@@ -8,6 +8,7 @@
     <!-- PWA Settings -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d9488">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ZeroPlus">
@@ -276,7 +277,7 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI (محرك الملازم والسلايدات والتناوب) ================= -->
+        <!-- ================= SECTION 4: ZERO AI ================= -->
         <section id="tab-zero" class="space-y-4">
             
             <!-- Lecture Upload & Slide Range Control -->
@@ -292,7 +293,7 @@
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
-                        ⚡ المحرك: Groq Llama 3.1
+                        ⚡ متصل: Groq Llama 3.1
                     </span>
                 </div>
 
@@ -1090,7 +1091,7 @@
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${AI_CONFIG.groqKey}`,
+                    "Authorization": "Bearer " + AI_CONFIG.groqKey,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -1099,7 +1100,7 @@
                         { role: "system", content: systemInstruction },
                         { role: "user", content: prompt }
                     ],
-                    temperature: 0.3,
+                    temperature: 0.2,
                     max_tokens: 600
                 })
             });
@@ -1107,7 +1108,7 @@
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
                 console.error("Groq Error Details:", errData);
-                throw new Error("فشل الاتصال بسيرفر Groq");
+                throw new Error("رمز الخطأ من السيرفر: " + response.status);
             }
 
             const data = await response.json();
@@ -1135,25 +1136,18 @@
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const prompt = `Based on this academic text:
+            const prompt = `Based on this text:
 """
 ${targetContent}
 """
 
-Create ONE multiple choice question (MCQ) testing understanding of this specific content.
-Return STRICTLY valid JSON ONLY without any markdown or backticks. Format:
-{
-  "q": "Question text here",
-  "options": [
-    {"t": "A) First Option", "correct": false},
-    {"t": "B) Second Option (Correct Answer)", "correct": true},
-    {"t": "C) Third Option", "correct": false}
-  ],
-  "explanation": "شرح توضيحي ومبسط للإجابة بالعربي"
-}`;
+Create ONE MCQ question testing comprehension.
+You MUST output ONLY a valid JSON object without any backticks, markdown, or extra words.
+Example format:
+{"q":"Question text","options":[{"t":"A) text","correct":false},{"t":"B) text","correct":true},{"t":"C) text","correct":false}],"explanation":"شرح بالعربي"}`;
 
             try {
-                const rawReply = await callRotatingAI(prompt, "You are an automated JSON-only academic quiz generator. Do NOT include markdown blocks, just raw JSON.");
+                const rawReply = await callRotatingAI(prompt, "You are a raw JSON API. Never use markdown formatting. Return strictly valid JSON.");
                 const cleanJson = rawReply.replace(/```json/gi, '').replace(/```/g, '').trim();
                 const quizData = JSON.parse(cleanJson);
 
@@ -1164,12 +1158,11 @@ Return STRICTLY valid JSON ONLY without any markdown or backticks. Format:
 
                 renderMCQCard(quizData);
             } catch (err) {
-                console.error("Quiz Generation Failed:", err);
+                console.error("Quiz Error:", err);
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
-                    <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold space-y-1">
-                        <div>تعذر استلام الرد من خادم الذكاء الاصطناعي. يرجى إعادة المحاولة.</div>
-                        <div class="text-[10px] text-slate-400">الخطأ التقني: ${err.message}</div>
+                    <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold">
+                        تعذر إنشاء الكويز: ${err.message}
                     </div>`;
                 feed.scrollTop = feed.scrollHeight;
             }
@@ -1235,7 +1228,7 @@ Return STRICTLY valid JSON ONLY without any markdown or backticks. Format:
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const systemPrompt = `أنت "زيرو" المدرس الأكاديمي والوزاري الذكي بالعراق. تشرح باختصار ووضوح وبلهجة مهذبة. اعتمد على محتوى السلايدات:\n${targetContent}`;
+            const systemPrompt = `أنت "زيرو" المدرس الأكاديمي والوزاري بالعراق. تشرح باختصار ووضوح وبلهجة مهذبة. اعتمد على محتوى السلايدات:\n${targetContent}`;
 
             try {
                 const reply = await callRotatingAI(txt, systemPrompt);
@@ -1254,7 +1247,7 @@ Return STRICTLY valid JSON ONLY without any markdown or backticks. Format:
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
                     <div class="p-2 text-rose-500 text-xs font-bold">
-                        تعذر الاتصال مؤقتاً، يرجى إعادة إرسال الرسالة.
+                        تعذر الاتصال بسيرفر الذكاء الاصطناعي (${err.message})، يرجى المحاولة ثانية.
                     </div>`;
             }
         }
