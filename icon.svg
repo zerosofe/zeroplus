@@ -1,24 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <linearGradient id="greeceBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="santoriniBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0E2F76"/>
-      <stop offset="100%" stop-color="#16439e"/>
+      <stop offset="100%" stop-color="#18489c"/>
     </linearGradient>
-    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0E2F76" flood-opacity="0.3"/>
-    </filter>
   </defs>
-
-  <!-- Background Base -->
-  <rect width="512" height="512" rx="120" fill="url(#greeceBlue)"/>
-  <rect width="504" height="504" x="4" y="4" rx="116" fill="none" stroke="#AAC0E1" stroke-width="4" stroke-opacity="0.4"/>
-
-  <!-- Inner Soft Accent -->
-  <circle cx="256" cy="256" r="190" fill="#F5FEFF" fill-opacity="0.04"/>
-
-  <!-- Z+ Typography -->
-  <g filter="url(#softShadow)" fill="#F5FEFF" font-family="'Cairo', system-ui, sans-serif" font-weight="900">
-    <text x="220" y="340" font-size="260" text-anchor="middle" letter-spacing="-8">Z</text>
-    <path d="M 360 215 L 360 260 L 315 260 L 315 300 L 360 300 L 360 345 L 400 345 L 400 300 L 445 300 L 445 260 L 400 260 L 400 215 Z" fill="#AAC0E1"/>
+  <!-- Background -->
+  <rect width="512" height="512" rx="120" fill="url(#santoriniBg)"/>
+  <rect width="500" height="500" x="6" y="6" rx="114" fill="none" stroke="#AAC0E1" stroke-width="8" stroke-opacity="0.5"/>
+  <!-- Z+ Logo -->
+  <g fill="#F5FEFF" font-family="'Cairo', Arial, sans-serif" font-weight="900">
+    <text x="215" y="345" font-size="280" text-anchor="middle" letter-spacing="-10">Z</text>
+    <!-- Plus Icon (+) -->
+    <path d="M 355 210 L 355 260 L 305 260 L 305 300 L 355 300 L 355 350 L 395 350 L 395 300 L 445 300 L 445 260 L 395 260 L 395 210 Z" fill="#AAC0E1"/>
   </g>
 </svg>
