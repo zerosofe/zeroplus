@@ -65,6 +65,15 @@
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1a2e3f; border-radius: 10px; }
+        
+        /* انيميشن نبض الشجرة التخيلية */
+        @keyframes float-tree {
+            0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.4)); }
+            50% { transform: translateY(-5px) scale(1.05); filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.7)); }
+        }
+        .fantasy-tree-animate {
+            animation: float-tree 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-brandDark-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 pb-24 md:pb-6">
@@ -92,8 +101,8 @@
                     <span id="app-xp">140 XP</span>
                 </div>
                 <div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800/40 px-3 py-1 rounded-full text-xs font-bold text-sky-700 dark:text-sky-300 hidden sm:flex items-center gap-1.5">
-                    <i class="fa-solid fa-fire text-amber-500"></i>
-                    <span>3 أيام</span>
+                    <i class="fa-solid fa-tree text-emerald-400"></i>
+                    <span id="header-tree-count">0 شجرة</span>
                 </div>
                 <!-- Cloud Status Indicator -->
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="السحابة متصلة"></div>
@@ -149,45 +158,82 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO (بومودورو) ================= -->
+        <!-- ================= SECTION 2: POMODORO & FANTASY FOREST (بومودورو وغابة الأشجار التخيلية) ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-3xl text-center max-w-md mx-auto shadow-sm">
-                <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-brandDark-bg p-1.5 rounded-2xl max-w-xs mx-auto mb-6">
-                    <button onclick="setPomoMode(25, 'وقت التركيز والدراسة ⚡', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm">تركيز (25د)</button>
-                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">استراحة (5د)</button>
-                    <button onclick="setPomoMode(15, 'استراحة طويلة ريّح دماغك 🌟', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">طويلة (15د)</button>
+                
+                <!-- Modes -->
+                <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-brandDark-bg p-1.5 rounded-2xl max-w-xs mx-auto mb-5">
+                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm">تركيز (25د)</button>
+                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">استراحة (5د)</button>
+                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">طويلة (15د)</button>
                 </div>
 
-                <div class="relative w-56 h-56 mx-auto flex items-center justify-center mb-6">
+                <!-- Circular Timer with Growing Fantasy Tree inside -->
+                <div class="relative w-60 h-60 mx-auto flex items-center justify-center mb-5">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-brandDark-bg" stroke-width="7"></circle>
-                        <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#aquaGradient)" stroke-width="7" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
+                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-brandDark-bg" stroke-width="6"></circle>
+                        <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#aquaGradient)" stroke-width="6" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
                         <defs>
                             <linearGradient id="aquaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                 <stop offset="0%" stop-color="#14b8a6"/>
-                                <stop offset="100%" stop-color="#0284c7"/>
+                                <stop offset="100%" stop-color="#38bdf8"/>
                             </linearGradient>
                         </defs>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+
+                    <!-- Center Elements (Timer + Virtual Tree Stage) -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <!-- Fantasy Tree Icon Preview -->
+                        <div id="pomo-tree-preview" class="text-3xl mb-1 fantasy-tree-animate transition-all duration-500">
+                            🌱
+                        </div>
                         <span id="pomo-display" class="text-4xl font-black tracking-wider text-slate-900 dark:text-white">25:00</span>
-                        <span id="pomo-status" class="text-xs text-turq-600 dark:text-turq-400 font-bold mt-1">وقت التركيز والدراسة ⚡</span>
+                        <span id="pomo-status" class="text-[11px] text-turq-600 dark:text-turq-400 font-bold mt-1 px-3">وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)</span>
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
-                        🍅 جلسات تركيز مكتملة اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
+                <!-- Stats summary -->
+                <div class="mb-5 flex justify-center gap-2">
+                    <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
+                        🍅 جلسات اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
+                        🌲 غابتك: <span id="forest-total-count" class="text-emerald-400 font-black">0</span> شجرة
                     </span>
                 </div>
 
+                <!-- Control Buttons -->
                 <div class="flex justify-center gap-3">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="gradient-turq-sky text-white font-black px-8 py-3 rounded-2xl shadow-lg shadow-turq-500/25 hover:opacity-95 transition">
-                        <span>ابدأ الجلسة</span> <i class="fa-solid fa-play mr-1 text-xs"></i>
+                        <span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>
                     </button>
                     <button onclick="resetPomo()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold hover:border-turq-500 transition" title="تصفير">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
+                </div>
+            </div>
+
+            <!-- ================= FOREST GARDEN DISPLAY (حديقة أشجار الطالب التخيلية) ================= -->
+            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز التخيلية 🌲✨</h3>
+                            <p class="text-[11px] text-slate-400">كل جلسة دراسة تكملها تزرعلك شجرة سحرية نادرة تنحفظ هنا للأبد!</p>
+                        </div>
+                    </div>
+                    <button onclick="clearForestConfirmation()" class="text-[10px] text-slate-400 hover:text-rose-500 transition" title="تفريغ الغابة">
+                        إعادة تهيئة
+                    </button>
+                </div>
+
+                <!-- Trees Grid -->
+                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2">
+                    <!-- Dynamic trees will be injected here -->
                 </div>
             </div>
         </section>
@@ -254,7 +300,7 @@
                 </button>
             </div>
 
-            <!-- Quick Action Prompts (Universal & Baccalaureate) -->
+            <!-- Quick Action Prompts -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold">
                 <button onclick="quickAskZero('سويلي كويز تفاعلي MCQ لاختبار معلوماتي')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز MCQ سريع</button>
                 <button onclick="quickAskZero('شنو أفضل خطة دراسية لمراجعة مادة الامتحان أو الوزاري قبل الامتحان بأسبوع؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🎯 خطة مراجعة سريعة</button>
@@ -292,7 +338,7 @@
             </button>
             <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
                 <i class="fa-solid fa-clock text-base mb-1"></i>
-                <span>بومودورو</span>
+                <span>بومودورو وغابتي</span>
             </button>
             <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
                 <i class="fa-solid fa-earth-americas text-base mb-1"></i>
@@ -305,7 +351,7 @@
         </div>
     </nav>
 
-    <!-- ================= JAVASCRIPT & SUPABASE CLOUD SYNC ================= -->
+    <!-- ================= JAVASCRIPT & ENGINES ================= -->
     <script>
         // ------------------ SUPABASE INITIALIZATION ------------------
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
@@ -324,10 +370,10 @@
         function triggerConfetti() {
             if (typeof confetti === 'function') {
                 confetti({
-                    particleCount: 60,
-                    spread: 70,
-                    origin: { y: 0.75 },
-                    colors: ['#14b8a6', '#0284c7', '#f59e0b', '#10b981']
+                    particleCount: 70,
+                    spread: 75,
+                    origin: { y: 0.7 },
+                    colors: ['#14b8a6', '#0284c7', '#f59e0b', '#10b981', '#ec4899']
                 });
             }
         }
@@ -508,11 +554,92 @@
 
         fetchCloudTasks();
 
-        // ------------------ 2. POMODORO TIMER ENGINE ------------------
+        // ------------------ 2. POMODORO & FANTASY FOREST ENGINE ------------------
+        let currentPomoMins = 25;
         let pomoDuration = 25 * 60;
         let pomoRemaining = 25 * 60;
         let pomoInterval = null;
         let pomoCompletedCount = 0;
+
+        // أنواع الأشجار التخيلية حسب المدة
+        const fantasyTreeTypes = {
+            25: {
+                name: "ساكورا أرجوانية سحرية",
+                icon: "🌸",
+                tag: "تركيز عميق 25د",
+                bgGradient: "from-fuchsia-500/20 to-purple-500/10",
+                borderColor: "border-fuchsia-500/30"
+            },
+            15: {
+                name: "شجرة الزمرد الكونية",
+                icon: "🌲",
+                tag: "جلسة هادئة 15د",
+                bgGradient: "from-emerald-500/20 to-teal-500/10",
+                borderColor: "border-emerald-500/30"
+            },
+            5: {
+                name: "برعم البلّور الأخضر",
+                icon: "🌱",
+                tag: "استراحة سريعة 5د",
+                bgGradient: "from-cyan-500/20 to-sky-500/10",
+                borderColor: "border-cyan-500/30"
+            }
+        };
+
+        // الغابة المخزنة
+        let userForest = JSON.parse(localStorage.getItem('zp_forest') || '[]');
+
+        function renderForest() {
+            const grid = document.getElementById('forest-grid');
+            grid.innerHTML = '';
+            document.getElementById('forest-total-count').innerText = userForest.length;
+            document.getElementById('header-tree-count').innerText = `${userForest.length} شجرة`;
+
+            if (userForest.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-xs text-slate-400">
+                        غابتك فارغة حالياً.. شغّل مؤقت التركيز وازرع أول شجرة خيالية خاصة بيك! 🌿✨
+                    </div>`;
+                return;
+            }
+
+            userForest.forEach(tree => {
+                grid.innerHTML += `
+                    <div class="bg-gradient-to-b ${tree.bgGradient} border ${tree.borderColor} p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm hover:scale-105 transition">
+                        <span class="text-3xl filter drop-shadow-md mb-1">${tree.icon}</span>
+                        <span class="text-[11px] font-bold text-slate-800 dark:text-slate-100 truncate w-full">${tree.name}</span>
+                        <span class="text-[9px] text-turq-600 dark:text-turq-400 font-semibold mt-0.5">${tree.time}</span>
+                    </div>`;
+            });
+        }
+
+        function plantTree(mins) {
+            const treeMeta = fantasyTreeTypes[mins] || fantasyTreeTypes[25];
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            const newTree = {
+                id: Date.now(),
+                name: treeMeta.name,
+                icon: treeMeta.icon,
+                tag: treeMeta.tag,
+                bgGradient: treeMeta.bgGradient,
+                borderColor: treeMeta.borderColor,
+                time: timeStr
+            };
+
+            userForest.unshift(newTree);
+            localStorage.setItem('zp_forest', JSON.stringify(userForest));
+            renderForest();
+        }
+
+        function clearForestConfirmation() {
+            if (confirm("هل تريد تفريغ وإعادة زراعة غابتك من جديد؟")) {
+                userForest = [];
+                localStorage.setItem('zp_forest', JSON.stringify([]));
+                renderForest();
+            }
+        }
 
         function updatePomoDisplay() {
             const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
@@ -520,15 +647,29 @@
             document.getElementById('pomo-display').innerText = `${m}:${s}`;
             const offset = 276 - (pomoRemaining / pomoDuration) * 276;
             document.getElementById('pomo-circle').style.strokeDashoffset = offset;
+
+            // تحديث أيقونة نمو الشجرة تدريجياً داخل الدائرة
+            const progress = (pomoDuration - pomoRemaining) / pomoDuration;
+            const treePreview = document.getElementById('pomo-tree-preview');
+            const targetIcon = (fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25]).icon;
+
+            if (progress < 0.3) {
+                treePreview.innerText = "🌱";
+            } else if (progress < 0.7) {
+                treePreview.innerText = "🌿";
+            } else {
+                treePreview.innerText = targetIcon;
+            }
         }
 
         function setPomoMode(mins, msg, btn) {
             clearInterval(pomoInterval);
             pomoInterval = null;
+            currentPomoMins = mins;
             pomoDuration = mins * 60;
             pomoRemaining = pomoDuration;
             document.getElementById('pomo-status').innerText = msg;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الجلسة</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
             document.querySelectorAll('.pomo-mode-btn').forEach(b => {
                 b.className = 'pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400';
             });
@@ -541,7 +682,7 @@
             if (pomoInterval) {
                 clearInterval(pomoInterval);
                 pomoInterval = null;
-                btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
+                btn.innerHTML = '<span>استئناف الزراعة</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
             } else {
                 btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-1 text-xs"></i>';
                 pomoInterval = setInterval(() => {
@@ -553,10 +694,16 @@
                         pomoInterval = null;
                         pomoCompletedCount++;
                         document.getElementById('pomo-count').innerText = pomoCompletedCount;
+                        
+                        // زرع الشجرة وحفظها
+                        plantTree(currentPomoMins);
+                        const treeInfo = fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25];
+
                         playChime(true);
-                        awardXP(25);
+                        awardXP(30);
                         triggerConfetti();
-                        alert("عاشت إيدك بطل! خلصت جلسة التركيز بنجاح (+25 XP) 🍅");
+
+                        alert(`🎉 مبروك بطل! كملت الجلسة بنجاح، وزرعت [ ${treeInfo.name} ${treeInfo.icon} ] في غابتك الخاصة! (+30 XP)`);
                         resetPomo();
                     }
                 }, 1000);
@@ -567,9 +714,11 @@
             clearInterval(pomoInterval);
             pomoInterval = null;
             pomoRemaining = pomoDuration;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الجلسة</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
             updatePomoDisplay();
         }
+
+        renderForest();
 
         // ------------------ 3. ENGLISH LEARNING ENGINE ------------------
         const englishLessons = {
