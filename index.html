@@ -6,6 +6,7 @@
     <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
     
     <!-- PWA Settings -->
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d9488">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,6 +44,8 @@
             }
         }
     </script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- PDF.js Library -->
@@ -65,7 +68,7 @@
             transform: translateY(4px);
             box-shadow: 0 0 0 #0d9488;
         }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1a2e3f; border-radius: 10px; }
         
@@ -78,11 +81,11 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-brandDark-bg text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 pb-24 md:pb-6">
+<body class="bg-slate-50 dark:bg-brandDark-bg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 pb-28">
 
     <!-- Top App Bar -->
-    <header class="sticky top-0 z-40 bg-white/80 dark:bg-brandDark-surface/80 backdrop-blur-md border-b border-slate-200 dark:border-brandDark-border px-4 py-3">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-brandDark-surface/90 backdrop-blur-md border-b border-slate-200 dark:border-brandDark-border px-4 py-3 shrink-0">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
             <!-- Logo (LTR Fix) -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl gradient-turq-sky flex items-center justify-center text-white font-black text-xl shadow-lg shadow-turq-500/20" dir="ltr">
@@ -117,7 +120,7 @@
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+    <main class="max-w-5xl w-full mx-auto p-3 sm:p-6 flex-1 flex flex-col">
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
@@ -272,19 +275,19 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI ================= -->
-        <section id="tab-zero" class="space-y-4">
+        <!-- ================= SECTION 4: ZERO AI (متجاوب بالكامل لجميع الشاشات) ================= -->
+        <section id="tab-zero" class="flex-1 flex flex-col gap-3">
             
             <!-- Lecture Upload & Slide Range Control -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl shadow-sm space-y-3">
-                <div class="flex items-center justify-between">
+            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3.5 sm:p-4 rounded-3xl shadow-sm space-y-2.5 shrink-0">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-sm shadow-sm">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز 📚</h3>
-                            <p class="text-[11px] text-slate-400">ارفع ملف الملزمة وحدد السلايدات ليصنعلك زيرو كويز مركز منها!</p>
+                            <h3 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز 📚</h3>
+                            <p class="text-[10px] sm:text-[11px] text-slate-400">ارفع ملف الملزمة وحدد السلايدات ليصنعلك زيرو كويز مركز منها!</p>
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
@@ -293,18 +296,18 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-brandDark-bg border border-dashed border-slate-300 dark:border-brandDark-border hover:border-turq-500 rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
+                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-brandDark-bg border border-dashed border-slate-300 dark:border-brandDark-border hover:border-turq-500 rounded-2xl p-2.5 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
                         <i class="fa-solid fa-file-pdf text-rose-500 text-base"></i>
                         <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
-                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-turq-500 transition">
+                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border px-4 py-2 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-turq-500 transition">
                         أو الصق نص ✍️
                     </button>
                 </div>
 
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="4" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
                 </div>
 
                 <!-- SLIDE RANGE SELECTOR -->
@@ -332,14 +335,14 @@
                     <!-- Scope Inputs -->
                     <div id="single-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
                         <span class="font-bold text-slate-500">اختر رقم السلايد:</span>
-                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
                     </div>
 
                     <div id="range-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
                         <span class="font-bold text-slate-500">من سلايد:</span>
-                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
                         <span class="font-bold text-slate-500">إلى سلايد:</span>
-                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
                     </div>
                 </div>
 
@@ -350,41 +353,46 @@
                 </div>
             </div>
 
-            <!-- Chat Header -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3.5 rounded-3xl flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-base shadow-sm">
-                        <i class="fa-solid fa-robot"></i>
+            <!-- Unified Chat Workspace Box (يأخذ مساحته الكاملة بدون قص) -->
+            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-3xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
+                
+                <!-- Chat Header -->
+                <div class="p-3.5 border-b border-slate-100 dark:border-brandDark-border flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-brandDark-bg/40">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                                زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            </h4>
+                            <p class="text-[10px] sm:text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية بدون انقطاع</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                            زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        </h4>
-                        <p class="text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية بدون انقطاع</p>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="requestAiQuizFromLecture()" class="duo-btn gradient-turq-sky text-white text-xs font-black px-3.5 sm:px-4 py-2 rounded-xl shadow-md shadow-turq-500/20 hover:opacity-95 transition">
+                            + اصنع كويز من الملزمة 📝
+                        </button>
+                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="مسح المحادثة">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <button onclick="requestAiQuizFromLecture()" class="duo-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl shadow-md shadow-turq-500/20 hover:opacity-95 transition">
-                        + اصنع كويز من الملزمة 📝
-                    </button>
-                    <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2" title="مسح المحادثة">
-                        <i class="fa-solid fa-trash-can"></i>
+
+                <!-- Chat Messages Feed -->
+                <div id="zero-chat-feed" class="flex-1 p-3 sm:p-5 space-y-4 overflow-y-auto max-h-[60vh]"></div>
+
+                <!-- Chat Input Bar (داخل الصندوق ليكون واضحاً وغير مقصوص أبداً) -->
+                <div class="p-3 border-t border-slate-100 dark:border-brandDark-border bg-slate-50 dark:bg-brandDark-bg/60 flex gap-2 items-center shrink-0">
+                    <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي نقطة بالمحاضرة أو اطلب شرح فكرة..." 
+                        onkeydown="if(event.key==='Enter') sendZeroChat()"
+                        class="flex-1 bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-turq-500 placeholder-slate-400 transition">
+                    <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Chat Feed -->
-            <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1"></div>
-
-            <!-- Chat Input -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2 rounded-2xl flex gap-2 shadow-sm">
-                <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي نقطة بالمحاضرة أو اطلب شرح فكرة..." 
-                    onkeydown="if(event.key==='Enter') sendZeroChat()"
-                    class="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
-                <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
         </section>
 
     </main>
@@ -430,22 +438,22 @@
         </div>
     </div>
 
-    <!-- Bottom Mobile Nav Bar -->
-    <nav class="fixed bottom-0 inset-x-0 bg-white/90 dark:bg-brandDark-surface/90 backdrop-blur-md border-t border-slate-200 dark:border-brandDark-border py-2 px-4 z-40">
-        <div class="max-w-md mx-auto flex justify-around">
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
+    <!-- Bottom Navigation Bar (متناسق مع كافة الأجهزة) -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-brandDark-surface/95 backdrop-blur-md border-t border-slate-200 dark:border-brandDark-border py-2.5 px-4 z-40 shadow-lg">
+        <div class="max-w-lg mx-auto flex justify-around">
+            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>
                 <span>المهام</span>
             </button>
-            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
+            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i>
                 <span>بومودورو وغابتي</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
                 <i class="fa-solid fa-earth-americas text-base mb-1"></i>
                 <span>الإنكليزي</span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs transition">
                 <i class="fa-solid fa-robot text-base mb-1"></i>
                 <span>زيرو AI</span>
             </button>
@@ -481,11 +489,11 @@
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
-                btn.className = "flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500";
+                btn.className = "flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition";
             });
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.className = "flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs";
+            activeBtn.className = "flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs transition";
         }
 
         function toggleTheme() {
@@ -1049,7 +1057,6 @@
             }
         }
 
-        // 1. اكتشاف الموديل النشط تلقائياً من حساب Groq لمنع خطأ 404/400
         async function discoverActiveGroqModel() {
             if (cachedGroqModel) return cachedGroqModel;
             try {
@@ -1071,9 +1078,7 @@
             return null;
         }
 
-        // 2. الاتصال السحابي متعدد الطبقات (Groq Auto-Model -> Pollinations GET)
         async function callCloudAI(prompt, systemInstruction = "") {
-            // الطبقة أ: Groq مع الموديل المكتشف تلقائياً
             try {
                 const activeModel = await discoverActiveGroqModel();
                 if (activeModel) {
@@ -1103,7 +1108,6 @@
                 }
             } catch (e) {}
 
-            // الطبقة ب: Pollinations GET السريع والمستقر
             try {
                 document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: السيرفر السحابي المباشر`;
                 const fullQuery = `${systemInstruction}\n\n${prompt}`.substring(0, 1200);
@@ -1115,17 +1119,15 @@
                 }
             } catch (e) {}
 
-            return null; // ينتقل فوراً للمحرك المحلي الذكي بدون رمي أي خطأ
+            return null;
         }
 
-        // 3. المحرك المحلي الذكي لتحليل الملزمة وتوليد الكويزات فوراً (Zero-Failure Local Engine)
         function generateSmartLocalQuizFromText(text) {
             document.getElementById('ai-active-engine-badge').innerText = `⚡ محرك زيرو المحلي الفوري`;
             
             const clean = text.replace(/\[Slide \d+\]:/g, '').replace(/\s+/g, ' ').trim();
             const sentences = clean.split(/[.!?\n]+/).map(s => s.trim()).filter(s => s.length > 35 && s.length < 220);
             
-            // اختيار جملة لم تُطرح سابقاً
             let unseen = sentences.filter(s => !seenQuestions.some(q => q.includes(s.substring(0, 20))));
             if (unseen.length === 0) unseen = sentences;
 
@@ -1135,7 +1137,6 @@
 
             const blankedSentence = targetSentence.replace(keyWord, "______");
 
-            // استخراج كلمات أخرى من الملزمة كخيارات مموهة حقيقية
             const allLongWords = clean.split(/\s+/).map(w => w.replace(/[^a-zA-Z\u0600-\u06FF]/g, '')).filter(w => w.length > 5 && w.toLowerCase() !== keyWord.toLowerCase());
             const distractor1 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Normal Baseline";
             const distractor2 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Secondary Factor";
@@ -1159,7 +1160,6 @@
             };
         }
 
-        // الردود الذكية للمحادثة في حال انقطاع السيرفر الخارجي
         function generateSmartLocalChatReply(userMsg, lectureContext) {
             document.getElementById('ai-active-engine-badge').innerText = `⚡ محرك زيرو المحلي الفوري`;
             const msg = userMsg.trim().toLowerCase();
@@ -1232,7 +1232,6 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
             let quizData = extractSafeJSON(rawReply);
 
-            // إذا لم يرجع السيرفر الخارجي JSON صالح، يشتغل المحرك المحلي الذكي فوراً بدون أي خطأ!
             if (!quizData || !quizData.q || !Array.isArray(quizData.options)) {
                 quizData = generateSmartLocalQuizFromText(targetContent);
             }
@@ -1253,21 +1252,21 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             item.options.forEach((opt) => {
                 const safeExp = (item.explanation || "إجابة نموذجية من الملزمة").replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 optionsHtml += `
-                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs font-semibold">
+                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs sm:text-sm font-semibold">
                         ${opt.t}
                     </button>`;
             });
 
             feed.innerHTML += `
-                <div class="flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                    <div id="${qId}" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                    <div id="${qId}" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none w-full max-w-[90%] sm:max-w-[80%] shadow-sm space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
                             <span class="text-sky-600 dark:text-sky-400">سؤال من السلايدات المحددة 📝</span>
                             <span class="text-slate-400">غير مكرر ✨</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-relaxed">${item.q}</h4>
-                        <div class="options-container space-y-1.5 pt-1">
+                        <div class="options-container space-y-2 pt-1">
                             ${optionsHtml}
                         </div>
                         <div class="feedback-container hidden"></div>
@@ -1286,7 +1285,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             const feed = document.getElementById('zero-chat-feed');
             feed.innerHTML += `
                 <div class="flex justify-end">
-                    <div class="gradient-turq-sky text-white text-xs sm:text-sm font-semibold p-3 rounded-2xl rounded-tl-none max-w-xs shadow-md shadow-turq-500/10">
+                    <div class="gradient-turq-sky text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[70%] shadow-md shadow-turq-500/10">
                         ${txt}
                     </div>
                 </div>`;
@@ -1300,7 +1299,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
             const loadingId = 'loading_chat_' + Date.now();
             feed.innerHTML += `
-                <div id="${loadingId}" class="text-[11px] font-bold text-slate-400 p-2 animate-pulse">
+                <div id="${loadingId}" class="text-xs font-bold text-slate-400 p-2 animate-pulse">
                     زيرو يكتب الآن... ✍️
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
@@ -1316,9 +1315,9 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             document.getElementById(loadingId)?.remove();
 
             feed.innerHTML += `
-                <div class="flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                    <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                    <div class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
                         ${reply.replace(/\n/g, '<br>')}
                     </div>
                 </div>`;
@@ -1335,7 +1334,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             fb.classList.remove('hidden');
 
             if (isCorrect) {
-                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-turq-500 bg-turq-500/10 text-turq-700 dark:text-turq-300 font-bold flex items-center justify-between text-xs';
+                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-turq-500 bg-turq-500/10 text-turq-700 dark:text-turq-300 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-check text-turq-500"></i>';
                 fb.className = 'feedback-container bg-turq-50 dark:bg-turq-900/20 text-turq-700 dark:text-turq-300 p-3 rounded-xl text-xs font-bold space-y-1';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> عاشت إيدك بطل! إجابة صحيحة ومضبوطة (+15 XP) 🎉</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">${exp}</div>`;
@@ -1343,7 +1342,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                 awardXP(15);
                 triggerConfetti();
             } else {
-                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs';
+                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
                 fb.className = 'feedback-container bg-rose-500/10 text-rose-500 dark:text-rose-400 p-3 rounded-xl text-xs font-bold space-y-1';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
@@ -1359,9 +1358,9 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                 feed.innerHTML = savedHtml;
             } else {
                 feed.innerHTML = `
-                    <div class="flex items-start gap-2.5">
-                        <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                        <div class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
                             هلا بيك بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
                             ارفع ملزمتك فوق بصيغة PDF، وتقدر تحدد سلايدات معينة أو كل السلايدات، واضغط <strong>+ اصنع كويز من الملزمة</strong> حتى نمتحنك بأسئلة دقيقة وغير مكررة!
                         </div>
@@ -1417,6 +1416,13 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             const text = getShareContent();
             navigator.clipboard.writeText(text).then(() => {
                 alert("تم نسخ بطاقة إنجازك! شاركها الآن على ستوري انستغرام أو تيليجرام 🚀");
+            });
+        }
+
+        // ------------------ 6. SERVICE WORKER ------------------
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
     </script>
