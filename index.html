@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
     
-    <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <link rel="apple-touch-icon" href="/icon.svg">
+    <!-- Favicon & Icons (Forced Cache Bust) -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=10">
+    <link rel="apple-touch-icon" href="/icon.svg?v=10">
+    <link rel="shortcut icon" href="/icon.svg?v=10">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json?v=10">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,7 +237,7 @@
                 </div>
             </div>
 
-            <!-- Spacious Uncramped Timer Card (الكلام خارج الدائرة تماماً) -->
+            <!-- Spacious Uncramped Timer Card (فقط العداد داخل الدائرة) -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-santorini space-y-6">
                 <!-- Mode Switcher -->
                 <div class="flex justify-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
@@ -245,7 +246,7 @@
                     <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15د)</button>
                 </div>
 
-                <!-- Clean Breathing Circle (فقط العداد والأيقونة داخل الدائرة) -->
+                <!-- Clean Breathing Circle -->
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-santorini-darkBase" stroke-width="4.5"></circle>
@@ -260,7 +261,7 @@
                     </div>
                 </div>
 
-                <!-- Status Outside Circle (مريح للعين وبدون أي حشر) -->
+                <!-- Status Outside Circle (مريح للعين) -->
                 <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto">
                     <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold block">
                         وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)
@@ -469,7 +470,7 @@
                     <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
                     <p class="text-xs text-santorini-softBlue">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
                 </div>
-                <div class="bg-black/20 p-3 rounded-2xl flex justify-around text-xs font-bold">
+                <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
                         <span class="block text-white/70 text-[10px]">مستوى الخبرة</span>
                         <span id="share-xp" class="text-amber-300 font-black text-sm">140 XP</span>
@@ -587,6 +588,7 @@
                 if (!error) {
                     updateCloudIndicator('online');
                 } else {
+                    console.error('Supabase Sync Error:', error);
                     updateCloudIndicator('offline');
                 }
             } catch (e) {
