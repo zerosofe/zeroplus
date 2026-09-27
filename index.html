@@ -25,29 +25,34 @@
             theme: {
                 extend: {
                     colors: {
-                        turq: {
+                        brand: {
                             50: '#f0fdfa',
                             100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
                             400: '#2dd4bf',
                             500: '#14b8a6',
                             600: '#0d9488',
                             700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
                         },
-                        sky: {
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                        },
-                        brandDark: {
-                            bg: '#0a1118',
-                            surface: '#111d28',
-                            border: '#1a2e3f',
+                        night: {
+                            base: '#090d12',
+                            card: '#0f1722',
+                            cardHover: '#131e2c',
+                            border: '#1c2838',
+                            muted: '#8094ad'
                         }
+                    },
+                    boxShadow: {
+                        'soft-glow': '0 10px 25px -5px rgba(20, 184, 166, 0.15)',
                     }
                 }
             }
         }
     </script>
+
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti CDN -->
@@ -60,63 +65,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .gradient-turq-sky {
-            background: linear-gradient(135deg, #14b8a6 0%, #0284c7 100%);
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        .gradient-brand {
+            background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+        }
+        .gradient-card-pomo {
+            background: linear-gradient(145deg, rgba(20, 184, 166, 0.08) 0%, rgba(2, 132, 199, 0.04) 100%);
         }
         .duo-btn {
-            box-shadow: 0 4px 0 #0d9488;
-            transition: all 0.1s ease;
+            box-shadow: 0 4px 0 #0f766e;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .duo-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #0d9488;
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0f766e;
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1a2e3f; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #243447; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334963; }
         
         @keyframes float-tree {
-            0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.4)); }
-            50% { transform: translateY(-5px) scale(1.05); filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.7)); }
+            0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.35)); }
+            50% { transform: translateY(-4px) scale(1.04); filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5)); }
         }
         .fantasy-tree-animate {
-            animation: float-tree 3s ease-in-out infinite;
+            animation: float-tree 3.2s ease-in-out infinite;
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-brandDark-bg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 pb-28">
+<body class="bg-slate-100 dark:bg-night-base text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 pb-24 selection:bg-brand-500 selection:text-white">
 
     <!-- Top App Bar -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-brandDark-surface/90 backdrop-blur-md border-b border-slate-200 dark:border-brandDark-border px-4 py-3 shrink-0">
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-night-base/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-night-border px-4 py-3 shrink-0 transition-colors">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
             <!-- Logo (LTR Fix) -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl gradient-turq-sky flex items-center justify-center text-white font-black text-xl shadow-lg shadow-turq-500/20" dir="ltr">
+                <div class="w-10 h-10 rounded-2xl gradient-brand flex items-center justify-center text-white font-black text-xl shadow-soft-glow" dir="ltr">
                     Z+
                 </div>
                 <div>
                     <h1 class="font-black text-lg leading-tight flex items-center gap-1" dir="ltr">
-                        <span class="text-slate-900 dark:text-white">Zero</span><span class="text-turq-500">Plus</span>
+                        <span class="text-slate-900 dark:text-white">Zero</span><span class="text-brand-500">Plus</span>
                     </h1>
-                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400">رفيقك الأكاديمي والوزاري 🇮🇶</span>
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-night-muted">رفيقك الأكاديمي والوزاري 🇮🇶</span>
                 </div>
             </div>
 
             <!-- Stats & Quick Actions -->
             <div class="flex items-center gap-2">
-                <button onclick="openShareModal()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-sky-400 flex items-center justify-center hover:scale-105 transition" title="مشاركة الإنجاز">
+                <button onclick="openShareModal()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-sky-400 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="مشاركة الإنجاز">
                     <i class="fa-solid fa-share-nodes text-sm"></i>
                 </button>
-                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 transition" title="تفعيل التنبيهات">
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="تفعيل التنبيهات">
                     <i id="notify-icon" class="fa-solid fa-bell text-sm"></i>
                 </button>
-                <div class="bg-turq-50 dark:bg-turq-900/20 border border-turq-200 dark:border-turq-800/40 px-3 py-1 rounded-full text-xs font-bold text-turq-700 dark:text-turq-300 flex items-center gap-1.5">
+                <div class="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-700/40 px-3 py-1 rounded-full text-xs font-bold text-brand-700 dark:text-brand-300 flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="متصل"></div>
-                <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-turq-400 flex items-center justify-center hover:scale-105 transition" title="تبديل الوضع">
+                <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-brand-400 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="تبديل الوضع">
                     <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
                 </button>
             </div>
@@ -128,34 +140,34 @@
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
-            <div class="gradient-turq-sky p-5 rounded-3xl text-white shadow-xl shadow-turq-500/15 flex items-center justify-between">
+            <div class="gradient-brand p-5 sm:p-6 rounded-3xl text-white shadow-soft-glow flex items-center justify-between">
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم الأكاديمي</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-100">إنجاز اليوم الأكاديمي</span>
                     <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">0 من 0 مهام مكتملة!</h2>
-                    <p id="todo-motivational" class="text-xs text-white/90 mt-1">عاشت إيدك بطل، رتب ملازمك وموادك واقرا أول بأول 🔥</p>
+                    <p id="todo-motivational" class="text-xs text-teal-100 mt-1">عاشت إيدك بطل، رتب ملازمك وموادك واقرا أول بأول 🔥</p>
                 </div>
-                <div id="todo-percent-badge" class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-xl border border-white/30">
+                <div id="todo-percent-badge" class="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20 shadow-inner">
                     0%
                 </div>
             </div>
 
             <!-- Add Input -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2.5 rounded-2xl flex flex-wrap sm:flex-nowrap gap-2 shadow-sm">
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-3 rounded-2xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-sm">
                 <input id="todo-input" type="text" placeholder="شنو عندك مادة، فصل وزاري، أو محاضرة باچر؟" 
                     onkeydown="if(event.key==='Enter') addTodo()"
-                    class="flex-1 min-w-[200px] bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
-                <select id="todo-tag" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border rounded-xl px-2 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none">
+                    class="flex-1 min-w-[200px] bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-night-muted">
+                <select id="todo-tag" class="bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border rounded-xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-brand-500">
                     <option value="جامعي 🏛️">جامعي 🏛️</option>
                     <option value="وزاري 🔥">وزاري 🔥</option>
                     <option value="دراسة ومراجعة 📖">دراسة ومراجعة 📖</option>
                     <option value="كويز وامتحان 📝">كويز وامتحان 📝</option>
                     <option value="عملي ومختبر 🔬">عملي ومختبر 🔬</option>
                 </select>
-                <select id="todo-prio" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border rounded-xl px-2 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none">
+                <select id="todo-prio" class="bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border rounded-xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-brand-500">
                     <option value="high">مهم كلش 🔥</option>
                     <option value="normal">اعتيادي 🌱</option>
                 </select>
-                <button onclick="addTodo()" class="w-full sm:w-auto gradient-turq-sky text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
+                <button onclick="addTodo()" class="w-full sm:w-auto gradient-brand text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition">
                     إضافة مهام +
                 </button>
             </div>
@@ -166,35 +178,35 @@
         <!-- ================= SECTION 2: POMODORO & FOREST & STATS ================= -->
         <section id="tab-pomodoro" class="hidden space-y-5">
             <div class="grid grid-cols-3 gap-2.5 text-center">
-                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
-                    <span class="text-[10px] text-slate-400 font-bold block">وقت التركيز التراكمي</span>
-                    <span id="stat-total-mins" class="text-base sm:text-lg font-black text-turq-500">0 دقيقة</span>
+                <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-3.5 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-500 dark:text-night-muted font-bold block">وقت التركيز التراكمي</span>
+                    <span id="stat-total-mins" class="text-base sm:text-lg font-black text-brand-500">0 دقيقة</span>
                 </div>
-                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
-                    <span class="text-[10px] text-slate-400 font-bold block">جلسات اليوم</span>
+                <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-3.5 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-500 dark:text-night-muted font-bold block">جلسات اليوم</span>
                     <span id="pomo-count-stat" class="text-base sm:text-lg font-black text-sky-400">0 جلسات</span>
                 </div>
-                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
-                    <span class="text-[10px] text-slate-400 font-bold block">أشجار الغابة</span>
+                <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-3.5 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-500 dark:text-night-muted font-bold block">أشجار الغابة</span>
                     <span id="stat-tree-count" class="text-base sm:text-lg font-black text-emerald-400">0 شجرة</span>
                 </div>
             </div>
 
             <!-- Timer Card -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-3xl text-center max-w-md mx-auto shadow-sm">
-                <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-brandDark-bg p-1.5 rounded-2xl max-w-xs mx-auto mb-5">
-                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm">تركيز (25د)</button>
-                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">استراحة (5د)</button>
-                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">طويلة (15د)</button>
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-6 rounded-3xl text-center max-w-md mx-auto shadow-sm">
+                <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-night-base p-1.5 rounded-2xl max-w-xs mx-auto mb-5 border border-slate-200/50 dark:border-night-border">
+                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-brand text-white shadow-sm">تركيز (25د)</button>
+                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-night-muted">استراحة (5د)</button>
+                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-night-muted">طويلة (15د)</button>
                 </div>
 
                 <div class="relative w-60 h-60 mx-auto flex items-center justify-center mb-5">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-brandDark-bg" stroke-width="6"></circle>
+                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-200/60 dark:stroke-night-border" stroke-width="6"></circle>
                         <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="url(#aquaGradient)" stroke-width="6" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
                         <defs>
                             <linearGradient id="aquaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#14b8a6"/>
+                                <stop offset="0%" stop-color="#0d9488"/>
                                 <stop offset="100%" stop-color="#38bdf8"/>
                             </linearGradient>
                         </defs>
@@ -205,22 +217,22 @@
                             🌱
                         </div>
                         <span id="pomo-display" class="text-4xl font-black tracking-wider text-slate-900 dark:text-white">25:00</span>
-                        <span id="pomo-status" class="text-[11px] text-turq-600 dark:text-turq-400 font-bold mt-1 px-3">وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)</span>
+                        <span id="pomo-status" class="text-[11px] text-brand-600 dark:text-brand-400 font-bold mt-1 px-3">وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)</span>
                     </div>
                 </div>
 
                 <div class="flex justify-center gap-3">
-                    <button id="pomo-play-btn" onclick="togglePomo()" class="gradient-turq-sky text-white font-black px-8 py-3 rounded-2xl shadow-lg shadow-turq-500/25 hover:opacity-95 transition">
+                    <button id="pomo-play-btn" onclick="togglePomo()" class="gradient-brand text-white font-black px-8 py-3 rounded-2xl shadow-soft-glow hover:opacity-95 transition">
                         <span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>
                     </button>
-                    <button onclick="resetPomo()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold hover:border-turq-500 transition" title="تصفير">
+                    <button onclick="resetPomo()" class="bg-slate-100 dark:bg-night-base border border-slate-200 dark:border-night-border text-slate-600 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold hover:border-brand-500 transition" title="تصفير">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Fantasy Forest Garden -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-3">
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-5 rounded-3xl shadow-sm space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
@@ -228,7 +240,7 @@
                         </div>
                         <div>
                             <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز التخيلية 🌲✨</h3>
-                            <p class="text-[11px] text-slate-400">تنمو غابتك مع كل جلسة تركيز تنجزها بدون توقف!</p>
+                            <p class="text-[11px] text-slate-500 dark:text-night-muted">تنمو غابتك مع كل جلسة تركيز تنجزها بدون توقف!</p>
                         </div>
                     </div>
                     <button onclick="clearForestConfirmation()" class="text-[10px] text-slate-400 hover:text-rose-500 transition">إعادة تهيئة</button>
@@ -240,21 +252,21 @@
         <!-- ================= SECTION 3: ENGLISH ================= -->
         <section id="tab-english" class="hidden space-y-4">
             <div class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (أساسيات ومحادثة)</button>
-                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
-                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
+                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-brand text-white text-xs font-black px-4 py-2.5 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (أساسيات ومحادثة)</button>
+                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
+                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
             </div>
 
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-4">
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-5 rounded-3xl shadow-sm space-y-4">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1 rounded-full">اكتب الترجمة بالعربي أو العراقي</span>
+                    <span class="text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 rounded-full border border-brand-200/50 dark:border-brand-700/30">اكتب الترجمة بالعربي أو العراقي</span>
                     <span id="eng-counter" class="text-slate-400">سؤال 1 من 3</span>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-brandDark-bg p-4 rounded-2xl border border-slate-100 dark:border-brandDark-border flex items-center justify-between">
+                <div class="bg-slate-50 dark:bg-night-base p-4 rounded-2xl border border-slate-200/60 dark:border-night-border flex items-center justify-between">
                     <div>
                         <h3 id="eng-prompt-text" class="text-lg font-black text-slate-900 dark:text-white">I have to study for the final exam</h3>
-                        <p id="eng-hint-text" class="text-xs text-slate-400 mt-1">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
+                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-night-muted mt-1">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
                     </div>
                     <button onclick="speakEngSentence()" class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 flex items-center justify-center hover:scale-105 transition" title="استمع للنطق">
                         <i class="fa-solid fa-volume-high"></i>
@@ -263,16 +275,16 @@
 
                 <input id="eng-user-input" type="text" placeholder="اكتب إجابتك هنا أو اضغط الكلمات بالأسفل..." 
                     onkeydown="if(event.key==='Enter') checkEngAnswer()"
-                    class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3.5 rounded-2xl text-sm focus:outline-none focus:border-turq-500 transition">
+                    class="w-full bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-3.5 rounded-2xl text-sm focus:outline-none focus:border-brand-500 transition">
 
                 <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold"></div>
                 <div id="eng-feedback-box" class="hidden p-3.5 rounded-2xl text-xs font-bold flex items-center gap-2"></div>
 
                 <div class="flex gap-2">
-                    <button onclick="nextEngQuestion()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-turq-500 transition">
+                    <button onclick="nextEngQuestion()" class="bg-slate-100 dark:bg-night-base border border-slate-200 dark:border-night-border text-slate-600 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-brand-500 transition">
                         تخطي <i class="fa-solid fa-forward mr-1"></i>
                     </button>
-                    <button onclick="checkEngAnswer()" class="flex-1 duo-btn gradient-turq-sky text-white font-black py-3 rounded-2xl shadow-lg shadow-turq-500/20 hover:opacity-95 transition">
+                    <button onclick="checkEngAnswer()" class="flex-1 duo-btn gradient-brand text-white font-black py-3 rounded-2xl shadow-soft-glow hover:opacity-95 transition">
                         تحقق من الإجابة ✅
                     </button>
                 </div>
@@ -283,54 +295,54 @@
         <section id="tab-zero" class="flex-1 flex flex-col gap-3">
             
             <!-- Lecture Upload & Slide Range Control -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3.5 sm:p-4 rounded-3xl shadow-sm space-y-2.5 shrink-0">
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-3.5 sm:p-4 rounded-3xl shadow-sm space-y-2.5 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-sm shadow-sm">
+                        <div class="w-8 h-8 rounded-xl gradient-brand text-white flex items-center justify-center text-sm shadow-sm">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
                         <div>
                             <h3 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز 📚</h3>
-                            <p class="text-[10px] sm:text-[11px] text-slate-400">ارفع ملف الملزمة وحدد السلايدات ليصنعلك زيرو كويز مركز منها!</p>
+                            <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-night-muted">ارفع ملف الملزمة وحدد السلايدات ليصنعلك زيرو كويز مركز منها!</p>
                         </div>
                     </div>
-                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
                         ⚡ محرك زيرو الهجين نشط
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-brandDark-bg border border-dashed border-slate-300 dark:border-brandDark-border hover:border-turq-500 rounded-2xl p-2.5 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
+                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-night-base border border-dashed border-slate-300 dark:border-night-border hover:border-brand-500 rounded-2xl p-2.5 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
                         <i class="fa-solid fa-file-pdf text-rose-500 text-base"></i>
                         <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
-                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border px-4 py-2 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-turq-500 transition">
+                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-night-base border border-slate-200 dark:border-night-border px-4 py-2 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-brand-500 transition">
                         أو الصق نص ✍️
                     </button>
                 </div>
 
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-3 rounded-2xl text-xs focus:outline-none focus:border-brand-500 transition resize-none"></textarea>
                 </div>
 
                 <!-- SLIDE RANGE SELECTOR -->
-                <div id="slide-scope-box" class="hidden bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl space-y-2">
+                <div id="slide-scope-box" class="hidden bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-3 rounded-2xl space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold">
-                        <span class="text-turq-600 dark:text-turq-400"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
+                        <span class="text-brand-600 dark:text-brand-400"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
                         <span id="total-slides-count" class="text-slate-400">إجمالي السلايدات: 0</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-xs font-semibold cursor-pointer">
                             <input type="radio" name="slide_scope" value="all" checked onchange="toggleScopeInputs()">
                             <span>كل السلايدات 📑</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-xs font-semibold cursor-pointer">
                             <input type="radio" name="slide_scope" value="single" onchange="toggleScopeInputs()">
                             <span>سلايد محدد 🎯</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-xs font-semibold cursor-pointer">
                             <input type="radio" name="slide_scope" value="range" onchange="toggleScopeInputs()">
                             <span>نطاق معين (من - إلى) 🔍</span>
                         </label>
@@ -338,15 +350,15 @@
 
                     <!-- Scope Inputs -->
                     <div id="single-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
-                        <span class="font-bold text-slate-500">اختر رقم السلايد:</span>
-                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <span class="font-bold text-slate-500 dark:text-night-muted">اختر رقم السلايد:</span>
+                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-1.5 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-center font-bold">
                     </div>
 
                     <div id="range-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
-                        <span class="font-bold text-slate-500">من سلايد:</span>
-                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
-                        <span class="font-bold text-slate-500">إلى سلايد:</span>
-                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-1.5 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <span class="font-bold text-slate-500 dark:text-night-muted">من سلايد:</span>
+                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-1.5 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-center font-bold">
+                        <span class="font-bold text-slate-500 dark:text-night-muted">إلى سلايد:</span>
+                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-1.5 rounded-xl bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-center font-bold">
                     </div>
                 </div>
 
@@ -358,23 +370,23 @@
             </div>
 
             <!-- Unified Chat Workspace Box -->
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-3xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
+            <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border rounded-3xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 
                 <!-- Chat Header -->
-                <div class="p-3.5 border-b border-slate-100 dark:border-brandDark-border flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-brandDark-bg/40">
+                <div class="p-3.5 border-b border-slate-200/80 dark:border-night-border flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-night-base/40">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-base shadow-sm">
+                        <div class="w-9 h-9 rounded-2xl gradient-brand text-white flex items-center justify-center font-bold text-base shadow-soft-glow">
                             <i class="fa-solid fa-robot"></i>
                         </div>
                         <div>
                             <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                                 زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             </h4>
-                            <p class="text-[10px] sm:text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية بدون انقطاع</p>
+                            <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-night-muted">توليد كويزات MCQ حصرية ومحادثة تدريسية بدون انقطاع</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button onclick="requestAiQuizFromLecture()" class="duo-btn gradient-turq-sky text-white text-xs font-black px-3.5 sm:px-4 py-2 rounded-xl shadow-md shadow-turq-500/20 hover:opacity-95 transition">
+                        <button onclick="requestAiQuizFromLecture()" class="duo-btn gradient-brand text-white text-xs font-black px-3.5 sm:px-4 py-2 rounded-xl shadow-soft-glow hover:opacity-95 transition">
                             + اصنع كويز من الملزمة 📝
                         </button>
                         <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="مسح المحادثة">
@@ -387,11 +399,11 @@
                 <div id="zero-chat-feed" class="flex-1 p-3 sm:p-5 space-y-4 overflow-y-auto max-h-[60vh]"></div>
 
                 <!-- Chat Input Bar -->
-                <div class="p-3 border-t border-slate-100 dark:border-brandDark-border bg-slate-50 dark:bg-brandDark-bg/60 flex gap-2 items-center shrink-0">
+                <div class="p-3 border-t border-slate-200/80 dark:border-night-border bg-slate-50/80 dark:bg-night-base/60 flex gap-2 items-center shrink-0">
                     <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي نقطة بالمحاضرة أو اطلب شرح فكرة..." 
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
-                        class="flex-1 bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-turq-500 placeholder-slate-400 transition">
-                    <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition shrink-0">
+                        class="flex-1 bg-white dark:bg-night-card border border-slate-200 dark:border-night-border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-brand-500 placeholder-slate-400 dark:placeholder-night-muted transition">
+                    <button onclick="sendZeroChat()" class="gradient-brand text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-soft-glow hover:opacity-95 transition shrink-0">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -402,15 +414,15 @@
     </main>
 
     <!-- ================= MODAL: SHARE ACHIEVEMENT CARD ================= -->
-    <div id="share-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
-            <div id="share-card" class="gradient-turq-sky p-6 rounded-2xl text-white shadow-lg space-y-3 text-center">
+    <div id="share-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <div id="share-card" class="gradient-brand p-6 rounded-2xl text-white shadow-soft-glow space-y-3 text-center">
                 <div class="w-12 h-12 rounded-2xl bg-white/20 mx-auto flex items-center justify-center font-black text-2xl border border-white/30" dir="ltr">
                     Z+
                 </div>
                 <div>
                     <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
-                    <p class="text-xs text-white/80">طالب متميز نحو النجاح الأكاديمي والوزاري 🇮🇶</p>
+                    <p class="text-xs text-teal-100">طالب متميز نحو النجاح الأكاديمي والوزاري 🇮🇶</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
@@ -431,10 +443,10 @@
             </div>
 
             <div class="flex gap-2">
-                <button onclick="executeShare()" class="flex-1 gradient-turq-sky text-white py-2.5 rounded-xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5">
+                <button onclick="executeShare()" class="flex-1 gradient-brand text-white py-2.5 rounded-xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-share"></i> <span>مشاركة فورية</span>
                 </button>
-                <button onclick="copyShareText()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs hover:border-turq-500 transition">
+                <button onclick="copyShareText()" class="bg-slate-100 dark:bg-night-base border border-slate-200 dark:border-night-border text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs hover:border-brand-500 transition">
                     نسخ النص
                 </button>
             </div>
@@ -443,21 +455,21 @@
     </div>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-brandDark-surface/95 backdrop-blur-md border-t border-slate-200 dark:border-brandDark-border py-2.5 px-4 z-40 shadow-lg">
+    <nav class="fixed bottom-0 inset-x-0 bg-white/85 dark:bg-night-base/85 backdrop-blur-xl border-t border-slate-200/80 dark:border-night-border py-2 px-4 z-40 shadow-lg">
         <div class="max-w-lg mx-auto flex justify-around">
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
+            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-brand-500 transition">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>
                 <span>المهام</span>
             </button>
-            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
+            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-brand-500 transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i>
                 <span>بومودورو وغابتي</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition">
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-brand-500 transition">
                 <i class="fa-solid fa-earth-americas text-base mb-1"></i>
                 <span>الإنكليزي</span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs transition">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-brand-600 dark:text-brand-400 font-bold text-xs transition">
                 <i class="fa-solid fa-robot text-base mb-1"></i>
                 <span>زيرو AI</span>
             </button>
@@ -466,6 +478,36 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
+        // ------------------ THEME CONTROLLER & STORAGE ------------------
+        function initTheme() {
+            const savedTheme = localStorage.getItem('zp_theme');
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'light') {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-sm';
+            } else {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-sm';
+            }
+        }
+        initTheme();
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('zp_theme', 'light');
+                icon.className = 'fa-solid fa-moon text-sm';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('zp_theme', 'dark');
+                icon.className = 'fa-solid fa-sun text-sm';
+            }
+        }
+
         // ------------------ GLOBAL STATE & XP ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
@@ -484,7 +526,7 @@
                     particleCount: 70,
                     spread: 75,
                     origin: { y: 0.7 },
-                    colors: ['#14b8a6', '#0284c7', '#f59e0b', '#10b981', '#ec4899']
+                    colors: ['#0d9488', '#0284c7', '#f59e0b', '#10b981', '#ec4899']
                 });
             }
         }
@@ -493,23 +535,11 @@
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
-                btn.className = "flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500 transition";
+                btn.className = "flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-brand-500 transition";
             });
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.className = "flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs transition";
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.className = 'fa-solid fa-moon text-sm';
-            } else {
-                html.classList.add('dark');
-                icon.className = 'fa-solid fa-sun text-sm';
-            }
+            activeBtn.className = "flex flex-col items-center py-1 px-3 text-brand-600 dark:text-brand-400 font-bold text-xs transition";
         }
 
         function playChime(success = true) {
@@ -572,7 +602,7 @@
 
             if (tasks.length === 0) {
                 list.innerHTML = `
-                    <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-2xl text-center text-xs text-slate-400">
+                    <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-6 rounded-2xl text-center text-xs text-slate-500 dark:text-night-muted">
                         ما عندك مهام حالياً، اكتب أول مادة أو فصل واضغط إضافة مهام ✨
                     </div>`;
             } else {
@@ -580,21 +610,21 @@
                     if (t.done) completed++;
                     const isHigh = t.prio === 'high';
                     list.innerHTML += `
-                        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-2xl flex items-center justify-between shadow-sm transition ${t.done ? 'opacity-60' : ''}">
+                        <div class="bg-white dark:bg-night-card border border-slate-200 dark:border-night-border p-4 rounded-2xl flex items-center justify-between shadow-sm transition ${t.done ? 'opacity-55' : ''}">
                             <div class="flex items-center gap-3">
-                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-lg ${t.done ? 'bg-turq-500 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-turq-500'} flex items-center justify-center text-xs cursor-pointer transition">
+                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-lg ${t.done ? 'bg-brand-500 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-brand-500'} flex items-center justify-center text-xs cursor-pointer transition">
                                     ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
                                 </div>
                                 <div>
                                     <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${t.title}</p>
                                     <div class="flex items-center gap-2 mt-0.5">
-                                        <span class="text-[11px] text-turq-600 dark:text-turq-400 font-semibold">${t.tag}</span>
+                                        <span class="text-[11px] text-brand-600 dark:text-brand-400 font-semibold">${t.tag}</span>
                                         ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-500 dark:text-rose-400 px-2 py-0.2 rounded-full font-bold">مهم كلش 🔥</span>' : ''}
                                     </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                ${t.done ? '<span class="text-xs text-slate-400">تمت ✅</span>' : ''}
+                                ${t.done ? '<span class="text-xs text-emerald-500 font-semibold">تمت ✅</span>' : ''}
                                 <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2 transition"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>`;
@@ -690,7 +720,7 @@
 
             if (userForest.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full py-8 text-center text-xs text-slate-400">
+                    <div class="col-span-full py-8 text-center text-xs text-slate-500 dark:text-night-muted">
                         غابتك فارغة حالياً.. شغّل مؤقت التركيز وازرع أول شجرة خيالية خاصة بيك! 🌿✨
                     </div>`;
                 return;
@@ -701,7 +731,7 @@
                     <div class="bg-gradient-to-b ${tree.bgGradient} border ${tree.borderColor} p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm hover:scale-105 transition">
                         <span class="text-3xl filter drop-shadow-md mb-1">${tree.icon}</span>
                         <span class="text-[11px] font-bold text-slate-800 dark:text-slate-100 truncate w-full">${tree.name}</span>
-                        <span class="text-[9px] text-turq-600 dark:text-turq-400 font-semibold mt-0.5">${tree.time}</span>
+                        <span class="text-[9px] text-brand-600 dark:text-brand-400 font-semibold mt-0.5">${tree.time}</span>
                     </div>`;
             });
         }
@@ -763,9 +793,9 @@
             document.getElementById('pomo-status').innerText = msg;
             document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
             document.querySelectorAll('.pomo-mode-btn').forEach(b => {
-                b.className = 'pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400';
+                b.className = 'pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-night-muted';
             });
-            btn.className = 'pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm';
+            btn.className = 'pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-brand text-white shadow-sm';
             updatePomoDisplay();
         }
 
@@ -856,9 +886,9 @@
             currentEngLvl = lvl;
             currentEngIdx = 0;
             document.querySelectorAll('.eng-lvl-btn').forEach(b => {
-                b.className = 'eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap';
+                b.className = 'eng-lvl-btn bg-white dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap';
             });
-            btn.className = 'eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm';
+            btn.className = 'eng-lvl-btn gradient-brand text-white text-xs font-black px-4 py-2.5 rounded-xl whitespace-nowrap shadow-sm';
             loadEngQuestion();
         }
 
@@ -877,7 +907,7 @@
             chipContainer.innerHTML = '';
             q.chips.forEach(word => {
                 chipContainer.innerHTML += `
-                    <button onclick="appendWordToInput('${word}')" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl hover:border-turq-500 transition">
+                    <button onclick="appendWordToInput('${word}')" class="bg-slate-100 dark:bg-night-base border border-slate-200 dark:border-night-border px-3 py-1.5 rounded-xl hover:border-brand-500 transition text-slate-700 dark:text-slate-200">
                         ${word}
                     </button>`;
             });
@@ -1219,7 +1249,7 @@
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
             feed.innerHTML += `
-                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-turq-600 dark:text-turq-400 p-3 bg-turq-50 dark:bg-turq-900/20 rounded-2xl animate-pulse">
+                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-brand-600 dark:text-brand-400 p-3 bg-brand-50 dark:bg-brand-900/20 rounded-2xl animate-pulse">
                     <i class="fa-solid fa-brain text-sm"></i>
                     <span>زيرو يحلل السلايدات المحددة ويصنع كويز تفاعلي... 🧠</span>
                 </div>`;
@@ -1256,15 +1286,15 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             item.options.forEach((opt) => {
                 const safeExp = (item.explanation || "إجابة نموذجية من الملزمة").replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 optionsHtml += `
-                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs sm:text-sm font-semibold">
+                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-night-border bg-white dark:bg-night-card hover:border-brand-500 transition text-xs sm:text-sm font-semibold">
                         ${opt.t}
                     </button>`;
             });
 
             feed.innerHTML += `
                 <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
-                    <div id="${qId}" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none w-full max-w-[90%] sm:max-w-[80%] shadow-sm space-y-3">
+                    <div class="w-8 h-8 rounded-xl gradient-brand text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                    <div id="${qId}" class="bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-4 rounded-3xl rounded-tr-none w-full max-w-[90%] sm:max-w-[80%] shadow-sm space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
                             <span class="text-sky-600 dark:text-sky-400">سؤال من السلايدات المحددة 📝</span>
                             <span class="text-slate-400">غير مكرر ✨</span>
@@ -1289,7 +1319,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             const feed = document.getElementById('zero-chat-feed');
             feed.innerHTML += `
                 <div class="flex justify-end">
-                    <div class="gradient-turq-sky text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[70%] shadow-md shadow-turq-500/10">
+                    <div class="gradient-brand text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[70%] shadow-md">
                         ${txt}
                     </div>
                 </div>`;
@@ -1320,8 +1350,8 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
             feed.innerHTML += `
                 <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
-                    <div class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                    <div class="w-8 h-8 rounded-xl gradient-brand text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                    <div class="bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
                         ${reply.replace(/\n/g, '<br>')}
                     </div>
                 </div>`;
@@ -1338,9 +1368,9 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             fb.classList.remove('hidden');
 
             if (isCorrect) {
-                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-turq-500 bg-turq-500/10 text-turq-700 dark:text-turq-300 font-bold flex items-center justify-between text-xs sm:text-sm';
-                btn.innerHTML += ' <i class="fa-solid fa-circle-check text-turq-500"></i>';
-                fb.className = 'feedback-container bg-turq-50 dark:bg-turq-900/20 text-turq-700 dark:text-turq-300 p-3 rounded-xl text-xs font-bold space-y-1';
+                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-brand-500 bg-brand-500/10 text-brand-700 dark:text-brand-300 font-bold flex items-center justify-between text-xs sm:text-sm';
+                btn.innerHTML += ' <i class="fa-solid fa-circle-check text-brand-500"></i>';
+                fb.className = 'feedback-container bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 p-3 rounded-xl text-xs font-bold space-y-1 border border-brand-200/50 dark:border-brand-700/30';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> عاشت إيدك بطل! إجابة صحيحة ومضبوطة (+15 XP) 🎉</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(true);
                 awardXP(15);
@@ -1348,7 +1378,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             } else {
                 btn.className = 'w-full text-right p-3 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
-                fb.className = 'feedback-container bg-rose-500/10 text-rose-500 dark:text-rose-400 p-3 rounded-xl text-xs font-bold space-y-1';
+                fb.className = 'feedback-container bg-rose-500/10 text-rose-500 dark:text-rose-400 p-3 rounded-xl text-xs font-bold space-y-1 border border-rose-500/30';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
                 playChime(false);
             }
@@ -1363,8 +1393,8 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             } else {
                 feed.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
-                        <div class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                        <div class="w-8 h-8 rounded-xl gradient-brand text-white flex items-center justify-center text-xs font-black shrink-0 mt-1" dir="ltr">Z+</div>
+                        <div class="bg-slate-50 dark:bg-night-base border border-slate-200 dark:border-night-border p-4 rounded-3xl rounded-tr-none max-w-[88%] sm:max-w-[78%] shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
                             هلا بيك بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
                             ارفع ملزمتك فوق بصيغة PDF، وتقدر تحدد سلايدات معينة أو كل السلايدات، واضغط <strong>+ اصنع كويز من الملزمة</strong> حتى نمتحنك بأسئلة دقيقة وغير مكررة!
                         </div>
