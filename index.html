@@ -45,6 +45,8 @@
     </script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -319,6 +321,17 @@
         }
         awardXP(0);
 
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 60,
+                    spread: 70,
+                    origin: { y: 0.75 },
+                    colors: ['#14b8a6', '#0284c7', '#f59e0b', '#10b981']
+                });
+            }
+        }
+
         function showTab(tabId) {
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
@@ -463,6 +476,7 @@
                     if (nextState) {
                         playChime(true);
                         awardXP(10);
+                        triggerConfetti();
                     }
                     return { ...t, done: nextState };
                 }
@@ -541,6 +555,7 @@
                         document.getElementById('pomo-count').innerText = pomoCompletedCount;
                         playChime(true);
                         awardXP(25);
+                        triggerConfetti();
                         alert("عاشت إيدك بطل! خلصت جلسة التركيز بنجاح (+25 XP) 🍅");
                         resetPomo();
                     }
@@ -649,6 +664,7 @@
             if (isCorrect) {
                 playChime(true);
                 awardXP(15);
+                triggerConfetti();
                 fb.className = 'p-3.5 rounded-2xl text-xs font-bold flex items-center gap-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30';
                 fb.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>عاشت إيدك بطل! إجابة صحيحة ومضبوطة (+15 XP) 🎉</span>';
             } else {
@@ -791,6 +807,7 @@
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> عاشت إيدك! إجابة صحيحة (+15 XP) 🎉</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(true);
                 awardXP(15);
+                triggerConfetti();
             } else {
                 btn.className = 'w-full text-right p-2.5 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
