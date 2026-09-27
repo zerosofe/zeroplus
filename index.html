@@ -292,7 +292,7 @@
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
-                        ⚡ المحرك: Groq
+                        ⚡ المحرك: Groq Llama 3.1
                     </span>
                 </div>
 
@@ -311,7 +311,7 @@
                     <textarea id="lecture-text-content" rows="4" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
                 </div>
 
-                <!-- SLIDE RANGE SELECTOR (تحديد نطاق السلايدات) -->
+                <!-- SLIDE RANGE SELECTOR -->
                 <div id="slide-scope-box" class="hidden bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold">
                         <span class="text-turq-600 dark:text-turq-400"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
@@ -364,7 +364,7 @@
                         <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                             زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </h4>
-                        <p class="text-[11px] text-slate-400">كويزات ذكية تناوبية (Groq ⚡ Gemini 🌐 Qwen 🧠)</p>
+                        <p class="text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -974,14 +974,12 @@
         loadEngQuestion();
 
         // ------------------ 4. ZERO AI ROTATION ENGINE & SLIDE PARSER ------------------
-        let pdfSlidesData = []; // Array of { pageNum: 1, text: "..." }
+        let pdfSlidesData = [];
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
 
         const AI_CONFIG = {
-            groqKey: "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",
-            geminiKey: "AQ.Ab8RN6L1HEDRM1kTho6tnYsMTnk2MBHkq8lIu8d24NTSku6JSA",
-            qwenKey: "sk-d7037ce698504ebcb37a4c9d54e19195"
+            groqKey: "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"
         };
 
         function togglePasteArea() {
@@ -1017,7 +1015,6 @@
                         fullText += `[سلايد ${i}]: ` + pageText + "\n";
                     }
 
-                    // تفعيل واجهة اختيار السلايدات
                     document.getElementById('slide-scope-box').classList.remove('hidden');
                     document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages} سلايد`;
                     document.getElementById('single-slide-num').max = pdf.numPages;
@@ -1062,10 +1059,9 @@
             alert("تم إفراغ محتوى الملزمة ومسح السلايدات وكاش الأسئلة.");
         }
 
-        // استخراج المحتوى حسب خيار السلايدات المختار
         function getScopedLectureContent() {
             if (pdfSlidesData.length === 0) {
-                return currentLectureText.substring(0, 3000);
+                return currentLectureText.substring(0, 2500);
             }
 
             const scope = document.querySelector('input[name="slide_scope"]:checked')?.value || 'all';
@@ -1079,104 +1075,53 @@
                 const from = parseInt(document.getElementById('range-slide-from').value) || 1;
                 const to = parseInt(document.getElementById('range-slide-to').value) || pdfSlidesData.length;
                 const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
-                return filtered.map(s => `[سلايد ${s.pageNum}]: ${s.text}`).join("\n").substring(0, 4000);
+                return filtered.map(s => `[سلايد ${s.pageNum}]: ${s.text}`).join("\n").substring(0, 3000);
             } 
             else {
-                // كل السلايدات - اختيار مقطع عشوائي ذكي بحجم 3000 حرف لمنع الضغط
-                const maxLen = Math.min(3000, currentLectureText.length);
+                const maxLen = Math.min(2500, currentLectureText.length);
                 const startIdx = Math.floor(Math.random() * Math.max(1, currentLectureText.length - maxLen));
                 return currentLectureText.substring(startIdx, startIdx + maxLen);
             }
         }
 
-        // محرك التناوب التلقائي للذكاء الاصطناعي (Groq -> Gemini -> Qwen)
         async function callRotatingAI(prompt, systemInstruction = "") {
-            const engines = [
-                {
-                    name: "Groq Cloud (Llama 8B)",
-                    call: async () => {
-                        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                            method: "POST",
-                            headers: {
-                                "Authorization": `Bearer ${AI_CONFIG.groqKey}`,
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                model: "llama-3.1-8b-instant",
-                                messages: [
-                                    { role: "system", content: systemInstruction },
-                                    { role: "user", content: prompt }
-                                ],
-                                response_format: { type: "json_object" },
-                                temperature: 0.3,
-                                max_tokens: 800
-                            })
-                        });
-                        if (!res.ok) throw new Error("Groq failed");
-                        const data = await res.json();
-                        return data.choices[0].message.content;
-                    }
+            document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: Groq Llama 3.1`;
+            
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${AI_CONFIG.groqKey}`,
+                    "Content-Type": "application/json"
                 },
-                {
-                    name: "Google Gemini 1.5 Flash",
-                    call: async () => {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_CONFIG.geminiKey}`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text: `${systemInstruction}\nOutput JSON only:\n${prompt}` }] }]
-                            })
-                        });
-                        if (!res.ok) throw new Error("Gemini failed");
-                        const data = await res.json();
-                        return data.candidates[0].content.parts[0].text;
-                    }
-                },
-                {
-                    name: "Qwen Cloud",
-                    call: async () => {
-                        const res = await fetch("https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions", {
-                            method: "POST",
-                            headers: {
-                                "Authorization": `Bearer ${AI_CONFIG.qwenKey}`,
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                model: "qwen3.5-flash",
-                                messages: [
-                                    { role: "system", content: systemInstruction },
-                                    { role: "user", content: prompt }
-                                ]
-                            })
-                        });
-                        if (!res.ok) throw new Error("Qwen failed");
-                        const data = await res.json();
-                        return data.choices[0].message.content;
-                    }
-                }
-            ];
+                body: JSON.stringify({
+                    model: "llama-3.1-8b-instant",
+                    messages: [
+                        { role: "system", content: systemInstruction },
+                        { role: "user", content: prompt }
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 600
+                })
+            });
 
-            for (let engine of engines) {
-                try {
-                    document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: ${engine.name.split(' ')[0]}`;
-                    const reply = await engine.call();
-                    if (reply) return reply;
-                } catch (err) {
-                    console.warn(`Engine ${engine.name} failed, switching to backup...`, err);
-                }
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                console.error("Groq Error Details:", errData);
+                throw new Error("فشل الاتصال بسيرفر Groq");
             }
-            throw new Error("جميع محركات الذكاء الاصطناعي مشغولة حالياً.");
+
+            const data = await response.json();
+            return data.choices[0].message.content;
         }
 
-        // توليد الكويز من نطاق السلايدات حصراً
         async function requestAiQuizFromLecture() {
             const manualText = document.getElementById('lecture-text-content').value.trim();
-            if (manualText && manualText.length > 50) {
+            if (manualText && manualText.length > 30) {
                 currentLectureText = manualText;
             }
 
-            if (!currentLectureText || currentLectureText.length < 30) {
-                alert("⚠️ لا يمكن توليد كويز! يرجى رفع ملف الملزمة (PDF) أو لصق النص أولاً.");
+            if (!currentLectureText || currentLectureText.length < 20) {
+                alert("⚠️ يرجى رفع ملف الملزمة أو لصق النص أولاً.");
                 return;
             }
 
@@ -1185,36 +1130,31 @@
             feed.innerHTML += `
                 <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-turq-600 dark:text-turq-400 p-3 bg-turq-50 dark:bg-turq-900/20 rounded-2xl animate-pulse">
                     <i class="fa-solid fa-brain text-sm"></i>
-                    <span>زيرو يحلل السلايدات المحددة ويصنع كويز ذكي غير مكرر... 🧠</span>
+                    <span>زيرو يحلل السلايدات ويصنع كويز تفاعلي الآن... 🧠</span>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const prompt = `
-محتوى السلايدات المحددة:
+            const prompt = `Based on this academic text:
 """
 ${targetContent}
 """
 
-قائمة الأسئلة السابقة لمنع التكرار نهائياً:
-${JSON.stringify(seenQuestions.slice(-10))}
-
-المطلوب: قم بصياغة سؤال MCQ واحد أكاديمي من هذا المحتوى حصراً، مع 3 خيارات وشرح توضيحي للحل.
-يجب إرجاع النتيجة بصيغة JSON فقط:
+Create ONE multiple choice question (MCQ) testing understanding of this specific content.
+Return STRICTLY valid JSON ONLY without any markdown or backticks. Format:
 {
-  "q": "نص السؤال هنا",
+  "q": "Question text here",
   "options": [
-    {"t": "A) الخيار الأول", "correct": false},
-    {"t": "B) الخيار الثاني", "correct": true},
-    {"t": "C) الخيار الثالث", "correct": false}
+    {"t": "A) First Option", "correct": false},
+    {"t": "B) Second Option (Correct Answer)", "correct": true},
+    {"t": "C) Third Option", "correct": false}
   ],
-  "explanation": "شرح الجواب الصحيح بالعربي"
-}
-`;
+  "explanation": "شرح توضيحي ومبسط للإجابة بالعربي"
+}`;
 
             try {
-                const response = await callRotatingAI(prompt, "You are an expert exam generator. Return valid JSON only.");
-                const cleanJson = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const rawReply = await callRotatingAI(prompt, "You are an automated JSON-only academic quiz generator. Do NOT include markdown blocks, just raw JSON.");
+                const cleanJson = rawReply.replace(/```json/gi, '').replace(/```/g, '').trim();
                 const quizData = JSON.parse(cleanJson);
 
                 document.getElementById(loadingId)?.remove();
@@ -1224,11 +1164,12 @@ ${JSON.stringify(seenQuestions.slice(-10))}
 
                 renderMCQCard(quizData);
             } catch (err) {
-                console.error(err);
+                console.error("Quiz Generation Failed:", err);
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
-                    <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold">
-                        السيرفر مشغول حالياً، اضغط على زر الكويز مرة ثانية لتفعيل المحرك البديل!
+                    <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold space-y-1">
+                        <div>تعذر استلام الرد من خادم الذكاء الاصطناعي. يرجى إعادة المحاولة.</div>
+                        <div class="text-[10px] text-slate-400">الخطأ التقني: ${err.message}</div>
                     </div>`;
                 feed.scrollTop = feed.scrollHeight;
             }
