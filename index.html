@@ -35,17 +35,14 @@
             }
         }
     </script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         .gradient-turq-sky {
             background: linear-gradient(135deg, #14b8a6 0%, #0284c7 100%);
-        }
-        .text-gradient {
-            background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
         .duo-btn {
             box-shadow: 0 4px 0 #0d9488;
@@ -55,7 +52,6 @@
             transform: translateY(4px);
             box-shadow: 0 0 0 #0d9488;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1a2e3f; border-radius: 10px; }
@@ -85,10 +81,12 @@
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
-                <div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800/40 px-3 py-1 rounded-full text-xs font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5">
+                <div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800/40 px-3 py-1 rounded-full text-xs font-bold text-sky-700 dark:text-sky-300 hidden sm:flex items-center gap-1.5">
                     <i class="fa-solid fa-fire text-amber-500"></i>
                     <span>3 أيام</span>
                 </div>
+                <!-- Cloud Status Indicator -->
+                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="السحابة متصلة"></div>
                 <!-- Dark / Light Mode Switcher -->
                 <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-turq-400 flex items-center justify-center hover:scale-105 transition" title="تبديل الوضع">
                     <i id="theme-icon" class="fa-solid fa-sun"></i>
@@ -100,13 +98,13 @@
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
 
-        <!-- ================= SECTION 1: TO-DO (المهام) ================= -->
+        <!-- ================= SECTION 1: TO-DO (المهام مع الحفظ السحابي) ================= -->
         <section id="tab-todo" class="space-y-4">
             <!-- Progress Card -->
             <div class="gradient-turq-sky p-5 rounded-3xl text-white shadow-xl shadow-turq-500/15 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم</span>
-                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">0 من 0 محاضرات مكتملة!</h2>
+                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">جاري جلب المهام من السحابة...</h2>
                     <p id="todo-motivational" class="text-xs text-white/90 mt-1">عاشت إيدك بطل، رتب ملازمك واقرا أول بأول 🔥</p>
                 </div>
                 <div id="todo-percent-badge" class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-xl border border-white/30">
@@ -130,27 +128,25 @@
                     <option value="normal">اعتيادي 🌱</option>
                 </select>
                 <button onclick="addTodo()" class="w-full sm:w-auto gradient-turq-sky text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
-                    إضافة +
+                    إضافة سحابية +
                 </button>
             </div>
 
             <!-- Task Items List -->
             <div id="todo-list" class="space-y-2.5">
-                <!-- Rendered dynamically -->
+                <div class="text-center py-8 text-xs text-slate-400">جاري الاتصال بقاعدة البيانات...</div>
             </div>
         </section>
 
         <!-- ================= SECTION 2: POMODORO (بومودورو) ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-3xl text-center max-w-md mx-auto shadow-sm">
-                <!-- Modes -->
                 <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-brandDark-bg p-1.5 rounded-2xl max-w-xs mx-auto mb-6">
                     <button onclick="setPomoMode(25, 'وقت التركيز والدراسة ⚡', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm">تركيز (25د)</button>
                     <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">استراحة (5د)</button>
                     <button onclick="setPomoMode(15, 'استراحة طويلة ريّح دماغك 🌟', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">طويلة (15د)</button>
                 </div>
 
-                <!-- Clock Visual -->
                 <div class="relative w-56 h-56 mx-auto flex items-center justify-center mb-6">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-brandDark-bg" stroke-width="7"></circle>
@@ -168,14 +164,12 @@
                     </div>
                 </div>
 
-                <!-- Completed Sessions Badge -->
                 <div class="mb-6">
                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
                         🍅 جلسات مكتملة اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
                     </span>
                 </div>
 
-                <!-- Buttons -->
                 <div class="flex justify-center gap-3">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="gradient-turq-sky text-white font-black px-8 py-3 rounded-2xl shadow-lg shadow-turq-500/25 hover:opacity-95 transition">
                         <span>ابدأ الجلسة</span> <i class="fa-solid fa-play mr-1 text-xs"></i>
@@ -189,21 +183,18 @@
 
         <!-- ================= SECTION 3: ENGLISH (تعلّم الإنكليزي) ================= -->
         <section id="tab-english" class="hidden space-y-4">
-            <!-- Level Bar -->
             <div class="flex gap-2 overflow-x-auto pb-1">
                 <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (يومي)</button>
                 <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى A2 (جامعي)</button>
                 <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى B1 (أكاديمي/طبي)</button>
             </div>
 
-            <!-- Interactive Duolingo-style Exercise Card -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-4">
                 <div class="flex items-center justify-between text-xs font-bold">
                     <span class="text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1 rounded-full">اكتب الترجمة بالعربي أو العراقي</span>
                     <span id="eng-counter" class="text-slate-400">سؤال 1 من 3</span>
                 </div>
 
-                <!-- Sentence Card -->
                 <div class="bg-slate-50 dark:bg-brandDark-bg p-4 rounded-2xl border border-slate-100 dark:border-brandDark-border flex items-center justify-between">
                     <div>
                         <h3 id="eng-prompt-text" class="text-lg font-black text-slate-900 dark:text-white">I have to study for the exam</h3>
@@ -214,17 +205,12 @@
                     </button>
                 </div>
 
-                <!-- Input area -->
                 <input id="eng-user-input" type="text" placeholder="اكتب إجابتك هنا أو اضغط الكلمات بالأسفل..." 
                     onkeydown="if(event.key==='Enter') checkEngAnswer()"
                     class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3.5 rounded-2xl text-sm focus:outline-none focus:border-turq-500 transition">
 
-                <!-- Quick Word Chips -->
-                <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold">
-                    <!-- Populated dynamically -->
-                </div>
+                <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold"></div>
 
-                <!-- Feedback Message Box -->
                 <div id="eng-feedback-box" class="hidden p-3.5 rounded-2xl text-xs font-bold flex items-center gap-2"></div>
 
                 <div class="flex gap-2">
@@ -240,7 +226,6 @@
 
         <!-- ================= SECTION 4: ZERO AI (شات وكويزات زيرو) ================= -->
         <section id="tab-zero" class="hidden space-y-4">
-            <!-- Header Banner -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-lg shadow-md shadow-turq-500/20">
@@ -258,16 +243,13 @@
                 </button>
             </div>
 
-            <!-- Quick Action Prompts -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold">
                 <button onclick="quickAskZero('سويلي كويز عن التخدير العام (General Anesthesia)')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز تخدير عام</button>
                 <button onclick="quickAskZero('اشرحلي بالعراقي شنو يعني Pre-oxygenation وليش نسويه؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">💡 شرح مفهوم Pre-oxygenation</button>
                 <button onclick="quickAskZero('سويلي كويز عن الفسلجة وعضلة القلب')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🔬 كويز فسلجة</button>
             </div>
 
-            <!-- Chat / Quiz Feed -->
             <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1">
-                <!-- Welcome Zero Message -->
                 <div class="flex items-start gap-2.5">
                     <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                     <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
@@ -277,7 +259,6 @@
                 </div>
             </div>
 
-            <!-- Chat Input -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2 rounded-2xl flex gap-2 shadow-sm">
                 <input id="zero-user-msg" type="text" placeholder="اكتب سؤالك لزيرو أو كوله 'سويلي كويز'..." 
                     onkeydown="if(event.key==='Enter') sendZeroChat()"
@@ -312,8 +293,13 @@
         </div>
     </nav>
 
-    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <!-- ================= JAVASCRIPT & SUPABASE CLOUD SYNC ================= -->
     <script>
+        // ------------------ SUPABASE INITIALIZATION ------------------
+        const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_shg6Ws-PT5lLUa6g2youYA_wPnnmsO_";
+        const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
         // ------------------ GLOBAL APP STATE & XP ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         function awardXP(amount) {
@@ -323,7 +309,6 @@
         }
         awardXP(0);
 
-        // Tab Navigation
         function showTab(tabId) {
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
@@ -335,7 +320,6 @@
             activeBtn.className = "flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs";
         }
 
-        // Dark / Light Theme Toggle
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -348,7 +332,6 @@
             }
         }
 
-        // Sound Effects (Web Audio API)
         function playChime(success = true) {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -358,8 +341,8 @@
                 gain.connect(ctx.destination);
                 osc.type = 'sine';
                 if (success) {
-                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
                 } else {
                     osc.frequency.setValueAtTime(300, ctx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
@@ -371,42 +354,63 @@
             } catch(e){}
         }
 
-        // ------------------ 1. TO-DO ENGINE ------------------
-        let tasks = JSON.parse(localStorage.getItem('zp_tasks') || JSON.stringify([
-            { id: 1, title: 'مراجعة كويز التشريح - المحاضرة الرابعة', tag: 'دراسة 📚', prio: 'normal', done: true },
-            { id: 2, title: 'تحضير تقرير العملي للمستشفى', tag: 'عملي 🔬', prio: 'high', done: false }
-        ]));
+        // ------------------ 1. TO-DO WITH REALTIME SUPABASE ------------------
+        let tasks = [];
+
+        async function fetchCloudTasks() {
+            if (db) {
+                try {
+                    const { data, error } = await db.from('tasks').select('*').order('created_at', { ascending: false });
+                    if (!error && data) {
+                        tasks = data;
+                        renderTasks();
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Supabase fetch fallback:", e);
+                }
+            }
+            // Local fallback
+            tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
+            renderTasks();
+        }
 
         function renderTasks() {
             const list = document.getElementById('todo-list');
             list.innerHTML = '';
             let completed = 0;
 
-            tasks.forEach(t => {
-                if (t.done) completed++;
-                const isHigh = t.prio === 'high';
-                list.innerHTML += `
-                    <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-2xl flex items-center justify-between shadow-sm transition ${t.done ? 'opacity-60' : ''}">
-                        <div class="flex items-center gap-3">
-                            <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-lg ${t.done ? 'bg-turq-500 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-turq-500'} flex items-center justify-center text-xs cursor-pointer transition">
-                                ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${t.title}</p>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    <span class="text-[11px] text-turq-600 dark:text-turq-400 font-semibold">${t.tag}</span>
-                                    ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-500 dark:text-rose-400 px-2 py-0.2 rounded-full font-bold">مهم كلش 🔥</span>' : ''}
+            if (tasks.length === 0) {
+                list.innerHTML = `
+                    <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-2xl text-center text-xs text-slate-400">
+                        ما عندك مهام حالياً، اكتب أول محاضرة أو كويز واضغط إضافة سحابية ✨
+                    </div>`;
+            } else {
+                tasks.forEach(t => {
+                    if (t.done) completed++;
+                    const isHigh = t.prio === 'high';
+                    list.innerHTML += `
+                        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-2xl flex items-center justify-between shadow-sm transition ${t.done ? 'opacity-60' : ''}">
+                            <div class="flex items-center gap-3">
+                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-lg ${t.done ? 'bg-turq-500 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-turq-500'} flex items-center justify-center text-xs cursor-pointer transition">
+                                    ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${t.title}</p>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[11px] text-turq-600 dark:text-turq-400 font-semibold">${t.tag}</span>
+                                        ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-500 dark:text-rose-400 px-2 py-0.2 rounded-full font-bold">مهم كلش 🔥</span>' : ''}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            ${t.done ? '<span class="text-xs text-slate-400">تمت ✅</span>' : ''}
-                            <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2 transition"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>`;
-            });
+                            <div class="flex items-center gap-2">
+                                ${t.done ? '<span class="text-xs text-slate-400">تمت ✅</span>' : ''}
+                                <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2 transition"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                });
+            }
 
-            // Update stats
             const total = tasks.length;
             const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
             document.getElementById('todo-summary-text').innerText = `${completed} من ${total} محاضرات مكتملة!`;
@@ -414,45 +418,75 @@
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
 
-        function addTodo() {
+        async function addTodo() {
             const input = document.getElementById('todo-input');
             const val = input.value.trim();
             if (!val) return;
             const tag = document.getElementById('todo-tag').value;
             const prio = document.getElementById('todo-prio').value;
-
-            tasks.unshift({
+            const newTask = {
                 id: Date.now(),
                 title: val,
                 tag: tag,
                 prio: prio,
                 done: false
-            });
+            };
+
+            tasks.unshift(newTask);
             input.value = '';
             renderTasks();
             awardXP(5);
+
+            // Cloud Save
+            if (db) {
+                try {
+                    await db.from('tasks').insert([newTask]);
+                } catch(e) {
+                    console.error("Cloud insert error:", e);
+                }
+            }
         }
 
-        function toggleTask(id) {
+        async function toggleTask(id) {
+            let nextState = false;
             tasks = tasks.map(t => {
                 if (t.id === id) {
-                    const next = !t.done;
-                    if (next) {
+                    nextState = !t.done;
+                    if (nextState) {
                         playChime(true);
                         awardXP(10);
                     }
-                    return { ...t, done: next };
+                    return { ...t, done: nextState };
                 }
                 return t;
             });
             renderTasks();
+
+            // Cloud Update
+            if (db) {
+                try {
+                    await db.from('tasks').update({ done: nextState }).eq('id', id);
+                } catch(e) {
+                    console.error("Cloud update error:", e);
+                }
+            }
         }
 
-        function deleteTask(id) {
+        async function deleteTask(id) {
             tasks = tasks.filter(t => t.id !== id);
             renderTasks();
+
+            // Cloud Delete
+            if (db) {
+                try {
+                    await db.from('tasks').delete().eq('id', id);
+                } catch(e) {
+                    console.error("Cloud delete error:", e);
+                }
+            }
         }
-        renderTasks();
+
+        fetchCloudTasks();
 
         // ------------------ 2. POMODORO TIMER ENGINE ------------------
         let pomoDuration = 25 * 60;
@@ -580,7 +614,6 @@
             const fb = document.getElementById('eng-feedback-box');
             fb.classList.add('hidden');
 
-            // Render chips
             const chipContainer = document.getElementById('eng-chips-box');
             chipContainer.innerHTML = '';
             q.chips.forEach(word => {
@@ -670,7 +703,6 @@
             input.value = '';
 
             const feed = document.getElementById('zero-chat-feed');
-            // User bubble
             feed.innerHTML += `
                 <div class="flex justify-end">
                     <div class="gradient-turq-sky text-white text-xs sm:text-sm font-semibold p-3.5 rounded-2xl rounded-tl-none max-w-xs shadow-md shadow-turq-500/10">
@@ -679,7 +711,6 @@
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
-            // Smart Tutor Response
             setTimeout(() => {
                 if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال')) {
                     triggerQuizQuestion();
