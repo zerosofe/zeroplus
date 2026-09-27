@@ -1,0 +1,22 @@
+{
+  "name": "ZeroPlus | زيرو بلس",
+  "short_name": "ZeroPlus",
+  "description": "رفيقك الأكاديمي الشامل لتنظيم المحاضرات وكويزات التخدير واللغة الإنجليزية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1118",
+  "theme_color": "#0d9488",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/heroicons:academic-cap-solid.svg?color=%2314b8a6",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.iconify.design/heroicons:academic-cap-solid.svg?color=%2314b8a6",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
