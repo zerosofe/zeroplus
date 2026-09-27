@@ -11,14 +11,8 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "https://api.iconify.design/heroicons:academic-cap-solid.svg?color=%2314b8a6",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://api.iconify.design/heroicons:academic-cap-solid.svg?color=%2314b8a6",
-      "sizes": "512x512",
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
