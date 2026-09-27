@@ -1,10 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <linearGradient id="zGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#14b8a6" />
-      <stop offset="100%" stop-color="#0284c7" />
+    <linearGradient id="greeceBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E2F76"/>
+      <stop offset="100%" stop-color="#16439e"/>
     </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0E2F76" flood-opacity="0.3"/>
+    </filter>
   </defs>
-  <rect width="512" height="512" rx="128" fill="url(#zGrad)" />
-  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="900" font-size="240">Z+</text>
+
+  <!-- Background Base -->
+  <rect width="512" height="512" rx="120" fill="url(#greeceBlue)"/>
+  <rect width="504" height="504" x="4" y="4" rx="116" fill="none" stroke="#AAC0E1" stroke-width="4" stroke-opacity="0.4"/>
+
+  <!-- Inner Soft Accent -->
+  <circle cx="256" cy="256" r="190" fill="#F5FEFF" fill-opacity="0.04"/>
+
+  <!-- Z+ Typography -->
+  <g filter="url(#softShadow)" fill="#F5FEFF" font-family="'Cairo', system-ui, sans-serif" font-weight="900">
+    <text x="220" y="340" font-size="260" text-anchor="middle" letter-spacing="-8">Z</text>
+    <path d="M 360 215 L 360 260 L 315 260 L 315 300 L 360 300 L 360 345 L 400 345 L 400 300 L 445 300 L 445 260 L 400 260 L 400 215 Z" fill="#AAC0E1"/>
+  </g>
 </svg>
