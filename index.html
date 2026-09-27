@@ -47,7 +47,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- PDF.js Library for reading PDF lectures directly in the browser -->
+    <!-- PDF.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -276,10 +276,10 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI (محرك الملازم والذكاء الاصطناعي التناوبي) ================= -->
+        <!-- ================= SECTION 4: ZERO AI (محرك الملازم والسلايدات والتناوب) ================= -->
         <section id="tab-zero" class="space-y-4">
             
-            <!-- Lecture Upload & Context Area -->
+            <!-- Lecture Upload & Slide Range Control -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl shadow-sm space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
@@ -288,16 +288,15 @@
                         </div>
                         <div>
                             <h3 class="font-black text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز 📚</h3>
-                            <p class="text-[11px] text-slate-400">ارفع ملزمة PDF أو الصق النص حتى يصنعلك زيرو كويز ذكي منها حصراً!</p>
+                            <p class="text-[11px] text-slate-400">ارفع ملف الملزمة وحدد السلايدات ليصنعلك زيرو كويز مركز منها!</p>
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
-                        ⚡ المحرك: Groq Cloud
+                        ⚡ المحرك: Groq
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <!-- File Upload Input (PDF & TXT) -->
                     <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-brandDark-bg border border-dashed border-slate-300 dark:border-brandDark-border hover:border-turq-500 rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
                         <i class="fa-solid fa-file-pdf text-rose-500 text-base"></i>
                         <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
@@ -308,14 +307,49 @@
                     </button>
                 </div>
 
-                <!-- Textarea (Collapsible) -->
                 <div id="lecture-paste-container" class="hidden">
                     <textarea id="lecture-text-content" rows="4" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
                 </div>
 
+                <!-- SLIDE RANGE SELECTOR (تحديد نطاق السلايدات) -->
+                <div id="slide-scope-box" class="hidden bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="text-turq-600 dark:text-turq-400"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
+                        <span id="total-slides-count" class="text-slate-400">إجمالي السلايدات: 0</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                            <input type="radio" name="slide_scope" value="all" checked onchange="toggleScopeInputs()">
+                            <span>كل السلايدات 📑</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                            <input type="radio" name="slide_scope" value="single" onchange="toggleScopeInputs()">
+                            <span>سلايد محدد 🎯</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-xs font-semibold cursor-pointer">
+                            <input type="radio" name="slide_scope" value="range" onchange="toggleScopeInputs()">
+                            <span>نطاق معين (من - إلى) 🔍</span>
+                        </label>
+                    </div>
+
+                    <!-- Scope Inputs -->
+                    <div id="single-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
+                        <span class="font-bold text-slate-500">اختر رقم السلايد:</span>
+                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                    </div>
+
+                    <div id="range-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
+                        <span class="font-bold text-slate-500">من سلايد:</span>
+                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                        <span class="font-bold text-slate-500">إلى سلايد:</span>
+                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-center font-bold">
+                    </div>
+                </div>
+
                 <!-- Active Lecture Status -->
                 <div id="lecture-loaded-badge" class="hidden p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-between">
-                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم قراءة الملزمة بنجاح! جاهز لتوليد الكويزات.</span>
+                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> الملزمة جاهزة للكويز!</span>
                     <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline">مسح الملزمة</button>
                 </div>
             </div>
@@ -330,7 +364,7 @@
                         <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                             زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </h4>
-                        <p class="text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية</p>
+                        <p class="text-[11px] text-slate-400">كويزات ذكية تناوبية (Groq ⚡ Gemini 🌐 Qwen 🧠)</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -939,14 +973,15 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI MULTI-ENGINE ROTATION & LECTURE PARSER ------------------
+        // ------------------ 4. ZERO AI ROTATION ENGINE & SLIDE PARSER ------------------
+        let pdfSlidesData = []; // Array of { pageNum: 1, text: "..." }
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
 
         const AI_CONFIG = {
             groqKey: "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",
             geminiKey: "AQ.Ab8RN6L1HEDRM1kTho6tnYsMTnk2MBHkq8lIu8d24NTSku6JSA",
-            qwenKey: "sk-d7037ce698504ebcb37a4c9d54e19195" // fallback
+            qwenKey: "sk-d7037ce698504ebcb37a4c9d54e19195"
         };
 
         function togglePasteArea() {
@@ -954,37 +989,56 @@
             box.classList.toggle('hidden');
         }
 
+        function toggleScopeInputs() {
+            const scope = document.querySelector('input[name="slide_scope"]:checked').value;
+            document.getElementById('single-slide-input-box').classList.toggle('hidden', scope !== 'single');
+            document.getElementById('range-slide-input-box').classList.toggle('hidden', scope !== 'range');
+        }
+
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const status = document.getElementById('upload-file-status');
-            status.innerText = `جاري قراءة ملف: ${file.name}... ⏳`;
+            status.innerText = `جاري قراءة: ${file.name}... ⏳`;
 
             try {
+                pdfSlidesData = [];
                 if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
                     const arrayBuffer = await file.arrayBuffer();
                     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                     let fullText = "";
-                    for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) { // يقرأ لغاية 30 صفحة
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const textContent = await page.getTextContent();
                         const pageText = textContent.items.map(item => item.str).join(" ");
-                        fullText += pageText + "\n";
+                        pdfSlidesData.push({ pageNum: i, text: pageText });
+                        fullText += `[سلايد ${i}]: ` + pageText + "\n";
                     }
-                    setLectureContent(fullText, file.name);
+
+                    // تفعيل واجهة اختيار السلايدات
+                    document.getElementById('slide-scope-box').classList.remove('hidden');
+                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages} سلايد`;
+                    document.getElementById('single-slide-num').max = pdf.numPages;
+                    document.getElementById('range-slide-to').max = pdf.numPages;
+                    document.getElementById('range-slide-to').value = Math.min(5, pdf.numPages);
+
+                    setLectureContent(fullText, file.name, pdf.numPages);
                 } else {
                     const text = await file.text();
-                    setLectureContent(text, file.name);
+                    pdfSlidesData = [{ pageNum: 1, text: text }];
+                    document.getElementById('slide-scope-box').classList.add('hidden');
+                    setLectureContent(text, file.name, 1);
                 }
             } catch (err) {
                 console.error(err);
-                alert("تعذر قراءة الملف، تأكد من سلامة ملف الـ PDF أو جرب لصق النص مباشرة.");
+                alert("تعذر قراءة الملف، تأكد من سلامة ملف الـ PDF أو جرب لصق النص يدوياً.");
                 status.innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
             }
         }
 
-        function setLectureContent(text, sourceName = "ملزمة") {
+        function setLectureContent(text, sourceName = "ملزمة", pages = 1) {
             currentLectureText = text.trim();
             localStorage.setItem('zp_active_lecture_text', currentLectureText);
             document.getElementById('lecture-paste-container').classList.add('hidden');
@@ -992,31 +1046,54 @@
             
             const badge = document.getElementById('lecture-loaded-badge');
             badge.classList.remove('hidden');
-            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز [ ${sourceName} ] بحجم (${Math.round(currentLectureText.length / 1000)} ألف حرف). زيرو جاهز للاختبار!`;
+            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> جاهزة! (${pages} سلايد / ${Math.round(currentLectureText.length / 1000)} ألف حرف).`;
         }
 
         function resetLectureContext() {
             currentLectureText = "";
+            pdfSlidesData = [];
             seenQuestions = [];
             localStorage.removeItem('zp_active_lecture_text');
             localStorage.removeItem('zp_seen_questions');
             document.getElementById('lecture-loaded-badge').classList.add('hidden');
+            document.getElementById('slide-scope-box').classList.add('hidden');
             document.getElementById('upload-file-status').innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
             document.getElementById('lecture-text-content').value = "";
-            alert("تم إفراغ محتوى الملزمة ومسح كاش الأسئلة السابقة.");
+            alert("تم إفراغ محتوى الملزمة ومسح السلايدات وكاش الأسئلة.");
         }
 
-        // إذا كان هناك نص ملزمة مخزن سابقاً
-        if (currentLectureText && currentLectureText.length > 50) {
-            document.getElementById('lecture-loaded-badge').classList.remove('hidden');
-            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> توجد ملزمة محفوظة بالذاكرة جاهزة للتوليد!`;
+        // استخراج المحتوى حسب خيار السلايدات المختار
+        function getScopedLectureContent() {
+            if (pdfSlidesData.length === 0) {
+                return currentLectureText.substring(0, 3000);
+            }
+
+            const scope = document.querySelector('input[name="slide_scope"]:checked')?.value || 'all';
+
+            if (scope === 'single') {
+                const num = parseInt(document.getElementById('single-slide-num').value) || 1;
+                const found = pdfSlidesData.find(s => s.pageNum === num);
+                return found ? `[سلايد ${num}]: ${found.text}` : pdfSlidesData[0].text;
+            } 
+            else if (scope === 'range') {
+                const from = parseInt(document.getElementById('range-slide-from').value) || 1;
+                const to = parseInt(document.getElementById('range-slide-to').value) || pdfSlidesData.length;
+                const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
+                return filtered.map(s => `[سلايد ${s.pageNum}]: ${s.text}`).join("\n").substring(0, 4000);
+            } 
+            else {
+                // كل السلايدات - اختيار مقطع عشوائي ذكي بحجم 3000 حرف لمنع الضغط
+                const maxLen = Math.min(3000, currentLectureText.length);
+                const startIdx = Math.floor(Math.random() * Math.max(1, currentLectureText.length - maxLen));
+                return currentLectureText.substring(startIdx, startIdx + maxLen);
+            }
         }
 
-        // استدعاء الذكاء الاصطناعي مع التناوب التلقائي (Groq -> Gemini -> Qwen)
+        // محرك التناوب التلقائي للذكاء الاصطناعي (Groq -> Gemini -> Qwen)
         async function callRotatingAI(prompt, systemInstruction = "") {
             const engines = [
                 {
-                    name: "Groq Cloud (Llama-3.3-70B)",
+                    name: "Groq Cloud (Llama 8B)",
                     call: async () => {
                         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                             method: "POST",
@@ -1025,15 +1102,17 @@
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify({
-                                model: "llama-3.3-70b-versatile",
+                                model: "llama-3.1-8b-instant",
                                 messages: [
                                     { role: "system", content: systemInstruction },
                                     { role: "user", content: prompt }
                                 ],
-                                temperature: 0.5,
-                                max_tokens: 1200
+                                response_format: { type: "json_object" },
+                                temperature: 0.3,
+                                max_tokens: 800
                             })
                         });
+                        if (!res.ok) throw new Error("Groq failed");
                         const data = await res.json();
                         return data.choices[0].message.content;
                     }
@@ -1045,15 +1124,16 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                contents: [{ parts: [{ text: `${systemInstruction}\n\n${prompt}` }] }]
+                                contents: [{ parts: [{ text: `${systemInstruction}\nOutput JSON only:\n${prompt}` }] }]
                             })
                         });
+                        if (!res.ok) throw new Error("Gemini failed");
                         const data = await res.json();
                         return data.candidates[0].content.parts[0].text;
                     }
                 },
                 {
-                    name: "Qwen Cloud (Qwen-Plus)",
+                    name: "Qwen Cloud",
                     call: async () => {
                         const res = await fetch("https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions", {
                             method: "POST",
@@ -1069,36 +1149,34 @@
                                 ]
                             })
                         });
+                        if (!res.ok) throw new Error("Qwen failed");
                         const data = await res.json();
                         return data.choices[0].message.content;
                     }
                 }
             ];
 
-            let lastError = null;
             for (let engine of engines) {
                 try {
                     document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: ${engine.name.split(' ')[0]}`;
                     const reply = await engine.call();
                     if (reply) return reply;
                 } catch (err) {
-                    console.warn(`Engine ${engine.name} failed, rotating to next...`, err);
-                    lastError = err;
+                    console.warn(`Engine ${engine.name} failed, switching to backup...`, err);
                 }
             }
-            throw new Error("جميع محركات الذكاء الاصطناعي مشغولة حالياً، يرجى المحاولة بعد دقيقة.");
+            throw new Error("جميع محركات الذكاء الاصطناعي مشغولة حالياً.");
         }
 
-        // توليد الكويز من الملزمة حصراً
+        // توليد الكويز من نطاق السلايدات حصراً
         async function requestAiQuizFromLecture() {
-            // التحقق من النص اليدوي إن لم يُرفع ملف
             const manualText = document.getElementById('lecture-text-content').value.trim();
             if (manualText && manualText.length > 50) {
                 currentLectureText = manualText;
             }
 
             if (!currentLectureText || currentLectureText.length < 30) {
-                alert("⚠️ لا يمكن توليد كويز فارغ! يرجى رفع ملف الملزمة (PDF) أو لصق نص المحاضرة أولاً بالخانة المخصصة أعلاه.");
+                alert("⚠️ لا يمكن توليد كويز! يرجى رفع ملف الملزمة (PDF) أو لصق النص أولاً.");
                 return;
             }
 
@@ -1107,41 +1185,40 @@
             feed.innerHTML += `
                 <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-turq-600 dark:text-turq-400 p-3 bg-turq-50 dark:bg-turq-900/20 rounded-2xl animate-pulse">
                     <i class="fa-solid fa-brain text-sm"></i>
-                    <span>زيرو يقرأ نصوص الملزمة ويصنعلك كويز MCQ غير مكرر... 🧠</span>
+                    <span>زيرو يحلل السلايدات المحددة ويصنع كويز ذكي غير مكرر... 🧠</span>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
+            const targetContent = getScopedLectureContent();
             const prompt = `
-إليك محتوى الملزمة الأكاديمية:
+محتوى السلايدات المحددة:
 """
-${currentLectureText.substring(0, 10000)}
+${targetContent}
 """
 
-قائمة الأسئلة التي طُرحت سابقاً (ممنوع منعاً باتاً تكرارها أو صياغة سؤال مشابه لها):
-${JSON.stringify(seenQuestions.slice(-15))}
+قائمة الأسئلة السابقة لمنع التكرار نهائياً:
+${JSON.stringify(seenQuestions.slice(-10))}
 
-المطلوب: قم بصياغة سؤال اختيارات (MCQ) أكاديمي ذكي ودقيق مستخرج حصراً من هذه الملزمة.
-يجب أن ترجع النتيجة بصيغة JSON نظيفة فقط بدون أي نصوص قبلها أو بعدها، بهذا الشكل التام:
+المطلوب: قم بصياغة سؤال MCQ واحد أكاديمي من هذا المحتوى حصراً، مع 3 خيارات وشرح توضيحي للحل.
+يجب إرجاع النتيجة بصيغة JSON فقط:
 {
-  "q": "نص السؤال هنا باللغة العربية أو الإنجليزية حسب لغة الملزمة",
+  "q": "نص السؤال هنا",
   "options": [
     {"t": "A) الخيار الأول", "correct": false},
     {"t": "B) الخيار الثاني", "correct": true},
     {"t": "C) الخيار الثالث", "correct": false}
   ],
-  "explanation": "الشرح والتعليل العلمي للحل الصحيح بالعربي أو العراقي المبسط"
+  "explanation": "شرح الجواب الصحيح بالعربي"
 }
 `;
 
             try {
-                const response = await callRotatingAI(prompt, "أنت زيرو الأكاديمي، أستاذ جامعي ومصمم أسئلة امتحانية ووزارية محترف. ترجع فقط كود JSON خالص.");
+                const response = await callRotatingAI(prompt, "You are an expert exam generator. Return valid JSON only.");
                 const cleanJson = response.replace(/```json/gi, '').replace(/```/g, '').trim();
                 const quizData = JSON.parse(cleanJson);
 
-                // إزالة علامة التحميل
                 document.getElementById(loadingId)?.remove();
 
-                // تخزين السؤال في الكاش لمنع تكراره
                 seenQuestions.push(quizData.q);
                 localStorage.setItem('zp_seen_questions', JSON.stringify(seenQuestions));
 
@@ -1151,7 +1228,7 @@ ${JSON.stringify(seenQuestions.slice(-15))}
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
                     <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold">
-                        واجه زيرو ضغطاً على السيرفر أثناء قراءة الملزمة. حاول الضغط على زر الكويز مرة ثانية!
+                        السيرفر مشغول حالياً، اضغط على زر الكويز مرة ثانية لتفعيل المحرك البديل!
                     </div>`;
                 feed.scrollTop = feed.scrollHeight;
             }
@@ -1174,7 +1251,7 @@ ${JSON.stringify(seenQuestions.slice(-15))}
                     <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                     <div id="${qId}" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-sky-600 dark:text-sky-400">سؤال من ملزمتك الحالية 📝</span>
+                            <span class="text-sky-600 dark:text-sky-400">سؤال من السلايدات المحددة 📝</span>
                             <span class="text-slate-400">غير مكرر ✨</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-relaxed">${item.q}</h4>
@@ -1216,8 +1293,8 @@ ${JSON.stringify(seenQuestions.slice(-15))}
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
-            const contextInstruction = currentLectureText ? `اعتمد على محتوى الملزمة التالي إن كان السؤال متعلقاً بها:\n${currentLectureText.substring(0, 5000)}` : "";
-            const systemPrompt = `أنت "زيرو (Zero)" الرفيق الأكاديمي والوزاري الذكي بالعراق. تتحدث بأسلوب مشجع ومحفز ومتقن علمياً، وتجيب باختصار ودقة ولهجة عراقية مهذبة أو فصحى واضحة. ${contextInstruction}`;
+            const targetContent = getScopedLectureContent();
+            const systemPrompt = `أنت "زيرو" المدرس الأكاديمي والوزاري الذكي بالعراق. تشرح باختصار ووضوح وبلهجة مهذبة. اعتمد على محتوى السلايدات:\n${targetContent}`;
 
             try {
                 const reply = await callRotatingAI(txt, systemPrompt);
@@ -1236,14 +1313,9 @@ ${JSON.stringify(seenQuestions.slice(-15))}
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
                     <div class="p-2 text-rose-500 text-xs font-bold">
-                        تعذر الرد مؤقتاً، تأكد من اتصال النت أو كرر رسالتك.
+                        تعذر الاتصال مؤقتاً، يرجى إعادة إرسال الرسالة.
                     </div>`;
             }
-        }
-
-        function quickAskZero(promptText) {
-            document.getElementById('zero-user-msg').value = promptText;
-            sendZeroChat();
         }
 
         function answerMCQ(containerId, isCorrect, btn, exp) {
@@ -1282,8 +1354,8 @@ ${JSON.stringify(seenQuestions.slice(-15))}
                     <div class="flex items-start gap-2.5">
                         <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                         <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                            هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري الذكي 🎓.<br>
-                            ارفع ملزمتك فوق بصيغة PDF أو الصق النص، واضغط على <strong>+ اصنع كويز من الملزمة</strong> حتى أمتحنك بأسئلة ذكية وغير مكررة منها مباشرة!
+                            هلا بيك بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
+                            ارفع ملزمتك فوق بصيغة PDF، وتقدر تحدد سلايدات معينة أو كل السلايدات، واضغط <strong>+ اصنع كويز من الملزمة</strong> حتى نمتحنك بأسئلة دقيقة وغير مكررة!
                         </div>
                     </div>`;
             }
