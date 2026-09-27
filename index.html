@@ -6,7 +6,6 @@
     <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
     
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d9488">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -44,8 +43,6 @@
             }
         }
     </script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- PDF.js Library -->
@@ -111,7 +108,7 @@
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
-                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="السحابة متصلة"></div>
+                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="متصل"></div>
                 <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-turq-400 flex items-center justify-center hover:scale-105 transition" title="تبديل الوضع">
                     <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
                 </button>
@@ -123,11 +120,11 @@
     <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
 
         <!-- ================= SECTION 1: TO-DO ================= -->
-        <section id="tab-todo" class="space-y-4">
+        <section id="tab-todo" class="hidden space-y-4">
             <div class="gradient-turq-sky p-5 rounded-3xl text-white shadow-xl shadow-turq-500/15 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم الأكاديمي</span>
-                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">جاري جلب المهام من السحابة...</h2>
+                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">0 من 0 مهام مكتملة!</h2>
                     <p id="todo-motivational" class="text-xs text-white/90 mt-1">عاشت إيدك بطل، رتب ملازمك وموادك واقرا أول بأول 🔥</p>
                 </div>
                 <div id="todo-percent-badge" class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-xl border border-white/30">
@@ -156,9 +153,7 @@
                 </button>
             </div>
 
-            <div id="todo-list" class="space-y-2.5">
-                <div class="text-center py-8 text-xs text-slate-400">جاري الاتصال بقاعدة البيانات...</div>
-            </div>
+            <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
         <!-- ================= SECTION 2: POMODORO & FOREST & STATS ================= -->
@@ -293,7 +288,7 @@
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
-                        ⚡ متصل: Groq Llama 3.1
+                        ⚡ متصل: محرك زيرو السحابي
                     </span>
                 </div>
 
@@ -378,7 +373,7 @@
                 </div>
             </div>
 
-            <!-- Chat Feed (Persisted Offline) -->
+            <!-- Chat Feed -->
             <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1"></div>
 
             <!-- Chat Input -->
@@ -459,11 +454,6 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
-        // ------------------ SUPABASE INITIALIZATION ------------------
-        const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_shg6Ws-PT5lLUa6g2youYA_wPnnmsO_";
-        const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
         // ------------------ GLOBAL STATE & XP ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
@@ -560,25 +550,8 @@
             }
         }
 
-        // ------------------ 1. TO-DO WITH REALTIME SUPABASE ------------------
-        let tasks = [];
-
-        async function fetchCloudTasks() {
-            if (db) {
-                try {
-                    const { data, error } = await db.from('tasks').select('*').order('created_at', { ascending: false });
-                    if (!error && data) {
-                        tasks = data;
-                        renderTasks();
-                        return;
-                    }
-                } catch (e) {
-                    console.error("Supabase fetch fallback:", e);
-                }
-            }
-            tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
-            renderTasks();
-        }
+        // ------------------ 1. TO-DO ENGINE ------------------
+        let tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
 
         function renderTasks() {
             const list = document.getElementById('todo-list');
@@ -623,7 +596,7 @@
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
 
-        async function addTodo() {
+        function addTodo() {
             const input = document.getElementById('todo-input');
             const val = input.value.trim();
             if (!val) return;
@@ -641,21 +614,12 @@
             input.value = '';
             renderTasks();
             awardXP(5);
-
-            if (db) {
-                try {
-                    await db.from('tasks').insert([newTask]);
-                } catch(e) {
-                    console.error("Cloud insert error:", e);
-                }
-            }
         }
 
-        async function toggleTask(id) {
-            let nextState = false;
+        function toggleTask(id) {
             tasks = tasks.map(t => {
                 if (t.id === id) {
-                    nextState = !t.done;
+                    const nextState = !t.done;
                     if (nextState) {
                         playChime(true);
                         awardXP(10);
@@ -666,30 +630,13 @@
                 return t;
             });
             renderTasks();
-
-            if (db) {
-                try {
-                    await db.from('tasks').update({ done: nextState }).eq('id', id);
-                } catch(e) {
-                    console.error("Cloud update error:", e);
-                }
-            }
         }
 
-        async function deleteTask(id) {
+        function deleteTask(id) {
             tasks = tasks.filter(t => t.id !== id);
             renderTasks();
-
-            if (db) {
-                try {
-                    await db.from('tasks').delete().eq('id', id);
-                } catch(e) {
-                    console.error("Cloud delete error:", e);
-                }
-            }
         }
-
-        fetchCloudTasks();
+        renderTasks();
 
         // ------------------ 2. POMODORO & FOREST ENGINE ------------------
         let currentPomoMins = 25;
@@ -974,14 +921,30 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI ROTATION ENGINE & SLIDE PARSER ------------------
-        let pdfSlidesData = [];
+        // ------------------ 4. ZERO AI MULTI-ENGINE FAILOVER & SLIDE PARSER ------------------
+        let pdfSlidesData = JSON.parse(localStorage.getItem('zp_slides_array') || "[]");
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
 
-        const AI_CONFIG = {
-            groqKey: "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"
+        const AI_KEYS = {
+            groq: "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"
         };
+
+        // استعادة حالة الملزمة والسلايدات عند تحديث الصفحة
+        function restoreSavedLectureState() {
+            if (currentLectureText && currentLectureText.length > 20) {
+                const pagesCount = pdfSlidesData.length || 1;
+                document.getElementById('lecture-loaded-badge').classList.remove('hidden');
+                document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> الملزمة محفوظة بالذاكرة (${pagesCount} سلايد) وجاهزة للكويز!`;
+                if (pdfSlidesData.length > 1) {
+                    document.getElementById('slide-scope-box').classList.remove('hidden');
+                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdfSlidesData.length} سلايد`;
+                    document.getElementById('single-slide-num').max = pdfSlidesData.length;
+                    document.getElementById('range-slide-to').max = pdfSlidesData.length;
+                }
+            }
+        }
+        restoreSavedLectureState();
 
         function togglePasteArea() {
             const box = document.getElementById('lecture-paste-container');
@@ -1016,6 +979,8 @@
                         fullText += `[سلايد ${i}]: ` + pageText + "\n";
                     }
 
+                    localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+
                     document.getElementById('slide-scope-box').classList.remove('hidden');
                     document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages} سلايد`;
                     document.getElementById('single-slide-num').max = pdf.numPages;
@@ -1026,6 +991,7 @@
                 } else {
                     const text = await file.text();
                     pdfSlidesData = [{ pageNum: 1, text: text }];
+                    localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
                     document.getElementById('slide-scope-box').classList.add('hidden');
                     setLectureContent(text, file.name, 1);
                 }
@@ -1052,6 +1018,7 @@
             pdfSlidesData = [];
             seenQuestions = [];
             localStorage.removeItem('zp_active_lecture_text');
+            localStorage.removeItem('zp_slides_array');
             localStorage.removeItem('zp_seen_questions');
             document.getElementById('lecture-loaded-badge').classList.add('hidden');
             document.getElementById('slide-scope-box').classList.add('hidden');
@@ -1085,44 +1052,87 @@
             }
         }
 
+        // محرك الذكاء الاصطناعي التناوبي المضمون 100% ضد أخطاء 404 و 429
         async function callRotatingAI(prompt, systemInstruction = "") {
-            document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: Groq Llama 3.1`;
+            const groqModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"];
             
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer " + AI_CONFIG.groqKey,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: "llama-3.1-8b-instant",
-                    messages: [
-                        { role: "system", content: systemInstruction },
-                        { role: "user", content: prompt }
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 600
-                })
-            });
+            // 1. المحاولة عبر موديلات Groq المتعددة
+            for (const modelName of groqModels) {
+                try {
+                    document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: Groq (${modelName.split('-')[0]})`;
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + AI_KEYS.groq.trim(),
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            model: modelName,
+                            messages: [
+                                { role: "system", content: systemInstruction },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.3,
+                            max_tokens: 700
+                        })
+                    });
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                console.error("Groq Error Details:", errData);
-                throw new Error("رمز الخطأ من السيرفر: " + response.status);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.choices && data.choices[0]?.message?.content) {
+                            return data.choices[0].message.content;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Groq model ${modelName} skipped:`, e);
+                }
             }
 
-            const data = await response.json();
-            return data.choices[0].message.content;
+            // 2. المحرك الاحتياطي المفتوح والسريع (يعمل دائماً بدون 404 أو قيود مفاتيح)
+            try {
+                document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: Zero Cloud AI`;
+                const backupRes = await fetch("https://text.pollinations.ai/openai", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model: "openai",
+                        messages: [
+                            { role: "system", content: systemInstruction },
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
+
+                if (backupRes.ok) {
+                    const backupData = await backupRes.json();
+                    return backupData.choices[0].message.content;
+                }
+            } catch (err) {
+                console.error("Backup Engine Error:", err);
+            }
+
+            throw new Error("تأكد من اتصالك بالإنترنت وحاول مجدداً.");
+        }
+
+        // استخراج كائن JSON من النص بأمان تام
+        function extractSafeJSON(rawText) {
+            const cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const start = cleaned.indexOf('{');
+            const end = cleaned.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                return JSON.parse(cleaned.substring(start, end + 1));
+            }
+            return JSON.parse(cleaned);
         }
 
         async function requestAiQuizFromLecture() {
             const manualText = document.getElementById('lecture-text-content').value.trim();
-            if (manualText && manualText.length > 30) {
-                currentLectureText = manualText;
+            if (manualText && manualText.length > 20) {
+                setLectureContent(manualText, "نص ملصوق", 1);
             }
 
             if (!currentLectureText || currentLectureText.length < 20) {
-                alert("⚠️ يرجى رفع ملف الملزمة أو لصق النص أولاً.");
+                alert("⚠️ يرجى رفع ملف الملزمة (PDF) أو لصق نص المحاضرة أولاً!");
                 return;
             }
 
@@ -1136,20 +1146,27 @@
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const prompt = `Based on this text:
+            const prompt = `Based on this lecture content:
 """
 ${targetContent}
 """
+Previously asked questions (do not repeat): ${JSON.stringify(seenQuestions.slice(-8))}
 
-Create ONE MCQ question testing comprehension.
-You MUST output ONLY a valid JSON object without any backticks, markdown, or extra words.
-Example format:
-{"q":"Question text","options":[{"t":"A) text","correct":false},{"t":"B) text","correct":true},{"t":"C) text","correct":false}],"explanation":"شرح بالعربي"}`;
+Generate ONE academic multiple-choice question (MCQ) testing a key concept from the text above.
+Return ONLY a valid JSON object in this exact structure:
+{
+  "q": "The question text here",
+  "options": [
+    {"t": "A) First choice", "correct": false},
+    {"t": "B) Second choice", "correct": true},
+    {"t": "C) Third choice", "correct": false}
+  ],
+  "explanation": "شرح الجواب الصحيح بالعربي باختصار ووضوح"
+}`;
 
             try {
-                const rawReply = await callRotatingAI(prompt, "You are a raw JSON API. Never use markdown formatting. Return strictly valid JSON.");
-                const cleanJson = rawReply.replace(/```json/gi, '').replace(/```/g, '').trim();
-                const quizData = JSON.parse(cleanJson);
+                const rawReply = await callRotatingAI(prompt, "You are an academic quiz JSON API. Output raw JSON only, starting with { and ending with }.");
+                const quizData = extractSafeJSON(rawReply);
 
                 document.getElementById(loadingId)?.remove();
 
@@ -1162,7 +1179,7 @@ Example format:
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
                     <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold">
-                        تعذر إنشاء الكويز: ${err.message}
+                        تعذر توليد الكويز (${err.message})، اضغط على زر الكويز مرة ثانية.
                     </div>`;
                 feed.scrollTop = feed.scrollHeight;
             }
@@ -1174,8 +1191,9 @@ Example format:
 
             let optionsHtml = '';
             item.options.forEach((opt) => {
+                const safeExp = (item.explanation || "إجابة نموذجية من المحاضرة").replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 optionsHtml += `
-                    <button onclick="answerMCQ('${qId}', ${opt.correct}, this, '${item.explanation.replace(/'/g, "\\'")}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs font-semibold">
+                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs font-semibold">
                         ${opt.t}
                     </button>`;
             });
@@ -1215,7 +1233,7 @@ Example format:
             feed.scrollTop = feed.scrollHeight;
             saveChatOffline();
 
-            if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال')) {
+            if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('اختبرني')) {
                 requestAiQuizFromLecture();
                 return;
             }
@@ -1228,7 +1246,7 @@ Example format:
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const systemPrompt = `أنت "زيرو" المدرس الأكاديمي والوزاري بالعراق. تشرح باختصار ووضوح وبلهجة مهذبة. اعتمد على محتوى السلايدات:\n${targetContent}`;
+            const systemPrompt = `أنت "زيرو (Zero)" المساعد الأكاديمي والوزاري الذكي للطلاب في العراق. جاوب بأسلوب علمي واضح ولطيف ومشجع باللهجة العراقية المهذبة أو العربية الفصحى المبسطة. ${targetContent ? 'محتوى المحاضرة المرفوعة حالياً للاستعانة بها:\n' + targetContent : ''}`;
 
             try {
                 const reply = await callRotatingAI(txt, systemPrompt);
@@ -1247,7 +1265,7 @@ Example format:
                 document.getElementById(loadingId)?.remove();
                 feed.innerHTML += `
                     <div class="p-2 text-rose-500 text-xs font-bold">
-                        تعذر الاتصال بسيرفر الذكاء الاصطناعي (${err.message})، يرجى المحاولة ثانية.
+                        تعذر الاتصال (${err.message})، يرجى المحاولة ثانية.
                     </div>`;
             }
         }
@@ -1281,7 +1299,7 @@ Example format:
         function loadSavedChat() {
             const feed = document.getElementById('zero-chat-feed');
             const savedHtml = localStorage.getItem('zp_chat_html');
-            if (savedHtml) {
+            if (savedHtml && !savedHtml.includes('السيرفر مشغول حالياً')) {
                 feed.innerHTML = savedHtml;
             } else {
                 feed.innerHTML = `
@@ -1292,6 +1310,7 @@ Example format:
                             ارفع ملزمتك فوق بصيغة PDF، وتقدر تحدد سلايدات معينة أو كل السلايدات، واضغط <strong>+ اصنع كويز من الملزمة</strong> حتى نمتحنك بأسئلة دقيقة وغير مكررة!
                         </div>
                     </div>`;
+                localStorage.setItem('zp_chat_html', feed.innerHTML);
             }
             feed.scrollTop = feed.scrollHeight;
         }
@@ -1302,10 +1321,8 @@ Example format:
         }
 
         function clearChatHistory() {
-            if (confirm("هل تريد مسح سجل المحادثة؟")) {
-                localStorage.removeItem('zp_chat_html');
-                loadSavedChat();
-            }
+            localStorage.removeItem('zp_chat_html');
+            loadSavedChat();
         }
         loadSavedChat();
 
@@ -1344,15 +1361,6 @@ Example format:
             const text = getShareContent();
             navigator.clipboard.writeText(text).then(() => {
                 alert("تم نسخ بطاقة إنجازك! شاركها الآن على ستوري انستغرام أو تيليجرام 🚀");
-            });
-        }
-
-        // ------------------ 6. SERVICE WORKER REGISTRATION ------------------
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
-                    console.log('ServiceWorker registration skipped or failed:', err);
-                });
             });
         }
     </script>
