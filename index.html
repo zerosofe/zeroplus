@@ -11,7 +11,7 @@
 
     <!-- PWA Settings -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0b2138">
+    <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -25,31 +25,15 @@
             theme: {
                 extend: {
                     colors: {
-                        medNavy: {
-                            50: '#f0f5fa',
-                            100: '#e1ecf5',
-                            200: '#c3d9eb',
-                            300: '#95bedc',
-                            400: '#5494c4',
-                            500: '#2b71a7',
-                            600: '#1d5789',
-                            700: '#17446e',
-                            800: '#112f4d',
-                            900: '#0b2138',
-                            950: '#071626'
-                        },
-                        medIce: {
-                            base: '#f1f5f9',
-                            card: '#ffffff',
-                            muted: '#64748b',
-                            border: '#e2e8f0'
-                        },
-                        nightMed: {
-                            base: '#07111c',
-                            card: '#0e1c2c',
-                            cardLight: '#14273d',
-                            border: '#1b324c',
-                            muted: '#8ba2be'
+                        santorini: {
+                            white: '#F5FEFF',
+                            softBlue: '#AAC0E1',
+                            deepNavy: '#0E2F76',
+                            hoverNavy: '#0a2359',
+                            lightBg: '#edf4fb',
+                            darkBase: '#081426',
+                            darkCard: '#0f2038',
+                            darkBorder: '#1c3456'
                         }
                     },
                     borderRadius: {
@@ -57,9 +41,8 @@
                         '4xl': '2.25rem'
                     },
                     boxShadow: {
-                        'soft-clean': '0 8px 30px rgba(11, 33, 56, 0.06)',
-                        'soft-dark': '0 10px 30px rgba(0, 0, 0, 0.35)',
-                        'navy-btn': '0 6px 20px rgba(11, 33, 56, 0.28)'
+                        'santorini': '0 8px 25px rgba(14, 47, 118, 0.08)',
+                        'santorini-btn': '0 6px 20px rgba(14, 47, 118, 0.28)'
                     }
                 }
             }
@@ -82,135 +65,152 @@
         body { 
             font-family: 'Cairo', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
-            padding-bottom: max(5.5rem, calc(4.5rem + env(safe-area-inset-bottom)));
+            padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
         }
 
-        /* Medical Clean Gradient */
-        .med-header-gradient {
-            background: linear-gradient(145deg, #0b2138 0%, #17446e 100%);
-        }
-        .med-ice-gradient {
-            background: linear-gradient(135deg, #e8f1f8 0%, #d5e5f3 100%);
+        .gradient-santorini {
+            background: linear-gradient(135deg, #0E2F76 0%, #1a4aa6 100%) !important;
         }
 
-        /* iOS Home Indicator Safe Padding */
         .ios-nav-safe {
-            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
-        /* Messages High Contrast Styling */
+        /* فقاعات المحادثة الواسعة والمريحة للعين */
         .chat-user-bubble {
-            background: #0b2138 !important;
-            color: #ffffff !important;
+            background: #0E2F76 !important;
+            color: #F5FEFF !important;
             border-radius: 1.5rem 1.5rem 0.35rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(11, 33, 56, 0.2);
-        }
-        html.dark .chat-user-bubble {
-            background: #17446e !important;
-            color: #ffffff !important;
-            border: 1px solid #235787 !important;
+            box-shadow: 0 4px 15px rgba(14, 47, 118, 0.2);
+            padding: 0.9rem 1.25rem !important;
         }
 
         html.dark .chat-bot-bubble {
-            background-color: #0e1c2c !important;
-            color: #f8fafc !important;
-            border: 1px solid #1c3552 !important;
+            background-color: #0f2038 !important;
+            color: #F5FEFF !important;
+            border: 1px solid #1c3456 !important;
             border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            padding: 1rem 1.25rem !important;
         }
         html:not(.dark) .chat-bot-bubble {
             background-color: #ffffff !important;
-            color: #0b2138 !important;
-            border: 1px solid #e2e8f0 !important;
+            color: #0E2F76 !important;
+            border: 1px solid #AAC0E1 !important;
             border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
-            box-shadow: 0 6px 20px rgba(11, 33, 56, 0.05);
+            box-shadow: 0 6px 20px rgba(14, 47, 118, 0.05);
+            padding: 1rem 1.25rem !important;
         }
 
-        .clean-card {
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+        /* كارت الكويز */
+        html.dark .chat-quiz-card {
+            background-color: #0f2038 !important;
+            color: #F5FEFF !important;
+            border: 1px solid #1c3456 !important;
         }
-        .clean-card:hover {
-            transform: translateY(-2px);
+        html:not(.dark) .chat-quiz-card {
+            background-color: #ffffff !important;
+            color: #0E2F76 !important;
+            border: 1px solid #AAC0E1 !important;
+        }
+
+        /* خيارات الكويز */
+        html.dark .chat-quiz-opt {
+            background-color: #152945 !important;
+            color: #F5FEFF !important;
+            border: 1px solid #23416b !important;
+        }
+        html.dark .chat-quiz-opt:hover {
+            border-color: #AAC0E1 !important;
+            background-color: #1a3357 !important;
+        }
+        html:not(.dark) .chat-quiz-opt {
+            background-color: #f7fbff !important;
+            color: #0E2F76 !important;
+            border: 1px solid #cfe0f5 !important;
+        }
+        html:not(.dark) .chat-quiz-opt:hover {
+            border-color: #0E2F76 !important;
+            background-color: #edf4fb !important;
         }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        html.dark ::-webkit-scrollbar-thumb { background: #1c3552; }
+        ::-webkit-scrollbar-thumb { background: #AAC0E1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-medIce-base dark:bg-nightMed-base text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 selection:bg-medNavy-900 selection:text-white">
+<body class="bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-800 dark:text-santorini-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-santorini-deepNavy selection:text-white">
 
-    <!-- Top Clean App Bar -->
-    <header class="sticky top-0 z-40 bg-white/80 dark:bg-nightMed-base/80 backdrop-blur-2xl border-b border-slate-200/70 dark:border-nightMed-border px-4 py-3 shrink-0 transition-colors">
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/85 dark:bg-santorini-darkBase/90 backdrop-blur-2xl border-b border-slate-200 dark:border-santorini-darkBorder px-4 py-3.5 shrink-0 transition-colors">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <!-- Brand Mark -->
+            <!-- Brand -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-medNavy-900 dark:bg-medNavy-700 flex items-center justify-center text-white font-black text-xl shadow-navy-btn" dir="ltr">
+                <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy flex items-center justify-center text-santorini-white font-black text-xl shadow-santorini-btn" dir="ltr">
                     Z+
                 </div>
                 <div>
-                    <h1 class="font-black text-lg leading-tight flex items-center gap-1 text-medNavy-900 dark:text-white" dir="ltr">
-                        <span>Zero</span><span class="text-medNavy-500 dark:text-medNavy-300">Plus</span>
+                    <h1 class="font-black text-lg leading-tight flex items-center gap-1 text-santorini-deepNavy dark:text-santorini-white" dir="ltr">
+                        <span>Zero</span><span class="text-santorini-softBlue">Plus</span>
                     </h1>
-                    <span class="text-[11px] font-semibold text-slate-400 dark:text-nightMed-muted">منصتك الأكاديمية الشاملة 🇮🇶</span>
+                    <span class="text-[11px] font-semibold text-slate-400 dark:text-santorini-softBlue">المنصة الأكاديمية الشاملة 🇮🇶</span>
                 </div>
             </div>
 
             <!-- Header Quick Actions -->
-            <div class="flex items-center gap-2">
-                <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border text-slate-600 dark:text-sky-300 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="مشاركة الإنجاز">
+            <div class="flex items-center gap-2.5">
+                <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="مشاركة الإنجاز">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
                 </button>
-                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="تفعيل التنبيهات">
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تفعيل التنبيهات">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
                 </button>
-                <div class="bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border px-3.5 py-1.5 rounded-full text-xs font-bold text-medNavy-900 dark:text-sky-200 flex items-center gap-1.5 shadow-sm">
+                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder px-3.5 py-1.5 rounded-full text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300" title="جاري الاتصال..."></div>
-                <button onclick="toggleTheme()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border text-slate-700 dark:text-amber-300 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="تبديل الوضع">
+                <button onclick="toggleTheme()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-santorini-deepNavy dark:text-amber-300 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تبديل الوضع">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Canvas (Adaptive for iPhone, iPad, Mac) -->
+    <!-- Main Workspace -->
     <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
-            <!-- Hero Stats Banner (Inspired by Card Headers) -->
-            <div class="med-header-gradient p-6 rounded-4xl text-white shadow-soft-clean flex items-center justify-between">
+            <!-- Hero Banner -->
+            <div class="gradient-santorini p-6 rounded-4xl text-white shadow-santorini flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold tracking-wider text-sky-200 uppercase">إنجاز اليوم الأكاديمي</span>
+                    <span class="text-[11px] font-bold tracking-wider text-santorini-softBlue uppercase">إنجاز اليوم الأكاديمي</span>
                     <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-1">0 من 0 مهام مكتملة!</h2>
-                    <p id="todo-motivational" class="text-xs text-slate-300 mt-1">رتّب جدولك وسجل المواد، وخلّك مستعد أول بأول 🩺</p>
+                    <p id="todo-motivational" class="text-xs text-slate-200 mt-1">رتّب محاضراتك واقرأ أول بأول لراحة بالك 📚</p>
                 </div>
                 <div id="todo-percent-badge" class="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20 shadow-inner">
                     0%
                 </div>
             </div>
 
-            <!-- Clean Add Input Box -->
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-soft-clean">
-                <input id="todo-input" type="text" placeholder="شنو عندك مادة، ملزمة، أو امتحان باچر؟" 
+            <!-- Add Task Box -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-santorini">
+                <input id="todo-input" type="text" placeholder="شنو عندك مادة، فصل وزاري، أو امتحان باچر؟" 
                     onkeydown="if(event.key==='Enter') addTodo()"
-                    class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-nightMed-muted text-slate-900 dark:text-white">
-                <select id="todo-tag" class="bg-slate-50 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
+                    class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white">
+                <select id="todo-tag" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
                     <option value="جامعي 🏛️">جامعي 🏛️</option>
                     <option value="وزاري 🔥">وزاري 🔥</option>
                     <option value="دراسة ومراجعة 📖">دراسة ومراجعة 📖</option>
                     <option value="كويز وامتحان 📝">كويز وامتحان 📝</option>
                     <option value="عملي ومختبر 🔬">عملي ومختبر 🔬</option>
                 </select>
-                <select id="todo-prio" class="bg-slate-50 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
+                <select id="todo-prio" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
                     <option value="high">مهم كلش 🔥</option>
                     <option value="normal">اعتيادي 🌱</option>
                 </select>
-                <button onclick="addTodo()" class="w-full sm:w-auto bg-medNavy-900 hover:bg-medNavy-800 text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-navy-btn transition active:scale-95">
+                <button onclick="addTodo()" class="w-full sm:w-auto bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-santorini-btn transition active:scale-95">
                     إضافة +
                 </button>
             </div>
@@ -219,110 +219,119 @@
         </section>
 
         <!-- ================= SECTION 2: POMODORO & STATS ================= -->
-        <section id="tab-pomodoro" class="hidden space-y-5">
-            <!-- 3 Stat Cards (Inspired by Doctor Stats Grid) -->
+        <section id="tab-pomodoro" class="hidden space-y-6">
+            <!-- Stats Grid -->
             <div class="grid grid-cols-3 gap-3 text-center">
-                <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-4 rounded-3xl shadow-soft-clean clean-card">
-                    <span class="text-[10px] sm:text-xs text-slate-400 dark:text-nightMed-muted font-bold block">التركيز التراكمي</span>
-                    <span id="stat-total-mins" class="text-base sm:text-xl font-black text-medNavy-900 dark:text-sky-300 mt-0.5 block">0 دقيقة</span>
+                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
+                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">التركيز التراكمي</span>
+                    <span id="stat-total-mins" class="text-base sm:text-xl font-black text-santorini-deepNavy dark:text-santorini-white mt-1 block">0 دقيقة</span>
                 </div>
-                <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-4 rounded-3xl shadow-soft-clean clean-card">
-                    <span class="text-[10px] sm:text-xs text-slate-400 dark:text-nightMed-muted font-bold block">جلسات اليوم</span>
-                    <span id="pomo-count-stat" class="text-base sm:text-xl font-black text-medNavy-600 dark:text-sky-400 mt-0.5 block">0 جلسات</span>
+                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
+                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">جلسات اليوم</span>
+                    <span id="pomo-count-stat" class="text-base sm:text-xl font-black text-santorini-deepNavy dark:text-santorini-white mt-1 block">0 جلسات</span>
                 </div>
-                <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-4 rounded-3xl shadow-soft-clean clean-card">
-                    <span class="text-[10px] sm:text-xs text-slate-400 dark:text-nightMed-muted font-bold block">أشجار الغابة</span>
-                    <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-0.5 block">0 شجرة</span>
+                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
+                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">أشجار الغابة</span>
+                    <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-1 block">0 شجرة</span>
                 </div>
             </div>
 
-            <!-- Nordic Minimalist Timer Card -->
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-6 sm:p-8 rounded-4xl text-center max-w-md mx-auto shadow-soft-clean">
-                <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-nightMed-base p-1.5 rounded-2xl max-w-xs mx-auto mb-6">
-                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-medNavy-900 text-white shadow-sm">تركيز (25د)</button>
-                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400">استراحة (5د)</button>
-                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400">طويلة (15د)</button>
+            <!-- Spacious Uncramped Timer Card (الكلام خارج الدائرة تماماً) -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-santorini space-y-6">
+                <!-- Mode Switcher -->
+                <div class="flex justify-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
+                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm">تركيز (25د)</button>
+                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5د)</button>
+                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15د)</button>
                 </div>
 
-                <div class="relative w-64 h-64 mx-auto flex items-center justify-center mb-6">
+                <!-- Clean Breathing Circle (فقط العداد والأيقونة داخل الدائرة) -->
+                <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-nightMed-base" stroke-width="5"></circle>
-                        <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="#0b2138" stroke-width="5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000 dark:stroke-sky-400"></circle>
+                        <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-santorini-darkBase" stroke-width="4.5"></circle>
+                        <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="#0E2F76" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000 dark:stroke-santorini-softBlue"></circle>
                     </svg>
 
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div id="pomo-tree-preview" class="text-3xl mb-1 transition-all duration-500">
+                        <div id="pomo-tree-preview" class="text-4xl mb-2 transition-all duration-500">
                             🌱
                         </div>
-                        <span id="pomo-display" class="text-4xl sm:text-5xl font-black tracking-tight text-medNavy-900 dark:text-white">25:00</span>
-                        <span id="pomo-status" class="text-[11px] text-medNavy-500 dark:text-sky-300 font-bold mt-1 px-4 text-center">وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)</span>
+                        <span id="pomo-display" class="text-5xl sm:text-6xl font-black tracking-tight text-santorini-deepNavy dark:text-santorini-white">25:00</span>
                     </div>
                 </div>
 
-                <div class="flex justify-center gap-3">
-                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-medNavy-900 hover:bg-medNavy-800 text-white font-black px-8 py-3.5 rounded-2xl shadow-navy-btn hover:opacity-95 transition active:scale-95">
-                        <span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-1.5 text-xs"></i>
+                <!-- Status Outside Circle (مريح للعين وبدون أي حشر) -->
+                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto">
+                    <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold block">
+                        وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)
+                    </span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-center gap-3 pt-2">
+                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black px-10 py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
+                        <span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>
                     </button>
-                    <button onclick="resetPomo()" class="bg-slate-100 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 px-4 py-3.5 rounded-2xl font-bold hover:border-medNavy-500 transition active:scale-95" title="تصفير">
+                    <button onclick="resetPomo()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold hover:border-santorini-softBlue transition active:scale-95" title="تصفير">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Forest Garden Grid -->
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-5 rounded-4xl shadow-soft-clean space-y-3">
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                             <i class="fa-solid fa-seedling"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز التخيلية 🌲</h3>
-                            <p class="text-[11px] text-slate-400">تنمو غابتك مع كل جلسة تنجزها بدون تشتت</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز 🌲</h3>
+                            <p class="text-[11px] text-slate-400">تنمو غابتك مع كل جلسة تركيز تنجزها بدون تشتت</p>
                         </div>
                     </div>
-                    <button onclick="clearForestConfirmation()" class="text-[11px] text-slate-400 hover:text-rose-500 transition font-bold">إعادة تهيئة</button>
+                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 transition font-bold">إعادة تهيئة</button>
                 </div>
-                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2"></div>
+                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2"></div>
             </div>
         </section>
 
         <!-- ================= SECTION 3: ENGLISH ================= -->
         <section id="tab-english" class="hidden space-y-4">
             <div class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn bg-medNavy-900 text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm">المستوى A1 (محادثة وأساسيات)</button>
-                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
-                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
+                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm">المستوى A1 (محادثة وأساسيات)</button>
+                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
+                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
             </div>
 
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-6 rounded-4xl shadow-soft-clean space-y-4">
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-medNavy-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/40 px-3 py-1 rounded-full border border-sky-100 dark:border-sky-900">ترجم للغة العربية</span>
+                    <span class="text-santorini-deepNavy dark:text-santorini-softBlue bg-santorini-lightBg dark:bg-santorini-darkBase px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">اكتب الترجمة بالعربي</span>
                     <span id="eng-counter" class="text-slate-400">سؤال 1 من 3</span>
                 </div>
 
-                <div class="bg-slate-50 dark:bg-nightMed-base p-5 rounded-3xl border border-slate-200/70 dark:border-nightMed-border flex items-center justify-between">
+                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase p-5 rounded-3xl border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-between">
                     <div>
-                        <h3 id="eng-prompt-text" class="text-lg font-black text-medNavy-900 dark:text-white">I have to study for the final exam</h3>
-                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-nightMed-muted mt-1 font-semibold">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
+                        <h3 id="eng-prompt-text" class="text-lg font-black text-santorini-deepNavy dark:text-santorini-white">I have to study for the final exam</h3>
+                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1 font-semibold">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
                     </div>
-                    <button onclick="speakEngSentence()" class="w-11 h-11 rounded-2xl bg-white dark:bg-nightMed-card text-medNavy-700 dark:text-sky-300 border border-slate-200/80 dark:border-nightMed-border flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition" title="استمع للنطق">
+                    <button onclick="speakEngSentence()" class="w-11 h-11 rounded-2xl bg-white dark:bg-santorini-darkCard text-santorini-deepNavy dark:text-santorini-softBlue border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition" title="استمع للنطق">
                         <i class="fa-solid fa-volume-high"></i>
                     </button>
                 </div>
 
                 <input id="eng-user-input" type="text" placeholder="اكتب إجابتك هنا أو اختر الكلمات بالأسفل..." 
                     onkeydown="if(event.key==='Enter') checkEngAnswer()"
-                    class="w-full bg-slate-50 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border p-4 rounded-2xl text-sm focus:outline-none focus:border-medNavy-500 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition font-semibold">
+                    class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition font-semibold">
 
                 <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold"></div>
                 <div id="eng-feedback-box" class="hidden p-4 rounded-2xl text-xs font-bold flex items-center gap-2"></div>
 
                 <div class="flex gap-2">
-                    <button onclick="nextEngQuestion()" class="bg-slate-100 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 px-5 py-3 rounded-2xl font-bold text-xs hover:border-medNavy-500 transition">
+                    <button onclick="nextEngQuestion()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3 rounded-2xl font-bold text-xs hover:border-santorini-softBlue transition">
                         تخطي <i class="fa-solid fa-forward mr-1"></i>
                     </button>
-                    <button onclick="checkEngAnswer()" class="flex-1 bg-medNavy-900 hover:bg-medNavy-800 text-white font-black py-3.5 rounded-2xl shadow-navy-btn hover:opacity-95 transition active:scale-95">
+                    <button onclick="checkEngAnswer()" class="flex-1 bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
                         تحقق من الإجابة ✅
                     </button>
                 </div>
@@ -330,101 +339,99 @@
         </section>
 
         <!-- ================= SECTION 4: ZERO AI ================= -->
-        <section id="tab-zero" class="flex-1 flex flex-col gap-3">
+        <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
             
-            <!-- Modern Lecture Source Card (Doctor Portal Style) -->
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-4 sm:p-5 rounded-4xl shadow-soft-clean space-y-3 shrink-0">
+            <!-- Lecture Box -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 sm:p-5 rounded-4xl shadow-santorini space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-medNavy-900 dark:bg-medNavy-700 text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
-                            <i class="fa-solid fa-file-medical"></i>
+                        <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
+                            <i class="fa-solid fa-book-medical"></i>
                         </div>
                         <div>
                             <h3 class="font-black text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز الأكاديمي 📚</h3>
-                            <p class="text-[11px] text-slate-400">ارفع ملف المحاضرة وسيقوم زيرو بصياغة أسئلة دقيقة منها</p>
+                            <p class="text-[11px] text-slate-400">ارفع ملف الملزمة ليصنعلك زيرو كويز مركز منها</p>
                         </div>
                     </div>
-                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-950/60 text-medNavy-700 dark:text-sky-300 px-3 py-1 rounded-full border border-sky-100 dark:border-sky-800">
+                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">
                         ⚡ محرك زيرو نشط
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-nightMed-base border border-dashed border-slate-300 dark:border-nightMed-border hover:border-medNavy-600 rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
-                        <i class="fa-solid fa-arrow-up-from-bracket text-medNavy-600 dark:text-sky-400"></i>
-                        <span id="upload-file-status">اضغط لرفع ملف المحاضرة (PDF / TXT)</span>
+                    <label class="cursor-pointer flex-1 bg-santorini-lightBg dark:bg-santorini-darkBase border border-dashed border-slate-300 dark:border-santorini-darkBorder hover:border-santorini-softBlue rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
+                        <i class="fa-solid fa-arrow-up-from-bracket text-santorini-deepNavy dark:text-santorini-softBlue"></i>
+                        <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
-                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-medNavy-500 transition">
+                    <button onclick="togglePasteArea()" class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-santorini-softBlue transition shadow-sm">
                         أو الصق نص ✍️
                     </button>
                 </div>
 
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border p-3.5 rounded-2xl text-xs focus:outline-none focus:border-medNavy-500 text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
 
-                <!-- SLIDE RANGE SELECTOR -->
-                <div id="slide-scope-box" class="hidden bg-slate-50 dark:bg-nightMed-base border border-slate-200/80 dark:border-nightMed-border p-3.5 rounded-3xl space-y-2">
+                <!-- Scope Inputs -->
+                <div id="slide-scope-box" class="hidden bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-3xl space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold">
-                        <span class="text-medNavy-700 dark:text-sky-300"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
+                        <span class="text-santorini-deepNavy dark:text-santorini-softBlue"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
                         <span id="total-slides-count" class="text-slate-400">إجمالي السلايدات: 0</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="all" checked onchange="toggleScopeInputs()">
                             <span>كل السلايدات 📑</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="single" onchange="toggleScopeInputs()">
                             <span>سلايد محدد 🎯</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="range" onchange="toggleScopeInputs()">
-                            <span>نطاق معين (من - إلى) 🔍</span>
+                            <span>نطاق معين 🔍</span>
                         </label>
                     </div>
 
-                    <!-- Scope Inputs -->
                     <div id="single-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
                         <span class="font-bold text-slate-600 dark:text-slate-400">رقم السلايد:</span>
-                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-center font-bold text-slate-900 dark:text-white">
+                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
                     </div>
 
                     <div id="range-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
                         <span class="font-bold text-slate-600 dark:text-slate-400">من:</span>
-                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-center font-bold text-slate-900 dark:text-white">
+                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
                         <span class="font-bold text-slate-600 dark:text-slate-400">إلى:</span>
-                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-white dark:bg-nightMed-card border border-slate-200 dark:border-night-border text-center font-bold text-slate-900 dark:text-white">
+                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
                     </div>
                 </div>
 
-                <!-- Active Lecture Status -->
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
-                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> الملزمة جاهزة للكويز!</span>
-                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">مسح الملزمة</button>
+                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> الملزمة جاهزة!</span>
+                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">مسح</button>
                 </div>
             </div>
 
-            <!-- Clean Chat Console -->
-            <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border rounded-4xl shadow-soft-clean flex-1 flex flex-col overflow-hidden min-h-[55vh]">
+            <!-- Spacious Chat Console -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl shadow-santorini flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 
                 <!-- Chat Header -->
-                <div class="p-4 border-b border-slate-100 dark:border-nightMed-border flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-nightMed-base/40">
+                <div class="p-4 border-b border-slate-100 dark:border-santorini-darkBorder flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-santorini-darkBase/40">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-medNavy-900 text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
+                        <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
                             Z+
                         </div>
                         <div>
                             <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                                زيرو المساعد الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                زيرو الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             </h4>
-                            <p class="text-[11px] text-slate-400">توليد كويزات ومحادثة تدريسية فورية</p>
+                            <p class="text-[11px] text-slate-400">توليد كويزات ومساعد أكاديمي فوري</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="requestAiQuizFromLecture()" class="bg-medNavy-900 hover:bg-medNavy-800 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-navy-btn hover:opacity-95 transition active:scale-95">
+                        <button onclick="requestAiQuizFromLecture()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
                             + اصنع كويز 📝
                         </button>
                         <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="مسح المحادثة">
@@ -433,15 +440,15 @@
                     </div>
                 </div>
 
-                <!-- Chat Feed -->
+                <!-- Chat Messages Feed -->
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
 
                 <!-- Chat Input Dock -->
-                <div class="p-3 border-t border-slate-100 dark:border-nightMed-border bg-slate-50/80 dark:bg-nightMed-base/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي فكرة أو اطلب شرح نقطة..." 
+                <div class="p-3 border-t border-slate-100 dark:border-santorini-darkBorder bg-slate-50/80 dark:bg-santorini-darkBase/60 flex gap-2 items-center shrink-0">
+                    <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي فكرة أو اطلب كويز..." 
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
-                        class="flex-1 bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-medNavy-500 text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
-                    <button onclick="sendZeroChat()" class="bg-medNavy-900 hover:bg-medNavy-800 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-navy-btn hover:opacity-95 transition active:scale-95 shrink-0">
+                        class="flex-1 bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
+                    <button onclick="sendZeroChat()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-santorini-btn hover:opacity-95 transition active:scale-95 shrink-0">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </div>
@@ -453,14 +460,14 @@
 
     <!-- ================= MODAL: SHARE ACHIEVEMENT CARD ================= -->
     <div id="share-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-soft-dark">
-            <div id="share-card" class="med-header-gradient p-6 rounded-3xl text-white shadow-soft-clean space-y-3 text-center">
+        <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <div id="share-card" class="gradient-santorini p-6 rounded-3xl text-white shadow-santorini space-y-3 text-center">
                 <div class="w-12 h-12 rounded-2xl bg-white/10 mx-auto flex items-center justify-center font-black text-2xl border border-white/20" dir="ltr">
                     Z+
                 </div>
                 <div>
                     <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
-                    <p class="text-xs text-sky-200">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
+                    <p class="text-xs text-santorini-softBlue">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-2xl flex justify-around text-xs font-bold">
                     <div>
@@ -481,10 +488,10 @@
             </div>
 
             <div class="flex gap-2">
-                <button onclick="executeShare()" class="flex-1 bg-medNavy-900 text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5 shadow-navy-btn">
+                <button onclick="executeShare()" class="flex-1 bg-santorini-deepNavy text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5 shadow-santorini-btn">
                     <i class="fa-solid fa-share-nodes"></i> <span>مشاركة فورية</span>
                 </button>
-                <button onclick="copyShareText()" class="bg-slate-100 dark:bg-nightMed-base border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-medNavy-500 transition">
+                <button onclick="copyShareText()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-santorini-softBlue transition">
                     نسخ النص
                 </button>
             </div>
@@ -492,22 +499,22 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar (iOS / Android Adaptive Dock) -->
-    <nav class="fixed bottom-0 inset-x-0 bg-white/90 dark:bg-nightMed-base/90 backdrop-blur-2xl border-t border-slate-200/80 dark:border-nightMed-border pt-2 ios-nav-safe z-40 shadow-soft-clean">
+    <!-- Bottom Navigation Dock (iOS / Android Safe) -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-santorini-darkBase/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-santorini-darkBorder pt-2.5 ios-nav-safe z-40 shadow-santorini">
         <div class="max-w-md mx-auto flex justify-around items-center px-4">
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-medNavy-700 dark:hover:text-sky-300 transition">
+            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>
                 <span>المهام</span>
             </button>
-            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-medNavy-700 dark:hover:text-sky-300 transition">
+            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i>
                 <span>بومودورو</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-medNavy-700 dark:hover:text-sky-300 transition">
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
                 <i class="fa-solid fa-earth-americas text-base mb-1"></i>
                 <span>الإنكليزي</span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-medNavy-900 dark:text-sky-300 font-black text-xs transition">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-santorini-deepNavy dark:text-santorini-softBlue font-black text-xs transition">
                 <i class="fa-solid fa-robot text-base mb-1"></i>
                 <span>زيرو AI</span>
             </button>
@@ -516,10 +523,9 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
-        // تنظيف محادثات الكاش السابقة لضمان التباين اللوني الجديد
-        if (localStorage.getItem('zp_clean_nordic_v1') !== 'true') {
+        if (localStorage.getItem('zp_clean_santorini_v1') !== 'true') {
             localStorage.removeItem('zp_chat_html');
-            localStorage.setItem('zp_clean_nordic_v1', 'true');
+            localStorage.setItem('zp_clean_santorini_v1', 'true');
         }
 
         // ------------------ SUPABASE INTEGRATION ------------------
@@ -656,7 +662,7 @@
                     particleCount: 70,
                     spread: 75,
                     origin: { y: 0.7 },
-                    colors: ['#0b2138', '#5494c4', '#10b981', '#f59e0b']
+                    colors: ['#0E2F76', '#AAC0E1', '#F5FEFF', '#10b981']
                 });
             }
         }
@@ -665,11 +671,11 @@
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
-                btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-medNavy-700 dark:hover:text-sky-300 transition";
+                btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition";
             });
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-medNavy-900 dark:text-sky-300 font-black text-xs transition";
+            activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-santorini-deepNavy dark:text-santorini-softBlue font-black text-xs transition";
         }
 
         function playChime(success = true) {
@@ -729,7 +735,7 @@
 
             if (tasks.length === 0) {
                 list.innerHTML = `
-                    <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-6 rounded-3xl text-center text-xs text-slate-400">
+                    <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">
                         ما عندك مهام حالياً، اكتب أول مادة أو فصل واضغط إضافة مهام ✨
                     </div>`;
             } else {
@@ -737,15 +743,15 @@
                     if (t.done) completed++;
                     const isHigh = t.prio === 'high';
                     list.innerHTML += `
-                        <div class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-4 rounded-3xl flex items-center justify-between shadow-soft-clean transition ${t.done ? 'opacity-55' : ''}">
+                        <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl flex items-center justify-between shadow-santorini transition ${t.done ? 'opacity-55' : ''}">
                             <div class="flex items-center gap-3">
-                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-medNavy-900 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-medNavy-500'} flex items-center justify-center text-xs cursor-pointer transition">
+                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-santorini-deepNavy text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-santorini-softBlue'} flex items-center justify-center text-xs cursor-pointer transition">
                                     ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-slate-100'}">${t.title}</p>
+                                    <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${t.title}</p>
                                     <div class="flex items-center gap-2 mt-0.5">
-                                        <span class="text-[11px] text-medNavy-600 dark:text-sky-300 font-bold">${t.tag}</span>
+                                        <span class="text-[11px] text-santorini-deepNavy dark:text-santorini-softBlue font-bold">${t.tag}</span>
                                         ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2 py-0.2 rounded-full font-bold">مهم كلش 🔥</span>' : ''}
                                     </div>
                                 </div>
@@ -815,9 +821,9 @@
         let pomoCompletedCount = 0;
 
         const fantasyTreeTypes = {
-            25: { name: "ساكورا أرجوانية سحرية", icon: "🌸" },
-            15: { name: "شجرة الزمرد الكونية", icon: "🌲" },
-            5: { name: "برعم البلّور الأخضر", icon: "🌱" }
+            25: { name: "ساكورا سحرية", icon: "🌸" },
+            15: { name: "شجرة الزمرد", icon: "🌲" },
+            5: { name: "برعم الكريستال", icon: "🌱" }
         };
 
         let userForest = JSON.parse(localStorage.getItem('zp_forest') || '[]');
@@ -837,9 +843,9 @@
 
             userForest.forEach(tree => {
                 grid.innerHTML += `
-                    <div class="bg-slate-50 dark:bg-nightMed-base border border-slate-200/80 dark:border-nightMed-border p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
+                    <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
                         <span class="text-2xl mb-1">${tree.icon}</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-slate-100 truncate w-full">${tree.name}</span>
+                        <span class="text-[10px] font-bold text-slate-800 dark:text-santorini-white truncate w-full">${tree.name}</span>
                         <span class="text-[9px] text-slate-400 font-semibold mt-0.5">${tree.time}</span>
                     </div>`;
             });
@@ -897,11 +903,11 @@
             pomoDuration = mins * 60;
             pomoRemaining = pomoDuration;
             document.getElementById('pomo-status').innerText = msg;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-1.5 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             document.querySelectorAll('.pomo-mode-btn').forEach(b => {
-                b.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400';
+                b.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300';
             });
-            btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-medNavy-900 text-white shadow-sm';
+            btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm';
             updatePomoDisplay();
         }
 
@@ -910,9 +916,9 @@
             if (pomoInterval) {
                 clearInterval(pomoInterval);
                 pomoInterval = null;
-                btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-1.5 text-xs"></i>';
+                btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             } else {
-                btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-1.5 text-xs"></i>';
+                btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
                 pomoInterval = setInterval(() => {
                     if (pomoRemaining > 0) {
                         pomoRemaining--;
@@ -946,7 +952,7 @@
             clearInterval(pomoInterval);
             pomoInterval = null;
             pomoRemaining = pomoDuration;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-1.5 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
         renderForest();
@@ -992,9 +998,9 @@
             currentEngLvl = lvl;
             currentEngIdx = 0;
             document.querySelectorAll('.eng-lvl-btn').forEach(b => {
-                b.className = 'eng-lvl-btn bg-white dark:bg-nightMed-card border border-slate-200 dark:border-nightMed-border text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap';
+                b.className = 'eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap';
             });
-            btn.className = 'eng-lvl-btn bg-medNavy-900 text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm';
+            btn.className = 'eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm';
             loadEngQuestion();
         }
 
@@ -1013,7 +1019,7 @@
             chipContainer.innerHTML = '';
             q.chips.forEach(word => {
                 chipContainer.innerHTML += `
-                    <button onclick="appendWordToInput('${word}')" class="bg-slate-100 dark:bg-nightMed-base border border-slate-200/80 dark:border-nightMed-border px-3.5 py-1.5 rounded-xl hover:border-medNavy-500 transition text-slate-800 dark:text-slate-200 font-bold">
+                    <button onclick="appendWordToInput('${word}')" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder px-3.5 py-1.5 rounded-xl hover:border-santorini-softBlue transition text-slate-800 dark:text-slate-200 font-bold">
                         ${word}
                     </button>`;
             });
@@ -1354,7 +1360,7 @@
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
             feed.innerHTML += `
-                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-medNavy-600 dark:text-sky-300 p-3.5 bg-slate-50 dark:bg-nightMed-base rounded-2xl animate-pulse">
+                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue p-3.5 bg-santorini-lightBg dark:bg-santorini-darkBase rounded-2xl animate-pulse">
                     <i class="fa-solid fa-brain text-sm"></i>
                     <span>زيرو يحلل السلايدات ويصنع كويز تفاعلي... 🧠</span>
                 </div>`;
@@ -1391,20 +1397,20 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             item.options.forEach((opt) => {
                 const safeExp = (item.explanation || "إجابة نموذجية من الملزمة").replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 optionsHtml += `
-                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="w-full text-right p-3.5 rounded-2xl border border-slate-200 dark:border-nightMed-border bg-slate-50 dark:bg-nightMed-base hover:border-medNavy-500 transition text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="chat-quiz-opt w-full text-right p-4 rounded-2xl transition text-xs sm:text-sm font-bold">
                         ${opt.t}
                     </button>`;
             });
 
             feed.innerHTML += `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-medNavy-900 text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div id="${qId}" class="bg-white dark:bg-nightMed-card border border-slate-200/80 dark:border-nightMed-border p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-soft-clean space-y-3">
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-santorini space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-medNavy-600 dark:text-sky-300">سؤال امتحاني من السلايدات 📝</span>
+                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold">سؤال امتحاني من السلايدات 📝</span>
                             <span class="text-slate-400">كويز تفاعلي</span>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-black leading-relaxed text-slate-900 dark:text-white">${item.q}</h4>
+                        <h4 class="text-xs sm:text-sm font-black leading-relaxed">${item.q}</h4>
                         <div class="options-container space-y-2 pt-1">
                             ${optionsHtml}
                         </div>
@@ -1425,7 +1431,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             
             feed.innerHTML += `
                 <div class="flex justify-start">
-                    <div class="chat-user-bubble text-xs sm:text-sm font-bold px-5 py-3.5 max-w-[85%] sm:max-w-[70%]">
+                    <div class="chat-user-bubble text-xs sm:text-sm font-bold max-w-[85%] sm:max-w-[70%]">
                         ${txt}
                     </div>
                 </div>`;
@@ -1456,7 +1462,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
             feed.innerHTML += `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-medNavy-900 text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-4 max-w-[88%] sm:max-w-[78%] text-xs sm:text-sm leading-relaxed font-bold">
                         ${reply.replace(/\n/g, '<br>')}
                     </div>
@@ -1477,17 +1483,17 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             logQuizResultToCloud(qText, btn.innerText, isCorrect);
 
             if (isCorrect) {
-                btn.className = 'w-full text-right p-3.5 rounded-2xl border-2 border-emerald-500 !bg-emerald-500/15 !text-emerald-500 font-bold flex items-center justify-between text-xs sm:text-sm';
+                btn.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-emerald-500 !bg-emerald-500/15 !text-emerald-500 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-check text-emerald-500"></i>';
-                fb.className = 'feedback-container bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-3.5 rounded-2xl text-xs font-bold space-y-1 border border-emerald-500/30';
+                fb.className = 'feedback-container bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-4 rounded-2xl text-xs font-bold space-y-1 border border-emerald-500/30';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> إجابة صحيحة ومضبوطة (+15 XP) 🎉</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(true);
                 awardXP(15);
                 triggerConfetti();
             } else {
-                btn.className = 'w-full text-right p-3.5 rounded-2xl border-2 border-rose-500 !bg-rose-500/15 !text-rose-500 font-bold flex items-center justify-between text-xs sm:text-sm';
+                btn.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-rose-500 !bg-rose-500/15 !text-rose-500 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
-                fb.className = 'feedback-container bg-rose-500/10 text-rose-700 dark:text-rose-300 p-3.5 rounded-2xl text-xs font-bold space-y-1 border border-rose-500/30';
+                fb.className = 'feedback-container bg-rose-500/10 text-rose-700 dark:text-rose-300 p-4 rounded-2xl text-xs font-bold space-y-1 border border-rose-500/30';
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
                 playChime(false);
             }
@@ -1502,7 +1508,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             } else {
                 feed.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <div class="w-9 h-9 rounded-2xl bg-medNavy-900 text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                        <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                         <div class="chat-bot-bubble p-4 max-w-[88%] sm:max-w-[78%] text-xs sm:text-sm leading-relaxed font-bold">
                             أهلاً بيك يا بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
                             ارفع ملزمتك فوق بصيغة PDF، واضغط <strong>+ اصنع كويز</strong> حتى نمتحنك بأسئلة دقيقة ومركزة!
