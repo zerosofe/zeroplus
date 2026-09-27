@@ -34,9 +34,9 @@
                             600: '#0284c7',
                         },
                         brandDark: {
-                            bg: '#0a1118',       // كحلي بترولي مريح ليلاً
-                            surface: '#111d28',  // بطاقات هادئة
-                            border: '#1a2e3f',   // إطارات ناعمة
+                            bg: '#0a1118',
+                            surface: '#111d28',
+                            border: '#1a2e3f',
                         }
                     }
                 }
@@ -66,7 +66,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1a2e3f; border-radius: 10px; }
         
-        /* انيميشن نبض الشجرة التخيلية */
         @keyframes float-tree {
             0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.4)); }
             50% { transform: translateY(-5px) scale(1.05); filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.7)); }
@@ -94,21 +93,21 @@
                 </div>
             </div>
 
-            <!-- Stats & Theme Toggle -->
-            <div class="flex items-center gap-2.5">
+            <!-- Stats & Quick Actions -->
+            <div class="flex items-center gap-2">
+                <button onclick="openShareModal()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-sky-400 flex items-center justify-center hover:scale-105 transition" title="مشاركة الإنجاز">
+                    <i class="fa-solid fa-share-nodes text-sm"></i>
+                </button>
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 transition" title="تفعيل التنبيهات">
+                    <i id="notify-icon" class="fa-solid fa-bell text-sm"></i>
+                </button>
                 <div class="bg-turq-50 dark:bg-turq-900/20 border border-turq-200 dark:border-turq-800/40 px-3 py-1 rounded-full text-xs font-bold text-turq-700 dark:text-turq-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
-                <div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800/40 px-3 py-1 rounded-full text-xs font-bold text-sky-700 dark:text-sky-300 hidden sm:flex items-center gap-1.5">
-                    <i class="fa-solid fa-tree text-emerald-400"></i>
-                    <span id="header-tree-count">0 شجرة</span>
-                </div>
-                <!-- Cloud Status Indicator -->
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="السحابة متصلة"></div>
-                <!-- Dark / Light Mode Switcher -->
                 <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-brandDark-border text-slate-600 dark:text-turq-400 flex items-center justify-center hover:scale-105 transition" title="تبديل الوضع">
-                    <i id="theme-icon" class="fa-solid fa-sun"></i>
+                    <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
                 </button>
             </div>
         </div>
@@ -117,9 +116,8 @@
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
 
-        <!-- ================= SECTION 1: TO-DO (المهام الأكاديمية الشاملة) ================= -->
+        <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="space-y-4">
-            <!-- Progress Card -->
             <div class="gradient-turq-sky p-5 rounded-3xl text-white shadow-xl shadow-turq-500/15 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم الأكاديمي</span>
@@ -152,24 +150,37 @@
                 </button>
             </div>
 
-            <!-- Task Items List -->
             <div id="todo-list" class="space-y-2.5">
                 <div class="text-center py-8 text-xs text-slate-400">جاري الاتصال بقاعدة البيانات...</div>
             </div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO & FANTASY FOREST (بومودورو وغابة الأشجار التخيلية) ================= -->
-        <section id="tab-pomodoro" class="hidden space-y-6">
+        <!-- ================= SECTION 2: POMODORO & FOREST & STATS ================= -->
+        <section id="tab-pomodoro" class="hidden space-y-5">
+            <!-- Productivity Stats Bar -->
+            <div class="grid grid-cols-3 gap-2.5 text-center">
+                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-400 font-bold block">وقت التركيز التراكمي</span>
+                    <span id="stat-total-mins" class="text-base sm:text-lg font-black text-turq-500">0 دقيقة</span>
+                </div>
+                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-400 font-bold block">جلسات اليوم</span>
+                    <span id="pomo-count-stat" class="text-base sm:text-lg font-black text-sky-400">0 جلسات</span>
+                </div>
+                <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
+                    <span class="text-[10px] text-slate-400 font-bold block">أشجار الغابة</span>
+                    <span id="stat-tree-count" class="text-base sm:text-lg font-black text-emerald-400">0 شجرة</span>
+                </div>
+            </div>
+
+            <!-- Timer Card -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-3xl text-center max-w-md mx-auto shadow-sm">
-                
-                <!-- Modes -->
                 <div class="flex justify-center gap-1.5 bg-slate-100 dark:bg-brandDark-bg p-1.5 rounded-2xl max-w-xs mx-auto mb-5">
                     <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold gradient-turq-sky text-white shadow-sm">تركيز (25د)</button>
                     <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">استراحة (5د)</button>
                     <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400">طويلة (15د)</button>
                 </div>
 
-                <!-- Circular Timer with Growing Fantasy Tree inside -->
                 <div class="relative w-60 h-60 mx-auto flex items-center justify-center mb-5">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-brandDark-bg" stroke-width="6"></circle>
@@ -182,9 +193,7 @@
                         </defs>
                     </svg>
 
-                    <!-- Center Elements (Timer + Virtual Tree Stage) -->
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <!-- Fantasy Tree Icon Preview -->
                         <div id="pomo-tree-preview" class="text-3xl mb-1 fantasy-tree-animate transition-all duration-500">
                             🌱
                         </div>
@@ -193,17 +202,6 @@
                     </div>
                 </div>
 
-                <!-- Stats summary -->
-                <div class="mb-5 flex justify-center gap-2">
-                    <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
-                        🍅 جلسات اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
-                    </span>
-                    <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
-                        🌲 غابتك: <span id="forest-total-count" class="text-emerald-400 font-black">0</span> شجرة
-                    </span>
-                </div>
-
-                <!-- Control Buttons -->
                 <div class="flex justify-center gap-3">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="gradient-turq-sky text-white font-black px-8 py-3 rounded-2xl shadow-lg shadow-turq-500/25 hover:opacity-95 transition">
                         <span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>
@@ -214,7 +212,7 @@
                 </div>
             </div>
 
-            <!-- ================= FOREST GARDEN DISPLAY (حديقة أشجار الطالب التخيلية) ================= -->
+            <!-- Fantasy Forest Garden -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
@@ -223,22 +221,16 @@
                         </div>
                         <div>
                             <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز التخيلية 🌲✨</h3>
-                            <p class="text-[11px] text-slate-400">كل جلسة دراسة تكملها تزرعلك شجرة سحرية نادرة تنحفظ هنا للأبد!</p>
+                            <p class="text-[11px] text-slate-400">تنمو غابتك مع كل جلسة تركيز تنجزها بدون توقف!</p>
                         </div>
                     </div>
-                    <button onclick="clearForestConfirmation()" class="text-[10px] text-slate-400 hover:text-rose-500 transition" title="تفريغ الغابة">
-                        إعادة تهيئة
-                    </button>
+                    <button onclick="clearForestConfirmation()" class="text-[10px] text-slate-400 hover:text-rose-500 transition">إعادة تهيئة</button>
                 </div>
-
-                <!-- Trees Grid -->
-                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2">
-                    <!-- Dynamic trees will be injected here -->
-                </div>
+                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2"></div>
             </div>
         </section>
 
-        <!-- ================= SECTION 3: ENGLISH (تعلّم الإنكليزي الأكاديمي والوزاري) ================= -->
+        <!-- ================= SECTION 3: ENGLISH ================= -->
         <section id="tab-english" class="hidden space-y-4">
             <div class="flex gap-2 overflow-x-auto pb-1">
                 <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (أساسيات ومحادثة)</button>
@@ -267,7 +259,6 @@
                     class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3.5 rounded-2xl text-sm focus:outline-none focus:border-turq-500 transition">
 
                 <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold"></div>
-
                 <div id="eng-feedback-box" class="hidden p-3.5 rounded-2xl text-xs font-bold flex items-center gap-2"></div>
 
                 <div class="flex gap-2">
@@ -281,7 +272,7 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI (شات وكويزات زيرو الأكاديمية الشاملة) ================= -->
+        <!-- ================= SECTION 4: ZERO AI (مع الحفظ المحلي أوفلاين) ================= -->
         <section id="tab-zero" class="hidden space-y-4">
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-3">
@@ -292,33 +283,32 @@
                         <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                             زيرو الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </h3>
-                        <p class="text-xs text-slate-400">مساعدك الذكي لكافة التخصصات الجامعية والوزاري 🎓</p>
+                        <p class="text-xs text-slate-400">محادثة محفوظة أوفلاين وكويزات MCQ 🎓</p>
                     </div>
                 </div>
-                <button onclick="triggerQuizQuestion()" class="text-[11px] font-bold text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1.5 rounded-full hover:scale-105 transition">
-                    + كويز تفاعلي 📝
-                </button>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="triggerQuizQuestion()" class="text-[11px] font-bold text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1.5 rounded-full hover:scale-105 transition">
+                        + كويز تفاعلي 📝
+                    </button>
+                    <button onclick="clearChatHistory()" class="text-[11px] text-slate-400 hover:text-rose-500 p-1.5" title="مسح المحادثة">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- Quick Action Prompts -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold">
                 <button onclick="quickAskZero('سويلي كويز تفاعلي MCQ لاختبار معلوماتي')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز MCQ سريع</button>
                 <button onclick="quickAskZero('شنو أفضل خطة دراسية لمراجعة مادة الامتحان أو الوزاري قبل الامتحان بأسبوع؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🎯 خطة مراجعة سريعة</button>
                 <button onclick="quickAskZero('اشرحلي تقنية الاسترجاع النشط (Active Recall) شلون تفيد بالامتحانات؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">💡 طرق الحفظ والتركيز</button>
             </div>
 
+            <!-- Chat Feed (Persisted Offline) -->
             <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1">
-                <div class="flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                    <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                        هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري 🎓.<br>
-                        سواء كنت طالب جامعة بكل اختصاصاتها أو طالب وزاري تستعد للامتحانات النهائية، أني هنا حتى أرتب وياك خطة دراستك، أشرحلك أي مفهوم غامض، وأختبرك بكويزات MCQ تحضيرية تضمنلك الـ 100!
-                    </div>
-                </div>
+                <!-- Chat will load from localStorage -->
             </div>
 
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2 rounded-2xl flex gap-2 shadow-sm">
-                <input id="zero-user-msg" type="text" placeholder="اكتب مادتك أو اسأل زيرو 'سويلي كويز عن...'..." 
+                <input id="zero-user-msg" type="text" placeholder="اكتب سؤالك لزيرو أو كوله 'سويلي كويز'..." 
                     onkeydown="if(event.key==='Enter') sendZeroChat()"
                     class="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
                 <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
@@ -328,6 +318,48 @@
         </section>
 
     </main>
+
+    <!-- ================= MODAL: SHARE ACHIEVEMENT CARD ================= -->
+    <div id="share-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <!-- Share Graphic Card -->
+            <div id="share-card" class="gradient-turq-sky p-6 rounded-2xl text-white shadow-lg space-y-3 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 mx-auto flex items-center justify-center font-black text-2xl border border-white/30" dir="ltr">
+                    Z+
+                </div>
+                <div>
+                    <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
+                    <p class="text-xs text-white/80">طالب متميز نحو النجاح الأكاديمي والوزاري 🇮🇶</p>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
+                    <div>
+                        <span class="block text-white/70 text-[10px]">مستوى الخبرة</span>
+                        <span id="share-xp" class="text-amber-300 font-black text-sm">140 XP</span>
+                    </div>
+                    <div class="border-r border-white/20"></div>
+                    <div>
+                        <span class="block text-white/70 text-[10px]">أشجار الغابة</span>
+                        <span id="share-trees" class="text-emerald-300 font-black text-sm">0 شجرة</span>
+                    </div>
+                    <div class="border-r border-white/20"></div>
+                    <div>
+                        <span class="block text-white/70 text-[10px]">المهام المنجزة</span>
+                        <span id="share-tasks" class="text-sky-300 font-black text-sm">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="executeShare()" class="flex-1 gradient-turq-sky text-white py-2.5 rounded-xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-share"></i> <span>مشاركة فورية</span>
+                </button>
+                <button onclick="copyShareText()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs hover:border-turq-500 transition">
+                    نسخ النص
+                </button>
+            </div>
+            <button onclick="closeShareModal()" class="text-xs text-slate-400 hover:text-slate-200 transition">إغلاق</button>
+        </div>
+    </div>
 
     <!-- Bottom Mobile Nav Bar -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/90 dark:bg-brandDark-surface/90 backdrop-blur-md border-t border-slate-200 dark:border-brandDark-border py-2 px-4 z-40">
@@ -360,12 +392,15 @@
 
         // ------------------ GLOBAL APP STATE & XP ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
+        let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
+
         function awardXP(amount) {
             userXP += amount;
             localStorage.setItem('zp_xp', userXP);
             document.getElementById('app-xp').innerText = `${userXP} XP`;
         }
         awardXP(0);
+        document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
 
         function triggerConfetti() {
             if (typeof confetti === 'function') {
@@ -394,10 +429,10 @@
             const icon = document.getElementById('theme-icon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                icon.className = 'fa-solid fa-moon';
+                icon.className = 'fa-solid fa-moon text-sm';
             } else {
                 html.classList.add('dark');
-                icon.className = 'fa-solid fa-sun';
+                icon.className = 'fa-solid fa-sun text-sm';
             }
         }
 
@@ -421,6 +456,34 @@
                 osc.start();
                 osc.stop(ctx.currentTime + 0.3);
             } catch(e){}
+        }
+
+        // ------------------ WEB PUSH NOTIFICATIONS ------------------
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("متصفحك لا يدعم الإشعارات.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                const icon = document.getElementById('notify-icon');
+                if (permission === "granted") {
+                    icon.className = 'fa-solid fa-bell text-sm text-emerald-400';
+                    sendPushNotice("تم تفعيل تنبيهات ZeroPlus بنجاح! 🔔", "سننبهك عند اكتمال جلسات الدراسة والتركيز.");
+                } else {
+                    icon.className = 'fa-solid fa-bell-slash text-sm text-rose-400';
+                }
+            });
+        }
+
+        function sendPushNotice(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(title, {
+                        body: body,
+                        icon: "https://api.iconify.design/heroicons:academic-cap-solid.svg?color=%2314b8a6"
+                    });
+                } catch(e){}
+            }
         }
 
         // ------------------ 1. TO-DO WITH REALTIME SUPABASE ------------------
@@ -554,14 +617,13 @@
 
         fetchCloudTasks();
 
-        // ------------------ 2. POMODORO & FANTASY FOREST ENGINE ------------------
+        // ------------------ 2. POMODORO & FOREST ENGINE ------------------
         let currentPomoMins = 25;
         let pomoDuration = 25 * 60;
         let pomoRemaining = 25 * 60;
         let pomoInterval = null;
         let pomoCompletedCount = 0;
 
-        // أنواع الأشجار التخيلية حسب المدة
         const fantasyTreeTypes = {
             25: {
                 name: "ساكورا أرجوانية سحرية",
@@ -586,14 +648,12 @@
             }
         };
 
-        // الغابة المخزنة
         let userForest = JSON.parse(localStorage.getItem('zp_forest') || '[]');
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
             grid.innerHTML = '';
-            document.getElementById('forest-total-count').innerText = userForest.length;
-            document.getElementById('header-tree-count').innerText = `${userForest.length} شجرة`;
+            document.getElementById('stat-tree-count').innerText = `${userForest.length} شجرة`;
 
             if (userForest.length === 0) {
                 grid.innerHTML = `
@@ -648,7 +708,6 @@
             const offset = 276 - (pomoRemaining / pomoDuration) * 276;
             document.getElementById('pomo-circle').style.strokeDashoffset = offset;
 
-            // تحديث أيقونة نمو الشجرة تدريجياً داخل الدائرة
             const progress = (pomoDuration - pomoRemaining) / pomoDuration;
             const treePreview = document.getElementById('pomo-tree-preview');
             const targetIcon = (fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25]).icon;
@@ -693,9 +752,12 @@
                         clearInterval(pomoInterval);
                         pomoInterval = null;
                         pomoCompletedCount++;
-                        document.getElementById('pomo-count').innerText = pomoCompletedCount;
+                        document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
                         
-                        // زرع الشجرة وحفظها
+                        totalFocusMins += currentPomoMins;
+                        localStorage.setItem('zp_focus_mins', totalFocusMins);
+                        document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+
                         plantTree(currentPomoMins);
                         const treeInfo = fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25];
 
@@ -703,6 +765,7 @@
                         awardXP(30);
                         triggerConfetti();
 
+                        sendPushNotice("ألف مبروك بطل! 🍅🎉", `اكتملت جلسة التركيز وزرعت [ ${treeInfo.name} ${treeInfo.icon} ] في غابتك.`);
                         alert(`🎉 مبروك بطل! كملت الجلسة بنجاح، وزرعت [ ${treeInfo.name} ${treeInfo.icon} ] في غابتك الخاصة! (+30 XP)`);
                         resetPomo();
                     }
@@ -717,7 +780,6 @@
             document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ الزراعة والتركيز</span> <i class="fa-solid fa-play mr-1 text-xs"></i>';
             updatePomoDisplay();
         }
-
         renderForest();
 
         // ------------------ 3. ENGLISH LEARNING ENGINE ------------------
@@ -838,7 +900,7 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI UNIVERSAL ACADEMIC TUTOR & QUIZ ENGINE ------------------
+        // ------------------ 4. ZERO AI CHAT (PERSISTENT OFFLINE) ------------------
         const quizBank = [
             {
                 q: "ما هي أفضل استراتيجية علمية لتثبيت المعلومات المعقدة قبل الامتحان بفترة؟",
@@ -870,6 +932,36 @@
         ];
         let quizIdx = 0;
 
+        function loadSavedChat() {
+            const feed = document.getElementById('zero-chat-feed');
+            const savedHtml = localStorage.getItem('zp_chat_html');
+            if (savedHtml) {
+                feed.innerHTML = savedHtml;
+            } else {
+                feed.innerHTML = `
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
+                        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                            هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري 🎓.<br>
+                            محادثتنا تنحفظ بجهازك أوفلاين حتى لو انقطع النت! اسألني أي شي أو اختبر معلوماتك بكويز تفاعلي الآن.
+                        </div>
+                    </div>`;
+            }
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function saveChatOffline() {
+            const feed = document.getElementById('zero-chat-feed');
+            localStorage.setItem('zp_chat_html', feed.innerHTML);
+        }
+
+        function clearChatHistory() {
+            if (confirm("هل تريد مسح سجل المحادثة؟")) {
+                localStorage.removeItem('zp_chat_html');
+                loadSavedChat();
+            }
+        }
+
         function sendZeroChat() {
             const input = document.getElementById('zero-user-msg');
             const txt = input.value.trim();
@@ -884,6 +976,7 @@
                     </div>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
+            saveChatOffline();
 
             setTimeout(() => {
                 if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال') || txt.includes('امتحان')) {
@@ -898,6 +991,7 @@
                             </div>
                         </div>`;
                     feed.scrollTop = feed.scrollHeight;
+                    saveChatOffline();
                 }
             }, 600);
         }
@@ -939,6 +1033,7 @@
                     </div>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
+            saveChatOffline();
         }
 
         function answerMCQ(containerId, isCorrect, btn, exp) {
@@ -964,9 +1059,49 @@
                 fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
                 playChime(false);
             }
+            saveChatOffline();
+        }
+        loadSavedChat();
+
+        // ------------------ 5. SHARE PROGRESS MODAL ------------------
+        function openShareModal() {
+            document.getElementById('share-xp').innerText = `${userXP} XP`;
+            document.getElementById('share-trees').innerText = `${userForest.length} شجرة`;
+            const completedCount = tasks.filter(t => t.done).length;
+            document.getElementById('share-tasks').innerText = `${completedCount}`;
+            document.getElementById('share-modal').classList.remove('hidden');
         }
 
-        // ------------------ 5. SERVICE WORKER REGISTRATION (PWA OFFLINE) ------------------
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+
+        function getShareContent() {
+            const completedCount = tasks.filter(t => t.done).length;
+            return `🔥 إنجازي اليوم في منصة ZeroPlus الأكاديمية:\n⚡ نقاط الخبرة: ${userXP} XP\n🌲 غابة التركيز: ${userForest.length} شجرة خيالية\n✅ المهام المكتملة: ${completedCount} مهمة\n\nجرّب المنصة ونظّم دراستك الآن مجاناً! 🎓`;
+        }
+
+        function executeShare() {
+            const text = getShareContent();
+            if (navigator.share) {
+                navigator.share({
+                    title: 'إنجازي على تطبيق ZeroPlus 🇮🇶',
+                    text: text,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                copyShareText();
+            }
+        }
+
+        function copyShareText() {
+            const text = getShareContent();
+            navigator.clipboard.writeText(text).then(() => {
+                alert("تم نسخ بطاقة إنجازك! شاركها الآن على ستوري انستغرام أو تيليجرام 🚀");
+            });
+        }
+
+        // ------------------ 6. SERVICE WORKER REGISTRATION ------------------
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(err => {
