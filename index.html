@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
+    <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
-    <!-- Favicon & Icons (Forced Cache Bust) -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=11">
-    <link rel="apple-touch-icon" href="/icon.svg?v=11">
-    <link rel="shortcut icon" href="/icon.svg?v=11">
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=12">
+    <link rel="apple-touch-icon" href="/icon.svg?v=12">
+    <link rel="shortcut icon" href="/icon.svg?v=12">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=11">
+    <link rel="manifest" href="/manifest.json?v=12">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,7 +43,7 @@
                     },
                     boxShadow: {
                         'santorini': '0 8px 25px rgba(14, 47, 118, 0.08)',
-                        'santorini-btn': '0 6px 20px rgba(14, 47, 118, 0.28)'
+                        'santorini-btn': '0 6px 20px rgba(14, 47, 118, 0.25)'
                     }
                 }
             }
@@ -64,7 +64,7 @@
     
     <style>
         body { 
-            font-family: 'Cairo', sans-serif; 
+            font-family: 'Cairo', system-ui, -apple-system, sans-serif; 
             -webkit-tap-highlight-color: transparent; 
             padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
         }
@@ -77,7 +77,7 @@
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
-        /* فقاعات المحادثة */
+        /* فقاعات المحادثة الرسمية */
         .chat-user-bubble {
             background: #0E2F76 !important;
             color: #F5FEFF !important;
@@ -103,7 +103,7 @@
             padding: 1rem 1.25rem !important;
         }
 
-        /* كارت الكويز */
+        /* كارت الاختبار */
         html.dark .chat-quiz-card {
             background-color: #0f2038 !important;
             color: #F5FEFF !important;
@@ -148,20 +148,20 @@
                 Z+
             </div>
             <div>
-                <h3 class="font-black text-xl text-santorini-deepNavy dark:text-santorini-white">أهلاً بك في ZeroPlus 🎓</h3>
+                <h3 class="font-black text-xl text-santorini-deepNavy dark:text-santorini-white">منصة ZeroPlus الأكاديمية</h3>
                 <p class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1.5 leading-relaxed">
-                    منصتك الأكاديمية الشاملة. اكتب اسمك لنحفظ إنجازاتك وسجل دراستك بالسحابة.
+                    يرجى إدخال الاسم لتسجيل جلستك ومزامنة سجلك الدراسي في السحابة.
                 </p>
             </div>
             <div class="space-y-3">
-                <input id="onboard-user-name" type="text" placeholder="اكتب اسمك أو لقبك هنا..." 
+                <input id="onboard-user-name" type="text" placeholder="الاسم الثلاثي أو اللقب الأكاديمي..." 
                     onkeydown="if(event.key==='Enter') saveUserName()"
                     class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white font-bold text-center transition">
                 <button onclick="saveUserName()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
-                    <span>دخول وحفظ البيانات</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>حفظ وبدء الجلسة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                 </button>
             </div>
-            <span class="text-[10px] text-slate-400 block">لن يُطلب منك الاسم مرة ثانية على هذا الجهاز</span>
+            <span class="text-[10px] text-slate-400 block font-semibold">يتم التحقق من الحساب لمرة واحدة فقط لكل جهاز</span>
         </div>
     </div>
 
@@ -177,24 +177,24 @@
                     <h1 class="font-black text-lg leading-tight flex items-center gap-1 text-santorini-deepNavy dark:text-santorini-white" dir="ltr">
                         <span>Zero</span><span class="text-santorini-softBlue">Plus</span>
                     </h1>
-                    <span id="app-user-greeting" class="text-[11px] font-semibold text-slate-400 dark:text-santorini-softBlue">المنصة الأكاديمية الشاملة 🇮🇶</span>
+                    <span id="app-user-greeting" class="text-[11px] font-semibold text-slate-400 dark:text-santorini-softBlue">بوابة التعليم التخصصي والوزاري</span>
                 </div>
             </div>
 
             <!-- Header Quick Actions -->
             <div class="flex items-center gap-2.5">
-                <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="مشاركة الإنجاز">
+                <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="مشاركة التقرير">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
                 </button>
-                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تفعيل التنبيهات">
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-amber-500 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="التنبيهات">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
                 </button>
-                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder px-3.5 py-1.5 rounded-full text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder px-3.5 py-1.5 rounded-full text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-bolt text-amber-500 text-xs"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
-                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300" title="جاري الاتصال..."></div>
-                <button onclick="toggleTheme()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-santorini-deepNavy dark:text-amber-300 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تبديل الوضع">
+                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300" title="جاري الاتصال بالسحابة"></div>
+                <button onclick="toggleTheme()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-santorini-deepNavy dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تبديل المظهر">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
                 </button>
             </div>
@@ -206,45 +206,48 @@
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
+            <!-- Summary Banner -->
             <div class="gradient-santorini p-6 rounded-4xl text-white shadow-santorini flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold tracking-wider text-santorini-softBlue uppercase">إنجاز اليوم الأكاديمي</span>
-                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-1">0 من 0 مهام مكتملة!</h2>
-                    <p id="todo-motivational" class="text-xs text-slate-200 mt-1">رتّب محاضراتك واقرأ أول بأول لراحة بالك 📚</p>
+                    <span class="text-[11px] font-bold tracking-wider text-santorini-softBlue uppercase">الجدول الأكاديمي اليومي</span>
+                    <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-1">0 من 0 مهام مكتملة</h2>
+                    <p id="todo-motivational" class="text-xs text-slate-200 mt-1">متابعة مقررات المنهج والواجبات والمحاضرات النظرية والعملية</p>
                 </div>
                 <div id="todo-percent-badge" class="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20 shadow-inner">
                     0%
                 </div>
             </div>
 
+            <!-- Add Task Box -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-santorini">
-                <input id="todo-input" type="text" placeholder="شنو عندك مادة، فصل وزاري، أو امتحان باچر؟" 
+                <input id="todo-input" type="text" placeholder="عنوان المقرر، الفصل، أو رقم المحاضرة..." 
                     onkeydown="if(event.key==='Enter') addTodo()"
                     class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white">
                 <select id="todo-tag" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
-                    <option value="جامعي 🏛️">جامعي 🏛️</option>
-                    <option value="وزاري 🔥">وزاري 🔥</option>
-                    <option value="دراسة ومراجعة 📖">دراسة ومراجعة 📖</option>
-                    <option value="كويز وامتحان 📝">كويز وامتحان 📝</option>
-                    <option value="عملي ومختبر 🔬">عملي ومختبر 🔬</option>
+                    <option value="مقرر جامعي">مقرر جامعي</option>
+                    <option value="منهج وزاري">منهج وزاري</option>
+                    <option value="مراجعة دورية">مراجعة دورية</option>
+                    <option value="اختبار وتقييم">اختبار وتقييم</option>
+                    <option value="مختبر وتطبيق عملي">مختبر وتطبيق عملي</option>
                 </select>
                 <select id="todo-prio" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
-                    <option value="high">مهم كلش 🔥</option>
-                    <option value="normal">اعتيادي 🌱</option>
+                    <option value="high">أولوية قصوى</option>
+                    <option value="normal">أولوية اعتيادية</option>
                 </select>
-                <button onclick="addTodo()" class="w-full sm:w-auto bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-santorini-btn transition active:scale-95">
-                    إضافة +
+                <button onclick="addTodo()" class="w-full sm:w-auto bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i> <span>إدراج</span>
                 </button>
             </div>
 
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO & STATS ================= -->
+        <!-- ================= SECTION 2: POMODORO & SESSIONS ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
+            <!-- Stats Metric Grid -->
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
-                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">التركيز التراكمي</span>
+                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">إجمالي وقت التركيز</span>
                     <span id="stat-total-mins" class="text-base sm:text-xl font-black text-santorini-deepNavy dark:text-santorini-white mt-1 block">0 دقيقة</span>
                 </div>
                 <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
@@ -252,19 +255,21 @@
                     <span id="pomo-count-stat" class="text-base sm:text-xl font-black text-santorini-deepNavy dark:text-santorini-white mt-1 block">0 جلسات</span>
                 </div>
                 <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
-                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">أشجار الغابة</span>
-                    <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-1 block">0 شجرة</span>
+                    <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">الجلسات المكتملة</span>
+                    <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-1 block">0 جلسة</span>
                 </div>
             </div>
 
-            <!-- Timer Card -->
+            <!-- Spacious Uncramped Timer Card (Clean Digital Dial) -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-santorini space-y-6">
+                <!-- Mode Switcher -->
                 <div class="flex justify-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
-                    <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm">تركيز (25د)</button>
-                    <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5د)</button>
-                    <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15د)</button>
+                    <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm">تركيز (25 د)</button>
+                    <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5 د)</button>
+                    <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15 د)</button>
                 </div>
 
+                <!-- Clean Breathing Circle (Only Time and Icon Inside) -->
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-santorini-darkBase" stroke-width="4.5"></circle>
@@ -272,72 +277,75 @@
                     </svg>
 
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div id="pomo-tree-preview" class="text-4xl mb-2 transition-all duration-500">
-                            🌱
+                        <div id="pomo-tree-preview" class="w-12 h-12 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center text-lg mb-2 border border-slate-200 dark:border-santorini-darkBorder">
+                            <i class="fa-solid fa-hourglass-half"></i>
                         </div>
                         <span id="pomo-display" class="text-5xl sm:text-6xl font-black tracking-tight text-santorini-deepNavy dark:text-santorini-white">25:00</span>
                     </div>
                 </div>
 
-                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto">
-                    <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold block">
-                        وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)
+                <!-- Status Outside Circle -->
+                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold">
+                        جلسة تركيز دراسي (25 دقيقة)
                     </span>
                 </div>
 
+                <!-- Actions -->
                 <div class="flex justify-center gap-3 pt-2">
-                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black px-10 py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
-                        <span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>
+                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black px-10 py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95 flex items-center gap-2">
+                        <span>بدء المؤقت</span> <i class="fa-solid fa-play text-xs"></i>
                     </button>
-                    <button onclick="resetPomo()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold hover:border-santorini-softBlue transition active:scale-95" title="تصفير">
+                    <button onclick="resetPomo()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold hover:border-santorini-softBlue transition active:scale-95" title="إعادة ضبط">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Forest Garden Grid -->
+            <!-- Focus Session Log -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-seedling"></i>
+                        <div class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center text-sm font-bold border border-slate-200 dark:border-santorini-darkBorder">
+                            <i class="fa-solid fa-chart-simple"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">غابة التركيز 🌲</h3>
-                            <p class="text-[11px] text-slate-400">تنمو غابتك مع كل جلسة تركيز تنجزها بدون تشتت</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">سجل الجلسات الأكاديمية</h3>
+                            <p class="text-[11px] text-slate-400">توثيق فترات التركيز المستمرة خلال اليوم</p>
                         </div>
                     </div>
-                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 transition font-bold">إعادة تهيئة</button>
+                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 transition font-bold">مسح السجل</button>
                 </div>
-                <div id="forest-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2"></div>
+                <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2"></div>
             </div>
         </section>
 
-        <!-- ================= SECTION 3: ENGLISH ================= -->
+        <!-- ================= SECTION 3: ACADEMIC TERMINOLOGY ================= -->
         <section id="tab-english" class="hidden space-y-4">
             <div class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm">المستوى A1 (محادثة وأساسيات)</button>
-                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
-                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
+                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm">المستوى التأسيسي (General)</button>
+                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى الأكاديمي (Collegiate)</button>
+                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى التخصصي (Scientific)</button>
             </div>
 
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-santorini-deepNavy dark:text-santorini-softBlue bg-santorini-lightBg dark:bg-santorini-darkBase px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">اكتب الترجمة بالعربي</span>
+                    <span class="text-santorini-deepNavy dark:text-santorini-softBlue bg-santorini-lightBg dark:bg-santorini-darkBase px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">ترجمة المصطلح العلمي</span>
                     <span id="eng-counter" class="text-slate-400">سؤال 1 من 3</span>
                 </div>
 
                 <div class="bg-santorini-lightBg dark:bg-santorini-darkBase p-5 rounded-3xl border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-between">
                     <div>
                         <h3 id="eng-prompt-text" class="text-lg font-black text-santorini-deepNavy dark:text-santorini-white">I have to study for the final exam</h3>
-                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1 font-semibold">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
+                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1 font-semibold">المعنى المقارب: (يجب أن أدرس للاختبار النهائي)</p>
                     </div>
-                    <button onclick="speakEngSentence()" class="w-11 h-11 rounded-2xl bg-white dark:bg-santorini-darkCard text-santorini-deepNavy dark:text-santorini-softBlue border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition" title="استمع للنطق">
+                    <button onclick="speakEngSentence()" class="w-11 h-11 rounded-2xl bg-white dark:bg-santorini-darkCard text-santorini-deepNavy dark:text-santorini-softBlue border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition" title="النطق الصوتي">
                         <i class="fa-solid fa-volume-high"></i>
                     </button>
                 </div>
 
-                <input id="eng-user-input" type="text" placeholder="اكتب إجابتك هنا أو اختر الكلمات بالأسفل..." 
+                <input id="eng-user-input" type="text" placeholder="اكتب صياغة الترجمة أو حدد الكلمات..." 
                     onkeydown="if(event.key==='Enter') checkEngAnswer()"
                     class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition font-semibold">
 
@@ -349,63 +357,65 @@
                         تخطي <i class="fa-solid fa-forward mr-1"></i>
                     </button>
                     <button onclick="checkEngAnswer()" class="flex-1 bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
-                        تحقق من الإجابة ✅
+                        تحقق من الصياغة
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI ================= -->
+        <!-- ================= SECTION 4: ZERO STUDY CONSOLE ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
+            <!-- Lecture Source Upload Card -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 sm:p-5 rounded-4xl shadow-santorini space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
-                            <i class="fa-solid fa-book-medical"></i>
+                            <i class="fa-solid fa-book-bookmark"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز الأكاديمي 📚</h3>
-                            <p class="text-[11px] text-slate-400">ارفع ملف الملزمة ليصنعلك زيرو كويز مركز منها</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار</h3>
+                            <p class="text-[11px] text-slate-400">تحميل المحاضرة لاستخراج الأسئلة النموذجية ومراجعة المفاهيم</p>
                         </div>
                     </div>
-                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">
-                        ⚡ محرك زيرو نشط
+                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span>المحرك التحليلي جاهز</span>
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
                     <label class="cursor-pointer flex-1 bg-santorini-lightBg dark:bg-santorini-darkBase border border-dashed border-slate-300 dark:border-santorini-darkBorder hover:border-santorini-softBlue rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
-                        <i class="fa-solid fa-arrow-up-from-bracket text-santorini-deepNavy dark:text-santorini-softBlue"></i>
-                        <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
+                        <i class="fa-solid fa-file-arrow-up text-santorini-deepNavy dark:text-santorini-softBlue"></i>
+                        <span id="upload-file-status">تحميل ملف المحاضرة (صيغة PDF أو نص)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
                     <button onclick="togglePasteArea()" class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-santorini-softBlue transition shadow-sm">
-                        أو الصق نص ✍️
+                        إدخال نصي مباشر
                     </button>
                 </div>
 
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
 
+                <!-- Slide Scope Selector -->
                 <div id="slide-scope-box" class="hidden bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-3xl space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold">
-                        <span class="text-santorini-deepNavy dark:text-santorini-softBlue"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
+                        <span class="text-santorini-deepNavy dark:text-santorini-softBlue"><i class="fa-solid fa-sliders ml-1"></i> نطاق السلايدات المستهدفة:</span>
                         <span id="total-slides-count" class="text-slate-400">إجمالي السلايدات: 0</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="all" checked onchange="toggleScopeInputs()">
-                            <span>كل السلايدات 📑</span>
+                            <span>كامل الملف</span>
                         </label>
                         <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="single" onchange="toggleScopeInputs()">
-                            <span>سلايد محدد 🎯</span>
+                            <span>سلايد محدد</span>
                         </label>
                         <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="radio" name="slide_scope" value="range" onchange="toggleScopeInputs()">
-                            <span>نطاق معين 🔍</span>
+                            <span>نطاق محدد</span>
                         </label>
                     </div>
 
@@ -423,12 +433,12 @@
                 </div>
 
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
-                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> الملزمة جاهزة!</span>
-                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">مسح</button>
+                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج للاختبار</span>
+                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
                 </div>
             </div>
 
-            <!-- Chat Console -->
+            <!-- Study Workspace Console -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl shadow-santorini flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 <div class="p-4 border-b border-slate-100 dark:border-santorini-darkBorder flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-santorini-darkBase/40">
                     <div class="flex items-center gap-3">
@@ -436,17 +446,17 @@
                             Z+
                         </div>
                         <div>
-                            <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                                زيرو الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                المساعد الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </h4>
-                            <p class="text-[11px] text-slate-400">توليد كويزات ومساعد أكاديمي فوري</p>
+                            <p class="text-[11px] text-slate-400">توليد اختبارات معيارية واستفسارات علمية فورية</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="requestAiQuizFromLecture()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
-                            + اصنع كويز 📝
+                        <button onclick="requestAiQuizFromLecture()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-pen text-xs"></i> <span>توليد سؤال MCQ</span>
                         </button>
-                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="مسح المحادثة">
+                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="إفراغ المحادثة">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
@@ -455,7 +465,7 @@
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
 
                 <div class="p-3 border-t border-slate-100 dark:border-santorini-darkBorder bg-slate-50/80 dark:bg-santorini-darkBase/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي فكرة أو اطلب كويز..." 
+                    <input id="zero-user-msg" type="text" placeholder="اكتب استفسارك العلمي أو اطلب شرح مفهوم..." 
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
                         class="flex-1 bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
                     <button onclick="sendZeroChat()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-santorini-btn hover:opacity-95 transition active:scale-95 shrink-0">
@@ -468,7 +478,7 @@
 
     </main>
 
-    <!-- ================= MODAL: SHARE ACHIEVEMENT CARD ================= -->
+    <!-- ================= MODAL: SHARE RECORD ================= -->
     <div id="share-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
             <div id="share-card" class="gradient-santorini p-6 rounded-3xl text-white shadow-santorini space-y-3 text-center">
@@ -476,8 +486,8 @@
                     Z+
                 </div>
                 <div>
-                    <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
-                    <p id="share-card-user" class="text-xs text-santorini-softBlue">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
+                    <h3 class="font-black text-xl">تقرير الإنجاز الأكاديمي</h3>
+                    <p id="share-card-user" class="text-xs text-santorini-softBlue">سجل الطالب الجامعي</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
@@ -486,8 +496,8 @@
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">أشجار الغابة</span>
-                        <span id="share-trees" class="text-emerald-300 font-black text-sm">0 شجرة</span>
+                        <span class="block text-white/70 text-[10px]">الجلسات المكتملة</span>
+                        <span id="share-trees" class="text-emerald-300 font-black text-sm">0 جلسة</span>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
@@ -498,8 +508,8 @@
             </div>
 
             <div class="flex gap-2">
-                <button onclick="executeShare()" class="flex-1 bg-santorini-deepNavy text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-1.5 shadow-santorini-btn">
-                    <i class="fa-solid fa-share-nodes"></i> <span>مشاركة فورية</span>
+                <button onclick="executeShare()" class="flex-1 bg-santorini-deepNavy text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-2 shadow-santorini-btn">
+                    <i class="fa-solid fa-share-nodes text-xs"></i> <span>مشاركة التقرير</span>
                 </button>
                 <button onclick="copyShareText()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-santorini-softBlue transition">
                     نسخ النص
@@ -509,7 +519,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Dock (iOS / Android Safe) -->
+    <!-- Bottom Navigation Dock -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-santorini-darkBase/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-santorini-darkBorder pt-2.5 ios-nav-safe z-40 shadow-santorini">
         <div class="max-w-md mx-auto flex justify-around items-center px-4">
             <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
@@ -518,21 +528,26 @@
             </button>
             <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i>
-                <span>بومودورو</span>
+                <span>التركيز</span>
             </button>
             <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-santorini-deepNavy dark:hover:text-santorini-softBlue transition">
-                <i class="fa-solid fa-earth-americas text-base mb-1"></i>
-                <span>الإنكليزي</span>
+                <i class="fa-solid fa-language text-base mb-1"></i>
+                <span>المصطلحات</span>
             </button>
             <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-santorini-deepNavy dark:text-santorini-softBlue font-black text-xs transition">
-                <i class="fa-solid fa-robot text-base mb-1"></i>
-                <span>زيرو AI</span>
+                <i class="fa-solid fa-graduation-cap text-base mb-1"></i>
+                <span>المساعد</span>
             </button>
         </div>
     </nav>
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
+        if (localStorage.getItem('zp_clean_professional_v1') !== 'true') {
+            localStorage.removeItem('zp_chat_html');
+            localStorage.setItem('zp_clean_professional_v1', 'true');
+        }
+
         // ------------------ ONBOARDING & USER IDENTITY ------------------
         let currentUserName = localStorage.getItem('zp_username') || '';
 
@@ -549,7 +564,7 @@
             const input = document.getElementById('onboard-user-name');
             const val = input.value.trim();
             if (!val) {
-                alert("يرجى كتابة اسمك أو لقبك للاستمرار.");
+                alert("يرجى إدخال الاسم الأكاديمي للاستمرار.");
                 return;
             }
 
@@ -566,9 +581,9 @@
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
-                if (greeting) greeting.innerText = `أهلاً بك، ${currentUserName} 🇮🇶`;
+                if (greeting) greeting.innerText = `مرحباً بك، ${currentUserName}`;
                 const shareGreeting = document.getElementById('share-card-user');
-                if (shareGreeting) shareGreeting.innerText = `الطالب المتميز: ${currentUserName}`;
+                if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName}`;
             }
         }
 
@@ -598,14 +613,14 @@
             const ind = document.getElementById('cloud-indicator');
             if (!ind) return;
             if (status === 'online') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50';
-                ind.title = 'متصل بقاعدة البيانات وتتم المزامنة ✅';
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50';
+                ind.title = 'متصل بالسحابة وتتم المزامنة';
             } else if (status === 'syncing') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-                ind.title = 'جاري المزامنة... ⏳';
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping';
+                ind.title = 'جاري مزامنة البيانات...';
             } else {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600';
-                ind.title = 'يعمل محلياً (Offline)';
+                ind.title = 'العمل في وضع عدم الاتصال (Offline)';
             }
         }
 
@@ -632,6 +647,7 @@
                 if (!error) {
                     updateCloudIndicator('online');
                 } else {
+                    console.error('Supabase Sync Error:', error);
                     updateCloudIndicator('offline');
                 }
             } catch (e) {
@@ -738,26 +754,26 @@
                     osc.frequency.setValueAtTime(300, ctx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
                 }
-                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.3);
             } catch(e){}
         }
 
-        // ------------------ PUSH NOTIFICATIONS ------------------
+        // ------------------ NOTIFICATIONS ------------------
         function requestNotificationPermission() {
             if (!("Notification" in window)) {
-                alert("متصفحك لا يدعم الإشعارات.");
+                alert("متصفحك لا يدعم نظام التنبيهات المباشرة.");
                 return;
             }
             Notification.requestPermission().then(permission => {
                 const icon = document.getElementById('notify-icon');
                 if (permission === "granted") {
-                    icon.className = 'fa-solid fa-bell text-xs text-emerald-400';
-                    sendPushNotice("تم تفعيل تنبيهات ZeroPlus بنجاح! 🔔", "سننبهك عند اكتمال جلسات الدراسة والتركيز.");
+                    icon.className = 'fa-solid fa-bell text-xs text-emerald-500';
+                    sendPushNotice("تنبيهات ZeroPlus نشطة", "سيتم إشعارك فور اكتمال الجلسات المقررة.");
                 } else {
-                    icon.className = 'fa-solid fa-bell-slash text-xs text-rose-400';
+                    icon.className = 'fa-solid fa-bell-slash text-xs text-rose-500';
                 }
             });
         }
@@ -765,7 +781,7 @@
         function sendPushNotice(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, { body: body, icon: "/icon.svg?v=11" });
+                    new Notification(title, { body: body, icon: "/icon.svg?v=12" });
                 } catch(e){}
             }
         }
@@ -781,7 +797,7 @@
             if (tasks.length === 0) {
                 list.innerHTML = `
                     <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">
-                        ما عندك مهام حالياً، اكتب أول مادة أو فصل واضغط إضافة مهام ✨
+                        لا توجد مهام مدرجة في جدولك حالياً، أدخل عنوان المقرر أعلاه للبدء.
                     </div>`;
             } else {
                 tasks.forEach(t => {
@@ -797,12 +813,12 @@
                                     <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${t.title}</p>
                                     <div class="flex items-center gap-2 mt-0.5">
                                         <span class="text-[11px] text-santorini-deepNavy dark:text-santorini-softBlue font-bold">${t.tag}</span>
-                                        ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2 py-0.2 rounded-full font-bold">مهم كلش 🔥</span>' : ''}
+                                        ${isHigh ? '<span class="text-[10px] bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full font-bold">أولوية قصوى</span>' : ''}
                                     </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                ${t.done ? '<span class="text-xs text-emerald-500 font-bold">تمت ✅</span>' : ''}
+                                ${t.done ? '<span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">مكتمل</span>' : ''}
                                 <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2 transition"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>`;
@@ -811,7 +827,7 @@
 
             const total = tasks.length;
             const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
-            document.getElementById('todo-summary-text').innerText = `${completed} من ${total} مهام ومحاضرات مكتملة!`;
+            document.getElementById('todo-summary-text').innerText = `${completed} من ${total} مهام مكتملة`;
             document.getElementById('todo-percent-badge').innerText = `${pct}%`;
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
@@ -865,56 +881,47 @@
         let pomoInterval = null;
         let pomoCompletedCount = 0;
 
-        const fantasyTreeTypes = {
-            25: { name: "ساكورا سحرية", icon: "🌸" },
-            15: { name: "شجرة الزمرد", icon: "🌲" },
-            5: { name: "برعم الكريستال", icon: "🌱" }
-        };
-
         let userForest = JSON.parse(localStorage.getItem('zp_forest') || '[]');
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
             grid.innerHTML = '';
-            document.getElementById('stat-tree-count').innerText = `${userForest.length} شجرة`;
+            document.getElementById('stat-tree-count').innerText = `${userForest.length} جلسة`;
 
             if (userForest.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full py-6 text-center text-xs text-slate-400">
-                        غابتك فارغة حالياً.. شغّل مؤقت التركيز وازرع أول شجرة خيالية! 🌿
+                        لا توجد جلسات دراسية مكتملة مسجلة في هذا اليوم.
                     </div>`;
                 return;
             }
 
-            userForest.forEach(tree => {
+            userForest.forEach(session => {
                 grid.innerHTML += `
                     <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
-                        <span class="text-2xl mb-1">${tree.icon}</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-santorini-white truncate w-full">${tree.name}</span>
-                        <span class="text-[9px] text-slate-400 font-semibold mt-0.5">${tree.time}</span>
+                        <span class="text-sm font-black text-santorini-deepNavy dark:text-santorini-softBlue mb-0.5"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> ${session.name}</span>
+                        <span class="text-[10px] text-slate-400 font-semibold">${session.time}</span>
                     </div>`;
             });
         }
 
-        function plantTree(mins) {
-            const treeMeta = fantasyTreeTypes[mins] || fantasyTreeTypes[25];
+        function logCompletedSession(mins) {
             const now = new Date();
-            const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
-            const newTree = {
+            const newSession = {
                 id: Date.now(),
-                name: treeMeta.name,
-                icon: treeMeta.icon,
+                name: `جلسة ${mins} دقيقة`,
                 time: timeStr
             };
 
-            userForest.unshift(newTree);
+            userForest.unshift(newSession);
             localStorage.setItem('zp_forest', JSON.stringify(userForest));
             renderForest();
         }
 
         function clearForestConfirmation() {
-            if (confirm("هل تريد تفريغ وإعادة زراعة غابتك من جديد؟")) {
+            if (confirm("هل ترغب في إعادة تهيئة سجل الجلسات المكتملة؟")) {
                 userForest = [];
                 localStorage.setItem('zp_forest', JSON.stringify([]));
                 renderForest();
@@ -927,18 +934,6 @@
             document.getElementById('pomo-display').innerText = `${m}:${s}`;
             const offset = 276 - (pomoRemaining / pomoDuration) * 276;
             document.getElementById('pomo-circle').style.strokeDashoffset = offset;
-
-            const progress = (pomoDuration - pomoRemaining) / pomoDuration;
-            const treePreview = document.getElementById('pomo-tree-preview');
-            const targetIcon = (fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25]).icon;
-
-            if (progress < 0.3) {
-                treePreview.innerText = "🌱";
-            } else if (progress < 0.7) {
-                treePreview.innerText = "🌿";
-            } else {
-                treePreview.innerText = targetIcon;
-            }
         }
 
         function setPomoMode(mins, msg, btn) {
@@ -948,7 +943,7 @@
             pomoDuration = mins * 60;
             pomoRemaining = pomoDuration;
             document.getElementById('pomo-status').innerText = msg;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             document.querySelectorAll('.pomo-mode-btn').forEach(b => {
                 b.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300';
             });
@@ -978,15 +973,14 @@
                         localStorage.setItem('zp_focus_mins', totalFocusMins);
                         document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
 
-                        plantTree(currentPomoMins);
-                        const treeInfo = fantasyTreeTypes[currentPomoMins] || fantasyTreeTypes[25];
+                        logCompletedSession(currentPomoMins);
 
                         playChime(true);
                         awardXP(30);
                         triggerConfetti();
 
-                        sendPushNotice("ألف مبروك بطل! 🍅🎉", `اكتملت جلسة التركيز وزرعت [ ${treeInfo.name} ${treeInfo.icon} ] في غابتك.`);
-                        alert(`🎉 مبروك بطل! كملت الجلسة بنجاح وزرعت [ ${treeInfo.name} ${treeInfo.icon} ]! (+30 XP)`);
+                        sendPushNotice("اكتملت الجلسة الأكاديمية", `تم توثيق ${currentPomoMins} دقيقة تركيز في سجلك.`);
+                        alert(`تم إنهاء جلسة التركيز بنجاح وتوثيقها (+30 XP)`);
                         resetPomo();
                     }
                 }, 1000);
@@ -997,41 +991,41 @@
             clearInterval(pomoInterval);
             pomoInterval = null;
             pomoRemaining = pomoDuration;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            document.getElementById('pomo-play-btn').innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
         renderForest();
 
-        // ------------------ 3. ENGLISH LEARNING ENGINE ------------------
+        // ------------------ 3. TERMINOLOGY ENGINE ------------------
         const englishLessons = {
             A1: [
                 {
                     prompt: "I have to study for the final exam",
-                    hint: "لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار",
-                    answers: ["لازم اقرا للامتحان النهائي", "لازم اقرا للامتحان", "يجب ان ادرس للاختبار النهائي", "اريد اقرا للامتحان"],
-                    chips: ["لازم", "أقرا", "للامتحان", "النهائي", "اليوم", "باچر"]
+                    hint: "صيغة الوجوب في الامتحانات النهائية",
+                    answers: ["يجب ان ادرس للاختبار النهائي", "يجب ان ادرس للامتحان النهائي", "لازم اقرا للامتحان النهائي"],
+                    chips: ["يجب", "أن", "أدرس", "للاختبار", "النهائي", "اليوم"]
                 },
                 {
                     prompt: "Consistency is the key to academic success",
-                    hint: "الاستمرارية هي مفتاح النجاح الأكاديمي",
-                    answers: ["الاستمرارية هي مفتاح النجاح الاكاديمي", "الاستمرار سر النجاح", "الاستمرارية مفتاح النجاح"],
-                    chips: ["الاستمرارية", "هي", "مفتاح", "النجاح", "الأكاديمي", "الدائم"]
+                    hint: "قاعدة الاستمرارية والأداء الأكاديمي",
+                    answers: ["الاستمرارية هي مفتاح النجاح الاكاديمي", "الاستمرارية مفتاح النجاح الاكاديمي"],
+                    chips: ["الاستمرارية", "هي", "مفتاح", "النجاح", "الأكاديمي"]
                 }
             ],
             A2: [
                 {
                     prompt: "If you study hard, you will pass the exam",
-                    hint: "إذا تقرا زين راح تنجح بالامتحان (قاعدة If الشرطية)",
-                    answers: ["اذا تقرا زين راح تنجح بالامتحان", "اذا درست بجد سوف تنجح", "لو تقرا تنجح"],
-                    chips: ["إذا", "تقرا", "زين", "راح", "تنجح", "بالامتحان"]
+                    hint: "الشرطية الأولى: الربط بين الجهد والاجتياز",
+                    answers: ["اذا درست بجد سوف تنجح في الامتحان", "اذا درست بجد ستجتاز الاختبار"],
+                    chips: ["إذا", "درست", "بجد", "سوف", "تجتاز", "الاختبار"]
                 }
             ],
             B1: [
                 {
                     prompt: "Active recall enhances long-term memory retention",
-                    hint: "الاسترجاع النشط يعزز استبقاء الذاكرة طويلة المدى",
-                    answers: ["الاسترجاع النشط يعزز استبقاء الذاكرة", "الاسترجاع النشط يقوي الذاكرة", "يعزز استبقاء الذاكرة"],
-                    chips: ["الاسترجاع", "النشط", "يعزز", "استبقاء", "الذاكرة", "طويلة المدى"]
+                    hint: "الاسترجاع النشط وتثبيت الذاكرة طويلة الأمد",
+                    answers: ["الاسترجاع النشط يعزز استبقاء الذاكرة طويلة الامد", "الاسترجاع النشط يثبت الذاكرة"],
+                    chips: ["الاسترجاع", "النشط", "يعزز", "استبقاء", "الذاكرة", "طويلة الأمد"]
                 }
             ]
         };
@@ -1053,9 +1047,9 @@
             const list = englishLessons[currentEngLvl];
             const q = list[currentEngIdx % list.length];
             document.getElementById('eng-prompt-text').innerText = q.prompt;
-            document.getElementById('eng-hint-text').innerText = `تلميح: (${q.hint})`;
+            document.getElementById('eng-hint-text').innerText = `السياق: (${q.hint})`;
             document.getElementById('eng-user-input').value = '';
-            document.getElementById('eng-counter').innerText = `سؤال ${(currentEngIdx % list.length) + 1} من ${list.length}`;
+            document.getElementById('eng-counter').innerText = `مصطلح ${(currentEngIdx % list.length) + 1} من ${list.length}`;
             
             const fb = document.getElementById('eng-feedback-box');
             fb.classList.add('hidden');
@@ -1100,11 +1094,11 @@
                 awardXP(15);
                 triggerConfetti();
                 fb.className = 'p-4 rounded-2xl text-xs font-bold flex items-center gap-2 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-                fb.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>عاشت إيدك! إجابة صحيحة ومضبوطة (+15 XP) 🎉</span>';
+                fb.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>الصياغة دقيقة ومطابقة للمفهوم العلمي (+15 XP)</span>';
             } else {
                 playChime(false);
                 fb.className = 'p-4 rounded-2xl text-xs font-bold flex items-center gap-2 bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/30';
-                fb.innerHTML = `<i class="fa-solid fa-circle-xmark"></i><span>قريب كلش! الإجابة المعتمدة: <strong>${q.answers[0]}</strong></span>`;
+                fb.innerHTML = `<i class="fa-solid fa-circle-xmark"></i><span>الصياغة المعتمدة: <strong>${q.answers[0]}</strong></span>`;
             }
         }
 
@@ -1123,7 +1117,7 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI ENGINE ------------------
+        // ------------------ 4. STUDY CONSOLE ENGINE ------------------
         let pdfSlidesData = JSON.parse(localStorage.getItem('zp_slides_array') || "[]");
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
@@ -1135,10 +1129,10 @@
             if (currentLectureText && currentLectureText.length > 20) {
                 const pagesCount = pdfSlidesData.length || 1;
                 document.getElementById('lecture-loaded-badge').classList.remove('hidden');
-                document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> الملزمة محفوظة (${pagesCount} سلايد) وجاهزة للكويز!`;
+                document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج (${pagesCount} سلايد)`;
                 if (pdfSlidesData.length > 1) {
                     document.getElementById('slide-scope-box').classList.remove('hidden');
-                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdfSlidesData.length} سلايد`;
+                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdfSlidesData.length}`;
                     document.getElementById('single-slide-num').max = pdfSlidesData.length;
                     document.getElementById('range-slide-to').max = pdfSlidesData.length;
                 }
@@ -1161,7 +1155,7 @@
             if (!file) return;
 
             const status = document.getElementById('upload-file-status');
-            status.innerText = `جاري قراءة: ${file.name}... ⏳`;
+            status.innerText = `جاري استخراج محتوى الملف: ${file.name}...`;
 
             try {
                 pdfSlidesData = [];
@@ -1181,7 +1175,7 @@
                     localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
 
                     document.getElementById('slide-scope-box').classList.remove('hidden');
-                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages} سلايد`;
+                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages}`;
                     document.getElementById('single-slide-num').max = pdf.numPages;
                     document.getElementById('range-slide-to').max = pdf.numPages;
                     document.getElementById('range-slide-to').value = Math.min(5, pdf.numPages);
@@ -1196,20 +1190,20 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("تعذر قراءة الملف، جرب لصق النص يدوياً.");
-                status.innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
+                alert("تعذر قراءة محتوى الملف، يرجى لصق النص يدوياً.");
+                status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             }
         }
 
-        function setLectureContent(text, sourceName = "ملزمة", pages = 1) {
+        function setLectureContent(text, sourceName = "المقرر", pages = 1) {
             currentLectureText = text.trim();
             localStorage.setItem('zp_active_lecture_text', currentLectureText);
             document.getElementById('lecture-paste-container').classList.add('hidden');
-            document.getElementById('upload-file-status').innerText = `تم رفع: ${sourceName} ✅`;
+            document.getElementById('upload-file-status').innerText = `المصدر المعتمد: ${sourceName}`;
             
             const badge = document.getElementById('lecture-loaded-badge');
             badge.classList.remove('hidden');
-            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> جاهزة! (${pages} سلايد).`;
+            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> جاهز (${pages} سلايد)`;
         }
 
         function resetLectureContext() {
@@ -1221,9 +1215,8 @@
             localStorage.removeItem('zp_seen_questions');
             document.getElementById('lecture-loaded-badge').classList.add('hidden');
             document.getElementById('slide-scope-box').classList.add('hidden');
-            document.getElementById('upload-file-status').innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
+            document.getElementById('upload-file-status').innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             document.getElementById('lecture-text-content').value = "";
-            alert("تم إفراغ محتوى الملزمة.");
         }
 
         function getScopedLectureContent() {
@@ -1276,7 +1269,6 @@
             try {
                 const activeModel = await discoverActiveGroqModel();
                 if (activeModel) {
-                    document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: Groq (${activeModel.substring(0,12)})`;
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST",
                         headers: {
@@ -1289,7 +1281,7 @@
                                 { role: "system", content: systemInstruction },
                                 { role: "user", content: prompt }
                             ],
-                            temperature: 0.3,
+                            temperature: 0.25,
                             max_tokens: 600
                         })
                     });
@@ -1303,7 +1295,6 @@
             } catch (e) {}
 
             try {
-                document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: السيرفر السحابي`;
                 const fullQuery = `${systemInstruction}\n\n${prompt}`.substring(0, 1200);
                 const url = `https://text.pollinations.ai/${encodeURIComponent(fullQuery)}?model=openai&seed=${Date.now()}`;
                 const res = await fetch(url);
@@ -1317,8 +1308,6 @@
         }
 
         function generateSmartLocalQuizFromText(text) {
-            document.getElementById('ai-active-engine-badge').innerText = `⚡ محرك زيرو المحلي`;
-            
             const clean = text.replace(/\[Slide \d+\]:/g, '').replace(/\s+/g, ' ').trim();
             const sentences = clean.split(/[.!?\n]+/).map(s => s.trim()).filter(s => s.length > 35 && s.length < 220);
             
@@ -1332,13 +1321,13 @@
             const blankedSentence = targetSentence.replace(keyWord, "______");
 
             const allLongWords = clean.split(/\s+/).map(w => w.replace(/[^a-zA-Z\u0600-\u06FF]/g, '')).filter(w => w.length > 5 && w.toLowerCase() !== keyWord.toLowerCase());
-            const distractor1 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Normal Baseline";
-            const distractor2 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Secondary Factor";
+            const distractor1 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Baseline Concept";
+            const distractor2 = allLongWords[Math.floor(Math.random() * allLongWords.length)] || "Secondary Parameter";
 
             const rawOpts = [
                 { text: keyWord, correct: true },
                 { text: distractor1, correct: false },
-                { text: distractor2 === distractor1 ? "Alternative Process" : distractor2, correct: false }
+                { text: distractor2 === distractor1 ? "Alternative Parameter" : distractor2, correct: false }
             ].sort(() => Math.random() - 0.5);
 
             const letters = ["A", "B", "C"];
@@ -1348,18 +1337,17 @@
             }));
 
             return {
-                q: `أكمل الفراغ العلمي التالي من نص الملزمة:\n"${blankedSentence}"`,
+                q: `اختر الخيار الأكاديمي الدقيق لإكمال العبارة التالية من واقع المنهج:\n"${blankedSentence}"`,
                 options: formattedOptions,
-                explanation: `النص الكامل المعتمد في الملزمة هو: "${targetSentence}"`
+                explanation: `النص المعتمد في السلايد: "${targetSentence}"`
             };
         }
 
         function generateSmartLocalChatReply(userMsg, lectureContext) {
-            document.getElementById('ai-active-engine-badge').innerText = `⚡ محرك زيرو المحلي`;
             const msg = userMsg.trim().toLowerCase();
 
             if (msg.includes('موجود') || msg.includes('هلو') || msg.includes('مرحبا') || msg.includes('سلام')) {
-                return `أهلاً بيك يا ${currentUserName || 'بطل'}! أني زيرو المساعد الأكاديمي وياك وجاهز 100% ⚡🎓.<br>${lectureContext ? 'ملزمتك مرفوعة وجاهزة، اضغط على <strong>+ اصنع كويز</strong> أو اسألني عن أي نقطة!' : 'ارفع ملزمتك بصيغة PDF فوق لنبدأ الدراسة!'}`;
+                return `مرحباً بك زميلنا ${currentUserName || 'المحترم'}. المنصة مهيأة لمساعدتك أكاديمياً، يمكنك رفع ملف المحاضرة والبدء باختبارات الـ MCQ أو الاستفسار عن أي جزئية علمية.`;
             }
 
             if (lectureContext && lectureContext.length > 30) {
@@ -1368,12 +1356,12 @@
                 const matched = sentences.filter(s => keywords.some(k => s.toLowerCase().includes(k)));
                 
                 if (matched.length > 0) {
-                    return `حسب ما مذكور بالسلايدات المحددة 📚:<br><br>• "${matched.slice(0, 2).join('. ')}"`;
+                    return `المعلومات الموثقة في السلايدات المحددة:\n\n• "${matched.slice(0, 2).join('. ')}"`;
                 }
-                return `ملخص أهم النقاط بالسلايدات المحددة 💡:<br><br>• "${sentences.slice(0, 2).join('<br>• ')}"`;
+                return `خلاصة النقاط الواردة في السلايدات المختارة:\n\n• "${sentences.slice(0, 2).join('\n• ')}"`;
             }
 
-            return `عاشت إيدك يا ${currentUserName || 'بطل'}! 💡 حتى أعطيك جواب دقيق من منهجك، ارفع ملف الملزمة فوق وسأشرحلك كل شيء خطوة بخطوة.`;
+            return `أهلاً بك، يرجى رفع ملف المحاضرة بصيغة PDF أعلاه لاستخراج البيانات العلمية بدقة وصياغة الأسئلة النموذجية بناءً على منهجك.`;
         }
 
         function extractSafeJSON(rawText) {
@@ -1394,11 +1382,11 @@
         async function requestAiQuizFromLecture() {
             const manualText = document.getElementById('lecture-text-content').value.trim();
             if (manualText && manualText.length > 20) {
-                setLectureContent(manualText, "نص ملصوق", 1);
+                setLectureContent(manualText, "نص مدخل", 1);
             }
 
             if (!currentLectureText || currentLectureText.length < 20) {
-                alert("⚠️ يرجى رفع ملف الملزمة (PDF) أو لصق النص أولاً!");
+                alert("يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
                 return;
             }
 
@@ -1406,18 +1394,18 @@
             const loadingId = 'loading_' + Date.now();
             feed.innerHTML += `
                 <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue p-3.5 bg-santorini-lightBg dark:bg-santorini-darkBase rounded-2xl animate-pulse">
-                    <i class="fa-solid fa-brain text-sm"></i>
-                    <span>زيرو يحلل السلايدات ويصنع كويز تفاعلي... 🧠</span>
+                    <i class="fa-solid fa-spinner fa-spin text-sm"></i>
+                    <span>جاري تحليل السلايدات وتوليد السؤال المعياري...</span>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const prompt = `Based on this lecture text:
+            const prompt = `Based on this scientific lecture text:
 """
 ${targetContent.substring(0, 1500)}
 """
-Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
-{"q":"Question text","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false}],"explanation":"شرح بالعربي"}`;
+Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
+{"q":"Question text","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false}],"explanation":"التوضيح الأكاديمي"}`;
 
             const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
             let quizData = extractSafeJSON(rawReply);
@@ -1440,7 +1428,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
             let optionsHtml = '';
             item.options.forEach((opt) => {
-                const safeExp = (item.explanation || "إجابة نموذجية من الملزمة").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const safeExp = (item.explanation || "الإجابة النموذجية المعتمدة في المنهج").replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 optionsHtml += `
                     <button onclick="answerMCQ('${qId}', ${Boolean(opt.correct)}, this, '${safeExp}')" class="chat-quiz-opt w-full text-right p-4 rounded-2xl transition text-xs sm:text-sm font-bold">
                         ${opt.t}
@@ -1452,8 +1440,8 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-santorini space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold">سؤال امتحاني من السلايدات 📝</span>
-                            <span class="text-slate-400">كويز تفاعلي</span>
+                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold"><i class="fa-solid fa-clipboard-question ml-1"></i> اختبار معياري</span>
+                            <span class="text-slate-400">سؤال مفرد</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed">${item.q}</h4>
                         <div class="options-container space-y-2 pt-1">
@@ -1483,20 +1471,20 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             feed.scrollTop = feed.scrollHeight;
             saveChatOffline();
 
-            if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('اختبرني')) {
+            if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('اختبرني') || txt.includes('سؤال')) {
                 requestAiQuizFromLecture();
                 return;
             }
 
             const loadingId = 'loading_chat_' + Date.now();
             feed.innerHTML += `
-                <div id="${loadingId}" class="text-xs font-bold text-slate-400 p-2 animate-pulse">
-                    زيرو يكتب الآن... ✍️
+                <div id="${loadingId}" class="text-xs font-bold text-slate-400 p-2 animate-pulse flex items-center gap-2">
+                    <i class="fa-solid fa-ellipsis"></i> <span>جاري تحرير الإجابة...</span>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const systemPrompt = `أنت "زيرو" المساعد الأكاديمي والوزاري الذكي للطلاب في العراق. خاطب المستخدم باسمه (${currentUserName || 'بطل'}). جاوب باختصار ووضوح وبلهجة عراقية مهذبة. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
+            const systemPrompt = `أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية في العراق. خاطب الطالب بصفته الأكاديمية وباسمه (${currentUserName || 'الزميل'}). أجب بأسلوب علمي رصين ومختصر وخالٍ تماماً من الإيموجيات. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
 
             let reply = await callCloudAI(txt, systemPrompt);
             if (!reply) {
@@ -1524,22 +1512,22 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             const fb = container.querySelector('.feedback-container');
             fb.classList.remove('hidden');
 
-            const qText = container.querySelector('h4') ? container.querySelector('h4').innerText : 'سؤال كويز';
+            const qText = container.querySelector('h4') ? container.querySelector('h4').innerText : 'سؤال تقييمي';
             logQuizResultToCloud(qText, btn.innerText, isCorrect);
 
             if (isCorrect) {
                 btn.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-emerald-500 !bg-emerald-500/15 !text-emerald-500 font-bold flex items-center justify-between text-xs sm:text-sm';
-                btn.innerHTML += ' <i class="fa-solid fa-circle-check text-emerald-500"></i>';
+                btn.innerHTML += ' <i class="fa-solid fa-check text-emerald-500"></i>';
                 fb.className = 'feedback-container bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-4 rounded-2xl text-xs font-bold space-y-1 border border-emerald-500/30';
-                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> إجابة صحيحة ومضبوطة يا ${currentUserName || 'بطل'} (+15 XP) 🎉</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
+                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> إجابة نموذجية صحيحة (+15 XP)</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(true);
                 awardXP(15);
                 triggerConfetti();
             } else {
                 btn.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-rose-500 !bg-rose-500/15 !text-rose-500 font-bold flex items-center justify-between text-xs sm:text-sm';
-                btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+                btn.innerHTML += ' <i class="fa-solid fa-xmark text-rose-500"></i>';
                 fb.className = 'feedback-container bg-rose-500/10 text-rose-700 dark:text-rose-300 p-4 rounded-2xl text-xs font-bold space-y-1 border border-rose-500/30';
-                fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
+                fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(false);
             }
             saveChatOffline();
@@ -1555,8 +1543,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                     <div class="flex items-start gap-3">
                         <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                         <div class="chat-bot-bubble p-4 max-w-[88%] sm:max-w-[78%] text-xs sm:text-sm leading-relaxed font-bold">
-                            أهلاً بيك يا ${currentUserName || 'بطل'}! أني <strong>زيرو (Zero)</strong> 🎓.<br>
-                            ارفع ملزمتك فوق بصيغة PDF، واضغط <strong>+ اصنع كويز</strong> حتى نمتحنك بأسئلة دقيقة ومركزة!
+                            مرحباً بك زميلنا ${currentUserName || 'المحترم'}. قم برفع ملف المحاضرة الأكاديمية بصيغة PDF أعلاه، واضغط على <strong>توليد سؤال MCQ</strong> لاستخراج الأسئلة ومراجعة النقاط الجوهرية.
                         </div>
                     </div>`;
                 localStorage.setItem('zp_chat_html', feed.innerHTML);
@@ -1575,10 +1562,10 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
         }
         loadSavedChat();
 
-        // ------------------ 5. SHARE PROGRESS MODAL ------------------
+        // ------------------ 5. SHARE RECORD MODAL ------------------
         function openShareModal() {
             document.getElementById('share-xp').innerText = `${userXP} XP`;
-            document.getElementById('share-trees').innerText = `${userForest.length} شجرة`;
+            document.getElementById('share-trees').innerText = `${userForest.length} جلسة`;
             const completedCount = tasks.filter(t => t.done).length;
             document.getElementById('share-tasks').innerText = `${completedCount}`;
             document.getElementById('share-modal').classList.remove('hidden');
@@ -1590,14 +1577,14 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
         function getShareContent() {
             const completedCount = tasks.filter(t => t.done).length;
-            return `🔥 إنجازي اليوم في منصة ZeroPlus الأكاديمية:\n👤 الطالب: ${currentUserName || 'طالب متميز'}\n⚡ نقاط الخبرة: ${userXP} XP\n🌲 غابة التركيز: ${userForest.length} شجرة خيالية\n✅ المهام المكتملة: ${completedCount} مهمة\n\nجرّب المنصة ونظّم دراستك مجاناً! 🎓`;
+            return `تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName || 'طالب جامعي'}\nالنقاط الأكاديمية: ${userXP} XP\nالجلسات المكتملة: ${userForest.length} جلسة\nالمهام المنجزة: ${completedCount}\nمنصة التعليم التخصصي.`;
         }
 
         function executeShare() {
             const text = getShareContent();
             if (navigator.share) {
                 navigator.share({
-                    title: 'إنجازي على تطبيق ZeroPlus 🇮🇶',
+                    title: 'تقرير الإنجاز الأكاديمي - ZeroPlus',
                     text: text,
                     url: window.location.href
                 }).catch(() => {});
@@ -1609,11 +1596,10 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
         function copyShareText() {
             const text = getShareContent();
             navigator.clipboard.writeText(text).then(() => {
-                alert("تم نسخ بطاقة إنجازك! شاركها الآن على ستوري انستغرام أو تيليجرام 🚀");
+                alert("تم نسخ التقرير بنجاح.");
             });
         }
 
-        // فحص حالة أول تشغيل لطلب الاسم
         checkOnboarding();
     </script>
 </body>
