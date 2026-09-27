@@ -6,12 +6,12 @@
     <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
     
     <!-- Favicon & Icons (Forced Cache Bust) -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=10">
-    <link rel="apple-touch-icon" href="/icon.svg?v=10">
-    <link rel="shortcut icon" href="/icon.svg?v=10">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=11">
+    <link rel="apple-touch-icon" href="/icon.svg?v=11">
+    <link rel="shortcut icon" href="/icon.svg?v=11">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=10">
+    <link rel="manifest" href="/manifest.json?v=11">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -77,7 +77,7 @@
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
-        /* فقاعات المحادثة الواسعة والمريحة للعين */
+        /* فقاعات المحادثة */
         .chat-user-bubble {
             background: #0E2F76 !important;
             color: #F5FEFF !important;
@@ -115,7 +115,6 @@
             border: 1px solid #AAC0E1 !important;
         }
 
-        /* خيارات الكويز */
         html.dark .chat-quiz-opt {
             background-color: #152945 !important;
             color: #F5FEFF !important;
@@ -142,6 +141,30 @@
 </head>
 <body class="bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-800 dark:text-santorini-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-santorini-deepNavy selection:text-white">
 
+    <!-- ================= MODAL: WELCOME USER ONBOARDING (FIRST TIME ONLY) ================= -->
+    <div id="onboarding-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-8 text-center space-y-5 shadow-2xl">
+            <div class="w-16 h-16 rounded-3xl bg-santorini-deepNavy text-white mx-auto flex items-center justify-center font-black text-2xl shadow-santorini-btn" dir="ltr">
+                Z+
+            </div>
+            <div>
+                <h3 class="font-black text-xl text-santorini-deepNavy dark:text-santorini-white">أهلاً بك في ZeroPlus 🎓</h3>
+                <p class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1.5 leading-relaxed">
+                    منصتك الأكاديمية الشاملة. اكتب اسمك لنحفظ إنجازاتك وسجل دراستك بالسحابة.
+                </p>
+            </div>
+            <div class="space-y-3">
+                <input id="onboard-user-name" type="text" placeholder="اكتب اسمك أو لقبك هنا..." 
+                    onkeydown="if(event.key==='Enter') saveUserName()"
+                    class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white font-bold text-center transition">
+                <button onclick="saveUserName()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>دخول وحفظ البيانات</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+                </button>
+            </div>
+            <span class="text-[10px] text-slate-400 block">لن يُطلب منك الاسم مرة ثانية على هذا الجهاز</span>
+        </div>
+    </div>
+
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-40 bg-white/85 dark:bg-santorini-darkBase/90 backdrop-blur-2xl border-b border-slate-200 dark:border-santorini-darkBorder px-4 py-3.5 shrink-0 transition-colors">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
@@ -154,7 +177,7 @@
                     <h1 class="font-black text-lg leading-tight flex items-center gap-1 text-santorini-deepNavy dark:text-santorini-white" dir="ltr">
                         <span>Zero</span><span class="text-santorini-softBlue">Plus</span>
                     </h1>
-                    <span class="text-[11px] font-semibold text-slate-400 dark:text-santorini-softBlue">المنصة الأكاديمية الشاملة 🇮🇶</span>
+                    <span id="app-user-greeting" class="text-[11px] font-semibold text-slate-400 dark:text-santorini-softBlue">المنصة الأكاديمية الشاملة 🇮🇶</span>
                 </div>
             </div>
 
@@ -183,7 +206,6 @@
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
-            <!-- Hero Banner -->
             <div class="gradient-santorini p-6 rounded-4xl text-white shadow-santorini flex items-center justify-between">
                 <div>
                     <span class="text-[11px] font-bold tracking-wider text-santorini-softBlue uppercase">إنجاز اليوم الأكاديمي</span>
@@ -195,7 +217,6 @@
                 </div>
             </div>
 
-            <!-- Add Task Box -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-santorini">
                 <input id="todo-input" type="text" placeholder="شنو عندك مادة، فصل وزاري، أو امتحان باچر؟" 
                     onkeydown="if(event.key==='Enter') addTodo()"
@@ -221,7 +242,6 @@
 
         <!-- ================= SECTION 2: POMODORO & STATS ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
-            <!-- Stats Grid -->
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
                     <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">التركيز التراكمي</span>
@@ -237,16 +257,14 @@
                 </div>
             </div>
 
-            <!-- Spacious Uncramped Timer Card (فقط العداد داخل الدائرة) -->
+            <!-- Timer Card -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-santorini space-y-6">
-                <!-- Mode Switcher -->
                 <div class="flex justify-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
                     <button onclick="setPomoMode(25, 'وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm">تركيز (25د)</button>
                     <button onclick="setPomoMode(5, 'استراحة چاي مهيّل ☕ (برعم الكريستال 🌱)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5د)</button>
                     <button onclick="setPomoMode(15, 'استراحة طويلة 🌟 (شجرة الزمرد الكونية 🌲)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15د)</button>
                 </div>
 
-                <!-- Clean Breathing Circle -->
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-santorini-darkBase" stroke-width="4.5"></circle>
@@ -261,14 +279,12 @@
                     </div>
                 </div>
 
-                <!-- Status Outside Circle (مريح للعين) -->
                 <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto">
                     <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold block">
                         وقت التركيز ⚡ (شجرة ساكورا سحرية 🌸)
                     </span>
                 </div>
 
-                <!-- Actions -->
                 <div class="flex justify-center gap-3 pt-2">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black px-10 py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
                         <span>ابدأ التركيز</span> <i class="fa-solid fa-play mr-2 text-xs"></i>
@@ -341,8 +357,6 @@
 
         <!-- ================= SECTION 4: ZERO AI ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
-            
-            <!-- Lecture Box -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 sm:p-5 rounded-4xl shadow-santorini space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
@@ -374,7 +388,6 @@
                     <textarea id="lecture-text-content" rows="3" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
 
-                <!-- Scope Inputs -->
                 <div id="slide-scope-box" class="hidden bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-3xl space-y-2">
                     <div class="flex items-center justify-between text-xs font-bold">
                         <span class="text-santorini-deepNavy dark:text-santorini-softBlue"><i class="fa-solid fa-sliders ml-1"></i> نطاق الكويز (السلايدات):</span>
@@ -415,10 +428,8 @@
                 </div>
             </div>
 
-            <!-- Spacious Chat Console -->
+            <!-- Chat Console -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl shadow-santorini flex-1 flex flex-col overflow-hidden min-h-[55vh]">
-                
-                <!-- Chat Header -->
                 <div class="p-4 border-b border-slate-100 dark:border-santorini-darkBorder flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-santorini-darkBase/40">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
@@ -441,10 +452,8 @@
                     </div>
                 </div>
 
-                <!-- Chat Messages Feed -->
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
 
-                <!-- Chat Input Dock -->
                 <div class="p-3 border-t border-slate-100 dark:border-santorini-darkBorder bg-slate-50/80 dark:bg-santorini-darkBase/60 flex gap-2 items-center shrink-0">
                     <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي فكرة أو اطلب كويز..." 
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
@@ -468,7 +477,7 @@
                 </div>
                 <div>
                     <h3 class="font-black text-xl">بطاقة إنجاز ZeroPlus</h3>
-                    <p class="text-xs text-santorini-softBlue">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
+                    <p id="share-card-user" class="text-xs text-santorini-softBlue">طالب متميز نحو النجاح الأكاديمي 🇮🇶</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
@@ -524,9 +533,43 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
-        if (localStorage.getItem('zp_clean_santorini_v1') !== 'true') {
-            localStorage.removeItem('zp_chat_html');
-            localStorage.setItem('zp_clean_santorini_v1', 'true');
+        // ------------------ ONBOARDING & USER IDENTITY ------------------
+        let currentUserName = localStorage.getItem('zp_username') || '';
+
+        function checkOnboarding() {
+            const isRegistered = localStorage.getItem('zp_user_registered');
+            if (!isRegistered || !currentUserName) {
+                document.getElementById('onboarding-modal').classList.remove('hidden');
+            } else {
+                updateGreetingHeader();
+            }
+        }
+
+        function saveUserName() {
+            const input = document.getElementById('onboard-user-name');
+            const val = input.value.trim();
+            if (!val) {
+                alert("يرجى كتابة اسمك أو لقبك للاستمرار.");
+                return;
+            }
+
+            currentUserName = val;
+            localStorage.setItem('zp_username', currentUserName);
+            localStorage.setItem('zp_user_registered', 'true');
+            
+            document.getElementById('onboarding-modal').classList.add('hidden');
+            updateGreetingHeader();
+            syncProfileWithCloud();
+            triggerConfetti();
+        }
+
+        function updateGreetingHeader() {
+            if (currentUserName) {
+                const greeting = document.getElementById('app-user-greeting');
+                if (greeting) greeting.innerText = `أهلاً بك، ${currentUserName} 🇮🇶`;
+                const shareGreeting = document.getElementById('share-card-user');
+                if (shareGreeting) shareGreeting.innerText = `الطالب المتميز: ${currentUserName}`;
+            }
         }
 
         // ------------------ SUPABASE INTEGRATION ------------------
@@ -580,6 +623,7 @@
                     .from('profiles')
                     .upsert({
                         device_id: deviceId,
+                        user_name: currentUserName || 'طالب ZeroPlus',
                         xp: userXP,
                         total_focus_mins: totalFocusMins,
                         last_active: new Date().toISOString()
@@ -588,7 +632,6 @@
                 if (!error) {
                     updateCloudIndicator('online');
                 } else {
-                    console.error('Supabase Sync Error:', error);
                     updateCloudIndicator('offline');
                 }
             } catch (e) {
@@ -722,7 +765,7 @@
         function sendPushNotice(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, { body: body, icon: "/icon.svg" });
+                    new Notification(title, { body: body, icon: "/icon.svg?v=11" });
                 } catch(e){}
             }
         }
@@ -1316,7 +1359,7 @@
             const msg = userMsg.trim().toLowerCase();
 
             if (msg.includes('موجود') || msg.includes('هلو') || msg.includes('مرحبا') || msg.includes('سلام')) {
-                return `أهلاً بيك يا بطل! أني زيرو المساعد الأكاديمي وياك وجاهز 100% ⚡🎓.<br>${lectureContext ? 'ملزمتك مرفوعة وجاهزة، اضغط على <strong>+ اصنع كويز</strong> أو اسألني عن أي نقطة!' : 'ارفع ملزمتك بصيغة PDF فوق لنبدأ الدراسة!'}`;
+                return `أهلاً بيك يا ${currentUserName || 'بطل'}! أني زيرو المساعد الأكاديمي وياك وجاهز 100% ⚡🎓.<br>${lectureContext ? 'ملزمتك مرفوعة وجاهزة، اضغط على <strong>+ اصنع كويز</strong> أو اسألني عن أي نقطة!' : 'ارفع ملزمتك بصيغة PDF فوق لنبدأ الدراسة!'}`;
             }
 
             if (lectureContext && lectureContext.length > 30) {
@@ -1330,7 +1373,7 @@
                 return `ملخص أهم النقاط بالسلايدات المحددة 💡:<br><br>• "${sentences.slice(0, 2).join('<br>• ')}"`;
             }
 
-            return `عاشت إيدك! 💡 حتى أعطيك جواب دقيق من منهجك، ارفع ملف الملزمة فوق وسأشرحلك كل شيء خطوة بخطوة.`;
+            return `عاشت إيدك يا ${currentUserName || 'بطل'}! 💡 حتى أعطيك جواب دقيق من منهجك، ارفع ملف الملزمة فوق وسأشرحلك كل شيء خطوة بخطوة.`;
         }
 
         function extractSafeJSON(rawText) {
@@ -1453,7 +1496,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getScopedLectureContent();
-            const systemPrompt = `أنت "زيرو" المساعد الأكاديمي والوزاري الذكي للطلاب في العراق. جاوب باختصار ووضوح وبلهجة عراقية مهذبة. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
+            const systemPrompt = `أنت "زيرو" المساعد الأكاديمي والوزاري الذكي للطلاب في العراق. خاطب المستخدم باسمه (${currentUserName || 'بطل'}). جاوب باختصار ووضوح وبلهجة عراقية مهذبة. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
 
             let reply = await callCloudAI(txt, systemPrompt);
             if (!reply) {
@@ -1488,7 +1531,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                 btn.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-emerald-500 !bg-emerald-500/15 !text-emerald-500 font-bold flex items-center justify-between text-xs sm:text-sm';
                 btn.innerHTML += ' <i class="fa-solid fa-circle-check text-emerald-500"></i>';
                 fb.className = 'feedback-container bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-4 rounded-2xl text-xs font-bold space-y-1 border border-emerald-500/30';
-                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> إجابة صحيحة ومضبوطة (+15 XP) 🎉</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
+                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> إجابة صحيحة ومضبوطة يا ${currentUserName || 'بطل'} (+15 XP) 🎉</div><div class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${exp}</div>`;
                 playChime(true);
                 awardXP(15);
                 triggerConfetti();
@@ -1512,7 +1555,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                     <div class="flex items-start gap-3">
                         <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                         <div class="chat-bot-bubble p-4 max-w-[88%] sm:max-w-[78%] text-xs sm:text-sm leading-relaxed font-bold">
-                            أهلاً بيك يا بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
+                            أهلاً بيك يا ${currentUserName || 'بطل'}! أني <strong>زيرو (Zero)</strong> 🎓.<br>
                             ارفع ملزمتك فوق بصيغة PDF، واضغط <strong>+ اصنع كويز</strong> حتى نمتحنك بأسئلة دقيقة ومركزة!
                         </div>
                     </div>`;
@@ -1547,7 +1590,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
         function getShareContent() {
             const completedCount = tasks.filter(t => t.done).length;
-            return `🔥 إنجازي اليوم في منصة ZeroPlus الأكاديمية:\n⚡ نقاط الخبرة: ${userXP} XP\n🌲 غابة التركيز: ${userForest.length} شجرة خيالية\n✅ المهام المكتملة: ${completedCount} مهمة\n\nجرّب المنصة ونظّم دراستك مجاناً! 🎓`;
+            return `🔥 إنجازي اليوم في منصة ZeroPlus الأكاديمية:\n👤 الطالب: ${currentUserName || 'طالب متميز'}\n⚡ نقاط الخبرة: ${userXP} XP\n🌲 غابة التركيز: ${userForest.length} شجرة خيالية\n✅ المهام المكتملة: ${completedCount} مهمة\n\nجرّب المنصة ونظّم دراستك مجاناً! 🎓`;
         }
 
         function executeShare() {
@@ -1569,6 +1612,9 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
                 alert("تم نسخ بطاقة إنجازك! شاركها الآن على ستوري انستغرام أو تيليجرام 🚀");
             });
         }
+
+        // فحص حالة أول تشغيل لطلب الاسم
+        checkOnboarding();
     </script>
 </body>
 </html>
