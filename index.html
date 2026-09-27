@@ -72,9 +72,6 @@
         .gradient-brand {
             background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
         }
-        .gradient-card-pomo {
-            background: linear-gradient(145deg, rgba(20, 184, 166, 0.08) 0%, rgba(2, 132, 199, 0.04) 100%);
-        }
         .duo-btn {
             box-shadow: 0 4px 0 #0f766e;
             transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
@@ -127,7 +124,7 @@
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     <span id="app-xp">140 XP</span>
                 </div>
-                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" title="متصل"></div>
+                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-400 transition-all duration-300" title="جاري الاتصال..."></div>
                 <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-night-card border border-slate-200 dark:border-night-border text-slate-600 dark:text-brand-400 flex items-center justify-center hover:scale-105 active:scale-95 transition" title="تبديل الوضع">
                     <i id="theme-icon" class="fa-solid fa-sun text-sm"></i>
                 </button>
@@ -478,6 +475,91 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
+        // ------------------ SUPABASE INTEGRATION (CONFIGURED) ------------------
+        const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
+
+        let supabaseClient = null;
+        if (window.supabase) {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch(e) {
+                console.warn("Supabase init error:", e);
+            }
+        }
+
+        function getDeviceId() {
+            let devId = localStorage.getItem('zp_device_id');
+            if (!devId) {
+                devId = 'zp_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+                localStorage.setItem('zp_device_id', devId);
+            }
+            return devId;
+        }
+
+        function updateCloudIndicator(status) {
+            const ind = document.getElementById('cloud-indicator');
+            if (!ind) return;
+            if (status === 'online') {
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50';
+                ind.title = 'متصل بقاعدة البيانات وتتم المزامنة ✅';
+            } else if (status === 'syncing') {
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+                ind.title = 'جاري المزامنة مع السحابة... ⏳';
+            } else {
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
+                ind.title = 'يعمل محلياً (Offline)';
+            }
+        }
+
+        async function syncProfileWithCloud() {
+            if (!supabaseClient || !navigator.onLine) {
+                updateCloudIndicator('offline');
+                return;
+            }
+
+            const deviceId = getDeviceId();
+            updateCloudIndicator('syncing');
+
+            try {
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .upsert({
+                        device_id: deviceId,
+                        xp: userXP,
+                        total_focus_mins: totalFocusMins,
+                        last_active: new Date().toISOString()
+                    }, { onConflict: 'device_id' });
+
+                if (!error) {
+                    updateCloudIndicator('online');
+                } else {
+                    console.error('Supabase Sync Error:', error);
+                    updateCloudIndicator('offline');
+                }
+            } catch (e) {
+                updateCloudIndicator('offline');
+            }
+        }
+
+        async function logQuizResultToCloud(questionText, selectedOption, isCorrect) {
+            if (!supabaseClient || !navigator.onLine) return;
+            try {
+                await supabaseClient
+                    .from('quiz_results')
+                    .insert([{
+                        device_id: getDeviceId(),
+                        question_text: questionText,
+                        selected_option: selectedOption,
+                        is_correct: Boolean(isCorrect)
+                    }]);
+            } catch (err) {
+                console.warn('Failed to log quiz result:', err);
+            }
+        }
+
+        window.addEventListener('online', () => syncProfileWithCloud());
+
         // ------------------ THEME CONTROLLER & STORAGE ------------------
         function initTheme() {
             const savedTheme = localStorage.getItem('zp_theme');
@@ -516,9 +598,11 @@
             userXP += amount;
             localStorage.setItem('zp_xp', userXP);
             document.getElementById('app-xp').innerText = `${userXP} XP`;
+            syncProfileWithCloud(); // مزامنة فورية مع قاعدة البيانات
         }
         awardXP(0);
         document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+        syncProfileWithCloud();
 
         function triggerConfetti() {
             if (typeof confetti === 'function') {
@@ -935,6 +1019,10 @@
             fb.classList.remove('hidden');
 
             const isCorrect = q.answers.some(a => cleanText(a) === userAns || userAns.includes(cleanText(a)));
+            
+            // مزامنة نتيجة كويز الإنكليزي في Supabase
+            logQuizResultToCloud(`[English ${currentEngLvl}]: ${q.prompt}`, userAns, isCorrect);
+
             if (isCorrect) {
                 playChime(true);
                 awardXP(15);
@@ -1359,6 +1447,7 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
             saveChatOffline();
         }
 
+        // تسجيل نتائج الكويز في Supabase
         function answerMCQ(containerId, isCorrect, btn, exp) {
             const container = document.getElementById(containerId);
             const btns = container.querySelectorAll('.options-container button');
@@ -1366,6 +1455,9 @@ Generate ONE multiple-choice question (MCQ). Return ONLY raw JSON:
 
             const fb = container.querySelector('.feedback-container');
             fb.classList.remove('hidden');
+
+            const qText = container.querySelector('h4') ? container.querySelector('h4').innerText : 'سؤال كويز';
+            logQuizResultToCloud(qText, btn.innerText, isCorrect); // إرسال للسحابة
 
             if (isCorrect) {
                 btn.className = 'w-full text-right p-3 rounded-xl border-2 border-brand-500 bg-brand-500/10 text-brand-700 dark:text-brand-300 font-bold flex items-center justify-between text-xs sm:text-sm';
