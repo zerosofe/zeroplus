@@ -1,11 +1,10 @@
-const CACHE_NAME = 'zeroplus-cache-v11';
+const CACHE_NAME = 'zeroplus-cache-v12';
 
-// الأصول الأساسية والمكتبات لضمان عمل الواجهة والأيقونة دون إنترنت
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=11',
-  '/manifest.json?v=11',
-  '/icon.svg?v=11',
+  '/index.html?v=12',
+  '/manifest.json?v=12',
+  '/icon.svg?v=12',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
@@ -15,7 +14,6 @@ const PRECACHE_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 
-// مرحلة التثبيت: حفظ الأصول الأساسية
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -27,7 +25,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// مرحلة التفعيل: مسح جميع إصدارات الكاش القديمة فوراً
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -38,12 +35,10 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// التعامل مع الطلبات بمرونة (Caching Strategy)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // استثناء طلبات قواعد البيانات والـ API والذكاء الاصطناعي من الكاش لضمان وصول أحدث البيانات
   if (
     req.method !== 'GET' ||
     url.hostname.includes('groq.com') ||
@@ -53,7 +48,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. للمكتبات الخارجية والخطوط والأيقونات: Cache-First لسرعة التحميل
   const isStaticAsset = 
     url.hostname.includes('cdn') ||
     url.hostname.includes('cdnjs') ||
@@ -78,7 +72,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. لصفحات الموقع والتنقل الداخلي: Network-First مع الرجوع للكاش عند انقطاع الإنترنت
   event.respondWith(
     fetch(req)
       .then((networkResponse) => {
@@ -92,7 +85,7 @@ self.addEventListener('fetch', (event) => {
         const cached = await caches.match(req);
         if (cached) return cached;
         if (req.mode === 'navigate') {
-          return caches.match('/index.html?v=11') || caches.match('/index.html') || caches.match('/');
+          return caches.match('/index.html?v=12') || caches.match('/index.html') || caches.match('/');
         }
       })
   );
