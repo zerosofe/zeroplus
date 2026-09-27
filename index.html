@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZeroPlus | زيرو بلس</title>
+    <title>ZeroPlus | زيرو بلس - المنصة الأكاديمية الشاملة</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ZeroPlus">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -71,7 +79,7 @@
                     <h1 class="font-black text-lg leading-tight flex items-center gap-1" dir="ltr">
                         <span class="text-slate-900 dark:text-white">Zero</span><span class="text-turq-500">Plus</span>
                     </h1>
-                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400">رفيقك الأكاديمي 🇮🇶</span>
+                    <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-400">رفيقك الأكاديمي والوزاري 🇮🇶</span>
                 </div>
             </div>
 
@@ -98,14 +106,14 @@
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
 
-        <!-- ================= SECTION 1: TO-DO (المهام مع الحفظ السحابي) ================= -->
+        <!-- ================= SECTION 1: TO-DO (المهام الأكاديمية الشاملة) ================= -->
         <section id="tab-todo" class="space-y-4">
             <!-- Progress Card -->
             <div class="gradient-turq-sky p-5 rounded-3xl text-white shadow-xl shadow-turq-500/15 flex items-center justify-between">
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-white/80">إنجاز اليوم الأكاديمي</span>
                     <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-0.5">جاري جلب المهام من السحابة...</h2>
-                    <p id="todo-motivational" class="text-xs text-white/90 mt-1">عاشت إيدك بطل، رتب ملازمك واقرا أول بأول 🔥</p>
+                    <p id="todo-motivational" class="text-xs text-white/90 mt-1">عاشت إيدك بطل، رتب ملازمك وموادك واقرا أول بأول 🔥</p>
                 </div>
                 <div id="todo-percent-badge" class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-xl border border-white/30">
                     0%
@@ -114,14 +122,15 @@
 
             <!-- Add Input -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2.5 rounded-2xl flex flex-wrap sm:flex-nowrap gap-2 shadow-sm">
-                <input id="todo-input" type="text" placeholder="شنو عندك محاضرة أو كويز باچر؟" 
+                <input id="todo-input" type="text" placeholder="شنو عندك مادة، فصل وزاري، أو محاضرة باچر؟" 
                     onkeydown="if(event.key==='Enter') addTodo()"
                     class="flex-1 min-w-[200px] bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
                 <select id="todo-tag" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border rounded-xl px-2 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none">
-                    <option value="دراسة 📚">دراسة 📚</option>
-                    <option value="عملي 🔬">عملي 🔬</option>
-                    <option value="كويز 🔥">كويز 🔥</option>
-                    <option value="واجب 📝">واجب 📝</option>
+                    <option value="جامعي 🏛️">جامعي 🏛️</option>
+                    <option value="وزاري 🔥">وزاري 🔥</option>
+                    <option value="دراسة ومراجعة 📖">دراسة ومراجعة 📖</option>
+                    <option value="كويز وامتحان 📝">كويز وامتحان 📝</option>
+                    <option value="عملي ومختبر 🔬">عملي ومختبر 🔬</option>
                 </select>
                 <select id="todo-prio" class="bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border rounded-xl px-2 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none">
                     <option value="high">مهم كلش 🔥</option>
@@ -166,7 +175,7 @@
 
                 <div class="mb-6">
                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-brandDark-bg px-3 py-1.5 rounded-xl">
-                        🍅 جلسات مكتملة اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
+                        🍅 جلسات تركيز مكتملة اليوم: <span id="pomo-count" class="text-turq-500 font-black">0</span>
                     </span>
                 </div>
 
@@ -181,12 +190,12 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 3: ENGLISH (تعلّم الإنكليزي) ================= -->
+        <!-- ================= SECTION 3: ENGLISH (تعلّم الإنكليزي الأكاديمي والوزاري) ================= -->
         <section id="tab-english" class="hidden space-y-4">
             <div class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (يومي)</button>
-                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى A2 (جامعي)</button>
-                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى B1 (أكاديمي/طبي)</button>
+                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap shadow-sm">المستوى A1 (أساسيات ومحادثة)</button>
+                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى A2 (وزاري وجامعي)</button>
+                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border text-slate-600 dark:text-slate-300 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">المستوى B1 (أكاديمي متقدم)</button>
             </div>
 
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-5 rounded-3xl shadow-sm space-y-4">
@@ -197,8 +206,8 @@
 
                 <div class="bg-slate-50 dark:bg-brandDark-bg p-4 rounded-2xl border border-slate-100 dark:border-brandDark-border flex items-center justify-between">
                     <div>
-                        <h3 id="eng-prompt-text" class="text-lg font-black text-slate-900 dark:text-white">I have to study for the exam</h3>
-                        <p id="eng-hint-text" class="text-xs text-slate-400 mt-1">تلميح: (لازم أقرا للامتحان / يجب أن أدرس للاختبار)</p>
+                        <h3 id="eng-prompt-text" class="text-lg font-black text-slate-900 dark:text-white">I have to study for the final exam</h3>
+                        <p id="eng-hint-text" class="text-xs text-slate-400 mt-1">تلميح: (لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار)</p>
                     </div>
                     <button onclick="speakEngSentence()" class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 flex items-center justify-center hover:scale-105 transition" title="استمع للنطق">
                         <i class="fa-solid fa-volume-high"></i>
@@ -224,7 +233,7 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI (شات وكويزات زيرو) ================= -->
+        <!-- ================= SECTION 4: ZERO AI (شات وكويزات زيرو الأكاديمية الشاملة) ================= -->
         <section id="tab-zero" class="hidden space-y-4">
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-3">
@@ -235,32 +244,33 @@
                         <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                             زيرو الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </h3>
-                        <p class="text-xs text-slate-400">محادثة تدريسية وكويزات MCQ تفاعلية 🎓</p>
+                        <p class="text-xs text-slate-400">مساعدك الذكي لكافة التخصصات الجامعية والوزاري 🎓</p>
                     </div>
                 </div>
                 <button onclick="triggerQuizQuestion()" class="text-[11px] font-bold text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1.5 rounded-full hover:scale-105 transition">
-                    + كويز جديد 📝
+                    + كويز تفاعلي 📝
                 </button>
             </div>
 
+            <!-- Quick Action Prompts (Universal & Baccalaureate) -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold">
-                <button onclick="quickAskZero('سويلي كويز عن التخدير العام (General Anesthesia)')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز تخدير عام</button>
-                <button onclick="quickAskZero('اشرحلي بالعراقي شنو يعني Pre-oxygenation وليش نسويه؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">💡 شرح مفهوم Pre-oxygenation</button>
-                <button onclick="quickAskZero('سويلي كويز عن الفسلجة وعضلة القلب')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🔬 كويز فسلجة</button>
+                <button onclick="quickAskZero('سويلي كويز تفاعلي MCQ لاختبار معلوماتي')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز MCQ سريع</button>
+                <button onclick="quickAskZero('شنو أفضل خطة دراسية لمراجعة مادة الامتحان أو الوزاري قبل الامتحان بأسبوع؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🎯 خطة مراجعة سريعة</button>
+                <button onclick="quickAskZero('اشرحلي تقنية الاسترجاع النشط (Active Recall) شلون تفيد بالامتحانات؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">💡 طرق الحفظ والتركيز</button>
             </div>
 
             <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1">
                 <div class="flex items-start gap-2.5">
                     <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                     <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                        هلا بيك بطل! أني <strong>زيرو (Zero)</strong> 🎓.<br>
-                        أني وياك حتى نراجع الملازم، نضبط المصطلحات، ونسوي كويزات MCQ تحضيرية للامتحان. اسألني أي شي أو اضغط على الأزرار فوك حتى نبدأ!
+                        هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري 🎓.<br>
+                        سواء كنت طالب جامعة بكل اختصاصاتها أو طالب وزاري تستعد للامتحانات النهائية، أني هنا حتى أرتب وياك خطة دراستك، أشرحلك أي مفهوم غامض، وأختبرك بكويزات MCQ تحضيرية تضمنلك الـ 100!
                     </div>
                 </div>
             </div>
 
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2 rounded-2xl flex gap-2 shadow-sm">
-                <input id="zero-user-msg" type="text" placeholder="اكتب سؤالك لزيرو أو كوله 'سويلي كويز'..." 
+                <input id="zero-user-msg" type="text" placeholder="اكتب مادتك أو اسأل زيرو 'سويلي كويز عن...'..." 
                     onkeydown="if(event.key==='Enter') sendZeroChat()"
                     class="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
                 <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
@@ -370,7 +380,6 @@
                     console.error("Supabase fetch fallback:", e);
                 }
             }
-            // Local fallback
             tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
             renderTasks();
         }
@@ -383,7 +392,7 @@
             if (tasks.length === 0) {
                 list.innerHTML = `
                     <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-6 rounded-2xl text-center text-xs text-slate-400">
-                        ما عندك مهام حالياً، اكتب أول محاضرة أو كويز واضغط إضافة مهام ✨
+                        ما عندك مهام حالياً، اكتب أول مادة أو فصل واضغط إضافة مهام ✨
                     </div>`;
             } else {
                 tasks.forEach(t => {
@@ -413,7 +422,7 @@
 
             const total = tasks.length;
             const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
-            document.getElementById('todo-summary-text').innerText = `${completed} من ${total} محاضرات مكتملة!`;
+            document.getElementById('todo-summary-text').innerText = `${completed} من ${total} مهام ومحاضرات مكتملة!`;
             document.getElementById('todo-percent-badge').innerText = `${pct}%`;
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
@@ -437,7 +446,6 @@
             renderTasks();
             awardXP(5);
 
-            // Cloud Save
             if (db) {
                 try {
                     await db.from('tasks').insert([newTask]);
@@ -462,7 +470,6 @@
             });
             renderTasks();
 
-            // Cloud Update
             if (db) {
                 try {
                     await db.from('tasks').update({ done: nextState }).eq('id', id);
@@ -476,7 +483,6 @@
             tasks = tasks.filter(t => t.id !== id);
             renderTasks();
 
-            // Cloud Delete
             if (db) {
                 try {
                     await db.from('tasks').delete().eq('id', id);
@@ -554,38 +560,32 @@
         const englishLessons = {
             A1: [
                 {
-                    prompt: "I have to study for the exam",
-                    hint: "لازم أقرا للامتحان / يجب أن أدرس للاختبار",
-                    answers: ["لازم اقرا للامتحان", "لازم اقرا للامتحان اليوم", "يجب ان ادرس للاختبار", "اريد اقرا للامتحان", "لازم ادرس للامتحان"],
-                    chips: ["لازم", "أقرا", "للامتحان", "اليوم", "باچر", "أدرس"]
+                    prompt: "I have to study for the final exam",
+                    hint: "لازم أقرا للامتحان النهائي / يجب أن أدرس للاختبار",
+                    answers: ["لازم اقرا للامتحان النهائي", "لازم اقرا للامتحان", "يجب ان ادرس للاختبار النهائي", "اريد اقرا للامتحان"],
+                    chips: ["لازم", "أقرا", "للامتحان", "النهائي", "اليوم", "باچر"]
                 },
                 {
-                    prompt: "How are you doing today?",
-                    hint: "شلونك اليوم / كيف حالك اليوم",
-                    answers: ["شلونك اليوم", "كيف حالك اليوم", "شلونك", "كيف حالك"],
-                    chips: ["شلونك", "اليوم", "كيف", "حالك", "بخير", "دكتور"]
-                },
-                {
-                    prompt: "I am a university student",
-                    hint: "أني طالب بالجامعة / أنا طالب جامعي",
-                    answers: ["اني طالب بالجامعة", "اني طالب جامعة", "انا طالب جامعي", "اني طالب جامعي"],
-                    chips: ["أني", "طالب", "بالجامعة", "أنا", "طبي", "تخدير"]
+                    prompt: "Consistency is the key to academic success",
+                    hint: "الاستمرارية هي مفتاح النجاح الأكاديمي",
+                    answers: ["الاستمرارية هي مفتاح النجاح الاكاديمي", "الاستمرار سر النجاح", "الاستمرارية مفتاح النجاح"],
+                    chips: ["الاستمرارية", "هي", "مفتاح", "النجاح", "الأكاديمي", "الدائم"]
                 }
             ],
             A2: [
                 {
-                    prompt: "We have a practical session tomorrow",
-                    hint: "عندنا عملي باچر / لدينا جلسة عملية غداً",
-                    answers: ["عندنا عملي باجر", "عندنا عملي باچر", "لدينا جلسة عملية غدا", "باجر عدنا عملي"],
-                    chips: ["عندنا", "عملي", "باچر", "لدينا", "مختبر", "محاضرة"]
+                    prompt: "If you study hard, you will pass the exam",
+                    hint: "إذا تقرا زين راح تنجح بالامتحان (قاعدة If الشرطية الوزارية)",
+                    answers: ["اذا تقرا زين راح تنجح بالامتحان", "اذا درست بجد سوف تنجح", "لو تقرا تنجح"],
+                    chips: ["إذا", "تقرا", "زين", "راح", "تنجح", "بالامتحان"]
                 }
             ],
             B1: [
                 {
-                    prompt: "Pre-oxygenation increases apnea tolerance",
-                    hint: "الأكسجة المسبقة تزيد وقت تحمل انقطاع النفس",
-                    answers: ["الاكسجة المسبقة تزيد وقت تحمل انقطاع النفس", "الاكسجة المسبقة تزيد من تحمل انقطاع النفس", "زيادة تحمل انقطاع النفس"],
-                    chips: ["الأكسجة", "المسبقة", "تزيد", "وقت", "تحمل", "انقطاع النفس"]
+                    prompt: "Active recall enhances long-term memory retention",
+                    hint: "الاسترجاع النشط يعزز استبقاء الذاكرة طويلة المدى",
+                    answers: ["الاسترجاع النشط يعزز استبقاء الذاكرة", "الاسترجاع النشط يقوي الذاكرة", "يعزز استبقاء الذاكرة"],
+                    chips: ["الاسترجاع", "النشط", "يعزز", "استبقاء", "الذاكرة", "طويلة المدى"]
                 }
             ]
         };
@@ -673,25 +673,34 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI INTERACTIVE TUTOR & QUIZ ENGINE ------------------
+        // ------------------ 4. ZERO AI UNIVERSAL ACADEMIC TUTOR & QUIZ ENGINE ------------------
         const quizBank = [
             {
-                q: "What is the primary purpose of pre-oxygenation before general anesthesia induction?",
+                q: "ما هي أفضل استراتيجية علمية لتثبيت المعلومات المعقدة قبل الامتحان بفترة؟",
                 options: [
-                    { t: "A) Decrease heart rate", correct: false },
-                    { t: "B) Increase apnea tolerance time (زيادة وقت تحمل انقطاع النفس)", correct: true },
-                    { t: "C) Induce deep sleep quickly", correct: false }
+                    { t: "A) إعادة قراءة النص عدة مرات فقط", correct: false },
+                    { t: "B) الاسترجاع النشط والتكرار المتباعد (Active Recall & Spaced Repetition)", correct: true },
+                    { t: "C) الدراسة لساعات طويلة بدون أي فترات راحة", correct: false }
                 ],
-                explanation: "الأكسجة المسبقة (Pre-oxygenation) تعوض النيتروجين بالأكسجين في الرئة (Denitrogenation) فتنطي للمريض وقت إضافي بدون هبوط نسبة الأكسجين أثناء التنبيب (Intubation)."
+                explanation: "أثبتت الدراسات أن استرجاع المعلومات ذاتياً عبر حل الأسئلة والكويزات يعزز ثبات الذاكرة بنسبة 80% مقارنة بالقراءة السلبية المتكررة."
             },
             {
-                q: "Which medication is commonly classified as an intravenous induction agent?",
+                q: "Which conjunction is correctly used to show a strong contrast between two academic ideas?",
                 options: [
-                    { t: "A) Propofol (بروبوفول)", correct: true },
-                    { t: "B) Paracetamol", correct: false },
-                    { t: "C) Atropine sulfate", correct: false }
+                    { t: "A) Furthermore", correct: false },
+                    { t: "B) However (مع ذلك / بالمقابل)", correct: true },
+                    { t: "C) Therefore", correct: false }
                 ],
-                explanation: "الـ Propofol هو أشهر منوم وريدي (IV Induction Agent) سريع المفعول يُستخدم لبدء التخدير العام."
+                explanation: "تُستخدم أداة الربط 'However' في المقالات والأسئلة الأكاديمية والوزارية للدلالة على التناقض أو التباين بين فكرتين."
+            },
+            {
+                q: "في إدارة الوقت، ماذا تسمى تقنية تقسيم الدراسة إلى فترات 25 دقيقة تركيز تعقبها 5 دقائق استراحة؟",
+                options: [
+                    { t: "A) تقنية بومودورو (Pomodoro Technique)", correct: true },
+                    { t: "B) تقنية إيزنهاور", correct: false },
+                    { t: "C) مصفوفة باريتو", correct: false }
+                ],
+                explanation: "تقنية بومودورو تمنع إجهاد الدماغ وتزيد من إفراز الدوبامين لإبقاء الطالب في قمة تركيزه طوال اليوم."
             }
         ];
         let quizIdx = 0;
@@ -712,15 +721,15 @@
             feed.scrollTop = feed.scrollHeight;
 
             setTimeout(() => {
-                if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال')) {
+                if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال') || txt.includes('امتحان')) {
                     triggerQuizQuestion();
                 } else {
                     feed.innerHTML += `
                         <div class="flex items-start gap-2.5">
                             <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                                <p>عاشت إيدك على السؤال بطل! 💡</p>
-                                <p>هذا المفهوم يعتمد على الفهم السريري الدقيق للمحاضرة؛ تأكد دائماً من ربط المصطلح الإنجليزي بوظيفته الفسيولوجية. تحب أسويلك كويز سريع حتى تمتحن نفسك بيه؟ اضغط على زر <strong>+ كويز جديد</strong> فوك!</p>
+                                <p>عاشت إيدك بطل! 💡</p>
+                                <p>هذا الموضوع كلش مهم؛ السر بالدراسة الأكاديمية والوزارية هو الفهم وتلخيص الفكرة بأسلوبك الخاص وحل الأسئلة الوزارية والامتحانية. تحب نمتحن نفسنا بكويز تفاعلي سريع؟ اضغط على زر <strong>+ كويز تفاعلي</strong> فوق!</p>
                             </div>
                         </div>`;
                     feed.scrollTop = feed.scrollHeight;
@@ -755,7 +764,7 @@
                             تدلل بطل! هذا سؤال امتحاني مهم ركّز بيه واختار الجواب الصح:
                         </p>
                         <div class="bg-slate-50 dark:bg-brandDark-bg p-3.5 rounded-2xl border border-slate-100 dark:border-brandDark-border space-y-2">
-                            <span class="text-[11px] font-bold text-sky-600 dark:text-sky-400">سؤال MCQ 📝</span>
+                            <span class="text-[11px] font-bold text-sky-600 dark:text-sky-400">سؤال تفاعلي MCQ 📝</span>
                             <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">${item.q}</h4>
                             <div class="options-container space-y-1.5 pt-1">
                                 ${optionsHtml}
