@@ -47,6 +47,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- PDF.js Library for reading PDF lectures directly in the browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -157,7 +162,6 @@
 
         <!-- ================= SECTION 2: POMODORO & FOREST & STATS ================= -->
         <section id="tab-pomodoro" class="hidden space-y-5">
-            <!-- Productivity Stats Bar -->
             <div class="grid grid-cols-3 gap-2.5 text-center">
                 <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl shadow-sm">
                     <span class="text-[10px] text-slate-400 font-bold block">وقت التركيز التراكمي</span>
@@ -272,43 +276,79 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 4: ZERO AI (مع الحفظ المحلي أوفلاين) ================= -->
-        <section id="tab-zero" class="hidden space-y-4">
-            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-lg shadow-md shadow-turq-500/20">
+        <!-- ================= SECTION 4: ZERO AI (محرك الملازم والذكاء الاصطناعي التناوبي) ================= -->
+        <section id="tab-zero" class="space-y-4">
+            
+            <!-- Lecture Upload & Context Area -->
+            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">ملزمة ومصدر الكويز 📚</h3>
+                            <p class="text-[11px] text-slate-400">ارفع ملزمة PDF أو الصق النص حتى يصنعلك زيرو كويز ذكي منها حصراً!</p>
+                        </div>
+                    </div>
+                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2.5 py-1 rounded-full border border-sky-200 dark:border-sky-800">
+                        ⚡ المحرك: Groq Cloud
+                    </span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <!-- File Upload Input (PDF & TXT) -->
+                    <label class="cursor-pointer flex-1 bg-slate-50 dark:bg-brandDark-bg border border-dashed border-slate-300 dark:border-brandDark-border hover:border-turq-500 rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition">
+                        <i class="fa-solid fa-file-pdf text-rose-500 text-base"></i>
+                        <span id="upload-file-status">اضغط لرفع ملف الملزمة (PDF / TXT)</span>
+                        <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
+                    </label>
+                    <button onclick="togglePasteArea()" class="bg-slate-100 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-turq-500 transition">
+                        أو الصق نص ✍️
+                    </button>
+                </div>
+
+                <!-- Textarea (Collapsible) -->
+                <div id="lecture-paste-container" class="hidden">
+                    <textarea id="lecture-text-content" rows="4" placeholder="الصق محتوى أو ملخص المحاضرة هنا باللغة العربية أو الإنجليزية..." class="w-full bg-slate-50 dark:bg-brandDark-bg border border-slate-200 dark:border-brandDark-border p-3 rounded-2xl text-xs focus:outline-none focus:border-turq-500 transition resize-none"></textarea>
+                </div>
+
+                <!-- Active Lecture Status -->
+                <div id="lecture-loaded-badge" class="hidden p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-between">
+                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم قراءة الملزمة بنجاح! جاهز لتوليد الكويزات.</span>
+                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline">مسح الملزمة</button>
+                </div>
+            </div>
+
+            <!-- Chat Header -->
+            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-3.5 rounded-3xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl gradient-turq-sky text-white flex items-center justify-center font-bold text-base shadow-sm">
                         <i class="fa-solid fa-robot"></i>
                     </div>
                     <div>
-                        <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                            زيرو الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        </h3>
-                        <p class="text-xs text-slate-400">محادثة محفوظة أوفلاين وكويزات MCQ 🎓</p>
+                        <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                            زيرو الأكاديمي الذكي <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        </h4>
+                        <p class="text-[11px] text-slate-400">توليد كويزات MCQ حصرية ومحادثة تدريسية</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <button onclick="triggerQuizQuestion()" class="text-[11px] font-bold text-turq-600 dark:text-turq-400 bg-turq-50 dark:bg-turq-900/30 px-3 py-1.5 rounded-full hover:scale-105 transition">
-                        + كويز تفاعلي 📝
+                    <button onclick="requestAiQuizFromLecture()" class="duo-btn gradient-turq-sky text-white text-xs font-black px-4 py-2 rounded-xl shadow-md shadow-turq-500/20 hover:opacity-95 transition">
+                        + اصنع كويز من الملزمة 📝
                     </button>
-                    <button onclick="clearChatHistory()" class="text-[11px] text-slate-400 hover:text-rose-500 p-1.5" title="مسح المحادثة">
+                    <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2" title="مسح المحادثة">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-semibold">
-                <button onclick="quickAskZero('سويلي كويز تفاعلي MCQ لاختبار معلوماتي')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">📝 كويز MCQ سريع</button>
-                <button onclick="quickAskZero('شنو أفضل خطة دراسية لمراجعة مادة الامتحان أو الوزاري قبل الامتحان بأسبوع؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">🎯 خطة مراجعة سريعة</button>
-                <button onclick="quickAskZero('اشرحلي تقنية الاسترجاع النشط (Active Recall) شلون تفيد بالامتحانات؟')" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border px-3 py-1.5 rounded-xl whitespace-nowrap hover:border-turq-500">💡 طرق الحفظ والتركيز</button>
-            </div>
-
             <!-- Chat Feed (Persisted Offline) -->
-            <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1">
-                <!-- Chat will load from localStorage -->
-            </div>
+            <div id="zero-chat-feed" class="space-y-3 min-h-[300px] max-h-[500px] overflow-y-auto p-1"></div>
 
+            <!-- Chat Input -->
             <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-2 rounded-2xl flex gap-2 shadow-sm">
-                <input id="zero-user-msg" type="text" placeholder="اكتب سؤالك لزيرو أو كوله 'سويلي كويز'..." 
+                <input id="zero-user-msg" type="text" placeholder="اسأل زيرو عن أي نقطة بالمحاضرة أو اطلب شرح فكرة..." 
                     onkeydown="if(event.key==='Enter') sendZeroChat()"
                     class="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none placeholder-slate-400">
                 <button onclick="sendZeroChat()" class="gradient-turq-sky text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-turq-500/20 hover:opacity-95 transition">
@@ -322,7 +362,6 @@
     <!-- ================= MODAL: SHARE ACHIEVEMENT CARD ================= -->
     <div id="share-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
-            <!-- Share Graphic Card -->
             <div id="share-card" class="gradient-turq-sky p-6 rounded-2xl text-white shadow-lg space-y-3 text-center">
                 <div class="w-12 h-12 rounded-2xl bg-white/20 mx-auto flex items-center justify-center font-black text-2xl border border-white/30" dir="ltr">
                     Z+
@@ -364,7 +403,7 @@
     <!-- Bottom Mobile Nav Bar -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/90 dark:bg-brandDark-surface/90 backdrop-blur-md border-t border-slate-200 dark:border-brandDark-border py-2 px-4 z-40">
         <div class="max-w-md mx-auto flex justify-around">
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs">
+            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
                 <i class="fa-solid fa-list-check text-base mb-1"></i>
                 <span>المهام</span>
             </button>
@@ -376,21 +415,21 @@
                 <i class="fa-solid fa-earth-americas text-base mb-1"></i>
                 <span>الإنكليزي</span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-slate-400 font-bold text-xs hover:text-turq-500">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1 px-3 text-turq-600 dark:text-turq-400 font-bold text-xs">
                 <i class="fa-solid fa-robot text-base mb-1"></i>
                 <span>زيرو AI</span>
             </button>
         </div>
     </nav>
 
-    <!-- ================= JAVASCRIPT & ENGINES ================= -->
+    <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
         // ------------------ SUPABASE INITIALIZATION ------------------
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_KEY = "sb_publishable_shg6Ws-PT5lLUa6g2youYA_wPnnmsO_";
         const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-        // ------------------ GLOBAL APP STATE & XP ------------------
+        // ------------------ GLOBAL STATE & XP ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
 
@@ -458,7 +497,7 @@
             } catch(e){}
         }
 
-        // ------------------ WEB PUSH NOTIFICATIONS ------------------
+        // ------------------ PUSH NOTIFICATIONS ------------------
         function requestNotificationPermission() {
             if (!("Notification" in window)) {
                 alert("متصفحك لا يدعم الإشعارات.");
@@ -900,37 +939,338 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. ZERO AI CHAT (PERSISTENT OFFLINE) ------------------
-        const quizBank = [
-            {
-                q: "ما هي أفضل استراتيجية علمية لتثبيت المعلومات المعقدة قبل الامتحان بفترة؟",
-                options: [
-                    { t: "A) إعادة قراءة النص عدة مرات فقط", correct: false },
-                    { t: "B) الاسترجاع النشط والتكرار المتباعد (Active Recall & Spaced Repetition)", correct: true },
-                    { t: "C) الدراسة لساعات طويلة بدون أي فترات راحة", correct: false }
-                ],
-                explanation: "أثبتت الدراسات أن استرجاع المعلومات ذاتياً عبر حل الأسئلة والكويزات يعزز ثبات الذاكرة بنسبة 80% مقارنة بالقراءة السلبية المتكررة."
-            },
-            {
-                q: "Which conjunction is correctly used to show a strong contrast between two academic ideas?",
-                options: [
-                    { t: "A) Furthermore", correct: false },
-                    { t: "B) However (مع ذلك / بالمقابل)", correct: true },
-                    { t: "C) Therefore", correct: false }
-                ],
-                explanation: "تُستخدم أداة الربط 'However' في المقالات والأسئلة الأكاديمية والوزارية للدلالة على التناقض أو التباين بين فكرتين."
-            },
-            {
-                q: "في إدارة الوقت، ماذا تسمى تقنية تقسيم الدراسة إلى فترات 25 دقيقة تركيز تعقبها 5 دقائق استراحة؟",
-                options: [
-                    { t: "A) تقنية بومودورو (Pomodoro Technique)", correct: true },
-                    { t: "B) تقنية إيزنهاور", correct: false },
-                    { t: "C) مصفوفة باريتو", correct: false }
-                ],
-                explanation: "تقنية بومودورو تمنع إجهاد الدماغ وتزيد من إفراز الدوبامين لإبقاء الطالب في قمة تركيزه طوال اليوم."
+        // ------------------ 4. ZERO AI MULTI-ENGINE ROTATION & LECTURE PARSER ------------------
+        let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
+        let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
+
+        const AI_CONFIG = {
+            groqKey: "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",
+            geminiKey: "AQ.Ab8RN6L1HEDRM1kTho6tnYsMTnk2MBHkq8lIu8d24NTSku6JSA",
+            qwenKey: "sk-d7037ce698504ebcb37a4c9d54e19195" // fallback
+        };
+
+        function togglePasteArea() {
+            const box = document.getElementById('lecture-paste-container');
+            box.classList.toggle('hidden');
+        }
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const status = document.getElementById('upload-file-status');
+            status.innerText = `جاري قراءة ملف: ${file.name}... ⏳`;
+
+            try {
+                if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = "";
+                    for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) { // يقرأ لغاية 30 صفحة
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(" ");
+                        fullText += pageText + "\n";
+                    }
+                    setLectureContent(fullText, file.name);
+                } else {
+                    const text = await file.text();
+                    setLectureContent(text, file.name);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("تعذر قراءة الملف، تأكد من سلامة ملف الـ PDF أو جرب لصق النص مباشرة.");
+                status.innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
             }
-        ];
-        let quizIdx = 0;
+        }
+
+        function setLectureContent(text, sourceName = "ملزمة") {
+            currentLectureText = text.trim();
+            localStorage.setItem('zp_active_lecture_text', currentLectureText);
+            document.getElementById('lecture-paste-container').classList.add('hidden');
+            document.getElementById('upload-file-status').innerText = `تم رفع: ${sourceName} ✅`;
+            
+            const badge = document.getElementById('lecture-loaded-badge');
+            badge.classList.remove('hidden');
+            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز [ ${sourceName} ] بحجم (${Math.round(currentLectureText.length / 1000)} ألف حرف). زيرو جاهز للاختبار!`;
+        }
+
+        function resetLectureContext() {
+            currentLectureText = "";
+            seenQuestions = [];
+            localStorage.removeItem('zp_active_lecture_text');
+            localStorage.removeItem('zp_seen_questions');
+            document.getElementById('lecture-loaded-badge').classList.add('hidden');
+            document.getElementById('upload-file-status').innerText = "اضغط لرفع ملف الملزمة (PDF / TXT)";
+            document.getElementById('lecture-text-content').value = "";
+            alert("تم إفراغ محتوى الملزمة ومسح كاش الأسئلة السابقة.");
+        }
+
+        // إذا كان هناك نص ملزمة مخزن سابقاً
+        if (currentLectureText && currentLectureText.length > 50) {
+            document.getElementById('lecture-loaded-badge').classList.remove('hidden');
+            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> توجد ملزمة محفوظة بالذاكرة جاهزة للتوليد!`;
+        }
+
+        // استدعاء الذكاء الاصطناعي مع التناوب التلقائي (Groq -> Gemini -> Qwen)
+        async function callRotatingAI(prompt, systemInstruction = "") {
+            const engines = [
+                {
+                    name: "Groq Cloud (Llama-3.3-70B)",
+                    call: async () => {
+                        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                            method: "POST",
+                            headers: {
+                                "Authorization": `Bearer ${AI_CONFIG.groqKey}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                model: "llama-3.3-70b-versatile",
+                                messages: [
+                                    { role: "system", content: systemInstruction },
+                                    { role: "user", content: prompt }
+                                ],
+                                temperature: 0.5,
+                                max_tokens: 1200
+                            })
+                        });
+                        const data = await res.json();
+                        return data.choices[0].message.content;
+                    }
+                },
+                {
+                    name: "Google Gemini 1.5 Flash",
+                    call: async () => {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_CONFIG.geminiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: `${systemInstruction}\n\n${prompt}` }] }]
+                            })
+                        });
+                        const data = await res.json();
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                },
+                {
+                    name: "Qwen Cloud (Qwen-Plus)",
+                    call: async () => {
+                        const res = await fetch("https://maas.qwencloudapi.com/compatible-mode/v1/chat/completions", {
+                            method: "POST",
+                            headers: {
+                                "Authorization": `Bearer ${AI_CONFIG.qwenKey}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                model: "qwen3.5-flash",
+                                messages: [
+                                    { role: "system", content: systemInstruction },
+                                    { role: "user", content: prompt }
+                                ]
+                            })
+                        });
+                        const data = await res.json();
+                        return data.choices[0].message.content;
+                    }
+                }
+            ];
+
+            let lastError = null;
+            for (let engine of engines) {
+                try {
+                    document.getElementById('ai-active-engine-badge').innerText = `⚡ متصل: ${engine.name.split(' ')[0]}`;
+                    const reply = await engine.call();
+                    if (reply) return reply;
+                } catch (err) {
+                    console.warn(`Engine ${engine.name} failed, rotating to next...`, err);
+                    lastError = err;
+                }
+            }
+            throw new Error("جميع محركات الذكاء الاصطناعي مشغولة حالياً، يرجى المحاولة بعد دقيقة.");
+        }
+
+        // توليد الكويز من الملزمة حصراً
+        async function requestAiQuizFromLecture() {
+            // التحقق من النص اليدوي إن لم يُرفع ملف
+            const manualText = document.getElementById('lecture-text-content').value.trim();
+            if (manualText && manualText.length > 50) {
+                currentLectureText = manualText;
+            }
+
+            if (!currentLectureText || currentLectureText.length < 30) {
+                alert("⚠️ لا يمكن توليد كويز فارغ! يرجى رفع ملف الملزمة (PDF) أو لصق نص المحاضرة أولاً بالخانة المخصصة أعلاه.");
+                return;
+            }
+
+            const feed = document.getElementById('zero-chat-feed');
+            const loadingId = 'loading_' + Date.now();
+            feed.innerHTML += `
+                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-turq-600 dark:text-turq-400 p-3 bg-turq-50 dark:bg-turq-900/20 rounded-2xl animate-pulse">
+                    <i class="fa-solid fa-brain text-sm"></i>
+                    <span>زيرو يقرأ نصوص الملزمة ويصنعلك كويز MCQ غير مكرر... 🧠</span>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+
+            const prompt = `
+إليك محتوى الملزمة الأكاديمية:
+"""
+${currentLectureText.substring(0, 10000)}
+"""
+
+قائمة الأسئلة التي طُرحت سابقاً (ممنوع منعاً باتاً تكرارها أو صياغة سؤال مشابه لها):
+${JSON.stringify(seenQuestions.slice(-15))}
+
+المطلوب: قم بصياغة سؤال اختيارات (MCQ) أكاديمي ذكي ودقيق مستخرج حصراً من هذه الملزمة.
+يجب أن ترجع النتيجة بصيغة JSON نظيفة فقط بدون أي نصوص قبلها أو بعدها، بهذا الشكل التام:
+{
+  "q": "نص السؤال هنا باللغة العربية أو الإنجليزية حسب لغة الملزمة",
+  "options": [
+    {"t": "A) الخيار الأول", "correct": false},
+    {"t": "B) الخيار الثاني", "correct": true},
+    {"t": "C) الخيار الثالث", "correct": false}
+  ],
+  "explanation": "الشرح والتعليل العلمي للحل الصحيح بالعربي أو العراقي المبسط"
+}
+`;
+
+            try {
+                const response = await callRotatingAI(prompt, "أنت زيرو الأكاديمي، أستاذ جامعي ومصمم أسئلة امتحانية ووزارية محترف. ترجع فقط كود JSON خالص.");
+                const cleanJson = response.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const quizData = JSON.parse(cleanJson);
+
+                // إزالة علامة التحميل
+                document.getElementById(loadingId)?.remove();
+
+                // تخزين السؤال في الكاش لمنع تكراره
+                seenQuestions.push(quizData.q);
+                localStorage.setItem('zp_seen_questions', JSON.stringify(seenQuestions));
+
+                renderMCQCard(quizData);
+            } catch (err) {
+                console.error(err);
+                document.getElementById(loadingId)?.remove();
+                feed.innerHTML += `
+                    <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/30 rounded-2xl text-xs font-bold">
+                        واجه زيرو ضغطاً على السيرفر أثناء قراءة الملزمة. حاول الضغط على زر الكويز مرة ثانية!
+                    </div>`;
+                feed.scrollTop = feed.scrollHeight;
+            }
+        }
+
+        function renderMCQCard(item) {
+            const feed = document.getElementById('zero-chat-feed');
+            const qId = 'quiz_' + Date.now();
+
+            let optionsHtml = '';
+            item.options.forEach((opt) => {
+                optionsHtml += `
+                    <button onclick="answerMCQ('${qId}', ${opt.correct}, this, '${item.explanation.replace(/'/g, "\\'")}')" class="w-full text-right p-3 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs font-semibold">
+                        ${opt.t}
+                    </button>`;
+            });
+
+            feed.innerHTML += `
+                <div class="flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
+                    <div id="${qId}" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-3">
+                        <div class="flex items-center justify-between text-[11px] font-bold">
+                            <span class="text-sky-600 dark:text-sky-400">سؤال من ملزمتك الحالية 📝</span>
+                            <span class="text-slate-400">غير مكرر ✨</span>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-relaxed">${item.q}</h4>
+                        <div class="options-container space-y-1.5 pt-1">
+                            ${optionsHtml}
+                        </div>
+                        <div class="feedback-container hidden"></div>
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+            saveChatOffline();
+        }
+
+        async function sendZeroChat() {
+            const input = document.getElementById('zero-user-msg');
+            const txt = input.value.trim();
+            if (!txt) return;
+            input.value = '';
+
+            const feed = document.getElementById('zero-chat-feed');
+            feed.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="gradient-turq-sky text-white text-xs sm:text-sm font-semibold p-3 rounded-2xl rounded-tl-none max-w-xs shadow-md shadow-turq-500/10">
+                        ${txt}
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+            saveChatOffline();
+
+            if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال')) {
+                requestAiQuizFromLecture();
+                return;
+            }
+
+            const loadingId = 'loading_chat_' + Date.now();
+            feed.innerHTML += `
+                <div id="${loadingId}" class="text-[11px] font-bold text-slate-400 p-2 animate-pulse">
+                    زيرو يكتب الآن... ✍️
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+
+            const contextInstruction = currentLectureText ? `اعتمد على محتوى الملزمة التالي إن كان السؤال متعلقاً بها:\n${currentLectureText.substring(0, 5000)}` : "";
+            const systemPrompt = `أنت "زيرو (Zero)" الرفيق الأكاديمي والوزاري الذكي بالعراق. تتحدث بأسلوب مشجع ومحفز ومتقن علمياً، وتجيب باختصار ودقة ولهجة عراقية مهذبة أو فصحى واضحة. ${contextInstruction}`;
+
+            try {
+                const reply = await callRotatingAI(txt, systemPrompt);
+                document.getElementById(loadingId)?.remove();
+
+                feed.innerHTML += `
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
+                        <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                            ${reply.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>`;
+                feed.scrollTop = feed.scrollHeight;
+                saveChatOffline();
+            } catch (err) {
+                document.getElementById(loadingId)?.remove();
+                feed.innerHTML += `
+                    <div class="p-2 text-rose-500 text-xs font-bold">
+                        تعذر الرد مؤقتاً، تأكد من اتصال النت أو كرر رسالتك.
+                    </div>`;
+            }
+        }
+
+        function quickAskZero(promptText) {
+            document.getElementById('zero-user-msg').value = promptText;
+            sendZeroChat();
+        }
+
+        function answerMCQ(containerId, isCorrect, btn, exp) {
+            const container = document.getElementById(containerId);
+            const btns = container.querySelectorAll('.options-container button');
+            btns.forEach(b => b.disabled = true);
+
+            const fb = container.querySelector('.feedback-container');
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-turq-500 bg-turq-500/10 text-turq-700 dark:text-turq-300 font-bold flex items-center justify-between text-xs';
+                btn.innerHTML += ' <i class="fa-solid fa-circle-check text-turq-500"></i>';
+                fb.className = 'feedback-container bg-turq-50 dark:bg-turq-900/20 text-turq-700 dark:text-turq-300 p-3 rounded-xl text-xs font-bold space-y-1';
+                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> عاشت إيدك بطل! إجابة صحيحة ومضبوطة (+15 XP) 🎉</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">${exp}</div>`;
+                playChime(true);
+                awardXP(15);
+                triggerConfetti();
+            } else {
+                btn.className = 'w-full text-right p-3 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs';
+                btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+                fb.className = 'feedback-container bg-rose-500/10 text-rose-500 dark:text-rose-400 p-3 rounded-xl text-xs font-bold space-y-1';
+                fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
+                playChime(false);
+            }
+            saveChatOffline();
+        }
 
         function loadSavedChat() {
             const feed = document.getElementById('zero-chat-feed');
@@ -942,8 +1282,8 @@
                     <div class="flex items-start gap-2.5">
                         <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
                         <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                            هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري 🎓.<br>
-                            محادثتنا تنحفظ بجهازك أوفلاين حتى لو انقطع النت! اسألني أي شي أو اختبر معلوماتك بكويز تفاعلي الآن.
+                            هلا بيك بطل! أني <strong>زيرو (Zero)</strong> رفيقك الأكاديمي والوزاري الذكي 🎓.<br>
+                            ارفع ملزمتك فوق بصيغة PDF أو الصق النص، واضغط على <strong>+ اصنع كويز من الملزمة</strong> حتى أمتحنك بأسئلة ذكية وغير مكررة منها مباشرة!
                         </div>
                     </div>`;
             }
@@ -960,106 +1300,6 @@
                 localStorage.removeItem('zp_chat_html');
                 loadSavedChat();
             }
-        }
-
-        function sendZeroChat() {
-            const input = document.getElementById('zero-user-msg');
-            const txt = input.value.trim();
-            if (!txt) return;
-            input.value = '';
-
-            const feed = document.getElementById('zero-chat-feed');
-            feed.innerHTML += `
-                <div class="flex justify-end">
-                    <div class="gradient-turq-sky text-white text-xs sm:text-sm font-semibold p-3.5 rounded-2xl rounded-tl-none max-w-xs shadow-md shadow-turq-500/10">
-                        ${txt}
-                    </div>
-                </div>`;
-            feed.scrollTop = feed.scrollHeight;
-            saveChatOffline();
-
-            setTimeout(() => {
-                if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('سؤال') || txt.includes('امتحان')) {
-                    triggerQuizQuestion();
-                } else {
-                    feed.innerHTML += `
-                        <div class="flex items-start gap-2.5">
-                            <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                            <div class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                                <p>عاشت إيدك بطل! 💡</p>
-                                <p>هذا الموضوع كلش مهم؛ السر بالدراسة الأكاديمية والوزارية هو الفهم وتلخيص الفكرة بأسلوبك الخاص وحل الأسئلة الوزارية والامتحانية. تحب نمتحن نفسنا بكويز تفاعلي سريع؟ اضغط على زر <strong>+ كويز تفاعلي</strong> فوق!</p>
-                            </div>
-                        </div>`;
-                    feed.scrollTop = feed.scrollHeight;
-                    saveChatOffline();
-                }
-            }, 600);
-        }
-
-        function quickAskZero(promptText) {
-            document.getElementById('zero-user-msg').value = promptText;
-            sendZeroChat();
-        }
-
-        function triggerQuizQuestion() {
-            const feed = document.getElementById('zero-chat-feed');
-            const item = quizBank[quizIdx % quizBank.length];
-            quizIdx++;
-            const qId = 'quiz_' + Date.now();
-
-            let optionsHtml = '';
-            item.options.forEach((opt, idx) => {
-                optionsHtml += `
-                    <button onclick="answerMCQ('${qId}', ${opt.correct}, this, '${item.explanation}')" class="w-full text-right p-2.5 rounded-xl border border-slate-200 dark:border-brandDark-border bg-white dark:bg-brandDark-surface hover:border-turq-500 transition text-xs font-semibold">
-                        ${opt.t}
-                    </button>`;
-            });
-
-            feed.innerHTML += `
-                <div class="flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-xl gradient-turq-sky text-white flex items-center justify-center text-xs font-black shrink-0 mt-1">Z+</div>
-                    <div id="${qId}" class="bg-white dark:bg-brandDark-surface border border-slate-200 dark:border-brandDark-border p-4 rounded-3xl rounded-tr-none max-w-md w-full shadow-sm space-y-3">
-                        <p class="text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                            تدلل بطل! هذا سؤال امتحاني مهم ركّز بيه واختار الجواب الصح:
-                        </p>
-                        <div class="bg-slate-50 dark:bg-brandDark-bg p-3.5 rounded-2xl border border-slate-100 dark:border-brandDark-border space-y-2">
-                            <span class="text-[11px] font-bold text-sky-600 dark:text-sky-400">سؤال تفاعلي MCQ 📝</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">${item.q}</h4>
-                            <div class="options-container space-y-1.5 pt-1">
-                                ${optionsHtml}
-                            </div>
-                        </div>
-                        <div class="feedback-container hidden"></div>
-                    </div>
-                </div>`;
-            feed.scrollTop = feed.scrollHeight;
-            saveChatOffline();
-        }
-
-        function answerMCQ(containerId, isCorrect, btn, exp) {
-            const container = document.getElementById(containerId);
-            const btns = container.querySelectorAll('.options-container button');
-            btns.forEach(b => b.disabled = true);
-
-            const fb = container.querySelector('.feedback-container');
-            fb.classList.remove('hidden');
-
-            if (isCorrect) {
-                btn.className = 'w-full text-right p-2.5 rounded-xl border-2 border-turq-500 bg-turq-500/10 text-turq-700 dark:text-turq-300 font-bold flex items-center justify-between text-xs';
-                btn.innerHTML += ' <i class="fa-solid fa-circle-check text-turq-500"></i>';
-                fb.className = 'feedback-container bg-turq-50 dark:bg-turq-900/20 text-turq-700 dark:text-turq-300 p-2.5 rounded-xl text-xs font-bold space-y-1';
-                fb.innerHTML = `<div><i class="fa-solid fa-circle-check ml-1"></i> عاشت إيدك! إجابة صحيحة (+15 XP) 🎉</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">${exp}</div>`;
-                playChime(true);
-                awardXP(15);
-                triggerConfetti();
-            } else {
-                btn.className = 'w-full text-right p-2.5 rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-500 font-bold flex items-center justify-between text-xs';
-                btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-rose-500"></i>';
-                fb.className = 'feedback-container bg-rose-500/10 text-rose-500 dark:text-rose-400 p-2.5 rounded-xl text-xs font-bold space-y-1';
-                fb.innerHTML = `<div><i class="fa-solid fa-circle-xmark ml-1"></i> إجابة غير دقيقة، حاول تركز أكثر بطل!</div><div class="text-[11px] font-normal text-slate-600 dark:text-slate-300">💡 التوضيح: ${exp}</div>`;
-                playChime(false);
-            }
-            saveChatOffline();
         }
         loadSavedChat();
 
