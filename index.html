@@ -799,6 +799,15 @@
                 playChime(false);
             }
         }
+
+        // ------------------ 5. SERVICE WORKER REGISTRATION (PWA OFFLINE) ------------------
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('ServiceWorker registration skipped or failed:', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
