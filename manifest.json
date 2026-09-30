@@ -1,20 +1,48 @@
 {
   "name": "ZeroPlus | المنصة الأكاديمية التخصصية",
   "short_name": "ZeroPlus",
-  "description": "منصة التعليم والتدريب التخصصي والوزاري للمجموعة الطبية والتقنيات الصحية",
+  "description": "منصة البناء اللغوي والتعليم التخصصي والوزاري للمجموعة الطبية والتقنيات الصحية",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#081426",
   "theme_color": "#0E2F76",
   "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
+  "categories": ["education", "medical"],
   "icons": [
     {
       "src": "/icon.svg?v=16",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "البناء اللغوي",
+      "short_name": "اللغة",
+      "description": "الانتقال المباشر لمسار المصطلحات والبناء اللغوي",
+      "url": "/#tab-english",
+      "icons": [
+        {
+          "src": "/icon.svg?v=16",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "المساعد الأكاديمي",
+      "short_name": "المساعد",
+      "description": "تحليل المحاضرات وتوليد الأسئلة",
+      "url": "/#tab-zero",
+      "icons": [
+        {
+          "src": "/icon.svg?v=16",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
