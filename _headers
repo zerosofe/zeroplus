@@ -4,19 +4,25 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
 
 /manifest.json
   Content-Type: application/manifest+json; charset=utf-8
-  Cache-Control: public, max-age=0, no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
 
 /sw.js
   Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=0, no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
+  Service-Worker-Allowed: /
 
 /index.html
   Content-Type: text/html; charset=utf-8
-  Cache-Control: public, max-age=0, no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
 
 /icon.svg
   Content-Type: image/svg+xml; charset=utf-8
-  Cache-Control: public, max-age=0, no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
