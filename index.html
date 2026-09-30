@@ -6,12 +6,12 @@
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=14">
-    <link rel="apple-touch-icon" href="/icon.svg?v=14">
-    <link rel="shortcut icon" href="/icon.svg?v=14">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=15">
+    <link rel="apple-touch-icon" href="/icon.svg?v=15">
+    <link rel="shortcut icon" href="/icon.svg?v=15">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=14">
+    <link rel="manifest" href="/manifest.json?v=15">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -77,6 +77,7 @@
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
+        /* رسائل المحادثة التخصصية */
         .chat-user-bubble {
             background: #0E2F76 !important;
             color: #F5FEFF !important;
@@ -102,6 +103,7 @@
             padding: 1rem 1.25rem !important;
         }
 
+        /* كارت الاختبار */
         html.dark .chat-quiz-card {
             background-color: #0f2038 !important;
             color: #F5FEFF !important;
@@ -139,7 +141,7 @@
 </head>
 <body class="bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-800 dark:text-santorini-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-santorini-deepNavy selection:text-white">
 
-    <!-- ================= MODAL 1: ONBOARDING USERNAME ================= -->
+    <!-- ================= MODAL 1: ONBOARDING USERNAME & DEPARTMENT ================= -->
     <div id="onboarding-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-8 text-center space-y-5 shadow-2xl">
             <div class="w-16 h-16 rounded-3xl bg-santorini-deepNavy text-white mx-auto flex items-center justify-center font-black text-2xl shadow-santorini-btn" dir="ltr">
@@ -148,18 +150,37 @@
             <div>
                 <h3 class="font-black text-xl text-santorini-deepNavy dark:text-santorini-white">منصة ZeroPlus الأكاديمية</h3>
                 <p class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1.5 leading-relaxed">
-                    يرجى إدخال الاسم لتسجيل جلستك ومزامنة سجلك الدراسي في السحابة.
+                    يرجى إدخال اسمك وتحديد قسمك الأكاديمي لتخصيص محتوى اللغة الإنجليزية والمصطلحات التخصصية.
                 </p>
             </div>
-            <div class="space-y-3">
-                <input id="onboard-user-name" type="text" placeholder="الاسم الثلاثي أو اللقب الأكاديمي..." 
-                    onkeydown="if(event.key==='Enter') saveUserName()"
-                    class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white font-bold text-center transition">
-                <button onclick="saveUserName()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
-                    <span>حفظ وبدء الجلسة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+            <div class="space-y-3 text-right">
+                <div>
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
+                    <input id="onboard-user-name" type="text" placeholder="الاسم الثلاثي أو اللقب..." 
+                        class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white font-bold transition">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">التخصص الأكاديمي / القسم:</label>
+                    <select id="onboard-user-dept" class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white font-bold transition">
+                        <option value="general">عام / مشترك لجميع الاختصاصات الطبية</option>
+                        <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
+                        <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
+                        <option value="optics">تقنيات البصريات والعيون</option>
+                        <option value="radiology">تقنيات الأشعة والسونار</option>
+                        <option value="dental_tech">تقنيات صناعة الأسنان</option>
+                        <option value="physiotherapy">تقنيات العلاج الطبيعي والتأهيل</option>
+                        <option value="community_health">تقنيات صحة المجتمع والوبائيات</option>
+                        <option value="medicine">الطب العام والجراحة</option>
+                        <option value="dentistry">طب وجراحة الفم والأسنان</option>
+                        <option value="pharmacy">الصيدلة السريرية والعقاقير</option>
+                        <option value="nursing">التمريض السريري والرعاية الحرجة</option>
+                    </select>
+                </div>
+                <button onclick="saveUserNameAndDept()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2 mt-2">
+                    <span>تأكيد وبدء المنصة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                 </button>
             </div>
-            <span class="text-[10px] text-slate-400 block font-semibold">يتم التحقق من الحساب لمرة واحدة فقط لكل جهاز</span>
+            <span class="text-[10px] text-slate-400 block font-semibold">يمكنك تعديل التخصص لاحقاً في أي وقت من قسم المصطلحات</span>
         </div>
     </div>
 
@@ -316,7 +337,7 @@
                     onkeydown="if(event.key==='Enter') addTodo()"
                     class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white">
                 <select id="todo-tag" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
-                    <option value="مقرر جامعي">مقرر جامعي</option>
+                    <option value="مقرر تخصصي">مقرر تخصصي</option>
                     <option value="منهج وزاري">منهج وزاري</option>
                     <option value="مراجعة دورية">مراجعة دورية</option>
                     <option value="اختبار وتقييم">اختبار وتقييم</option>
@@ -406,43 +427,96 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 3: ACADEMIC TERMINOLOGY ================= -->
-        <section id="tab-english" class="hidden space-y-4">
-            <div class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="setEnglishLevel('A1', this)" class="eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm">المستوى التأسيسي (General)</button>
-                <button onclick="setEnglishLevel('A2', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى الأكاديمي (Collegiate)</button>
-                <button onclick="setEnglishLevel('B1', this)" class="eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap">المستوى التخصصي (Scientific)</button>
-            </div>
-
-            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
-                <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-santorini-deepNavy dark:text-santorini-softBlue bg-santorini-lightBg dark:bg-santorini-darkBase px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder">ترجمة المصطلح العلمي</span>
-                    <span id="eng-counter" class="text-slate-400">سؤال 1 من 3</span>
+        <!-- ================= SECTION 3: MEDICAL ENGLISH & SPECIALTY FLASHCARDS ================= -->
+        <section id="tab-english" class="hidden space-y-5">
+            <!-- Specialty Selection & Stats Header -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-5 rounded-4xl shadow-santorini space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-santorini-darkBorder pb-3">
+                    <div>
+                        <span class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue uppercase block">مسار اللغة الإنجليزية والمصطلحات الطبية</span>
+                        <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white mt-0.5">بطاقات الاسترجاع النشط والتكرار المتباعد</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">القسم:</span>
+                        <select id="active-dept-selector" onchange="changeActiveDepartment(this.value)" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue focus:outline-none">
+                            <option value="general">عام / مشترك لكافة الأقسام</option>
+                            <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
+                            <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
+                            <option value="optics">تقنيات البصريات والعيون</option>
+                            <option value="radiology">تقنيات الأشعة والسونار</option>
+                            <option value="dental_tech">تقنيات صناعة الأسنان</option>
+                            <option value="physiotherapy">تقنيات العلاج الطبيعي والتأهيل</option>
+                            <option value="community_health">تقنيات صحة المجتمع والوبائيات</option>
+                            <option value="medicine">الطب العام والجراحة</option>
+                            <option value="dentistry">طب وجراحة الفم والأسنان</option>
+                            <option value="pharmacy">الصيدلة السريرية والعقاقير</option>
+                            <option value="nursing">التمريض السريري والرعاية الحرجة</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase p-5 rounded-3xl border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-between">
-                    <div>
-                        <h3 id="eng-prompt-text" class="text-lg font-black text-santorini-deepNavy dark:text-santorini-white">I have to study for the final exam</h3>
-                        <p id="eng-hint-text" class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1 font-semibold">المعنى المقارب: (يجب أن أدرس للاختبار النهائي)</p>
+                <!-- Flashcard Progress Metrix -->
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span id="card-counter-badge" class="text-slate-400">بطاقة 1 من 10</span>
+                    <div class="flex items-center gap-4">
+                        <span class="text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check ml-1"></i> أتقنت: <strong id="mastered-count-badge">0</strong></span>
+                        <span class="text-amber-500"><i class="fa-solid fa-arrows-rotate ml-1"></i> قيد المراجعة: <strong id="review-count-badge">0</strong></span>
                     </div>
-                    <button onclick="speakEngSentence()" class="w-11 h-11 rounded-2xl bg-white dark:bg-santorini-darkCard text-santorini-deepNavy dark:text-santorini-softBlue border border-slate-200 dark:border-santorini-darkBorder flex items-center justify-center hover:scale-105 active:scale-95 shadow-sm transition" title="النطق الصوتي">
+                </div>
+            </div>
+
+            <!-- Active Interactive Clinical Flashcard (Mode 1 Only) -->
+            <div id="flashcard-canvas" class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-8 rounded-4xl shadow-santorini space-y-6 max-w-xl mx-auto text-center">
+                <!-- Card Header -->
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span id="card-category-tag" class="px-3 py-1 rounded-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-santorini-deepNavy dark:text-santorini-softBlue">
+                        مصطلح سريري
+                    </span>
+                    <button onclick="speakCurrentTerm()" class="w-10 h-10 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="استمع للنطق الصوتي الصحيح">
                         <i class="fa-solid fa-volume-high"></i>
                     </button>
                 </div>
 
-                <input id="eng-user-input" type="text" placeholder="اكتب صياغة الترجمة أو حدد الكلمات..." 
-                    onkeydown="if(event.key==='Enter') checkEngAnswer()"
-                    class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-2xl text-sm focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition font-semibold">
+                <!-- Main Term Presentation -->
+                <div class="py-4 space-y-2">
+                    <h2 id="card-english-term" class="text-3xl sm:text-4xl font-black text-santorini-deepNavy dark:text-santorini-white tracking-wide" dir="ltr">
+                        Hypoxia
+                    </h2>
+                    <p id="card-arabic-meaning" class="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-200">
+                        نقص تشبع الأكسجين في الأنسجة الحيوية
+                    </p>
+                </div>
 
-                <div id="eng-chips-box" class="flex flex-wrap gap-2 text-xs font-bold"></div>
-                <div id="eng-feedback-box" class="hidden p-4 rounded-2xl text-xs font-bold flex items-center gap-2"></div>
+                <!-- Linguistic Anatomy / Word Decomposition -->
+                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl text-right space-y-2">
+                    <span class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5">
+                        <i class="fa-solid fa-cubes-stacked text-xs"></i> <span>تفكيك المصطلح لغوياً (Word Anatomy):</span>
+                    </span>
+                    <p id="card-word-anatomy" class="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-relaxed" dir="ltr">
+                        Hypo- (Prefix: deficient/low) + ox- (Root: oxygen) + -ia (Suffix: condition)
+                    </p>
+                </div>
 
-                <div class="flex gap-2">
-                    <button onclick="nextEngQuestion()" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3 rounded-2xl font-bold text-xs hover:border-santorini-softBlue transition">
-                        تخطي <i class="fa-solid fa-forward mr-1"></i>
+                <!-- Clinical Sentence / Language Context -->
+                <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl text-right space-y-2">
+                    <span class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5">
+                        <i class="fa-solid fa-stethoscope text-xs"></i> <span>التوظيف اللغوي في جملة سريرية (Clinical Context):</span>
+                    </span>
+                    <p id="card-clinical-sentence-en" class="text-xs font-bold text-santorini-deepNavy dark:text-white leading-relaxed" dir="ltr">
+                        "The anesthesiologist adjusted the oxygen flow rate to prevent cellular hypoxia."
+                    </p>
+                    <p id="card-clinical-sentence-ar" class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                        قام أخصائي التخدير بتعديل معدل تدفق الأكسجين لمنع نقص الأكسجة في الأنسجة.
+                    </p>
+                </div>
+
+                <!-- Self Assessment & Recall Actions -->
+                <div class="pt-2 flex gap-3">
+                    <button onclick="handleFlashcardRating(false)" class="flex-1 bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 py-3.5 rounded-2xl font-bold text-xs hover:border-amber-500 transition active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate text-xs text-amber-500"></i> <span>يحتاج مراجعة</span>
                     </button>
-                    <button onclick="checkEngAnswer()" class="flex-1 bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95">
-                        تحقق من الصياغة
+                    <button onclick="handleFlashcardRating(true)" class="flex-1 bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-xs shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check text-xs text-emerald-400"></i> <span>أتقنت المصطلح (+10 XP)</span>
                     </button>
                 </div>
             </div>
@@ -450,7 +524,6 @@
 
         <!-- ================= SECTION 4: ZERO STUDY CONSOLE ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
-            <!-- Lecture Upload Bar -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 sm:p-5 rounded-4xl shadow-santorini space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
@@ -554,8 +627,8 @@
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">المهام المنجزة</span>
-                        <span id="share-tasks" class="text-sky-300 font-black text-sm">0</span>
+                        <span class="block text-white/70 text-[10px]">المصطلحات المتقنة</span>
+                        <span id="share-mastered" class="text-sky-300 font-black text-sm">0</span>
                     </div>
                 </div>
             </div>
@@ -596,12 +669,339 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
-        if (localStorage.getItem('zp_clean_professional_v3') !== 'true') {
-            localStorage.removeItem('zp_chat_html');
-            localStorage.setItem('zp_clean_professional_v3', 'true');
+        // ------------------ 1. DEPARTMENT DATA & FLASHCARDS ------------------
+        const DEPARTMENT_DATA = {
+            general: {
+                title: "المصطلحات الطبية العامة المشتركة",
+                cards: [
+                    {
+                        term: "Hypertension",
+                        ar: "ارتفاع ضغط الدم الوعائي",
+                        anatomy: "Hyper- (Prefix: high/excessive) + Tension (Root: pressure)",
+                        en_sentence: "The patient was prescribed antihypertensive medication to control persistent hypertension.",
+                        ar_sentence: "تم وصف علاج خافض للضغط للمريض للسيطرة على الارتفاع المستمر لضغط الدم."
+                    },
+                    {
+                        term: "Tachycardia",
+                        ar: "تسارع معدل ضربات القلب",
+                        anatomy: "Tachy- (Prefix: rapid/fast) + -cardia (Suffix: heart condition)",
+                        en_sentence: "Physical exertion and severe dehydration can trigger sinus tachycardia.",
+                        ar_sentence: "يمكن أن يؤدي المجهود البدني والجفاف الشديد إلى تحفيز تسارع نبضات القلب الجيبي."
+                    },
+                    {
+                        term: "Dyspnea",
+                        ar: "صعوبة أو ضيق في التنفس",
+                        anatomy: "Dys- (Prefix: difficult/painful) + -pnea (Suffix: respiration/breathing)",
+                        en_sentence: "The clinical team assessed the patient who developed acute dyspnea on exertion.",
+                        ar_sentence: "قام الفريق السريري بتقييم المريض الذي عانى من ضيق تنفس حاد عند بذل المجهود."
+                    }
+                ]
+            },
+            anesthesia: {
+                title: "تقنيات التخدير والعناية المركزة",
+                cards: [
+                    {
+                        term: "Endotracheal Intubation",
+                        ar: "التنبيب الرغامي داخل القصبة الهوائية",
+                        anatomy: "Endo- (within) + Tracheal (trachea) + Intubation (inserting a tube)",
+                        en_sentence: "Endotracheal intubation is essential to secure the airway during general anesthesia.",
+                        ar_sentence: "يعد التنبيب الرغامي ضرورياً لتأمين المجرى الهوائي أثناء التخدير العام."
+                    },
+                    {
+                        term: "Atelectasis",
+                        ar: "انخماص الحويصلات الرئوية",
+                        anatomy: "Atel/o- (incomplete) + -ectasis (dilation/expansion)",
+                        en_sentence: "Postoperative incentive spirometry reduces the incidence of pulmonary atelectasis.",
+                        ar_sentence: "يساعد جهاز قياس التنفس الحافز بعد العمليات في تقليل حدوث انخماص الرئة."
+                    },
+                    {
+                        term: "Extubation",
+                        ar: "نزع الأنبوب الرغامي بعد الإفاقة",
+                        anatomy: "Ex- (out/away from) + Tubation (tube presence)",
+                        en_sentence: "Extubation is safely performed once the patient regains adequate spontaneous reflexes.",
+                        ar_sentence: "يتم نزع الأنبوب الرغامي بأمان بمجرد استعادة المريض للمنعكسات التلقائية الكافية."
+                    }
+                ]
+            },
+            labs: {
+                title: "تقنيات المختبرات والتحليلات المرضية",
+                cards: [
+                    {
+                        term: "Leukocytosis",
+                        ar: "ارتفاع عدد كريات الدم البيضاء",
+                        anatomy: "Leuk/o- (white) + cyt- (cell) + -osis (abnormal increase)",
+                        en_sentence: "The complete blood count revealed marked leukocytosis indicating systemic bacterial infection.",
+                        ar_sentence: "أظهر فحص تعداد الدم الكامل ارتفاعاً ملحوظاً في كريات الدم البيضاء مشيراً إلى عدوى بكتيرية."
+                    },
+                    {
+                        term: "Hemolysis",
+                        ar: "انحلال وتكسر خلايا الدم الحمراء",
+                        anatomy: "Hem/o- (blood) + -lysis (destruction/dissolution)",
+                        en_sentence: "In vitro hemolysis in blood samples falsely elevates serum potassium levels.",
+                        ar_sentence: "يؤدي انحلال الدم داخل عينات الفحص إلى ارتفاع كاذب في مستويات بوتاسيوم المصل."
+                    },
+                    {
+                        term: "Bacteremia",
+                        ar: "وجود البكتيريا في المجرى الدموي",
+                        anatomy: "Bacteri- (bacteria) + -emia (blood condition)",
+                        en_sentence: "Blood cultures are obtained immediately to confirm suspected transient bacteremia.",
+                        ar_sentence: "تؤخذ مزارع الدم فوراً لتأكيد الاشتباه في وجود البكتيريا في الدم."
+                    }
+                ]
+            },
+            optics: {
+                title: "تقنيات البصريات والعيون",
+                cards: [
+                    {
+                        term: "Myopia",
+                        ar: "قصر النظر البصري",
+                        anatomy: "My- (squint/close) + -opia (vision condition)",
+                        en_sentence: "Concave corrective lenses are prescribed to treat axial myopia.",
+                        ar_sentence: "يتم وصف العدسات التصحيحية المقعرة لعلاج قصر النظر المحوري."
+                    },
+                    {
+                        term: "Astigmatism",
+                        ar: "اللابؤرية / انحراف القرنية",
+                        anatomy: "A- (without) + Stigmat- (point/mark) + -ism (state)",
+                        en_sentence: "Corneal astigmatism causes blurred vision due to irregular refractive curvature.",
+                        ar_sentence: "يؤدي انحراف القرنية إلى تشوش الرؤية بسبب عدم انتظام تقوس الانكسار."
+                    },
+                    {
+                        term: "Tonometry",
+                        ar: "قياس ضغط العين الداخلي",
+                        anatomy: "Ton/o- (tension/pressure) + -metry (measurement)",
+                        en_sentence: "Applanation tonometry is the standard method for screening ocular glaucoma.",
+                        ar_sentence: "يعد قياس ضغط العين بالمسطحة الطريقة المعيارية للكشف عن داء الزرق (الجلوكوما)."
+                    }
+                ]
+            },
+            radiology: {
+                title: "تقنيات الأشعة والسونار",
+                cards: [
+                    {
+                        term: "Radiopaque",
+                        ar: "معتم للأشعة / حاجب للإشعاع",
+                        anatomy: "Radi/o- (radiation/x-ray) + -opaque (impervious to light/radiation)",
+                        en_sentence: "Bone structures appear radiopaque and white on standard diagnostic radiographs.",
+                        ar_sentence: "تظهر التراكيب العظمية معتمة للأشعة وبيضاء على الصور الإشعاعية التشخيصية المعتادة."
+                    },
+                    {
+                        term: "Echogenicity",
+                        ar: "القدرة الصدوية للأنسجة بالسونار",
+                        anatomy: "Echo- (sound wave) + -genicity (producing/generating)",
+                        en_sentence: "Ultrasound imaging differentiates cystic lesions based on their internal echogenicity.",
+                        ar_sentence: "يميز التصوير بالسونار الآفات الكيسية بناءً على قدرتها الصدوية الداخلية."
+                    },
+                    {
+                        term: "Attenuation",
+                        ar: "توهين وضعف حزمة الأشعة داخل النسيج",
+                        anatomy: "Attenuat- (to thin/reduce) + -ion (process)",
+                        en_sentence: "Computed tomography measures tissue attenuation values expressed in Hounsfield units.",
+                        ar_sentence: "يقيس المفراس الحلزوني قيم توهين الأشعة في الأنسجة معبراً عنها بوحدات هونسفيلد."
+                    }
+                ]
+            },
+            dental_tech: {
+                title: "تقنيات صناعة الأسنان",
+                cards: [
+                    {
+                        term: "Prosthodontics",
+                        ar: "الاستعاضة السنية والتعويضات الاصطناعية",
+                        anatomy: "Prosth/o- (addition/replacement) + Odont- (tooth) + -ics (specialty)",
+                        en_sentence: "Removable prosthodontics focuses on restoring masticatory function with complete dentures.",
+                        ar_sentence: "تركز الاستعاضة السنية المتحركة على استعادة وظيفة المضغ بواسطة أطقم الأسنان الكاملة."
+                    },
+                    {
+                        term: "Occlusion",
+                        ar: "الإطباق السني بين الفكين",
+                        anatomy: "Occlud- (to close/shut) + -ion (action)",
+                        en_sentence: "Precise articulation ensures anatomical occlusion and prevents temporomandibular joint stress.",
+                        ar_sentence: "يضمن التعديل الدقيق إطباقاً تشريحياً صحيحاً ويمنع إجهاد مفصل الفك الصدغي."
+                    }
+                ]
+            },
+            physiotherapy: {
+                title: "تقنيات العلاج الطبيعي والتأهيل",
+                cards: [
+                    {
+                        term: "Hemiplegia",
+                        ar: "شلل نصفي طولي في جانب من الجسم",
+                        anatomy: "Hemi- (half) + -plegia (paralysis)",
+                        en_sentence: "Post-stroke rehabilitation aims to restore functional mobility in patients with hemiplegia.",
+                        ar_sentence: "يهدف تأهيل ما بعد الجلطة الدماغية إلى استعادة الحركة الوظيفية لمرضى الشلل النصفي."
+                    },
+                    {
+                        term: "Proprioception",
+                        ar: "الإحساس العميق بوضعية المفاصل والحركة",
+                        anatomy: "Propri/o- (one's own) + -ception (perception)",
+                        en_sentence: "Neuromuscular training improves joint proprioception and reduces re-injury rates.",
+                        ar_sentence: "يعزز التدريب العصبي العضلي الإحساس بوضعية المفاصل ويقلل من تكرار الإصابات."
+                    }
+                ]
+            },
+            community_health: {
+                title: "تقنيات صحة المجتمع والوبائيات",
+                cards: [
+                    {
+                        term: "Epidemiology",
+                        ar: "علم دراسة الأوبئة وانتشار الأمراض",
+                        anatomy: "Epi- (upon) + Dem/o- (people) + -logy (study of)",
+                        en_sentence: "Field epidemiology provides essential statistical data to control communicable outbreaks.",
+                        ar_sentence: "توفر الوبائيات الميدانية بيانات إحصائية أساسية للسيطرة على الفاشيات الانتقالية."
+                    },
+                    {
+                        term: "Prophylaxis",
+                        ar: "الوقاية الاستباقية من المرض",
+                        anatomy: "Pro- (before) + Phylaxis (guarding/protection)",
+                        en_sentence: "Pre-exposure immunization is an effective form of primary prophylaxis.",
+                        ar_sentence: "يعد التمنيع المسبق شكلاً فعالاً من أشكال الوقاية الأولية من الأمراض."
+                    }
+                ]
+            },
+            medicine: {
+                title: "الطب العام والجراحة",
+                cards: [
+                    {
+                        term: "Ischemia",
+                        ar: "نقص التروية الدموية عن العضو",
+                        anatomy: "Isch- (suppression/deficiency) + -emia (blood flow)",
+                        en_sentence: "Myocardial ischemia results when coronary arterial blood supply is critically restricted.",
+                        ar_sentence: "يحدث نقص تروية عضلة القلب عندما يتناقص تدفق الدم الشرياني التاجي بشكل حرج."
+                    },
+                    {
+                        term: "Prognosis",
+                        ar: "المآل التقديري لمسار المرض",
+                        anatomy: "Pro- (beforehand) + Gnos- (knowledge) + -is (condition)",
+                        en_sentence: "Early surgical intervention significantly improves the overall patient prognosis.",
+                        ar_sentence: "يحسن التدخل الجراحي المبكر المآل التقديري الإجمالي للمريض بشكل ملحوظ."
+                    }
+                ]
+            },
+            dentistry: {
+                title: "طب وجراحة الفم والأسنان",
+                cards: [
+                    {
+                        term: "Endodontics",
+                        ar: "علاج ومعالجة جذور ولب الأسنان",
+                        anatomy: "Endo- (inside) + Odont- (tooth) + -ics (practice)",
+                        en_sentence: "Endodontic therapy involves complete debridement of infected pulpal tissue.",
+                        ar_sentence: "يشمل علاج جذور الأسنان تنظيف الأنسجة اللبية المصابة بالكامل وتطهيرها."
+                    },
+                    {
+                        term: "Periodontitis",
+                        ar: "التهاب دواعم السن والأنسجة المحيطة",
+                        anatomy: "Peri- (around) + Odont- (tooth) + -itis (inflammation)",
+                        en_sentence: "Chronic periodontitis causes progressive destruction of the supporting alveolar bone.",
+                        ar_sentence: "يؤدي التهاب دواعم السن المزمن إلى تآكل تدريجي في عظم الفك السنخي الداعم."
+                    }
+                ]
+            },
+            pharmacy: {
+                title: "الصيدلة السريرية والعقاقير",
+                cards: [
+                    {
+                        term: "Bioavailability",
+                        ar: "التوافر الحيوي للدواء في الدورة الدموية",
+                        anatomy: "Bio- (life/body) + Availability (fraction reaching circulation)",
+                        en_sentence: "Intravenous administration provides one hundred percent systemic drug bioavailability.",
+                        ar_sentence: "يوفر الحقن الوريدي المباشر توافراً حيوياً جهازياً بنسبة مئة بالمئة للدواء."
+                    },
+                    {
+                        term: "Pharmacokinetics",
+                        ar: "حركية الدواء (امتصاص، توزيع، وأيض)",
+                        anatomy: "Pharmac/o- (drug) + Kinet- (movement) + -ics (study)",
+                        en_sentence: "Renal clearance is a key parameter in determining clinical pharmacokinetics.",
+                        ar_sentence: "يعد الإخراج الكلوي معياراً حاسماً في حساب حركية الدواء السريرية داخل الجسم."
+                    }
+                ]
+            },
+            nursing: {
+                title: "التمريض السريري والرعاية الحرجة",
+                cards: [
+                    {
+                        term: "Triage",
+                        ar: "فرز وتصنيف الحالات الإسعافية حسب الخطورة",
+                        anatomy: "French: Trier (to sort / prioritize based on acuity)",
+                        en_sentence: "Emergency nurses perform rapid triage to prioritize critical resuscitative care.",
+                        ar_sentence: "تقوم كوادر التمريض بعمليات الفرز السريع لتقديم الأولوية لحالات الإنعاش الحرجة."
+                    },
+                    {
+                        term: "Phlebitis",
+                        ar: "التهاب الوريد المحيطي الموضعي",
+                        anatomy: "Phleb/o- (vein) + -itis (inflammation)",
+                        en_sentence: "Frequent inspection of peripheral intravenous sites prevents progressive phlebitis.",
+                        ar_sentence: "يمنع الفحص الدوري لمواقع القسطرة الوريدية الطرفية تطور التهاب الوريد."
+                    }
+                ]
+            }
+        };
+
+        let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
+        let currentFlashcardIndex = 0;
+        let masteredCardsCount = parseInt(localStorage.getItem('zp_mastered_cards_count') || '0');
+        let reviewCardsCount = parseInt(localStorage.getItem('zp_review_cards_count') || '0');
+
+        function loadDepartmentFlashcards() {
+            const dept = DEPARTMENT_DATA[activeDepartmentKey] || DEPARTMENT_DATA['general'];
+            const selector = document.getElementById('active-dept-selector');
+            if (selector) selector.value = activeDepartmentKey;
+
+            const cards = dept.cards;
+            if (currentFlashcardIndex >= cards.length) {
+                currentFlashcardIndex = 0;
+            }
+
+            const current = cards[currentFlashcardIndex];
+            document.getElementById('card-category-tag').innerText = dept.title;
+            document.getElementById('card-english-term').innerText = current.term;
+            document.getElementById('card-arabic-meaning').innerText = current.ar;
+            document.getElementById('card-word-anatomy').innerText = current.anatomy;
+            document.getElementById('card-clinical-sentence-en').innerText = `"${current.en_sentence}"`;
+            document.getElementById('card-clinical-sentence-ar').innerText = current.ar_sentence;
+
+            document.getElementById('card-counter-badge').innerText = `بطاقة ${currentFlashcardIndex + 1} من ${cards.length}`;
+            document.getElementById('mastered-count-badge').innerText = masteredCardsCount;
+            document.getElementById('review-count-badge').innerText = reviewCardsCount;
+            const shareMastered = document.getElementById('share-mastered');
+            if (shareMastered) shareMastered.innerText = masteredCardsCount;
         }
 
-        // ------------------ ONBOARDING & USER IDENTITY ------------------
+        function changeActiveDepartment(newDept) {
+            activeDepartmentKey = newDept;
+            localStorage.setItem('zp_user_department', newDept);
+            currentFlashcardIndex = 0;
+            loadDepartmentFlashcards();
+            syncProfileWithCloud();
+        }
+
+        function speakCurrentTerm() {
+            const term = document.getElementById('card-english-term').innerText;
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(term);
+                u.lang = 'en-US';
+                u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function handleFlashcardRating(mastered) {
+            const dept = DEPARTMENT_DATA[activeDepartmentKey] || DEPARTMENT_DATA['general'];
+            if (mastered) {
+                masteredCardsCount++;
+                localStorage.setItem('zp_mastered_cards_count', masteredCardsCount);
+                awardXP(10);
+                playChime(true);
+            } else {
+                reviewCardsCount++;
+                localStorage.setItem('zp_review_cards_count', reviewCardsCount);
+                playChime(false);
+            }
+
+            currentFlashcardIndex = (currentFlashcardIndex + 1) % dept.cards.length;
+            loadDepartmentFlashcards();
+        }
+
+        // ------------------ 2. ONBOARDING & USER IDENTITY ------------------
         let currentUserName = localStorage.getItem('zp_username') || '';
 
         function checkOnboarding() {
@@ -613,34 +1013,39 @@
             }
         }
 
-        function saveUserName() {
-            const input = document.getElementById('onboard-user-name');
-            const val = input.value.trim();
-            if (!val) {
+        function saveUserNameAndDept() {
+            const nameInput = document.getElementById('onboard-user-name');
+            const deptInput = document.getElementById('onboard-user-dept');
+            const nameVal = nameInput.value.trim();
+            if (!nameVal) {
                 alert("يرجى إدخال الاسم الأكاديمي للاستمرار.");
                 return;
             }
 
-            currentUserName = val;
+            currentUserName = nameVal;
+            activeDepartmentKey = deptInput.value;
             localStorage.setItem('zp_username', currentUserName);
+            localStorage.setItem('zp_user_department', activeDepartmentKey);
             localStorage.setItem('zp_user_registered', 'true');
             
             document.getElementById('onboarding-modal').classList.add('hidden');
             updateGreetingHeader();
+            loadDepartmentFlashcards();
             syncProfileWithCloud();
             triggerConfetti();
         }
 
         function updateGreetingHeader() {
             if (currentUserName) {
+                const deptTitle = (DEPARTMENT_DATA[activeDepartmentKey] || DEPARTMENT_DATA['general']).title;
                 const greeting = document.getElementById('app-user-greeting');
-                if (greeting) greeting.innerText = `مرحباً بك، ${currentUserName}`;
+                if (greeting) greeting.innerText = `${currentUserName} | ${deptTitle}`;
                 const shareGreeting = document.getElementById('share-card-user');
-                if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName}`;
+                if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName} (${deptTitle})`;
             }
         }
 
-        // ------------------ SUPABASE INTEGRATION ------------------
+        // ------------------ 3. SUPABASE INTEGRATION ------------------
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -700,7 +1105,6 @@
                 if (!error) {
                     updateCloudIndicator('online');
                 } else {
-                    console.error('Supabase Sync Error:', error);
                     updateCloudIndicator('offline');
                 }
             } catch (e) {
@@ -726,7 +1130,7 @@
 
         window.addEventListener('online', () => syncProfileWithCloud());
 
-        // ------------------ THEME CONTROLLER & STORAGE ------------------
+        // ------------------ 4. THEME CONTROLLER & STORAGE ------------------
         function initTheme() {
             const savedTheme = localStorage.getItem('zp_theme');
             const html = document.documentElement;
@@ -756,7 +1160,7 @@
             }
         }
 
-        // ------------------ GLOBAL STATE & XP ------------------
+        // ------------------ 5. GLOBAL XP & NOTIFICATIONS ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
 
@@ -773,8 +1177,8 @@
         function triggerConfetti() {
             if (typeof confetti === 'function') {
                 confetti({
-                    particleCount: 70,
-                    spread: 75,
+                    particleCount: 60,
+                    spread: 70,
                     origin: { y: 0.7 },
                     colors: ['#0E2F76', '#AAC0E1', '#F5FEFF', '#10b981']
                 });
@@ -814,7 +1218,6 @@
             } catch(e){}
         }
 
-        // ------------------ NOTIFICATIONS ------------------
         function requestNotificationPermission() {
             if (!("Notification" in window)) {
                 alert("متصفحك لا يدعم نظام التنبيهات المباشرة.");
@@ -834,12 +1237,12 @@
         function sendPushNotice(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, { body: body, icon: "/icon.svg?v=14" });
+                    new Notification(title, { body: body, icon: "/icon.svg?v=15" });
                 } catch(e){}
             }
         }
 
-        // ------------------ 1. TO-DO ENGINE ------------------
+        // ------------------ 6. TO-DO ENGINE ------------------
         let tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
 
         function renderTasks() {
@@ -927,7 +1330,7 @@
         }
         renderTasks();
 
-        // ------------------ 2. POMODORO ENGINE ------------------
+        // ------------------ 7. POMODORO TIMER ENGINE ------------------
         let currentPomoMins = 25;
         let pomoDuration = 25 * 60;
         let pomoRemaining = 25 * 60;
@@ -1049,128 +1452,7 @@
         }
         renderForest();
 
-        // ------------------ 3. TERMINOLOGY ENGINE ------------------
-        const englishLessons = {
-            A1: [
-                {
-                    prompt: "I have to study for the final exam",
-                    hint: "صيغة الوجوب في الامتحانات النهائية",
-                    answers: ["يجب ان ادرس للاختبار النهائي", "يجب ان ادرس للامتحان النهائي", "لازم اقرا للامتحان النهائي"],
-                    chips: ["يجب", "أن", "أدرس", "للاختبار", "النهائي", "اليوم"]
-                },
-                {
-                    prompt: "Consistency is the key to academic success",
-                    hint: "قاعدة الاستمرارية والأداء الأكاديمي",
-                    answers: ["الاستمرارية هي مفتاح النجاح الاكاديمي", "الاستمرارية مفتاح النجاح الاكاديمي"],
-                    chips: ["الاستمرارية", "هي", "مفتاح", "النجاح", "الأكاديمي"]
-                }
-            ],
-            A2: [
-                {
-                    prompt: "If you study hard, you will pass the exam",
-                    hint: "الشرطية الأولى: الربط بين الجهد والاجتياز",
-                    answers: ["اذا درست بجد سوف تنجح في الامتحان", "اذا درست بجد ستجتاز الاختبار"],
-                    chips: ["إذا", "درست", "بجد", "سوف", "تجتاز", "الاختبار"]
-                }
-            ],
-            B1: [
-                {
-                    prompt: "Active recall enhances long-term memory retention",
-                    hint: "الاسترجاع النشط وتثبيت الذاكرة طويلة الأمد",
-                    answers: ["الاسترجاع النشط يعزز استبقاء الذاكرة طويلة الامد", "الاسترجاع النشط يثبت الذاكرة"],
-                    chips: ["الاسترجاع", "النشط", "يعزز", "استبقاء", "الذاكرة", "طويلة الأمد"]
-                }
-            ]
-        };
-
-        let currentEngLvl = 'A1';
-        let currentEngIdx = 0;
-
-        function setEnglishLevel(lvl, btn) {
-            currentEngLvl = lvl;
-            currentEngIdx = 0;
-            document.querySelectorAll('.eng-lvl-btn').forEach(b => {
-                b.className = 'eng-lvl-btn bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-2xl whitespace-nowrap';
-            });
-            btn.className = 'eng-lvl-btn bg-santorini-deepNavy text-white text-xs font-black px-4 py-2.5 rounded-2xl whitespace-nowrap shadow-sm';
-            loadEngQuestion();
-        }
-
-        function loadEngQuestion() {
-            const list = englishLessons[currentEngLvl];
-            const q = list[currentEngIdx % list.length];
-            document.getElementById('eng-prompt-text').innerText = q.prompt;
-            document.getElementById('eng-hint-text').innerText = `السياق: (${q.hint})`;
-            document.getElementById('eng-user-input').value = '';
-            document.getElementById('eng-counter').innerText = `مصطلح ${(currentEngIdx % list.length) + 1} من ${list.length}`;
-            
-            const fb = document.getElementById('eng-feedback-box');
-            fb.classList.add('hidden');
-
-            const chipContainer = document.getElementById('eng-chips-box');
-            chipContainer.innerHTML = '';
-            q.chips.forEach(word => {
-                chipContainer.innerHTML += `
-                    <button onclick="appendWordToInput('${word}')" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder px-3.5 py-1.5 rounded-xl hover:border-santorini-softBlue transition text-slate-800 dark:text-slate-200 font-bold">
-                        ${word}
-                    </button>`;
-            });
-        }
-
-        function appendWordToInput(word) {
-            const inp = document.getElementById('eng-user-input');
-            inp.value = (inp.value.trim() + ' ' + word).trim();
-            inp.focus();
-        }
-
-        function cleanText(txt) {
-            return txt.toLowerCase().trim()
-                .replace(/[؟?!.,،]/g, '')
-                .replace(/[أإآ]/g, 'ا')
-                .replace(/ة/g, 'ه')
-                .replace(/چ/g, 'ج');
-        }
-
-        function checkEngAnswer() {
-            const userAns = cleanText(document.getElementById('eng-user-input').value);
-            const list = englishLessons[currentEngLvl];
-            const q = list[currentEngIdx % list.length];
-            const fb = document.getElementById('eng-feedback-box');
-            fb.classList.remove('hidden');
-
-            const isCorrect = q.answers.some(a => cleanText(a) === userAns || userAns.includes(cleanText(a)));
-            
-            logQuizResultToCloud(`[English ${currentEngLvl}]: ${q.prompt}`, userAns, isCorrect);
-
-            if (isCorrect) {
-                playChime(true);
-                awardXP(15);
-                triggerConfetti();
-                fb.className = 'p-4 rounded-2xl text-xs font-bold flex items-center gap-2 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-                fb.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>الصياغة دقيقة ومطابقة للمفهوم العلمي (+15 XP)</span>';
-            } else {
-                playChime(false);
-                fb.className = 'p-4 rounded-2xl text-xs font-bold flex items-center gap-2 bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/30';
-                fb.innerHTML = `<i class="fa-solid fa-circle-xmark"></i><span>الصياغة المعتمدة: <strong>${q.answers[0]}</strong></span>`;
-            }
-        }
-
-        function nextEngQuestion() {
-            currentEngIdx++;
-            loadEngQuestion();
-        }
-
-        function speakEngSentence() {
-            const text = document.getElementById('eng-prompt-text').innerText;
-            if ('speechSynthesis' in window) {
-                const u = new SpeechSynthesisUtterance(text);
-                u.lang = 'en-US';
-                window.speechSynthesis.speak(u);
-            }
-        }
-        loadEngQuestion();
-
-        // ------------------ 4. CUSTOM AI STUDY CONSOLE ------------------
+        // ------------------ 8. CUSTOM AI STUDY CONSOLE ------------------
         let pdfSlidesData = JSON.parse(localStorage.getItem('zp_slides_array') || "[]");
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
@@ -1251,22 +1533,22 @@
             feed.innerHTML += `
                 <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue p-3.5 bg-santorini-lightBg dark:bg-santorini-darkBase rounded-2xl animate-pulse">
                     <i class="fa-solid fa-spinner fa-spin text-sm"></i>
-                    <span>جاري تحليل السلايدات وبناء المخرج المطلوب (${selectedAiTaskType.toUpperCase()})...</span>
+                    <span>جاري تحليل السلايدات وبناء المخرج الأكاديمي (${selectedAiTaskType.toUpperCase()})...</span>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
             if (selectedAiTaskType === 'summary') {
-                const prompt = `Based on this academic lecture text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nWrite a high-yield, structured academic summary in Arabic. Highlight key terms and principles cleanly. Output ONLY Markdown format with bullet points and bold terms. No emojis.`;
-                let reply = await callCloudAI(prompt, "You are a professional academic medical lecturer.");
+                const prompt = `Based on this academic lecture text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nWrite a high-yield, structured academic summary in Arabic for university students. Highlight key concepts and clinical points. Output ONLY clean Markdown format. No emojis.`;
+                let reply = await callCloudAI(prompt, "You are an expert academic medical professor.");
                 if (!reply) {
-                    reply = "تعذر الاتصال بالسيرفر السحابي، إليك ملخص النقاط الأساسية من الملف:\n• " + targetContent.split(/[.!?\n]+/).filter(s => s.trim().length > 30).slice(0, 4).join("\n• ");
+                    reply = "خلاصة النقاط الأساسية المستخرجة من المحاضرة:\n• " + targetContent.split(/[.!?\n]+/).filter(s => s.trim().length > 30).slice(0, 4).join("\n• ");
                 }
                 document.getElementById(loadingId)?.remove();
                 renderSummaryBubble(reply);
             }
             else if (selectedAiTaskType === 'short') {
                 const prompt = `Based on this academic text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nGenerate ${qCount} short-answer exam questions with model answers. Return ONLY raw JSON in this format:
-{"questions":[{"q":"Question text","answer":"Model answer","explanation":"Context or slide reference"}]}`;
+{"questions":[{"q":"Question text","answer":"Model answer","explanation":"Context"}]}`;
                 const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
                 let data = extractSafeJSON(rawReply);
                 document.getElementById(loadingId)?.remove();
@@ -1287,7 +1569,7 @@
                     renderTextSheetShortAnswer(data.questions);
                 }
             }
-            else { // MCQ
+            else {
                 const prompt = `Based on this academic text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nGenerate ${qCount} academic multiple-choice questions (MCQ). Return ONLY raw JSON in this format:
 {"questions":[{"q":"Question text","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false}],"explanation":"التوضيح الأكاديمي"}]}`;
                 const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
@@ -1336,7 +1618,7 @@
                             <span class="text-slate-400">تقييم ذاتي</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed">${item.q}</h4>
-                        <textarea placeholder="اكتب إجابتك هنا للمقارنة مع النموذج..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
+                        <textarea placeholder="اكتب صياغة إجابتك هنا للمقارنة مع النموذج..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
                         <div class="flex items-center gap-2">
                             <button onclick="revealShortAnswer('${qId}')" class="bg-santorini-deepNavy text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
                                 إظهار الإجابة النموذجية
@@ -1586,7 +1868,7 @@
             const msg = userMsg.trim().toLowerCase();
 
             if (msg.includes('موجود') || msg.includes('هلو') || msg.includes('مرحبا') || msg.includes('سلام')) {
-                return `مرحباً بك زميلنا ${currentUserName || 'المحترم'}. المنصة مهيأة لمساعدتك أكاديمياً، يمكنك رفع ملف المحاضرة والبدء باختبارات الـ MCQ أو الاستفسار عن أي جزئية علمية.`;
+                return `مرحباً بك زميلنا ${currentUserName || 'المحترم'}. المنصة مهيأة لمساعدتك أكاديمياً، يمكنك رفع ملف المحاضرة والبدء باختبارات الـ MCQ أو الاستفسار عن أي جزئية علمية في تخصصك.`;
             }
 
             if (lectureContext && lectureContext.length > 30) {
@@ -1600,7 +1882,7 @@
                 return `خلاصة النقاط الواردة في السلايدات المختارة:\n\n• "${sentences.slice(0, 2).join('\n• ')}"`;
             }
 
-            return `أهلاً بك، يرجى رفع ملف المحاضرة بصيغة PDF أعلاه لاستخراج البيانات العلمية بدقة وصياغة الأسئلة النموذجية بناءً على منهجك.`;
+            return `أهلاً بك، يرجى رفع ملف المحاضرة بصيغة PDF أعلاه لاستخراج البيانات العلمية بدقة وصياغة الأسئلة النموذجية بناءً على منهجك الأكاديمي.`;
         }
 
         function extractSafeJSON(rawText) {
@@ -1679,7 +1961,8 @@
             feed.scrollTop = feed.scrollHeight;
 
             const targetContent = getModalScopedContent();
-            const systemPrompt = `أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية في العراق. خاطب الطالب بصفته الأكاديمية وباسمه (${currentUserName || 'الزميل'}). أجب بأسلوب علمي رصين ومختصر وخالٍ تماماً من الإيموجيات. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
+            const deptTitle = (DEPARTMENT_DATA[activeDepartmentKey] || DEPARTMENT_DATA['general']).title;
+            const systemPrompt = `أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية في العراق. تخصص الطالب هو: ${deptTitle}. خاطب الطالب بصفته وباسمه (${currentUserName || 'الزميل'}). أجب بأسلوب علمي رصين ومختصر وخالٍ تماماً من الإيموجيات مع مراعاة المصطلحات الإنجليزية الدقيقة. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
 
             let reply = await callCloudAI(txt, systemPrompt);
             if (!reply) {
@@ -1757,12 +2040,11 @@
         }
         loadSavedChat();
 
-        // ------------------ 5. SHARE RECORD MODAL ------------------
+        // ------------------ 9. SHARE RECORD MODAL ------------------
         function openShareModal() {
             document.getElementById('share-xp').innerText = `${userXP} XP`;
             document.getElementById('share-trees').innerText = `${userForest.length} جلسة`;
-            const completedCount = tasks.filter(t => t.done).length;
-            document.getElementById('share-tasks').innerText = `${completedCount}`;
+            document.getElementById('share-mastered').innerText = `${masteredCardsCount}`;
             document.getElementById('share-modal').classList.remove('hidden');
         }
 
@@ -1771,8 +2053,8 @@
         }
 
         function getShareContent() {
-            const completedCount = tasks.filter(t => t.done).length;
-            return `تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName || 'طالب جامعي'}\nالنقاط الأكاديمية: ${userXP} XP\nالجلسات المكتملة: ${userForest.length} جلسة\nالمهام المنجزة: ${completedCount}\nمنصة التعليم التخصصي.`;
+            const deptTitle = (DEPARTMENT_DATA[activeDepartmentKey] || DEPARTMENT_DATA['general']).title;
+            return `تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName || 'طالب جامعي'}\nالقسم: ${deptTitle}\nالنقاط الأكاديمية: ${userXP} XP\nالجلسات المكتملة: ${userForest.length} جلسة\nالمصطلحات المتقنة: ${masteredCardsCount}\nمنصة التعليم التخصصي.`;
         }
 
         function executeShare() {
@@ -1795,7 +2077,9 @@
             });
         }
 
+        // تشغيل التهيئة
         checkOnboarding();
+        loadDepartmentFlashcards();
     </script>
 </body>
 </html>
