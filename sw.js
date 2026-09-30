@@ -1,11 +1,11 @@
-const CACHE_NAME = 'zeroplus-cache-v22';
+const CACHE_NAME = 'zeroplus-cache-v23';
 
 // الأصول الأساسية المسبقة لضمان عمل الواجهة والأقسام دون إنترنت
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=22',
-  '/manifest.json?v=22',
-  '/icon.svg?v=22',
+  '/index.html?v=23',
+  '/manifest.json?v=23',
+  '/icon.svg?v=23',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
@@ -40,7 +40,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // استثناء الـ API وقواعد البيانات والذكاء الاصطناعي من الكاش لضمان وصول التحديثات الحية والاستجابة الـ AI
+  // استثناء الـ API وقواعد البيانات والذكاء الاصطناعي من الكاش لضمان وصول التحديثات الحية واستجابة الـ AI
   if (
     req.method !== 'GET' ||
     url.hostname.includes('groq.com') ||
@@ -89,7 +89,7 @@ self.addEventListener('fetch', (event) => {
         const cached = await caches.match(req);
         if (cached) return cached;
         if (req.mode === 'navigate') {
-          return caches.match('/index.html?v=22') || caches.match('/index.html') || caches.match('/');
+          return caches.match('/index.html?v=23') || caches.match('/index.html') || caches.match('/');
         }
       })
   );
