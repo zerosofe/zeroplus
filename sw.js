@@ -1,14 +1,14 @@
-const CACHE_NAME = 'zeroplus-cache-v24';
+const CACHE_NAME = 'zeroplus-cache-v25';
 
 // الأصول الأساسية المسبقة لضمان عمل الواجهة والأقسام دون إنترنت
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=24',
-  '/manifest.json?v=24',
-  '/icon.svg?v=24',
+  '/index.html?v=25',
+  '/manifest.json?v=25',
+  '/icon.svg?v=25',
   '/icon-192.png',
   '/icon-512.png',
-  '/apple-touch-icon.png?v=24',
+  '/apple-touch-icon.png?v=25',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
@@ -99,7 +99,7 @@ self.addEventListener('fetch', (event) => {
         if (req.mode === 'navigate') {
           // caches.match يعيد Promise دائماً، لذا يجب انتظار كل محاولة قبل الانتقال للتي تليها
           return (await caches.match('/')) ||
-                 (await caches.match('/index.html?v=24')) ||
+                 (await caches.match('/index.html?v=25')) ||
                  (await caches.match('/index.html')) ||
                  Response.error();
         }
