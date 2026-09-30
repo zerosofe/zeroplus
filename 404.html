@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0; url=/">
+    <title>ZeroPlus | جاري التحويل</title>
+    <style>
+        body {
+            background-color: #081426;
+            color: #F5FEFF;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(170, 192, 225, 0.2);
+            border-top-color: #AAC0E1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        // إعادة التوجيه الفوري لجذر التطبيق
+        window.location.replace("/");
+    </script>
+</head>
+<body>
+    <div class="spinner"></div>
+    <p style="font-size: 14px; font-weight: 600; color: #AAC0E1;">جاري التوجيه إلى منصة ZeroPlus...</p>
+</body>
+</html>
