@@ -1706,6 +1706,23 @@
             const qCount = parseInt(document.getElementById('ai-questions-count').value) || 1;
             const displayStyle = document.getElementById('ai-display-style').value;
 
+            // نظام التخزين المؤقت للأسئلة لتجنب تكرار استهلاك رصيد الـ AI
+            const cacheKey = 'zp_quiz_cache_' + btoa(unescape(encodeURIComponent(scopedContent.substring(0, 300)))).substring(0, 30) + '_' + selectedAiTaskType + '_' + qCount;
+            const cachedData = localStorage.getItem(cacheKey);
+
+            if (cachedData && displayStyle === 'interactive') {
+                const data = JSON.parse(cachedData);
+                activeQuizSessionState = {
+                    questions: data.questions,
+                    currentIndex: 0,
+                    score: 0,
+                    qCount: data.questions.length
+                };
+                playChime(true);
+                renderCurrentInteractiveQuizQuestion();
+                return;
+            }
+
             feed.innerHTML += `
                 <div id="${loadingId}" class="flex items-center gap-3 p-4 rounded-3xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue animate-pulse">
                     <i class="fa-solid fa-brain-circuit text-base text-santorini-deepNavy dark:text-santorini-softBlue fa-spin"></i>
@@ -1794,6 +1811,10 @@ ${scopedContent.substring(0, 7500)}
                     const single = generateSmartLocalQuizFromLecture(scopedContent);
                     data = { questions: [single] };
                 }
+
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify(data));
+                } catch(err) {}
 
                 if (displayStyle === 'interactive') {
                     // تهيئة جلسة الاختبار التفاعلي للسؤال تلو الآخر
