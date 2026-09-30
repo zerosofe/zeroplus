@@ -1,17 +1,17 @@
 {
-  "name": "ZeroPlus | زيرو بلس",
+  "name": "ZeroPlus | المنصة الأكاديمية التخصصية",
   "short_name": "ZeroPlus",
-  "description": "المنصة الأكاديمية والوزارية الشاملة لتنظيم الجداول الدراسية وكويزات السلايدات الذكية",
+  "description": "منصة التعليم والتدريب التخصصي والوزاري للمجموعة الطبية والتقنيات الصحية",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a1118",
-  "theme_color": "#0d9488",
+  "background_color": "#081426",
+  "theme_color": "#0E2F76",
   "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/icon.svg?v=15",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
