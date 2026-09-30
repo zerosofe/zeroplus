@@ -6,12 +6,12 @@
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=24">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=24">
-    <link rel="shortcut icon" href="/icon.svg?v=24">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=25">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=25">
+    <link rel="shortcut icon" href="/icon.svg?v=25">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=24">
+    <link rel="manifest" href="/manifest.json?v=25">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1630,9 +1630,23 @@
             }
             const total = pdfSlidesData.length || 1;
             document.getElementById('modal-slides-total-badge').innerText = `إجمالي السلايدات المفحوصة: ${total}`;
-            document.getElementById('modal-single-slide-num').max = total;
-            document.getElementById('modal-range-slide-to').max = total;
-            document.getElementById('modal-range-slide-to').value = Math.min(5, total);
+            const singleEl = document.getElementById('modal-single-slide-num');
+            const fromEl = document.getElementById('modal-range-slide-from');
+            const toEl = document.getElementById('modal-range-slide-to');
+            singleEl.max = total;
+            fromEl.max = total;
+            toEl.max = total;
+            // ضبط القيم داخل حدود المحاضرة الفعلية بدل تصفير نطاق الطالب في كل فتح للنافذة
+            const clamp = (el, fallback) => {
+                const n = parseInt(el.value, 10);
+                const safe = Number.isFinite(n) ? Math.min(Math.max(n, 1), total) : fallback;
+                el.value = safe;
+                return safe;
+            };
+            clamp(singleEl, 1);
+            clamp(fromEl, 1);
+            clamp(toEl, Math.min(5, total));
+            if (parseInt(toEl.value, 10) < parseInt(fromEl.value, 10)) toEl.value = total;
             document.getElementById('ai-config-modal').classList.remove('hidden');
         }
 
@@ -1663,13 +1677,23 @@
                 return currentLectureText.trim();
             }
             const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
+            const withinScope = (el, fallback) => {
+                const n = parseInt(el?.value, 10);
+                return Number.isFinite(n) ? Math.min(Math.max(n, 1), pdfSlidesData.length) : fallback;
+            };
             if (scope === 'single') {
-                const num = parseInt(document.getElementById('modal-single-slide-num').value) || 1;
+                const num = withinScope(document.getElementById('modal-single-slide-num'), 1);
                 const found = pdfSlidesData.find(s => s.pageNum === num);
-                return found ? `[Slide ${num}]: ${found.text}` : pdfSlidesData[0].text;
+                return found ? `[Slide ${num}]: ${found.text}` : `[Slide ${pdfSlidesData[0].pageNum}]: ${pdfSlidesData[0].text}`;
             } else if (scope === 'range') {
-                const from = parseInt(document.getElementById('modal-range-slide-from').value) || 1;
-                const to = parseInt(document.getElementById('modal-range-slide-to').value) || pdfSlidesData.length;
+                const last = pdfSlidesData.length;
+                const fromEl = document.getElementById('modal-range-slide-from');
+                const toEl = document.getElementById('modal-range-slide-to');
+                const from = withinScope(fromEl, 1);
+                const to = Math.max(from, withinScope(toEl, last));
+                // مزامنة الحقول مع النطاق المصحح ليرى الطالب ما سيُرسل فعلياً
+                if (fromEl) fromEl.value = from;
+                if (toEl) toEl.value = to;
                 const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
                 return filtered.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
             } else {
@@ -1738,6 +1762,10 @@
             lastManualLectureText = '';
         }
 
+        let lastAIError = 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
+        let chatMemory = safeParse('zp_chat_memory', []);
+        if (!Array.isArray(chatMemory)) chatMemory = [];
+
         async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
             const label = loadingElId && document.getElementById(loadingElId)?.querySelector('.thinking-step-text');
             const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
@@ -1768,29 +1796,124 @@
             }
             return null;
         }
-        let lastAIError = 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
-        let chatMemory = safeParse('zp_chat_memory', []); if (!Array.isArray(chatMemory)) chatMemory = [];
+        // يحوّل النص المُحدد (نطاق السلايدات) إلى قائمة سلايدات فعلية مع الحفاظ على ترقيمها الأصلي
+        function scopedSlidesFromText(text) {
+            const raw = String(text || '').trim();
+            if (!raw) return [];
+            const matches = [...raw.matchAll(/\[Slide\s+(\d+)\]\s*:?\s*([\s\S]*?)(?=\n*\[Slide\s+\d+\]|$)/g)];
+            if (!matches.length) return [{ pageNum: 1, text: raw }];
+            return matches.map(m => ({ pageNum: parseInt(m[1], 10), text: String(m[2] || '').trim() })).filter(s => s.text);
+        }
+        // أخذ عيّنة موزعة على كامل السلايدات المحددة دون تجاوز ميزانية الطلب
         function sampleLectureSlides(text) {
-            const slides = pdfSlidesData.length ? pdfSlidesData : [{pageNum:1,text}];
+            const slides = scopedSlidesFromText(text);
+            if (!slides.length) return '';
             const budget = 18000;
-            let result = slides.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join('\n\n');
+            const result = slides.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join('\n\n');
             if (result.length <= budget) return result;
             const perSlide = Math.max(250, Math.floor(budget / slides.length));
-            return slides.map(s => `[Slide ${s.pageNum}]: ${s.text.slice(0,perSlide)}`).join('\n\n').slice(0,budget);
+            return slides.map(s => `[Slide ${s.pageNum}]: ${s.text.slice(0, perSlide)}`).join('\n\n').slice(0, budget);
+        }
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
         }
         function parseAIJson(raw) {
-            try { const t=(raw||'').replace(/```json/gi,'').replace(/```/g,'').trim(); return JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1)); } catch (_) { return null; }
+            const clean = String(raw || '').replace(/```json/gi, '').replace(/```/g, '').trim();
+            if (!clean) return null;
+            const attempt = (s) => { try { return JSON.parse(s); } catch (_) { return null; } };
+            const direct = attempt(clean);
+            if (direct) return direct;
+            const objStart = clean.indexOf('{'), objEnd = clean.lastIndexOf('}');
+            const arrStart = clean.indexOf('['), arrEnd = clean.lastIndexOf(']');
+            // المصفوفة الجذرية [{...},{...}] تُقبل أيضاً وتُغلَّف تلقائياً
+            if (arrStart !== -1 && arrEnd > arrStart && (objStart === -1 || arrStart < objStart)) {
+                const parsedArr = attempt(clean.slice(arrStart, arrEnd + 1));
+                if (parsedArr) return Array.isArray(parsedArr) ? { questions: parsedArr } : parsedArr;
+            }
+            if (objStart !== -1 && objEnd > objStart) return attempt(clean.slice(objStart, objEnd + 1));
+            return null;
+        }
+        // توحيد المسافات وعلامات التنصيص لأن نصوص PDF المستخرجة تحتوي فواصل أسطر ومسافات متعددة
+        function normalizeForEvidence(v) {
+            return String(v || '')
+                .replace(/[\u2018\u2019\u201B\u2032]/g, "'")
+                .replace(/[\u201C\u201D\u201E\u2033]/g, '"')
+                .replace(/[\u2013\u2014\u2212]/g, '-')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
         }
         function evidenceIsInLecture(q, text) {
-            const evidence = String(q?.evidence || '').trim();
-            return evidence.length >= 12 && text.toLowerCase().includes(evidence.toLowerCase());
+            const evidence = normalizeForEvidence(q?.evidence);
+            if (evidence.length < 12) return false;
+            const rawHaystack = normalizeForEvidence(typeof text === 'string' ? text : '');
+            if (!rawHaystack) return false;
+            if (rawHaystack.includes(evidence)) return true;
+            // مطابقة ثانوية: تجاهل أرقام السلايدات وعلامات الحذف، ثم اسمح بفروق بسيطة في التقطيع
+            const clean = (s) => s.replace(/\[slide\s*\d+\]\s*:?/g, ' ').replace(/\.{3,}/g, ' ').replace(/\s+/g, ' ').trim();
+            const cleanEvidence = clean(evidence);
+            const cleanHaystack = clean(rawHaystack);
+            if (cleanEvidence.length >= 12 && cleanHaystack.includes(cleanEvidence)) return true;
+            const words = cleanEvidence.split(' ').filter(w => w.length > 2);
+            if (words.length < 4) return false;
+            const matched = words.filter(w => cleanHaystack.includes(w)).length;
+            return (matched / words.length) >= 0.85;
         }
+        function questionKey(v) {
+            return String(v || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+        }
+
+        // حفظ عيّنة واحدة فقط من الاختبارات في الذاكرة المحلية حتى لا تتضخم بيانات المتصفح
+        function readQuizCache(key) {
+            const parsed = safeParse(key, null);
+            return parsed && Array.isArray(parsed.questions) && parsed.questions.length ? parsed : null;
+        }
+        function pruneQuizCache(keepKey) {
+            try {
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith('zp_quiz_cache_v2_') && k !== keepKey)
+                    .forEach(k => localStorage.removeItem(k));
+            } catch (e) { console.warn('تعذر تنظيف ذاكرة الاختبارات المحلية', e); }
+        }
+
         async function reviewQuestions(questions, text, kind) {
             if (!questions.length) return [];
-            const prompt = `راجع كل سؤال وإجابته من نص المحاضرة. أعد فقط الأسئلة الصحيحة التي جوابها مثبت صراحة في النص، واحتفظ بحقل evidence مقتبس حرفياً. أعِد JSON بالشكل {"questions":[...]}. النوع ${kind}.\nالأسئلة: ${JSON.stringify({questions})}\nنص المحاضرة:\n${text}`;
+            // إن كان كل سؤال يحمل اقتباساً حرفياً مطابقاً للنص فلا حاجة لاستهلاك رصيد إضافي في التدقيق
+            if (questions.every(q => evidenceIsInLecture(q, text))) return questions;
+
+            const compact = questions.map(q => ({
+                q: q.q,
+                correct: q.options?.find(o => o.correct)?.t || '',
+                evidence: q.evidence || '',
+                why_correct: q.why_correct || ''
+            }));
+            const prompt = `راجع كل سؤال وإجابته من نص المحاضرة. أعد فقط الأسئلة الصحيحة التي جوابها مثبت صراحة في النص، واحتفظ بحقل evidence مقتبساً حرفياً. أعِد JSON بالشكل {"questions":[...]}. النوع ${kind}.\nالأسئلة: ${JSON.stringify({ questions: compact })}\nنص المحاضرة:\n${text}`;
             const raw = await callStrictAcademicAI(prompt, 'أنت مدقق أكاديمي. لا تقبل أي معلومة لا يثبتها النص. أخرج JSON فقط.', null, true);
-            const reviewed = parseAIJson(raw)?.questions || [];
-            return reviewed.filter(q => evidenceIsInLecture(q,text));
+            const reviewed = parseAIJson(raw)?.questions;
+            if (!Array.isArray(reviewed) || !reviewed.length) return questions; // فشل التدقيق لا يُفقد الطالب أسئلته الأصلية
+
+            // دمج مخرجات المدقق مع السؤال الأصلي حتى لا تُفقد الخيارات أو التوضيحات
+            const merged = reviewed.map(r => {
+                const original = questions.find(q => questionKey(q.q) === questionKey(r.q)) || {};
+                const options = Array.isArray(r.options) && r.options.length ? r.options : original.options;
+                return {
+                    ...original,
+                    ...r,
+                    options,
+                    q_ar: r.q_ar || original.q_ar || '',
+                    evidence: r.evidence || original.evidence || '',
+                    why_correct: r.why_correct || original.why_correct || '',
+                    why_incorrect: r.why_incorrect || original.why_incorrect || '',
+                    source_ref: r.source_ref || original.source_ref || ''
+                };
+            }).filter(q => isValidMCQ(q) && q.options.filter(o => o.correct).length === 1 && evidenceIsInLecture(q, text));
+
+            return merged.length ? merged : questions.filter(q => evidenceIsInLecture(q, text));
         }
 
         async function executeAiCustomTask() {
@@ -1799,8 +1922,10 @@
 
             const scopedContent = getScopedLectureContent();
             const sampledContent = sampleLectureSlides(scopedContent);
-            if (!scopedContent || scopedContent.length < 20) {
-                alert("يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
+            if (!scopedContent || scopedContent.trim().length < 20 || !sampledContent) {
+                alert(currentLectureText.trim().length >= 20
+                    ? "النطاق المحدد من السلايدات لا يحتوي نصاً كافياً للمعالجة. اختر نطاقاً آخر ثم أعد المحاولة."
+                    : "يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
                 return;
             }
 
@@ -1811,18 +1936,15 @@
 
             // نظام التخزين المؤقت المحلي (Local Cache) لتجنب استهلاك الرصيد عند تكرار نفس الطلب
             const cacheKey = 'zp_quiz_cache_v2_' + hashString(sampledContent) + '_' + selectedAiTaskType + '_' + qCount;
-            const cachedData = localStorage.getItem(cacheKey);
-
-            let cachedQuiz = null;
-            try { cachedQuiz = cachedData ? JSON.parse(cachedData) : null; } catch (e) {}
-            if (cachedQuiz && Array.isArray(cachedQuiz.questions) && cachedQuiz.questions.length && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
-                const data = cachedQuiz;
+            const cachedQuiz = readQuizCache(cacheKey);
+            if (cachedQuiz && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
                 activeQuizSessionState = {
-                    questions: data.questions,
+                    questions: cachedQuiz.questions,
                     currentIndex: 0,
                     score: 0,
-                    qCount: data.questions.length
+                    qCount: cachedQuiz.questions.length
                 };
+                showAINotice('تم استرجاع هذا الاختبار من الذاكرة المحلية لنفس النطاق دون استهلاك رصيد الذكاء الاصطناعي.');
                 playChime(true);
                 renderCurrentInteractiveQuizQuestion();
                 return;
@@ -1854,6 +1976,7 @@ ${sampledContent}
                 const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt, loadingId);
                 document.getElementById(loadingId)?.remove();
 
+                if (!rawReply) showAINotice(`تعذر الوصول إلى الذكاء الاصطناعي (${lastAIError}) — تم عرض خلاصة محلية مبنية على نص السلايدات نفسه.`);
                 const summaryText = rawReply || "خلاصة المنهج المعتمد بناءً على السلايدات المحددة:\n\n• " + scopedContent.split(/[.!?\n]+/).filter(s => s.trim().length > 30).slice(0, 5).join("\n• ");
                 renderSummaryCard(summaryText);
 
@@ -1868,12 +1991,8 @@ ${sampledContent}
                 const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط بدون مقدمات.", loadingId);
                 document.getElementById(loadingId)?.remove();
 
-                let data = null;
-                try {
-                    const cleanJson = (rawReply || '').replace(/```json/gi, '').replace(/```/g, '').trim();
-                    const s = cleanJson.indexOf('{'), e = cleanJson.lastIndexOf('}');
-                    if (s !== -1 && e !== -1) data = JSON.parse(cleanJson.substring(s, e + 1));
-                } catch(e) {}
+                let data = parseAIJson(rawReply);
+                if (!rawReply) showAINotice(`تعذر الوصول إلى الذكاء الاصطناعي (${lastAIError}) — تم عرض سؤال نموذجي مستخرج من نص المحاضرة.`);
 
                 if (data && Array.isArray(data.questions)) {
                     data.questions = data.questions.filter(q => q && typeof q.q === 'string' && q.answer).slice(0, qCount);
@@ -1911,16 +2030,22 @@ ${sampledContent}
                         if (accepted.length >= qCount) break;
                     }
                     if (!raw) failureReason = lastAIError;
+                    else if (!batchQuestions.length) failureReason = 'لم يجد التدقيق الأكاديمي أي سؤال مثبت حرفياً في نطاق السلايدات المحدد.';
                 }
                 let questions = accepted.slice(0,qCount);
                 if (questions.length < qCount) {
-                    const fallback = generateSmartLocalQuizFromLecture(sampledContent, qCount - questions.length, seen);
+                    const fallback = generateSmartLocalQuizFromLecture(scopedContent, qCount - questions.length, seen);
                     questions = questions.concat(fallback);
                 }
                 document.getElementById(loadingId)?.remove();
-                if (questions.length < qCount || accepted.length === 0) showAIError(failureReason);
+                if (accepted.length === 0) {
+                    showAIError(failureReason);
+                } else if (questions.length > accepted.length) {
+                    showAINotice(`تم توليد ${accepted.length} من ${qCount} سؤالاً بالذكاء الاصطناعي، واستُكملت بقية الأسئلة محلياً من نص المحاضرة نفسه.`);
+                }
                 data = {questions};
-                if (accepted.length >= qCount) safeSetItem(cacheKey, JSON.stringify(data));
+                // لا نحفظ في الذاكرة إلا الاختبار المولّد بالكامل من الذكاء الاصطناعي وضمن النطاق المحدد
+                if (accepted.length >= qCount) { pruneQuizCache(cacheKey); safeSetItem(cacheKey, JSON.stringify(data)); }
                 if (displayStyle === 'interactive') {
                     activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
                     renderCurrentInteractiveQuizQuestion();
@@ -1935,21 +2060,33 @@ ${sampledContent}
         }
 
         function shuffleAndRenumberOptions(options) {
-            const shuffled = [...options].sort(() => Math.random() - 0.5);
-            return shuffled.map((o,i) => ({...o,t:`${String.fromCharCode(65+i)}) ${o.t.replace(/^[A-D][).]\s*/, '')}`}));
+            const shuffled = shuffleArray(options);
+            return shuffled.map((o,i) => ({...o,t:`${String.fromCharCode(65+i)}) ${String(o.t).replace(/^[A-D][).]\s*/, '')}`}));
         }
         function generateSmartLocalQuizFromLecture(text, count = 1, seen = new Set()) {
-            const slides = pdfSlidesData.length ? pdfSlidesData : [{pageNum:1,text}];
-            const sentences = slides.flatMap(s => (s.text||'').split(/[.!?\n]+/).map(x=>({text:x.trim(),page:s.pageNum})))
+            // الأسئلة المحلية تُبنى من النطاق المحدد نفسه، لا من كامل المحاضرة
+            const slides = scopedSlidesFromText(text);
+            const source = slides.length ? slides : pdfSlidesData;
+            const sentences = source.flatMap(s => (s.text||'').split(/[.!?\n]+/).map(x=>({text:x.trim(),page:s.pageNum})))
                 .filter(x=>x.text.length>35 && x.text.length<240);
             const made=[]; let cursor=0;
             while (made.length<count && sentences.length && cursor<sentences.length*2) {
                 const item=sentences[(cursor++ * Math.ceil(sentences.length/Math.max(count,1))) % sentences.length];
-                const words=item.text.split(/\s+/).filter(w=>w.length>4); const answer=words[Math.floor(words.length/2)];
-                if (!answer || seen.has(item.text.toLowerCase())) continue;
+                if (seen.has(item.text.toLowerCase())) continue;
+                const words=item.text.split(/\s+/).filter(w=>w.length>4 && !/^\d+$/.test(w));
+                if (words.length < 3) continue;
+                const answer=words[Math.floor(words.length/2)];
+                if (!answer) continue;
+                // الخيارات الخاطئة كلمات لا ترد في نفس الجملة، فلا يمكن أن تكمل الفراغ بشكل صحيح
+                const pool=[...new Set(sentences.flatMap(x=>x.text.split(/\s+/).filter(w=>w.length>5 && !/^\d+$/.test(w))))]
+                    .filter(w=>w.toLowerCase()!==answer.toLowerCase() && !item.text.toLowerCase().includes(w.toLowerCase()));
+                const distractors=shuffleArray(pool).slice(0,3);
+                let filler=1;
+                while(distractors.length<3) {
+                    const candidate=`مصطلح ${filler++}`;
+                    if (!item.text.toLowerCase().includes(candidate.toLowerCase())) distractors.push(candidate);
+                }
                 seen.add(item.text.toLowerCase());
-                const distractors=[...new Set(sentences.map(x=>x.text.split(/\s+/).filter(w=>w.length>4)[0]).filter(w=>w&&w.toLowerCase()!==answer.toLowerCase()))].slice(0,3);
-                while(distractors.length<3) distractors.push(words.find(w=>w!==answer)||'المعلومة');
                 const opts=shuffleAndRenumberOptions([{t:answer,correct:true},...distractors.map(t=>({t,correct:false}))]);
                 made.push({q:`Complete the statement from the lecture: "${item.text.replace(answer,'______')}"`,q_ar:'أكمل العبارة اعتماداً على نص المحاضرة:',evidence:item.text,options:opts,why_correct:`الإجابة مثبتة في النص: ${item.text}`,why_incorrect:'الخيارات الأخرى لا تكمل العبارة الواردة في السلايد.',source_ref:`السلايد ${item.page}`});
             }
@@ -1957,6 +2094,9 @@ ${sampledContent}
         }
         function showAIError(message) {
             document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-xs text-rose-600 font-bold p-3">تعذر إكمال توليد أسئلة الذكاء الاصطناعي: ${escapeHtml(message || lastAIError)}</div>`);
+        }
+        function showAINotice(message) {
+            document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-[11px] text-amber-700 dark:text-amber-400 font-bold p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-2">${escapeHtml(message)}</div>`);
         }
 
         function renderSummaryCard(text) {
@@ -2195,9 +2335,11 @@ ${sampledContent}
             const feed = document.getElementById('zero-chat-feed');
             feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
 
-            if (txt.includes('كويز') || txt.includes('سؤال') || txt.includes('quiz') || txt.includes('اختبرني')) { 
-                openAiConfigModal(); 
-                return; 
+            // لا نفتح نافذة الاختبار إلا لأمر قصير وصريح، حتى لا تُحتجز أسئلة الشرح الطويلة
+            const quizIntent = /(كويز|اختبرني|اختبار|أسئلة|اسئلة|\bquiz\b|\bmcq\b)/i.test(txt);
+            if (quizIntent && txt.length <= 40) {
+                openAiConfigModal();
+                return;
             }
 
             syncManualLectureText();
@@ -2224,8 +2366,10 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
             if (!reply) {
                 if (scopedContent && scopedContent.length > 30) {
                     const sentences = scopedContent.replace(/\[Slide \d+\]:/g, '').split(/[.!?\n]+/).filter(s => s.trim().length > 30);
+                    showAINotice(`تعذر الوصول إلى خدمة الذكاء الاصطناعي (${lastAIError}) — تم عرض مقتطف موثق من نص المحاضرة.`);
                     reply = `المعلومات الموثقة في السلايدات حول استفسارك:\n\n• "${sentences.slice(0, 2).join('\n• ')}"`;
                 } else {
+                    showAINotice(`تعذر الوصول إلى خدمة الذكاء الاصطناعي (${lastAIError}).`);
                     reply = `مرحباً بك زميلنا ${currentUserName || 'المحترم'}. يرجى رفع ملف المحاضرة من زر التحميل أعلاه لكي أقوم بفحصه واستيعابه بدقة والإجابة حصراً من صلب منهجك.`;
                 }
             }
