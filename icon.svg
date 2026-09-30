@@ -12,8 +12,8 @@
   <circle cx="256" cy="256" r="180" fill="none" stroke="#AAC0E1" stroke-width="1.5" stroke-opacity="0.15"/>
   <circle cx="256" cy="256" r="130" fill="none" stroke="#AAC0E1" stroke-width="1" stroke-opacity="0.1"/>
 
-  <g fill="#F5FEFF" font-family="'Cairo', system-ui, -apple-system, sans-serif" font-weight="900">
-    <text x="215" y="340" font-size="260" text-anchor="middle" letter-spacing="-6">Z</text>
-    <path d="M 355 210 L 355 260 L 305 260 L 305 300 L 355 300 L 355 350 L 395 350 L 395 300 L 445 300 L 445 260 L 395 260 L 395 210 Z" fill="#AAC0E1"/>
+  <g transform="translate(-30 0)">
+    <path d="M 128 158 H 302 V 200 L 196 298 H 304 V 342 H 126 V 300 L 234 202 H 128 Z" fill="#F5FEFF"/>
+    <path transform="translate(14 0)" d="M 355 210 L 355 260 L 305 260 L 305 300 L 355 300 L 355 350 L 395 350 L 395 300 L 445 300 L 445 260 L 395 260 L 395 210 Z" fill="#AAC0E1"/>
   </g>
 </svg>

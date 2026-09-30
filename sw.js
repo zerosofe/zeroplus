@@ -1,11 +1,14 @@
-const CACHE_NAME = 'zeroplus-cache-v23';
+const CACHE_NAME = 'zeroplus-cache-v24';
 
 // الأصول الأساسية المسبقة لضمان عمل الواجهة والأقسام دون إنترنت
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=23',
-  '/manifest.json?v=23',
-  '/icon.svg?v=23',
+  '/index.html?v=24',
+  '/manifest.json?v=24',
+  '/icon.svg?v=24',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png?v=24',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
@@ -19,8 +22,13 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      // cache.add() يفشل مع الطلبات الخارجية (opaque)، لذا نستخدم fetch + put مع no-cors للمكتبات الخارجية
       return Promise.allSettled(
-        PRECACHE_ASSETS.map((url) => cache.add(url))
+        PRECACHE_ASSETS.map(async (url) => {
+          const isExternal = new URL(url, self.location.origin).origin !== self.location.origin;
+          const res = await fetch(new Request(url, isExternal ? { mode: 'no-cors' } : {}));
+          if (res && (res.ok || res.type === 'opaque')) await cache.put(url, res);
+        })
       );
     })
   );
@@ -64,7 +72,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(req).then((cachedResponse) => {
         if (cachedResponse) return cachedResponse;
         return fetch(req).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
+          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
           }
@@ -89,8 +97,13 @@ self.addEventListener('fetch', (event) => {
         const cached = await caches.match(req);
         if (cached) return cached;
         if (req.mode === 'navigate') {
-          return caches.match('/index.html?v=23') || caches.match('/index.html') || caches.match('/');
+          // caches.match يعيد Promise دائماً، لذا يجب انتظار كل محاولة قبل الانتقال للتي تليها
+          return (await caches.match('/')) ||
+                 (await caches.match('/index.html?v=24')) ||
+                 (await caches.match('/index.html')) ||
+                 Response.error();
         }
+        return Response.error();
       })
   );
 });

@@ -6,6 +6,11 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Cross-Origin-Opener-Policy: same-origin
 
+/
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
+  CDN-Cache-Control: no-store
+
 /manifest.json
   Content-Type: application/manifest+json; charset=utf-8
   Cache-Control: public, max-age=0, s-maxage=0, no-cache, no-store, must-revalidate
