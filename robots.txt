@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /sw.js
+
+Sitemap: https://zeroplus-8jz.pages.dev/sitemap.xml
