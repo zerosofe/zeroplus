@@ -6,12 +6,12 @@
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=18">
-    <link rel="apple-touch-icon" href="/icon.svg?v=18">
-    <link rel="shortcut icon" href="/icon.svg?v=18">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=22">
+    <link rel="apple-touch-icon" href="/icon.svg?v=22">
+    <link rel="shortcut icon" href="/icon.svg?v=22">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=18">
+    <link rel="manifest" href="/manifest.json?v=22">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -178,7 +178,7 @@
                     <span>تأكيد وبدء المنصة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                 </button>
             </div>
-            <span class="text-[10px] text-slate-400 block font-semibold">يتم التحقق من الحساب لمرة واحدة فقط لكل جهاز</span>
+            <span class="text-[10px] text-slate-400 block font-semibold">يتم حفظ الحساب سحابياً ومحلياً لضمان استمراريته</span>
         </div>
     </div>
 
@@ -229,7 +229,7 @@
                     </select>
                 </div>
                 <div class="space-y-1.5" id="ai-question-count-wrapper">
-                    <label class="text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue block">عدد الأسئلة:</label>
+                    <label class="text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue block">عدد الأسئلة المطلوبة:</label>
                     <select id="ai-questions-count" class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
                         <option value="1">سؤال واحد</option>
                         <option value="3" selected>3 أسئلة</option>
@@ -1254,9 +1254,45 @@
             syncProfileWithCloud();
         }
 
-        // ------------------ ONBOARDING & INITIALIZATION ------------------
-        function checkOnboarding() {
+        // ------------------ ONBOARDING & IDENTIFICATION (PERSISTENT CLOUD SYNC) ------------------
+        async function checkOnboarding() {
+            const deviceId = getDeviceId();
+            
+            // محاولة استعادة البيانات من سحابة Supabase فور فتح التطبيق
+            if (supabaseClient && navigator.onLine) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('device_id', deviceId)
+                        .maybeSingle();
+
+                    if (data && data.user_name && !error) {
+                        currentUserName = data.user_name;
+                        activeDepartmentKey = data.department || 'general';
+                        userXP = data.xp || 140;
+                        unlockedNodeMax = data.unlocked_stage_max || 1;
+                        userStreak = data.streak_count || 1;
+
+                        localStorage.setItem('zp_username', currentUserName);
+                        localStorage.setItem('zp_user_department', activeDepartmentKey);
+                        localStorage.setItem('zp_user_registered', 'true');
+                        localStorage.setItem('zp_xp', userXP);
+                        localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
+
+                        document.getElementById('onboarding-modal').classList.add('hidden');
+                        updateGreetingHeader();
+                        renderPathTree();
+                        updateGamificationBar();
+                        return;
+                    }
+                } catch(e) {}
+            }
+
+            // التحقق المحلي في حال عدم توفر الاتصال السحابي اللحظي
             const isRegistered = localStorage.getItem('zp_user_registered');
+            currentUserName = localStorage.getItem('zp_username') || '';
+
             if (!isRegistered || !currentUserName) {
                 document.getElementById('onboarding-modal').classList.remove('hidden');
             } else {
@@ -1264,7 +1300,7 @@
             }
         }
 
-        function saveUserNameAndDept() {
+        async function saveUserNameAndDept() {
             const nameInput = document.getElementById('onboard-user-name');
             const deptInput = document.getElementById('onboard-user-dept');
             const nameVal = nameInput.value.trim();
@@ -1281,7 +1317,7 @@
             
             document.getElementById('onboarding-modal').classList.add('hidden');
             updateGreetingHeader();
-            syncProfileWithCloud();
+            await syncProfileWithCloud();
             triggerConfetti();
         }
 
@@ -1705,7 +1741,7 @@
             const qCount = parseInt(document.getElementById('ai-questions-count').value) || 1;
             const displayStyle = document.getElementById('ai-display-style').value;
 
-            // نظام التخزين المؤقت للأسئلة لتجنب تكرار استهلاك رصيد الـ AI
+            // نظام التخزين المؤقت المحلي (Local Cache) لتجنب استهلاك الرصيد عند تكرار نفس الطلب
             const cacheKey = 'zp_quiz_cache_' + btoa(unescape(encodeURIComponent(scopedContent.substring(0, 300)))).substring(0, 30) + '_' + selectedAiTaskType + '_' + qCount;
             const cachedData = localStorage.getItem(cacheKey);
 
@@ -1735,7 +1771,7 @@
             const strictSystemPrompt = `أنت المساعد الأكاديمي الرسمي الصارم لمنصة ZeroPlus الجامعية في العراق. 
 قواعدك الصارمة:
 1. اعتمد بنسبة 100% فقط على محتوى السلايدات المرفقة للطالب، ولا تضف أي معلومة خارجية.
-2. استخرج الأسئلة، الخيارات، والأجوبة والتعليلات من صلب نصوص السلايدات حرفياً.
+2. استخرج تماماً (${qCount}) أسئلة من صلب نصوص السلايدات حرفياً.
 3. التزم باللغة الأكاديمية التخصصية الخالية من الإيموجيات.`;
 
             if (selectedAiTaskType === 'summary') {
@@ -1752,7 +1788,7 @@ ${scopedContent.substring(0, 7500)}
                 renderSummaryCard(summaryText);
 
             } else if (selectedAiTaskType === 'short') {
-                const prompt = `افحص السلايدات التالية بدقة واستخرج منها ${qCount} أسئلة مقالية قصيرة نموذجية مع ترجمة السؤال للعربية وجوابها المعتمد حصراً من المنهج. أخرج الناتج بصيغة JSON فقط:
+                const prompt = `افحص السلايدات التالية بدقة واستخرج منها بالضبط ${qCount} أسئلة مقالية قصيرة نموذجية مع ترجمة السؤال للعربية وجوابها المعتمد حصراً من المنهج. أخرج الناتج بصيغة JSON فقط:
 {"questions":[{"q":"Question in English","q_ar":"ترجمة السؤال باللغة العربية","answer":"الجواب النموذجي المستخرج حرفياً من السلايد","explanation":"رقم السلايد أو السياق المعتمد"}]}
 محتوى السلايدات:
 """
@@ -1787,8 +1823,7 @@ ${scopedContent.substring(0, 7500)}
                 }
 
             } else {
-                // MCQ مع الترجمة والتعليل الدقيق للخطأ والصواب والتتابع التفاعلي
-                const prompt = `افحص السلايدات التالية بدقة وافهم كل ما ورد فيها، ثم صغ ${qCount} أسئلة اختبار اختيار من متعدد (MCQ) معتمدة بنسبة 100% على نصوصها فقط.
+                const prompt = `افحص السلايدات التالية بدقة وافهم كل ما ورد فيها، ثم صغ تماماً (${qCount}) أسئلة اختبار اختيار من متعدد (MCQ) معتمدة بنسبة 100% على نصوصها فقط.
 أخرج الناتج بصيغة JSON حصراً بهذا الهيكل لكل سؤال:
 {"questions":[{"q":"Question text in English","q_ar":"ترجمة السؤال باللغة العربية بدقة","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false},{"t":"D) Choice 4","correct":false}],"why_correct":"تعليل دقيق لسبب صحة هذا الخيار مستنداً لنص السلايد","why_incorrect":"توضيح لما الخيارات الأخرى غير صحيحة أو غير متطابقة مع السلايد","source_ref":"رقم السلايد أو الجملة المعتمدة"}]}
 نصوص السلايدات:
@@ -1816,7 +1851,6 @@ ${scopedContent.substring(0, 7500)}
                 } catch(err) {}
 
                 if (displayStyle === 'interactive') {
-                    // تهيئة جلسة الاختبار التفاعلي للسؤال تلو الآخر
                     activeQuizSessionState = {
                         questions: data.questions,
                         currentIndex: 0,
@@ -1954,13 +1988,29 @@ ${scopedContent.substring(0, 7500)}
             feed.scrollTop = feed.scrollHeight;
         }
 
-        // ------------------ التتابع التفاعلي وإصلاح الأزرار والتعليل الدقيق ------------------
+        // ------------------ التتابع التفاعلي (السؤال تلو الآخر وتصغير السؤال السابق) ------------------
         function renderCurrentInteractiveQuizQuestion() {
             const feed = document.getElementById('zero-chat-feed');
             const state = activeQuizSessionState;
             const qIdx = state.currentIndex;
             const currentItem = state.questions[qIdx];
             const qId = 'quiz_active_card_' + qIdx;
+
+            // تصغير السؤال السابق لإفساح المساحة في الشاشة
+            if (qIdx > 0) {
+                for (let i = 0; i < qIdx; i++) {
+                    const prevCard = document.getElementById('quiz_active_card_' + i);
+                    if (prevCard && !prevCard.classList.contains('minimized-question')) {
+                        prevCard.classList.add('opacity-75', 'scale-[0.98]', 'transition-all');
+                        prevCard.style.maxHeight = '110px';
+                        prevCard.style.overflow = 'hidden';
+                        const activeOpts = prevCard.querySelector('.options-container');
+                        if (activeOpts) activeOpts.style.display = 'none';
+                        const badge = prevCard.querySelector('.question-status-badge');
+                        if (badge) badge.innerHTML = `<span class="text-emerald-500 font-bold"><i class="fa-solid fa-check-circle ml-1"></i> تم الإجابة</span>`;
+                    }
+                }
+            }
 
             let optHtml = '';
             currentItem.options.forEach((o, optIdx) => {
@@ -1970,9 +2020,9 @@ ${scopedContent.substring(0, 7500)}
             feed.innerHTML += `
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] space-y-3 shadow-santorini">
+                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] space-y-3 shadow-santorini transition-all duration-300">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
+                            <span class="question-status-badge text-santorini-deepNavy dark:text-santorini-softBlue font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
                             <span class="text-slate-400">منهج معتمد</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${currentItem.q}</h4>
@@ -1980,7 +2030,8 @@ ${scopedContent.substring(0, 7500)}
                             <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue ml-1">ترجمة السؤال:</span> ${currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق'}
                         </div>
                         <div class="space-y-2 options-container pt-1">${optHtml}</div>
-                        <div class="feedback-container hidden space-y-2 pt-1"></div>
+                        <!-- مكان الرد والتغذية الراجعة يقع أسفل الأزرار مباشرة بمسافة واضحة -->
+                        <div class="feedback-container hidden space-y-3 pt-3 border-t border-slate-100 dark:border-santorini-darkBorder mt-3"></div>
                     </div>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
@@ -1991,7 +2042,7 @@ ${scopedContent.substring(0, 7500)}
             const chosenOption = currentItem.options[optIdx];
             const card = document.getElementById('quiz_active_card_' + qIdx);
             
-            // تعطيل كافة أزرار السؤال
+            // تعطيل كافة أزرار الاختيارات للسؤال الحالي
             card.querySelectorAll('.options-container button').forEach(b => b.disabled = true);
             const fb = card.querySelector('.feedback-container');
             fb.classList.remove('hidden');
@@ -2022,29 +2073,29 @@ ${scopedContent.substring(0, 7500)}
                             <i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span>
                         </div>
                         <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-rose-600 dark:text-rose-400">لماذا خطأ:</strong> ${currentItem.why_incorrect || 'هذا الخيار يخالف المعطيات والتعريف المذكور في المحاضرة.'}</p>
-                        <div class="border-t border-rose-500/20 pt-1 mt-1 text-[11px]">
-                            <strong class="text-emerald-600 dark:text-emerald-400">الجواب الصحيح:</strong> ${correctOpt.t}
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${currentItem.why_correct || currentItem.explanation || ''}</p>
+                        <div class="border-t border-rose-500/20 pt-1.5 mt-1.5 text-[11px] space-y-1">
+                            <div><strong class="text-emerald-600 dark:text-emerald-400">الجواب الصحيح:</strong> ${correctOpt.t}</div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">${currentItem.why_correct || currentItem.explanation || ''}</p>
                         </div>
                     </div>
                 `;
                 playChime(false);
             }
 
-            // زر الانتقال للسؤال التالي أو إنهاء الاختبار
+            // زر الانتقال للسؤال التالي أو إنهاء الاختبار بعد استنفاد كامل العدد المحدد
             const isLastQuestion = (qIdx + 1) >= activeQuizSessionState.qCount;
             if (!isLastQuestion) {
                 fb.innerHTML += `
-                    <button onclick="advanceToNextQuestion()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3 rounded-2xl font-bold text-xs shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
+                    <button onclick="advanceToNextQuestion()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3 rounded-2xl font-bold text-xs shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2 mt-2">
                         <span>السؤال التالي</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                     </button>
                 `;
             } else {
                 fb.innerHTML += `
-                    <div class="p-4 rounded-2xl bg-santorini-deepNavy text-white text-center space-y-2 mt-2">
+                    <div class="p-4 rounded-2xl bg-santorini-deepNavy text-white text-center space-y-2 mt-3">
                         <span class="text-xs font-black block">اكتمل الاختبار المنهجي بنجاح</span>
                         <p class="text-[11px] text-santorini-softBlue">نتيجتك الأكاديمية: ${activeQuizSessionState.score} من ${activeQuizSessionState.qCount}</p>
-                        <button onclick="openAiConfigModal()" class="inline-block bg-white text-santorini-deepNavy px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
+                        <button onclick="openAiConfigModal()" class="inline-block bg-white text-santorini-deepNavy px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm mt-1">
                             اختبار جديد لنطاق آخر
                         </button>
                     </div>
@@ -2138,7 +2189,6 @@ ${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف 
         checkOnboarding();
         renderPathTree();
         updateGamificationBar();
-        restoreUserDataFromCloud();
     </script>
 </body>
 </html>
