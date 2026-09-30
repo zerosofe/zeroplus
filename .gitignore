@@ -1,0 +1,17 @@
+# Dependencies (لو أضيفت أدوات بناء مستقبلاً)
+node_modules/
+package-lock.json
+
+# Environment & secrets — لا تضع أي مفتاح سري هنا أبداً
+.env
+.env.*
+*.pem
+
+# ملفات النظام
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# أدوات النشر المحلية
+.wrangler/
+*.log
