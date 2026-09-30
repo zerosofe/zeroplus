@@ -1,10 +1,11 @@
-const CACHE_NAME = 'zeroplus-cache-v14';
+const CACHE_NAME = 'zeroplus-cache-v15';
 
+// الأصول الأساسية المسبقة لضمان عمل الواجهة والأقسام دون إنترنت
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=14',
-  '/manifest.json?v=14',
-  '/icon.svg?v=14',
+  '/index.html?v=15',
+  '/manifest.json?v=15',
+  '/icon.svg?v=15',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
@@ -39,6 +40,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
+  // استثناء الـ API وقواعد البيانات والذكاء الاصطناعي من الكاش لضمان وصول التحديثات الحية
   if (
     req.method !== 'GET' ||
     url.hostname.includes('groq.com') ||
@@ -48,6 +50,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // 1. للمكتبات الخارجية والخطوط والأيقونات: Cache-First
   const isStaticAsset = 
     url.hostname.includes('cdn') ||
     url.hostname.includes('cdnjs') ||
@@ -72,6 +75,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // 2. لصفحات الموقع والملاحة: Network-First
   event.respondWith(
     fetch(req)
       .then((networkResponse) => {
@@ -85,7 +89,7 @@ self.addEventListener('fetch', (event) => {
         const cached = await caches.match(req);
         if (cached) return cached;
         if (req.mode === 'navigate') {
-          return caches.match('/index.html?v=14') || caches.match('/index.html') || caches.match('/');
+          return caches.match('/index.html?v=15') || caches.match('/index.html') || caches.match('/');
         }
       })
   );
