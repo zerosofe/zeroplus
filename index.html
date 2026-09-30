@@ -6,12 +6,12 @@
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=12">
-    <link rel="apple-touch-icon" href="/icon.svg?v=12">
-    <link rel="shortcut icon" href="/icon.svg?v=12">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=14">
+    <link rel="apple-touch-icon" href="/icon.svg?v=14">
+    <link rel="shortcut icon" href="/icon.svg?v=14">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=12">
+    <link rel="manifest" href="/manifest.json?v=14">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -77,7 +77,6 @@
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
-        /* فقاعات المحادثة الرسمية */
         .chat-user-bubble {
             background: #0E2F76 !important;
             color: #F5FEFF !important;
@@ -103,7 +102,6 @@
             padding: 1rem 1.25rem !important;
         }
 
-        /* كارت الاختبار */
         html.dark .chat-quiz-card {
             background-color: #0f2038 !important;
             color: #F5FEFF !important;
@@ -141,7 +139,7 @@
 </head>
 <body class="bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-800 dark:text-santorini-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-santorini-deepNavy selection:text-white">
 
-    <!-- ================= MODAL: WELCOME USER ONBOARDING (FIRST TIME ONLY) ================= -->
+    <!-- ================= MODAL 1: ONBOARDING USERNAME ================= -->
     <div id="onboarding-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-8 text-center space-y-5 shadow-2xl">
             <div class="w-16 h-16 rounded-3xl bg-santorini-deepNavy text-white mx-auto flex items-center justify-center font-black text-2xl shadow-santorini-btn" dir="ltr">
@@ -165,10 +163,107 @@
         </div>
     </div>
 
+    <!-- ================= MODAL 2: CONFIGURATION & AI GENERATOR DIALOG ================= -->
+    <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-santorini-darkBorder pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-base text-santorini-deepNavy dark:text-santorini-white">تخصيص الاختبار والمراجعة</h3>
+                        <p class="text-[11px] text-slate-400">حدد نوع المخرج الأكاديمي وطريقة عرضه ونطاق السلايدات</p>
+                    </div>
+                </div>
+                <button onclick="closeAiConfigModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-santorini-darkBase text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Task Type -->
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue block">نوع المخرج الأكاديمي:</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="setAiTaskType('mcq', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-santorini-deepNavy bg-santorini-deepNavy text-white shadow-sm flex flex-col items-center gap-1.5 transition">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>خيارات (MCQ)</span>
+                    </button>
+                    <button type="button" onclick="setAiTaskType('short', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-santorini-darkBorder bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>إجابة قصيرة</span>
+                    </button>
+                    <button type="button" onclick="setAiTaskType('summary', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-santorini-darkBorder bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>ملخص مكثف</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Display Style & Question Count -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="ai-count-and-style-box">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue block">طريقة العرض:</label>
+                    <select id="ai-display-style" class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
+                        <option value="interactive">تفاعلي (حل فوري وتقييم درجات)</option>
+                        <option value="text">نصي كامل (ورقة نموذجية قابلة للنسخ)</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5" id="ai-question-count-wrapper">
+                    <label class="text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue block">عدد الأسئلة:</label>
+                    <select id="ai-questions-count" class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
+                        <option value="1">سؤال واحد</option>
+                        <option value="3" selected>3 أسئلة</option>
+                        <option value="5">5 أسئلة</option>
+                        <option value="10">10 أسئلة (اختبار كامل)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Slide Scope -->
+            <div class="space-y-2 border-t border-slate-100 dark:border-santorini-darkBorder pt-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <label class="text-santorini-deepNavy dark:text-santorini-softBlue">نطاق السلايدات المطلوب:</label>
+                    <span id="modal-slides-total-badge" class="text-slate-400">إجمالي السلايدات: 1</span>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <input type="radio" name="modal_slide_scope" value="all" checked onchange="toggleModalScopeInputs()">
+                        <span>كامل المحاضرة</span>
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <input type="radio" name="modal_slide_scope" value="single" onchange="toggleModalScopeInputs()">
+                        <span>سلايد محدد</span>
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
+                        <input type="radio" name="modal_slide_scope" value="range" onchange="toggleModalScopeInputs()">
+                        <span>نطاق معين</span>
+                    </label>
+                </div>
+
+                <div id="modal-single-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
+                    <span class="font-bold text-slate-500">رقم السلايد:</span>
+                    <input id="modal-single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
+                </div>
+
+                <div id="modal-range-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
+                    <span class="font-bold text-slate-500">من سلايد:</span>
+                    <input id="modal-range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
+                    <span class="font-bold text-slate-500">إلى سلايد:</span>
+                    <input id="modal-range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
+                </div>
+            </div>
+
+            <button onclick="executeAiCustomTask()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2">
+                <span>تأكيد وبدء المعالجة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-40 bg-white/85 dark:bg-santorini-darkBase/90 backdrop-blur-2xl border-b border-slate-200 dark:border-santorini-darkBorder px-4 py-3.5 shrink-0 transition-colors">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <!-- Brand -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-santorini-deepNavy flex items-center justify-center text-santorini-white font-black text-xl shadow-santorini-btn" dir="ltr">
                     Z+
@@ -181,7 +276,6 @@
                 </div>
             </div>
 
-            <!-- Header Quick Actions -->
             <div class="flex items-center gap-2.5">
                 <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-600 dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="مشاركة التقرير">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
@@ -206,7 +300,6 @@
 
         <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
-            <!-- Summary Banner -->
             <div class="gradient-santorini p-6 rounded-4xl text-white shadow-santorini flex items-center justify-between">
                 <div>
                     <span class="text-[11px] font-bold tracking-wider text-santorini-softBlue uppercase">الجدول الأكاديمي اليومي</span>
@@ -218,7 +311,6 @@
                 </div>
             </div>
 
-            <!-- Add Task Box -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-santorini">
                 <input id="todo-input" type="text" placeholder="عنوان المقرر، الفصل، أو رقم المحاضرة..." 
                     onkeydown="if(event.key==='Enter') addTodo()"
@@ -244,7 +336,6 @@
 
         <!-- ================= SECTION 2: POMODORO & SESSIONS ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
-            <!-- Stats Metric Grid -->
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini">
                     <span class="text-[11px] text-slate-400 dark:text-santorini-softBlue font-bold block">إجمالي وقت التركيز</span>
@@ -260,16 +351,13 @@
                 </div>
             </div>
 
-            <!-- Spacious Uncramped Timer Card (Clean Digital Dial) -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-santorini space-y-6">
-                <!-- Mode Switcher -->
                 <div class="flex justify-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
                     <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm">تركيز (25 د)</button>
                     <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5 د)</button>
                     <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15 د)</button>
                 </div>
 
-                <!-- Clean Breathing Circle (Only Time and Icon Inside) -->
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-santorini-darkBase" stroke-width="4.5"></circle>
@@ -284,7 +372,6 @@
                     </div>
                 </div>
 
-                <!-- Status Outside Circle -->
                 <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span id="pomo-status" class="text-xs sm:text-sm text-santorini-deepNavy dark:text-santorini-softBlue font-bold">
@@ -292,7 +379,6 @@
                     </span>
                 </div>
 
-                <!-- Actions -->
                 <div class="flex justify-center gap-3 pt-2">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white font-black px-10 py-3.5 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95 flex items-center gap-2">
                         <span>بدء المؤقت</span> <i class="fa-solid fa-play text-xs"></i>
@@ -303,7 +389,6 @@
                 </div>
             </div>
 
-            <!-- Focus Session Log -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 rounded-4xl shadow-santorini space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
@@ -365,7 +450,7 @@
 
         <!-- ================= SECTION 4: ZERO STUDY CONSOLE ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
-            <!-- Lecture Source Upload Card -->
+            <!-- Lecture Upload Bar -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 sm:p-5 rounded-4xl shadow-santorini space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
@@ -373,8 +458,8 @@
                             <i class="fa-solid fa-book-bookmark"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار</h3>
-                            <p class="text-[11px] text-slate-400">تحميل المحاضرة لاستخراج الأسئلة النموذجية ومراجعة المفاهيم</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار والمراجعة</h3>
+                            <p class="text-[11px] text-slate-400">تحميل المحاضرة وتخصيص نمط الأسئلة والنطاق</p>
                         </div>
                     </div>
                     <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue px-3 py-1 rounded-full border border-slate-200 dark:border-santorini-darkBorder flex items-center gap-1.5">
@@ -397,48 +482,16 @@
                     <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-santorini-softBlue text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
 
-                <!-- Slide Scope Selector -->
-                <div id="slide-scope-box" class="hidden bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3.5 rounded-3xl space-y-2">
-                    <div class="flex items-center justify-between text-xs font-bold">
-                        <span class="text-santorini-deepNavy dark:text-santorini-softBlue"><i class="fa-solid fa-sliders ml-1"></i> نطاق السلايدات المستهدفة:</span>
-                        <span id="total-slides-count" class="text-slate-400">إجمالي السلايدات: 0</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                            <input type="radio" name="slide_scope" value="all" checked onchange="toggleScopeInputs()">
-                            <span>كامل الملف</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                            <input type="radio" name="slide_scope" value="single" onchange="toggleScopeInputs()">
-                            <span>سلايد محدد</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-2xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                            <input type="radio" name="slide_scope" value="range" onchange="toggleScopeInputs()">
-                            <span>نطاق محدد</span>
-                        </label>
-                    </div>
-
-                    <div id="single-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
-                        <span class="font-bold text-slate-600 dark:text-slate-400">رقم السلايد:</span>
-                        <input id="single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                    </div>
-
-                    <div id="range-slide-input-box" class="hidden pt-1 flex items-center gap-2 text-xs">
-                        <span class="font-bold text-slate-600 dark:text-slate-400">من:</span>
-                        <input id="range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                        <span class="font-bold text-slate-600 dark:text-slate-400">إلى:</span>
-                        <input id="range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                    </div>
-                </div>
-
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
                     <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج للاختبار</span>
-                    <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openAiConfigModal()" class="text-[11px] text-santorini-deepNavy dark:text-santorini-softBlue underline font-bold">تغيير خيارات الاختبار</button>
+                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Study Workspace Console -->
+            <!-- Workspace Console -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl shadow-santorini flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 <div class="p-4 border-b border-slate-100 dark:border-santorini-darkBorder flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-santorini-darkBase/40">
                     <div class="flex items-center gap-3">
@@ -453,8 +506,8 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="requestAiQuizFromLecture()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-pen text-xs"></i> <span>توليد سؤال MCQ</span>
+                        <button onclick="openAiConfigModal()" class="bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-santorini-btn hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
+                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص الاختبار والمراجعة</span>
                         </button>
                         <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="إفراغ المحادثة">
                             <i class="fa-solid fa-trash-can"></i>
@@ -543,9 +596,9 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
-        if (localStorage.getItem('zp_clean_professional_v1') !== 'true') {
+        if (localStorage.getItem('zp_clean_professional_v3') !== 'true') {
             localStorage.removeItem('zp_chat_html');
-            localStorage.setItem('zp_clean_professional_v1', 'true');
+            localStorage.setItem('zp_clean_professional_v3', 'true');
         }
 
         // ------------------ ONBOARDING & USER IDENTITY ------------------
@@ -781,7 +834,7 @@
         function sendPushNotice(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, { body: body, icon: "/icon.svg?v=12" });
+                    new Notification(title, { body: body, icon: "/icon.svg?v=14" });
                 } catch(e){}
             }
         }
@@ -1117,37 +1170,254 @@
         }
         loadEngQuestion();
 
-        // ------------------ 4. STUDY CONSOLE ENGINE ------------------
+        // ------------------ 4. CUSTOM AI STUDY CONSOLE ------------------
         let pdfSlidesData = JSON.parse(localStorage.getItem('zp_slides_array') || "[]");
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let seenQuestions = JSON.parse(localStorage.getItem('zp_seen_questions') || "[]");
         let cachedGroqModel = null;
+        let selectedAiTaskType = 'mcq';
 
         const GROQ_API_KEY = "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";
+
+        function openAiConfigModal() {
+            if (!currentLectureText || currentLectureText.length < 20) {
+                alert("يرجى تحميل ملف المحاضرة (PDF) أو إدخال النص أولاً.");
+                return;
+            }
+            const totalPages = pdfSlidesData.length || 1;
+            document.getElementById('modal-slides-total-badge').innerText = `إجمالي السلايدات: ${totalPages}`;
+            document.getElementById('modal-single-slide-num').max = totalPages;
+            document.getElementById('modal-range-slide-to').max = totalPages;
+            document.getElementById('modal-range-slide-to').value = Math.min(5, totalPages);
+            document.getElementById('ai-config-modal').classList.remove('hidden');
+        }
+
+        function closeAiConfigModal() {
+            document.getElementById('ai-config-modal').classList.add('hidden');
+        }
+
+        function setAiTaskType(type, btn) {
+            selectedAiTaskType = type;
+            document.querySelectorAll('.ai-task-btn').forEach(b => {
+                b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-santorini-darkBorder bg-santorini-lightBg dark:bg-santorini-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition';
+            });
+            btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-santorini-deepNavy bg-santorini-deepNavy text-white shadow-sm flex flex-col items-center gap-1.5 transition';
+
+            const countWrapper = document.getElementById('ai-question-count-wrapper');
+            if (type === 'summary') {
+                countWrapper.classList.add('hidden');
+            } else {
+                countWrapper.classList.remove('hidden');
+            }
+        }
+
+        function toggleModalScopeInputs() {
+            const scope = document.querySelector('input[name="modal_slide_scope"]:checked').value;
+            document.getElementById('modal-single-slide-box').classList.toggle('hidden', scope !== 'single');
+            document.getElementById('modal-range-slide-box').classList.toggle('hidden', scope !== 'range');
+        }
+
+        function getModalScopedContent() {
+            if (pdfSlidesData.length === 0) {
+                return currentLectureText.substring(0, 3000);
+            }
+
+            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
+
+            if (scope === 'single') {
+                const num = parseInt(document.getElementById('modal-single-slide-num').value) || 1;
+                const found = pdfSlidesData.find(s => s.pageNum === num);
+                return found ? `[Slide ${num}]: ${found.text}` : pdfSlidesData[0].text;
+            } 
+            else if (scope === 'range') {
+                const from = parseInt(document.getElementById('modal-range-slide-from').value) || 1;
+                const to = parseInt(document.getElementById('modal-range-slide-to').value) || pdfSlidesData.length;
+                const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
+                return filtered.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n").substring(0, 3500);
+            } 
+            else {
+                return currentLectureText.substring(0, 3500);
+            }
+        }
+
+        async function executeAiCustomTask() {
+            closeAiConfigModal();
+            const displayStyle = document.getElementById('ai-display-style').value;
+            const qCount = parseInt(document.getElementById('ai-questions-count').value) || 1;
+            const targetContent = getModalScopedContent();
+            const feed = document.getElementById('zero-chat-feed');
+
+            const loadingId = 'loading_' + Date.now();
+            feed.innerHTML += `
+                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue p-3.5 bg-santorini-lightBg dark:bg-santorini-darkBase rounded-2xl animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin text-sm"></i>
+                    <span>جاري تحليل السلايدات وبناء المخرج المطلوب (${selectedAiTaskType.toUpperCase()})...</span>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+
+            if (selectedAiTaskType === 'summary') {
+                const prompt = `Based on this academic lecture text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nWrite a high-yield, structured academic summary in Arabic. Highlight key terms and principles cleanly. Output ONLY Markdown format with bullet points and bold terms. No emojis.`;
+                let reply = await callCloudAI(prompt, "You are a professional academic medical lecturer.");
+                if (!reply) {
+                    reply = "تعذر الاتصال بالسيرفر السحابي، إليك ملخص النقاط الأساسية من الملف:\n• " + targetContent.split(/[.!?\n]+/).filter(s => s.trim().length > 30).slice(0, 4).join("\n• ");
+                }
+                document.getElementById(loadingId)?.remove();
+                renderSummaryBubble(reply);
+            }
+            else if (selectedAiTaskType === 'short') {
+                const prompt = `Based on this academic text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nGenerate ${qCount} short-answer exam questions with model answers. Return ONLY raw JSON in this format:
+{"questions":[{"q":"Question text","answer":"Model answer","explanation":"Context or slide reference"}]}`;
+                const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
+                let data = extractSafeJSON(rawReply);
+                document.getElementById(loadingId)?.remove();
+
+                if (!data || !Array.isArray(data.questions)) {
+                    data = {
+                        questions: [{
+                            q: "ما هو المفهوم الأساسي المشار إليه في هذا الجزء من المحاضرة؟",
+                            answer: targetContent.substring(0, 100) + "...",
+                            explanation: "مستخرج من نص المحاضرة المحدد"
+                        }]
+                    };
+                }
+
+                if (displayStyle === 'interactive') {
+                    data.questions.forEach(item => renderInteractiveShortAnswerCard(item));
+                } else {
+                    renderTextSheetShortAnswer(data.questions);
+                }
+            }
+            else { // MCQ
+                const prompt = `Based on this academic text:\n"""\n${targetContent.substring(0, 2500)}\n"""\nGenerate ${qCount} academic multiple-choice questions (MCQ). Return ONLY raw JSON in this format:
+{"questions":[{"q":"Question text","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false}],"explanation":"التوضيح الأكاديمي"}]}`;
+                const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
+                let data = extractSafeJSON(rawReply);
+                document.getElementById(loadingId)?.remove();
+
+                if (!data || !Array.isArray(data.questions)) {
+                    const single = generateSmartLocalQuizFromText(targetContent);
+                    data = { questions: [single] };
+                }
+
+                if (displayStyle === 'interactive') {
+                    data.questions.forEach(item => renderMCQCard(item));
+                } else {
+                    renderTextSheetMCQ(data.questions);
+                }
+            }
+
+            saveChatOffline();
+        }
+
+        function renderSummaryBubble(text) {
+            const feed = document.getElementById('zero-chat-feed');
+            feed.innerHTML += `
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
+                        <div class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 border-b border-slate-200 dark:border-santorini-darkBorder pb-2">
+                            <i class="fa-solid fa-file-lines"></i> <span>ملخص المنهج المعتمد</span>
+                        </div>
+                        <div class="whitespace-pre-line text-slate-800 dark:text-slate-100 font-semibold pt-1">${text.replace(/\n/g, '<br>')}</div>
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function renderInteractiveShortAnswerCard(item) {
+            const feed = document.getElementById('zero-chat-feed');
+            const qId = 'short_' + Date.now() + Math.random().toString(36).substring(4);
+            feed.innerHTML += `
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-santorini space-y-3">
+                        <div class="flex items-center justify-between text-[11px] font-bold">
+                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold"><i class="fa-solid fa-pen-to-square ml-1"></i> سؤال مقالي قصير</span>
+                            <span class="text-slate-400">تقييم ذاتي</span>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-black leading-relaxed">${item.q}</h4>
+                        <textarea placeholder="اكتب إجابتك هنا للمقارنة مع النموذج..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
+                        <div class="flex items-center gap-2">
+                            <button onclick="revealShortAnswer('${qId}')" class="bg-santorini-deepNavy text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
+                                إظهار الإجابة النموذجية
+                            </button>
+                        </div>
+                        <div class="model-answer-box hidden p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1">
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400 block"><i class="fa-solid fa-check ml-1"></i> الإجابة المعتمدة:</span>
+                            <p class="text-slate-800 dark:text-slate-200 font-semibold">${item.answer}</p>
+                            <span class="text-[10px] text-slate-400 block mt-1">${item.explanation || ''}</span>
+                        </div>
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function revealShortAnswer(qId) {
+            const card = document.getElementById(qId);
+            const box = card.querySelector('.model-answer-box');
+            box.classList.remove('hidden');
+            awardXP(10);
+            playChime(true);
+        }
+
+        function renderTextSheetMCQ(list) {
+            const feed = document.getElementById('zero-chat-feed');
+            let content = '';
+            list.forEach((item, idx) => {
+                content += `<strong>س ${idx + 1}: ${item.q}</strong><br>`;
+                item.options.forEach(o => {
+                    content += `• ${o.t} ${o.correct ? ' (الإجابة الصحيحة)' : ''}<br>`;
+                });
+                content += `<span class="text-[10px] text-slate-400">التوضيح: ${item.explanation}</span><br><br>`;
+            });
+
+            feed.innerHTML += `
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
+                        <div class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 border-b border-slate-200 dark:border-santorini-darkBorder pb-2">
+                            <i class="fa-solid fa-print"></i> <span>ورقة اختبار نصية (MCQ Sheet)</span>
+                        </div>
+                        <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function renderTextSheetShortAnswer(list) {
+            const feed = document.getElementById('zero-chat-feed');
+            let content = '';
+            list.forEach((item, idx) => {
+                content += `<strong>س ${idx + 1}: ${item.q}</strong><br>`;
+                content += `• الجواب النموذجي: ${item.answer}<br>`;
+                if (item.explanation) content += `<span class="text-[10px] text-slate-400">المرجع: ${item.explanation}</span><br>`;
+                content += `<br>`;
+            });
+
+            feed.innerHTML += `
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
+                        <div class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 border-b border-slate-200 dark:border-santorini-darkBorder pb-2">
+                            <i class="fa-solid fa-print"></i> <span>ورقة أسئلة مقالية نموذجية</span>
+                        </div>
+                        <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
+                    </div>
+                </div>`;
+            feed.scrollTop = feed.scrollHeight;
+        }
 
         function restoreSavedLectureState() {
             if (currentLectureText && currentLectureText.length > 20) {
                 const pagesCount = pdfSlidesData.length || 1;
                 document.getElementById('lecture-loaded-badge').classList.remove('hidden');
                 document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج (${pagesCount} سلايد)`;
-                if (pdfSlidesData.length > 1) {
-                    document.getElementById('slide-scope-box').classList.remove('hidden');
-                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdfSlidesData.length}`;
-                    document.getElementById('single-slide-num').max = pdfSlidesData.length;
-                    document.getElementById('range-slide-to').max = pdfSlidesData.length;
-                }
             }
         }
         restoreSavedLectureState();
 
         function togglePasteArea() {
             document.getElementById('lecture-paste-container').classList.toggle('hidden');
-        }
-
-        function toggleScopeInputs() {
-            const scope = document.querySelector('input[name="slide_scope"]:checked').value;
-            document.getElementById('single-slide-input-box').classList.toggle('hidden', scope !== 'single');
-            document.getElementById('range-slide-input-box').classList.toggle('hidden', scope !== 'range');
         }
 
         async function handleFileUpload(event) {
@@ -1173,21 +1443,16 @@
                     }
 
                     localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-
-                    document.getElementById('slide-scope-box').classList.remove('hidden');
-                    document.getElementById('total-slides-count').innerText = `إجمالي السلايدات: ${pdf.numPages}`;
-                    document.getElementById('single-slide-num').max = pdf.numPages;
-                    document.getElementById('range-slide-to').max = pdf.numPages;
-                    document.getElementById('range-slide-to').value = Math.min(5, pdf.numPages);
-
                     setLectureContent(fullText, file.name, pdf.numPages);
                 } else {
                     const text = await file.text();
                     pdfSlidesData = [{ pageNum: 1, text: text }];
                     localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    document.getElementById('slide-scope-box').classList.add('hidden');
                     setLectureContent(text, file.name, 1);
                 }
+                
+                setTimeout(() => openAiConfigModal(), 400);
+
             } catch (err) {
                 console.error(err);
                 alert("تعذر قراءة محتوى الملف، يرجى لصق النص يدوياً.");
@@ -1214,34 +1479,8 @@
             localStorage.removeItem('zp_slides_array');
             localStorage.removeItem('zp_seen_questions');
             document.getElementById('lecture-loaded-badge').classList.add('hidden');
-            document.getElementById('slide-scope-box').classList.add('hidden');
             document.getElementById('upload-file-status').innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             document.getElementById('lecture-text-content').value = "";
-        }
-
-        function getScopedLectureContent() {
-            if (pdfSlidesData.length === 0) {
-                return currentLectureText.substring(0, 2000);
-            }
-
-            const scope = document.querySelector('input[name="slide_scope"]:checked')?.value || 'all';
-
-            if (scope === 'single') {
-                const num = parseInt(document.getElementById('single-slide-num').value) || 1;
-                const found = pdfSlidesData.find(s => s.pageNum === num);
-                return found ? `[Slide ${num}]: ${found.text}` : pdfSlidesData[0].text;
-            } 
-            else if (scope === 'range') {
-                const from = parseInt(document.getElementById('range-slide-from').value) || 1;
-                const to = parseInt(document.getElementById('range-slide-to').value) || pdfSlidesData.length;
-                const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
-                return filtered.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n").substring(0, 2500);
-            } 
-            else {
-                const maxLen = Math.min(2000, currentLectureText.length);
-                const startIdx = Math.floor(Math.random() * Math.max(1, currentLectureText.length - maxLen));
-                return currentLectureText.substring(startIdx, startIdx + maxLen);
-            }
         }
 
         async function discoverActiveGroqModel() {
@@ -1282,7 +1521,7 @@
                                 { role: "user", content: prompt }
                             ],
                             temperature: 0.25,
-                            max_tokens: 600
+                            max_tokens: 700
                         })
                     });
                     if (res.ok) {
@@ -1295,7 +1534,7 @@
             } catch (e) {}
 
             try {
-                const fullQuery = `${systemInstruction}\n\n${prompt}`.substring(0, 1200);
+                const fullQuery = `${systemInstruction}\n\n${prompt}`.substring(0, 1400);
                 const url = `https://text.pollinations.ai/${encodeURIComponent(fullQuery)}?model=openai&seed=${Date.now()}`;
                 const res = await fetch(url);
                 if (res.ok) {
@@ -1379,52 +1618,9 @@
             }
         }
 
-        async function requestAiQuizFromLecture() {
-            const manualText = document.getElementById('lecture-text-content').value.trim();
-            if (manualText && manualText.length > 20) {
-                setLectureContent(manualText, "نص مدخل", 1);
-            }
-
-            if (!currentLectureText || currentLectureText.length < 20) {
-                alert("يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
-                return;
-            }
-
-            const feed = document.getElementById('zero-chat-feed');
-            const loadingId = 'loading_' + Date.now();
-            feed.innerHTML += `
-                <div id="${loadingId}" class="flex items-center gap-2 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue p-3.5 bg-santorini-lightBg dark:bg-santorini-darkBase rounded-2xl animate-pulse">
-                    <i class="fa-solid fa-spinner fa-spin text-sm"></i>
-                    <span>جاري تحليل السلايدات وتوليد السؤال المعياري...</span>
-                </div>`;
-            feed.scrollTop = feed.scrollHeight;
-
-            const targetContent = getScopedLectureContent();
-            const prompt = `Based on this scientific lecture text:
-"""
-${targetContent.substring(0, 1500)}
-"""
-Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
-{"q":"Question text","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false}],"explanation":"التوضيح الأكاديمي"}`;
-
-            const rawReply = await callCloudAI(prompt, "Output raw JSON only.");
-            let quizData = extractSafeJSON(rawReply);
-
-            if (!quizData || !quizData.q || !Array.isArray(quizData.options)) {
-                quizData = generateSmartLocalQuizFromText(targetContent);
-            }
-
-            document.getElementById(loadingId)?.remove();
-
-            seenQuestions.push(quizData.q);
-            localStorage.setItem('zp_seen_questions', JSON.stringify(seenQuestions));
-
-            renderMCQCard(quizData);
-        }
-
         function renderMCQCard(item) {
             const feed = document.getElementById('zero-chat-feed');
-            const qId = 'quiz_' + Date.now();
+            const qId = 'quiz_' + Date.now() + Math.random().toString(36).substring(4);
 
             let optionsHtml = '';
             item.options.forEach((opt) => {
@@ -1440,8 +1636,8 @@ Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-santorini space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold"><i class="fa-solid fa-clipboard-question ml-1"></i> اختبار معياري</span>
-                            <span class="text-slate-400">سؤال مفرد</span>
+                            <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold"><i class="fa-solid fa-clipboard-question ml-1"></i> اختبار معياري (MCQ)</span>
+                            <span class="text-slate-400">تقييم تفاعلي</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed">${item.q}</h4>
                         <div class="options-container space-y-2 pt-1">
@@ -1451,7 +1647,6 @@ Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
                     </div>
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
-            saveChatOffline();
         }
 
         async function sendZeroChat() {
@@ -1472,7 +1667,7 @@ Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
             saveChatOffline();
 
             if (txt.includes('كويز') || txt.includes('quiz') || txt.includes('اختبرني') || txt.includes('سؤال')) {
-                requestAiQuizFromLecture();
+                openAiConfigModal();
                 return;
             }
 
@@ -1483,7 +1678,7 @@ Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
                 </div>`;
             feed.scrollTop = feed.scrollHeight;
 
-            const targetContent = getScopedLectureContent();
+            const targetContent = getModalScopedContent();
             const systemPrompt = `أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية في العراق. خاطب الطالب بصفته الأكاديمية وباسمه (${currentUserName || 'الزميل'}). أجب بأسلوب علمي رصين ومختصر وخالٍ تماماً من الإيموجيات. ${targetContent ? 'محتوى المحاضرة:\n' + targetContent.substring(0, 1000) : ''}`;
 
             let reply = await callCloudAI(txt, systemPrompt);
@@ -1543,7 +1738,7 @@ Generate ONE academic multiple-choice question (MCQ). Return ONLY raw JSON:
                     <div class="flex items-start gap-3">
                         <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                         <div class="chat-bot-bubble p-4 max-w-[88%] sm:max-w-[78%] text-xs sm:text-sm leading-relaxed font-bold">
-                            مرحباً بك زميلنا ${currentUserName || 'المحترم'}. قم برفع ملف المحاضرة الأكاديمية بصيغة PDF أعلاه، واضغط على <strong>توليد سؤال MCQ</strong> لاستخراج الأسئلة ومراجعة النقاط الجوهرية.
+                            مرحباً بك زميلنا ${currentUserName || 'المحترم'}. قم بتحميل ملف المحاضرة أعلاه، وستظهر لك نافذة لتحديد نوع المخرج (MCQ، إجابة قصيرة، أو ملخص) وتحديد نطاق السلايدات بدقة.
                         </div>
                     </div>`;
                 localStorage.setItem('zp_chat_html', feed.innerHTML);
