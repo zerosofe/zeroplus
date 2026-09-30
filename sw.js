@@ -1,19 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <defs>
-    <linearGradient id="primaryNavy" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0E2F76"/>
-      <stop offset="100%" stop-color="#123d8f"/>
-    </linearGradient>
-  </defs>
+const CACHE_NAME = 'zeroplus-cache-v14';
 
-  <rect width="512" height="512" rx="128" fill="url(#primaryNavy)"/>
-  <rect width="496" height="496" x="8" y="8" rx="120" fill="none" stroke="#AAC0E1" stroke-width="4" stroke-opacity="0.35"/>
+const PRECACHE_ASSETS = [
+  '/',
+  '/index.html?v=14',
+  '/manifest.json?v=14',
+  '/icon.svg?v=14',
+  'https://cdn.tailwindcss.com',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+  'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+];
 
-  <circle cx="256" cy="256" r="180" fill="none" stroke="#AAC0E1" stroke-width="1.5" stroke-opacity="0.15"/>
-  <circle cx="256" cy="256" r="130" fill="none" stroke="#AAC0E1" stroke-width="1" stroke-opacity="0.1"/>
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        PRECACHE_ASSETS.map((url) => cache.add(url))
+      );
+    })
+  );
+});
 
-  <g fill="#F5FEFF" font-family="'Cairo', system-ui, -apple-system, sans-serif" font-weight="900">
-    <text x="215" y="340" font-size="260" text-anchor="middle" letter-spacing="-6">Z</text>
-    <path d="M 355 210 L 355 260 L 305 260 L 305 300 L 355 300 L 355 350 L 395 350 L 395 300 L 445 300 L 445 260 L 395 260 L 395 210 Z" fill="#AAC0E1"/>
-  </g>
-</svg>
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  if (
+    req.method !== 'GET' ||
+    url.hostname.includes('groq.com') ||
+    url.hostname.includes('pollinations.ai') ||
+    url.hostname.includes('supabase.co')
+  ) {
+    return;
+  }
+
+  const isStaticAsset = 
+    url.hostname.includes('cdn') ||
+    url.hostname.includes('cdnjs') ||
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.png');
+
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(req).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(req).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
+          }
+          return networkResponse;
+        });
+      })
+    );
+    return;
+  }
+
+  event.respondWith(
+    fetch(req)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
+        }
+        return networkResponse;
+      })
+      .catch(async () => {
+        const cached = await caches.match(req);
+        if (cached) return cached;
+        if (req.mode === 'navigate') {
+          return caches.match('/index.html?v=14') || caches.match('/index.html') || caches.match('/');
+        }
+      })
+  );
+});
