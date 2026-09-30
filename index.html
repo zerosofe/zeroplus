@@ -2,16 +2,16 @@
 <html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=23">
-    <link rel="apple-touch-icon" href="/icon.svg?v=23">
-    <link rel="shortcut icon" href="/icon.svg?v=23">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=24">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=24">
+    <link rel="shortcut icon" href="/icon.svg?v=24">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=23">
+    <link rel="manifest" href="/manifest.json?v=24">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,7 +57,7 @@
     <!-- PDF.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -505,7 +505,7 @@
 
                 <div class="pt-2 flex gap-3">
                     <button id="lesson-action-btn" onclick="submitCurrentExercise()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95">
-                        تحقق من الإجابة
+                        فهمت المصطلح، التالي
                     </button>
                 </div>
             </div>
@@ -658,6 +658,40 @@
 
     <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
+        // ------------------ HELPERS ------------------
+        function escapeHtml(v) {
+            return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        // نص آمن مع أسطر جديدة و **خط عريض** بسيط
+        function formatRichText(v) {
+            return escapeHtml(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        }
+        function safeParse(key, fallback) {
+            try {
+                const v = JSON.parse(localStorage.getItem(key));
+                return v === null || v === undefined ? fallback : v;
+            } catch (e) { return fallback; }
+        }
+        function safeSetItem(key, value) {
+            try { localStorage.setItem(key, value); return true; }
+            catch (e) { console.warn('localStorage write failed for', key, e); return false; }
+        }
+        function hashString(str) {
+            let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+            for (let i = 0; i < str.length; i++) {
+                const ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
+        }
+        function deptLabel(key) {
+            const opt = document.querySelector(`#onboard-user-dept option[value="${key}"]`);
+            return opt ? opt.textContent.trim() : key;
+        }
+
         // ------------------ SUPABASE INTEGRATION & CREDENTIALS ------------------
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
@@ -1190,7 +1224,7 @@
                     <div class="text-center py-2">
                         <div class="flex items-center justify-center gap-2">
                             <h2 class="text-3xl font-black text-santorini-deepNavy dark:text-santorini-white" dir="ltr">${current.term}</h2>
-                            <button onclick="speakLessonTerm('${current.term}')" class="w-8 h-8 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm">
+                            <button onclick="speakLessonTerm(activeNodeSession.items[activeQuestionIdx].term)" class="w-8 h-8 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm">
                                 <i class="fa-solid fa-volume-high text-xs"></i>
                             </button>
                         </div>
@@ -1217,10 +1251,13 @@
             const items = activeNodeSession.items;
             const currentItem = items[activeQuestionIdx];
 
+            // منع تكرار كسب النقاط عند إعادة محطة مكتملة سابقاً
+            const alreadyCompleted = activeNodeSession.order < unlockedNodeMax;
+
             recordWordMasteryToCloud(currentItem.term, true);
 
             playChime(true);
-            awardXP(10);
+            if (!alreadyCompleted) awardXP(10);
 
             if (activeQuestionIdx + 1 < items.length) {
                 activeQuestionIdx++;
@@ -1235,7 +1272,7 @@
             triggerConfetti();
             playChime(true);
 
-            if (nodeOrder === unlockedNodeMax) {
+            if (nodeOrder === unlockedNodeMax && unlockedNodeMax <= FLAT_NODES.length) {
                 unlockedNodeMax++;
                 localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
             }
@@ -1244,7 +1281,7 @@
             syncProfileWithCloud();
 
             renderPathTree();
-            alert("عاشت إيدك! أكملت المحطة بنجاح وفككت قفل المحطة التالية (+10 XP).");
+            alert("عاشت إيدك! أكملت المحطة بنجاح وفككت قفل المحطة التالية.");
         }
 
         function changeActiveDepartment(newDept) {
@@ -1283,6 +1320,8 @@
                         updateGreetingHeader();
                         renderPathTree();
                         updateGamificationBar();
+                        document.getElementById('app-xp').innerText = `${userXP} XP`;
+                        updateCloudIndicator('online');
                         return;
                     }
                 } catch(e) {}
@@ -1295,6 +1334,7 @@
                 document.getElementById('onboarding-modal').classList.remove('hidden');
             } else {
                 updateGreetingHeader();
+                syncProfileWithCloud();
             }
         }
 
@@ -1322,7 +1362,7 @@
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
-                if (greeting) greeting.innerText = `${currentUserName} | ${activeDepartmentKey}`;
+                if (greeting) greeting.innerText = `${currentUserName} | ${deptLabel(activeDepartmentKey)}`;
                 const shareGreeting = document.getElementById('share-card-user');
                 if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName}`;
                 const sel = document.getElementById('active-dept-selector');
@@ -1350,6 +1390,7 @@
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
             activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-santorini-deepNavy dark:text-santorini-softBlue font-black text-xs transition";
+            safeSetItem('zp_active_tab', tabId);
         }
 
         function triggerConfetti() {
@@ -1418,11 +1459,13 @@
             Notification.requestPermission().then(p => {
                 const icon = document.getElementById('notify-icon');
                 if (p === "granted") icon.className = 'fa-solid fa-bell text-xs text-emerald-500';
+                else alert("تم رفض الإشعارات. يمكنك تفعيلها من إعدادات المتصفح.");
             });
         }
 
         // ------------------ TO-DO LOGIC ------------------
-        let tasks = JSON.parse(localStorage.getItem('zp_tasks') || '[]');
+        let tasks = safeParse('zp_tasks', []);
+        if (!Array.isArray(tasks)) tasks = [];
         function renderTasks() {
             const list = document.getElementById('todo-list');
             list.innerHTML = '';
@@ -1438,7 +1481,7 @@
                                 <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-santorini-deepNavy text-white' : 'border-2 border-slate-300 dark:border-slate-600'} flex items-center justify-center text-xs cursor-pointer transition">
                                     ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
                                 </div>
-                                <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${t.title}</p>
+                                <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${escapeHtml(t.title)}</p>
                             </div>
                             <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
                         </div>`;
@@ -1470,7 +1513,8 @@
 
         // ------------------ POMODORO LOGIC ------------------
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
-        let userForest = JSON.parse(localStorage.getItem('zp_forest') || '[]');
+        let userForest = safeParse('zp_forest', []);
+        if (!Array.isArray(userForest)) userForest = [];
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
@@ -1483,8 +1527,8 @@
             userForest.forEach(s => {
                 grid.innerHTML += `
                     <div class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
-                        <span class="text-sm font-black text-santorini-deepNavy dark:text-santorini-softBlue mb-0.5"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> ${s.name}</span>
-                        <span class="text-[10px] text-slate-400 font-semibold">${s.time}</span>
+                        <span class="text-sm font-black text-santorini-deepNavy dark:text-santorini-softBlue mb-0.5"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> ${escapeHtml(s.name)}</span>
+                        <span class="text-[10px] text-slate-400 font-semibold">${escapeHtml(s.time)}</span>
                     </div>`;
             });
         }
@@ -1492,7 +1536,7 @@
             const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
             const s = String(pomoRemaining % 60).padStart(2, '0');
             document.getElementById('pomo-display').innerText = `${m}:${s}`;
-            const offset = 276 - (pomoRemaining / pomoDuration) * 276;
+            const offset = 276 - (pomoDuration ? pomoRemaining / pomoDuration : 0) * 276;
             document.getElementById('pomo-circle').style.strokeDashoffset = offset;
         }
         function setPomoMode(mins, msg, btn) {
@@ -1504,6 +1548,24 @@
             btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-santorini-deepNavy text-white shadow-sm';
             updatePomoDisplay();
         }
+        let pomoEndAt = 0;
+        function finishPomoSession() {
+            clearInterval(pomoInterval); pomoInterval = null;
+            pomoCompletedCount++;
+            document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
+            totalFocusMins += currentPomoMins;
+            localStorage.setItem('zp_focus_mins', totalFocusMins);
+            document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+            const now = new Date();
+            userForest.unshift({ id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` });
+            safeSetItem('zp_forest', JSON.stringify(userForest));
+            renderForest();
+            playChime(true); awardXP(30); triggerConfetti();
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try { new Notification('ZeroPlus', { body: `اكتملت جلسة ${currentPomoMins} دقيقة. أحسنت!`, icon: '/icon-192.png' }); } catch (e) {}
+            }
+            resetPomo();
+        }
         function togglePomo() {
             const btn = document.getElementById('pomo-play-btn');
             if (pomoInterval) {
@@ -1511,24 +1573,13 @@
                 btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             } else {
                 btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
+                // الاعتماد على الوقت الفعلي بدل العدّ كل ثانية لأن المتصفح يبطّئ المؤقتات في الخلفية
+                pomoEndAt = Date.now() + pomoRemaining * 1000;
                 pomoInterval = setInterval(() => {
-                    if (pomoRemaining > 0) {
-                        pomoRemaining--; updatePomoDisplay();
-                    } else {
-                        clearInterval(pomoInterval); pomoInterval = null;
-                        pomoCompletedCount++;
-                        document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
-                        totalFocusMins += currentPomoMins;
-                        localStorage.setItem('zp_focus_mins', totalFocusMins);
-                        document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
-                        const now = new Date();
-                        userForest.unshift({ id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` });
-                        localStorage.setItem('zp_forest', JSON.stringify(userForest));
-                        renderForest();
-                        playChime(true); awardXP(30); triggerConfetti();
-                        resetPomo();
-                    }
-                }, 1000);
+                    pomoRemaining = Math.max(0, Math.ceil((pomoEndAt - Date.now()) / 1000));
+                    updatePomoDisplay();
+                    if (pomoRemaining <= 0) finishPomoSession();
+                }, 250);
             }
         }
         function resetPomo() {
@@ -1545,12 +1596,34 @@
         renderForest();
 
         // ------------------ REFINED ACADEMIC AI ENGINE (STRICT LECTURE COMPLIANCE) ------------------
-        let pdfSlidesData = JSON.parse(localStorage.getItem('zp_slides_array') || "[]");
+        let pdfSlidesData = safeParse('zp_slides_array', []);
+        if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
+        let lastManualLectureText = '';
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let selectedAiTaskType = 'mcq';
         const GROQ_API_KEY = "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";
 
+        // دمج النص الملصق يدوياً كمصدر للمحاضرة (كان يُقرأ فقط عند التنفيذ فيمنع فتح نافذة الخيارات)
+        function syncManualLectureText() {
+            const box = document.getElementById('lecture-text-content');
+            const manual = box ? box.value.trim() : '';
+            if (manual.length > 20 && manual !== lastManualLectureText) {
+                lastManualLectureText = manual;
+                currentLectureText = manual;
+                pdfSlidesData = [{ pageNum: 1, text: manual }];
+                safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                safeSetItem('zp_active_lecture_text', manual);
+                showLectureLoadedBadge();
+            }
+        }
+
+        function showLectureLoadedBadge() {
+            document.getElementById('lecture-loaded-badge').classList.remove('hidden');
+            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
+        }
+
         function openAiConfigModal() {
+            syncManualLectureText();
             if (!currentLectureText || currentLectureText.trim().length < 20) { 
                 alert("يرجى تحميل ملف المحاضرة أولاً ليتمكن المساعد من فحصها واستيعابها."); 
                 return; 
@@ -1611,7 +1684,8 @@
             status.innerText = `جاري فحص واستخراج محتوى الملف كاملاً: ${file.name}...`;
 
             try {
-                if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
+                if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
+                    if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
                     const buf = await file.arrayBuffer();
                     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
                     let fullText = ""; 
@@ -1625,19 +1699,22 @@
                         fullText += `[Slide ${i}]: ${pText}\n\n`;
                     }
                     currentLectureText = fullText;
-                    localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    localStorage.setItem('zp_active_lecture_text', fullText);
+                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                    safeSetItem('zp_active_lecture_text', fullText);
                 } else {
                     const text = await file.text();
                     currentLectureText = text;
                     pdfSlidesData = [{ pageNum: 1, text: text }];
-                    localStorage.setItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    localStorage.setItem('zp_active_lecture_text', text);
+                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                    safeSetItem('zp_active_lecture_text', text);
                 }
 
-                document.getElementById('lecture-loaded-badge').classList.remove('hidden');
-                document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length} سلايد)`;
+                // الملف المرفوع يحلّ محل أي نص ملصق سابقاً
+                document.getElementById('lecture-text-content').value = '';
+                lastManualLectureText = '';
+                showLectureLoadedBadge();
                 status.innerText = `المصدر المعتمد: ${file.name}`;
+                e.target.value = '';
                 setTimeout(() => openAiConfigModal(), 400);
             } catch(err) {
                 console.error(err);
@@ -1658,6 +1735,7 @@
             document.getElementById('lecture-loaded-badge').classList.add('hidden');
             document.getElementById('upload-file-status').innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             document.getElementById('lecture-text-content').value = "";
+            lastManualLectureText = '';
         }
 
         async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null) {
@@ -1723,10 +1801,7 @@
 
         async function executeAiCustomTask() {
             closeAiConfigModal();
-            const manualText = document.getElementById('lecture-text-content').value.trim();
-            if (manualText && manualText.length > 20) {
-                currentLectureText = manualText;
-            }
+            syncManualLectureText();
 
             const scopedContent = getScopedLectureContent();
             if (!scopedContent || scopedContent.length < 20) {
@@ -1740,11 +1815,13 @@
             const displayStyle = document.getElementById('ai-display-style').value;
 
             // نظام التخزين المؤقت المحلي (Local Cache) لتجنب استهلاك الرصيد عند تكرار نفس الطلب
-            const cacheKey = 'zp_quiz_cache_' + btoa(unescape(encodeURIComponent(scopedContent.substring(0, 300)))).substring(0, 30) + '_' + selectedAiTaskType + '_' + qCount;
+            const cacheKey = 'zp_quiz_cache_' + hashString(scopedContent.substring(0, 7500)) + '_' + selectedAiTaskType + '_' + qCount;
             const cachedData = localStorage.getItem(cacheKey);
 
-            if (cachedData && displayStyle === 'interactive') {
-                const data = JSON.parse(cachedData);
+            let cachedQuiz = null;
+            try { cachedQuiz = cachedData ? JSON.parse(cachedData) : null; } catch (e) {}
+            if (cachedQuiz && Array.isArray(cachedQuiz.questions) && cachedQuiz.questions.length && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
+                const data = cachedQuiz;
                 activeQuizSessionState = {
                     questions: data.questions,
                     currentIndex: 0,
@@ -1756,14 +1833,14 @@
                 return;
             }
 
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div id="${loadingId}" class="flex items-center gap-3 p-4 rounded-3xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue animate-pulse">
-                    <i class="fa-solid fa-brain-circuit text-base text-santorini-deepNavy dark:text-santorini-softBlue fa-spin"></i>
+                    <i class="fa-solid fa-brain text-base text-santorini-deepNavy dark:text-santorini-softBlue fa-spin"></i>
                     <div>
                         <span class="block text-slate-800 dark:text-white">المساعد الأكاديمي يفحص السلايدات ويستوعب المنهج بدقة</span>
                         <span class="thinking-step-text text-[11px] text-slate-400 font-semibold">جاري قراءة وفحص نصوص السلايدات بدقة...</span>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
 
             const strictSystemPrompt = `أنت المساعد الأكاديمي الرسمي الصارم لمنصة ZeroPlus الجامعية في العراق. 
@@ -1798,12 +1875,15 @@ ${scopedContent.substring(0, 7500)}
 
                 let data = null;
                 try {
-                    const cleanJson = rawReply.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    const cleanJson = (rawReply || '').replace(/```json/gi, '').replace(/```/g, '').trim();
                     const s = cleanJson.indexOf('{'), e = cleanJson.lastIndexOf('}');
                     if (s !== -1 && e !== -1) data = JSON.parse(cleanJson.substring(s, e + 1));
                 } catch(e) {}
 
-                if (!data || !Array.isArray(data.questions)) {
+                if (data && Array.isArray(data.questions)) {
+                    data.questions = data.questions.filter(q => q && typeof q.q === 'string' && q.answer).slice(0, qCount);
+                }
+                if (!data || !Array.isArray(data.questions) || data.questions.length === 0) {
                     data = {
                         questions: [{
                             q: "What is the core clinical parameter described in the slides?",
@@ -1834,19 +1914,21 @@ ${scopedContent.substring(0, 7500)}
 
                 let data = null;
                 try {
-                    const cleanJson = rawReply.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    const cleanJson = (rawReply || '').replace(/```json/gi, '').replace(/```/g, '').trim();
                     const s = cleanJson.indexOf('{'), e = cleanJson.lastIndexOf('}');
                     if (s !== -1 && e !== -1) data = JSON.parse(cleanJson.substring(s, e + 1));
                 } catch(e) {}
 
-                if (!data || !Array.isArray(data.questions)) {
-                    const single = generateSmartLocalQuizFromLecture(scopedContent);
-                    data = { questions: [single] };
+                const validQuestions = (data && Array.isArray(data.questions))
+                    ? data.questions.filter(isValidMCQ).slice(0, qCount)
+                    : [];
+                if (validQuestions.length === 0) {
+                    data = { questions: [generateSmartLocalQuizFromLecture(scopedContent)] };
+                } else {
+                    data = { questions: validQuestions };
+                    // لا يُخزَّن في الكاش إلا ناتج الذكاء الاصطناعي الفعلي (وليس السؤال الاحتياطي العشوائي)
+                    safeSetItem(cacheKey, JSON.stringify(data));
                 }
-
-                try {
-                    localStorage.setItem(cacheKey, JSON.stringify(data));
-                } catch(err) {}
 
                 if (displayStyle === 'interactive') {
                     activeQuizSessionState = {
@@ -1860,6 +1942,12 @@ ${scopedContent.substring(0, 7500)}
                     renderTextSheetMCQ(data.questions);
                 }
             }
+        }
+
+        function isValidMCQ(q) {
+            return q && typeof q.q === 'string' && Array.isArray(q.options) && q.options.length >= 2
+                && q.options.every(o => o && typeof o.t === 'string')
+                && q.options.some(o => o.correct === true);
         }
 
         function generateSmartLocalQuizFromLecture(text) {
@@ -1887,23 +1975,23 @@ ${scopedContent.substring(0, 7500)}
 
         function renderSummaryCard(text) {
             const feed = document.getElementById('zero-chat-feed');
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
                         <div class="text-[11px] font-bold text-santorini-deepNavy dark:text-santorini-softBlue flex items-center gap-1.5 border-b border-slate-200 dark:border-santorini-darkBorder pb-2">
                             <i class="fa-solid fa-file-lines"></i> <span>ملخص المنهج المستخلص من السلايدات</span>
                         </div>
-                        <div class="whitespace-pre-line text-slate-800 dark:text-slate-100 font-semibold pt-1">${text.replace(/\n/g, '<br>')}</div>
+                        <div class="whitespace-pre-line text-slate-800 dark:text-slate-100 font-semibold pt-1">${formatRichText(text)}</div>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
         function renderInteractiveShortAnswerCard(item) {
             const feed = document.getElementById('zero-chat-feed');
             const qId = 'short_' + Date.now() + Math.random().toString(36).substring(4);
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-santorini space-y-3">
@@ -1911,8 +1999,8 @@ ${scopedContent.substring(0, 7500)}
                             <span class="text-santorini-deepNavy dark:text-santorini-softBlue font-bold"><i class="fa-solid fa-pen-to-square ml-1"></i> سؤال مقالي من صلب المحاضرة</span>
                             <span class="text-slate-400">تقييم المنهج</span>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${item.q}</h4>
-                        <p class="text-[11px] text-slate-500 dark:text-santorini-softBlue font-bold">الترجمة: ${item.q_ar || ''}</p>
+                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(item.q)}</h4>
+                        <p class="text-[11px] text-slate-500 dark:text-santorini-softBlue font-bold">الترجمة: ${escapeHtml(item.q_ar || '')}</p>
                         <textarea placeholder="اكتب صياغة إجابتك هنا للمقارنة مع جواب المحاضرة..." class="w-full bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
                         <div class="flex items-center gap-2">
                             <button onclick="revealShortAnswer('${qId}')" class="bg-santorini-deepNavy text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
@@ -1921,11 +2009,11 @@ ${scopedContent.substring(0, 7500)}
                         </div>
                         <div class="model-answer-box hidden p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1">
                             <span class="font-bold text-emerald-700 dark:text-emerald-400 block"><i class="fa-solid fa-check ml-1"></i> نص الإجابة المعتمدة:</span>
-                            <p class="text-slate-800 dark:text-slate-200 font-semibold">${item.answer}</p>
-                            <span class="text-[10px] text-slate-400 block mt-1">${item.explanation || ''}</span>
+                            <p class="text-slate-800 dark:text-slate-200 font-semibold">${escapeHtml(item.answer)}</p>
+                            <span class="text-[10px] text-slate-400 block mt-1">${escapeHtml(item.explanation || '')}</span>
                         </div>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -1941,15 +2029,15 @@ ${scopedContent.substring(0, 7500)}
             const feed = document.getElementById('zero-chat-feed');
             let content = '';
             list.forEach((item, idx) => {
-                content += `<strong>س ${idx + 1}: ${item.q}</strong><br>`;
-                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${item.q_ar}</span><br>`;
+                content += `<strong>س ${idx + 1}: ${escapeHtml(item.q)}</strong><br>`;
+                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${escapeHtml(item.q_ar)}</span><br>`;
                 item.options.forEach(o => {
-                    content += `• ${o.t} ${o.correct ? ' (الإجابة الصحيحة)' : ''}<br>`;
+                    content += `• ${escapeHtml(o.t)} ${o.correct ? ' (الإجابة الصحيحة)' : ''}<br>`;
                 });
-                content += `<span class="text-[10px] text-emerald-600 dark:text-emerald-400">التعليل: ${item.why_correct || item.explanation || ''}</span><br><br>`;
+                content += `<span class="text-[10px] text-emerald-600 dark:text-emerald-400">التعليل: ${escapeHtml(item.why_correct || item.explanation || '')}</span><br><br>`;
             });
 
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
@@ -1958,7 +2046,7 @@ ${scopedContent.substring(0, 7500)}
                         </div>
                         <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -1966,14 +2054,14 @@ ${scopedContent.substring(0, 7500)}
             const feed = document.getElementById('zero-chat-feed');
             let content = '';
             list.forEach((item, idx) => {
-                content += `<strong>س ${idx + 1}: ${item.q}</strong><br>`;
-                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${item.q_ar}</span><br>`;
-                content += `• الجواب النموذجي: ${item.answer}<br>`;
-                if (item.explanation) content += `<span class="text-[10px] text-slate-400">السياق المعتمد: ${item.explanation}</span><br>`;
+                content += `<strong>س ${idx + 1}: ${escapeHtml(item.q)}</strong><br>`;
+                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${escapeHtml(item.q_ar)}</span><br>`;
+                content += `• الجواب النموذجي: ${escapeHtml(item.answer)}<br>`;
+                if (item.explanation) content += `<span class="text-[10px] text-slate-400">السياق المعتمد: ${escapeHtml(item.explanation)}</span><br>`;
                 content += `<br>`;
             });
 
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
@@ -1982,7 +2070,7 @@ ${scopedContent.substring(0, 7500)}
                         </div>
                         <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -2015,10 +2103,10 @@ ${scopedContent.substring(0, 7500)}
 
             let optHtml = '';
             currentItem.options.forEach((o, optIdx) => {
-                optHtml += `<button onclick="handleMCQSelection(${qIdx}, ${optIdx}, this)" class="chat-quiz-opt w-full text-right p-4 rounded-2xl text-xs sm:text-sm font-bold transition active:scale-98">${o.t}</button>`;
+                optHtml += `<button onclick="handleMCQSelection(${qIdx}, ${optIdx}, this)" class="chat-quiz-opt w-full text-right p-4 rounded-2xl text-xs sm:text-sm font-bold transition active:scale-98">${escapeHtml(o.t)}</button>`;
             });
 
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3 mt-3">
                     <div class="w-9 h-9 rounded-2xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] space-y-3 shadow-santorini transition-all duration-300">
@@ -2026,15 +2114,15 @@ ${scopedContent.substring(0, 7500)}
                             <span class="question-status-badge text-santorini-deepNavy dark:text-santorini-softBlue font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
                             <span class="text-slate-400">منهج معتمد</span>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${currentItem.q}</h4>
+                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(currentItem.q)}</h4>
                         <div class="p-2.5 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
-                            <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue ml-1">ترجمة السؤال:</span> ${currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق'}
+                            <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue ml-1">ترجمة السؤال:</span> ${escapeHtml(currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق')}
                         </div>
                         <div class="space-y-2 options-container pt-1">${optHtml}</div>
                         <!-- مكان الرد والتغذية الراجعة يقع أسفل الأزرار مباشرة بمسافة واضحة -->
                         <div class="feedback-container hidden space-y-3 pt-3 border-t border-slate-100 dark:border-santorini-darkBorder mt-3"></div>
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -2059,8 +2147,8 @@ ${scopedContent.substring(0, 7500)}
                         <div class="font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-check"></i> <span>إجابة صحيحة ومطابقة للسلايد (+15 XP)</span>
                         </div>
-                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-emerald-600 dark:text-emerald-400">لماذا صحيحة:</strong> ${currentItem.why_correct || currentItem.explanation || 'الخيار يطابق النص الحرفي والتعريف الوارد في المحاضرة.'}</p>
-                        ${currentItem.source_ref ? `<span class="text-[10px] text-slate-400 block">المصدر: ${currentItem.source_ref}</span>` : ''}
+                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-emerald-600 dark:text-emerald-400">لماذا صحيحة:</strong> ${escapeHtml(currentItem.why_correct || currentItem.explanation || 'الخيار يطابق النص الحرفي والتعريف الوارد في المحاضرة.')}</p>
+                        ${currentItem.source_ref ? `<span class="text-[10px] text-slate-400 block">المصدر: ${escapeHtml(currentItem.source_ref)}</span>` : ''}
                     </div>
                 `;
                 playChime(true);
@@ -2073,10 +2161,10 @@ ${scopedContent.substring(0, 7500)}
                         <div class="font-black text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span>
                         </div>
-                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-rose-600 dark:text-rose-400">لماذا خطأ:</strong> ${currentItem.why_incorrect || 'هذا الخيار يخالف المعطيات والتعريف المذكور في المحاضرة.'}</p>
+                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-rose-600 dark:text-rose-400">لماذا خطأ:</strong> ${escapeHtml(currentItem.why_incorrect || 'هذا الخيار يخالف المعطيات والتعريف المذكور في المحاضرة.')}</p>
                         <div class="border-t border-rose-500/20 pt-1.5 mt-1.5 text-[11px] space-y-1">
-                            <div><strong class="text-emerald-600 dark:text-emerald-400">الجواب الصحيح:</strong> ${correctOpt.t}</div>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400">${currentItem.why_correct || currentItem.explanation || ''}</p>
+                            <div><strong class="text-emerald-600 dark:text-emerald-400">الجواب الصحيح:</strong> ${escapeHtml(correctOpt.t)}</div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(currentItem.why_correct || currentItem.explanation || '')}</p>
                         </div>
                     </div>
                 `;
@@ -2086,13 +2174,13 @@ ${scopedContent.substring(0, 7500)}
             // زر الانتقال للسؤال التالي أو إنهاء الاختبار بعد استنفاد كامل العدد المحدد
             const isLastQuestion = (qIdx + 1) >= activeQuizSessionState.qCount;
             if (!isLastQuestion) {
-                fb.innerHTML += `
+                fb.insertAdjacentHTML('beforeend', `
                     <button onclick="advanceToNextQuestion()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3 rounded-2xl font-bold text-xs shadow-santorini-btn transition active:scale-95 flex items-center justify-center gap-2 mt-2">
                         <span>السؤال التالي</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                     </button>
-                `;
+                `);
             } else {
-                fb.innerHTML += `
+                fb.insertAdjacentHTML('beforeend', `
                     <div class="p-4 rounded-2xl bg-santorini-deepNavy text-white text-center space-y-2 mt-3">
                         <span class="text-xs font-black block">اكتمل الاختبار المنهجي بنجاح</span>
                         <p class="text-[11px] text-santorini-softBlue">نتيجتك الأكاديمية: ${activeQuizSessionState.score} من ${activeQuizSessionState.qCount}</p>
@@ -2100,7 +2188,7 @@ ${scopedContent.substring(0, 7500)}
                             اختبار جديد لنطاق آخر
                         </button>
                     </div>
-                `;
+                `);
                 triggerConfetti();
             }
 
@@ -2119,20 +2207,21 @@ ${scopedContent.substring(0, 7500)}
             if (!txt) return;
             inp.value = '';
             const feed = document.getElementById('zero-chat-feed');
-            feed.innerHTML += `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${txt}</div></div>`;
+            feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
 
             if (txt.includes('كويز') || txt.includes('سؤال') || txt.includes('quiz') || txt.includes('اختبرني')) { 
                 openAiConfigModal(); 
                 return; 
             }
 
+            syncManualLectureText();
             const scopedContent = getScopedLectureContent();
             const loadingId = 'loading_chat_' + Date.now();
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div id="${loadingId}" class="flex items-center gap-2 p-3 text-xs font-bold text-slate-400 animate-pulse">
-                    <i class="fa-solid fa-brain-circuit text-santorini-softBlue"></i> 
+                    <i class="fa-solid fa-brain text-santorini-softBlue"></i> 
                     <span class="thinking-step-text">جاري فحص وتدقيق نصوص المحاضرة لصياغة الإجابة...</span>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
 
             const systemPrompt = `أنت المساعد الأكاديمي الصارم لمنصة ZeroPlus في العراق. 
@@ -2154,13 +2243,13 @@ ${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف 
                 }
             }
 
-            feed.innerHTML += `
+            feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-4 text-xs font-bold max-w-[85%] leading-relaxed">
-                        ${reply.replace(/\n/g, '<br>')}
+                        ${formatRichText(reply)}
                     </div>
-                </div>`;
+                </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -2178,15 +2267,42 @@ ${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف 
             document.getElementById('share-modal').classList.add('hidden'); 
         }
         function copyShareText() {
-            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nمسار البناء اللغوي الطبي.`).then(() => alert("تم نسخ التقرير بنجاح."));
+            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nمسار البناء اللغوي الطبي.`)
+                .then(() => alert("تم نسخ التقرير بنجاح."))
+                .catch(() => alert("تعذر النسخ تلقائياً، يرجى نسخ النص يدوياً."));
         }
         function executeShare() {
             if (navigator.share) {
-                navigator.share({ title: 'ZeroPlus Report', text: `إنجازي على منصة ZeroPlus الأكاديمية: ${userXP} XP` });
+                navigator.share({ title: 'ZeroPlus Report', text: `إنجازي على منصة ZeroPlus الأكاديمية: ${userXP} XP` }).catch(() => {});
             } else { copyShareText(); }
         }
 
         // ------------------ INITIAL STARTUP ------------------
+        // سلسلة الأيام المتتالية (Streak): كانت ثابتة على 1 ولا تتغير أبداً
+        (function updateDailyStreak() {
+            const today = new Date().toISOString().slice(0, 10);
+            const last = localStorage.getItem('zp_last_active_date');
+            if (last === today) return;
+            if (last) {
+                const diffDays = Math.round((new Date(today) - new Date(last)) / 86400000);
+                userStreak = diffDays === 1 ? userStreak + 1 : 1;
+            }
+            safeSetItem('zp_med_streak', userStreak);
+            safeSetItem('zp_last_active_date', today);
+        })();
+
+        // مزامنة الواجهة مع الحالة المحفوظة عند التحميل
+        document.getElementById('app-xp').innerText = `${userXP} XP`;
+        document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+        if ('Notification' in window && Notification.permission === 'granted') {
+            document.getElementById('notify-icon').className = 'fa-solid fa-bell text-xs text-emerald-500';
+        }
+        if (currentLectureText && currentLectureText.trim().length >= 20) {
+            showLectureLoadedBadge();
+        }
+        const savedTab = localStorage.getItem('zp_active_tab');
+        showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
+        updatePomoDisplay();
         checkOnboarding();
         renderPathTree();
         updateGamificationBar();
