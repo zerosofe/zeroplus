@@ -1738,65 +1738,59 @@
             lastManualLectureText = '';
         }
 
-        async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null) {
-            const steps = [
-                "جاري قراءة وفحص نصوص السلايدات بدقة...",
-                "استيعاب المنهج واستخراج الحقائق المعتمدة...",
-                "تحليل الخيارات ومطابقتها حرفياً مع مصدر المحاضرة...",
-                "صياغة التوضيحات والترجمة الأكاديمية الدقيقة..."
-            ];
-            let stepIdx = 0;
-            let timer = null;
-
-            if (loadingElId) {
-                const targetEl = document.getElementById(loadingElId);
-                if (targetEl) {
-                    timer = setInterval(() => {
-                        stepIdx = (stepIdx + 1) % steps.length;
-                        const label = targetEl.querySelector('.thinking-step-text');
-                        if (label) label.innerText = steps[stepIdx];
-                    }, 1100);
-                }
-            }
-
-            // فترة الانتظار المدروسة (3.5 ثوانٍ لضمان استيعاب الطالب والتأكد من البديهة والتدقيق)
-            const minThinkingDelay = new Promise(resolve => setTimeout(resolve, 3500));
-
-            try {
+        async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
+            const label = loadingElId && document.getElementById(loadingElId)?.querySelector('.thinking-step-text');
+            const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+            let lastError = null;
+            for (let attempt = 0; attempt < 3; attempt++) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 58000);
-
-                const fetchPromise = fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { 
-                        "Authorization": "Bearer " + GROQ_API_KEY.trim(), 
-                        "Content-Type": "application/json" 
-                    },
-                    body: JSON.stringify({ 
-                        model: "llama-3.3-70b-versatile", 
-                        messages: [
-                            { role: "system", content: systemInstruction },
-                            { role: "user", content: userPrompt }
-                        ],
-                        temperature: 0.15 
-                    }),
-                    signal: controller.signal
-                });
-
-                const [res] = await Promise.all([fetchPromise, minThinkingDelay]);
-
-                clearTimeout(timeoutId);
-                if (timer) clearInterval(timer);
-
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.choices?.[0]?.message?.content || null;
-                }
-            } catch(e) {
-                if (timer) clearInterval(timer);
-                console.warn("Cloud AI response delayed or timed out:", e);
+                try {
+                    const model = models[Math.min(attempt, models.length - 1)];
+                    if (label) label.innerText = `محاولة ${attempt + 1} من 3 — مراجعة المحتوى...`;
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST', headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY.trim(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model, messages: [{role:'system',content:systemInstruction},{role:'user',content:userPrompt}], temperature: 0.15,
+                            ...(jsonMode ? {response_format:{type:'json_object'}} : {}) }), signal: controller.signal
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        const code = data.error?.code || '';
+                        lastError = res.status === 401 ? 'مفتاح API غير صالح.' : (res.status === 429 || code.includes('rate')) ? 'تم تجاوز حد الطلبات؛ انتظر قليلاً.' : `تعذر الاتصال بخدمة الذكاء الاصطناعي (${res.status}).`; lastAIError = lastError;
+                        if (res.status === 401) break;
+                        continue;
+                    }
+                    const content = data.choices?.[0]?.message?.content;
+                    if (content) return content;
+                    lastError = 'أعاد النموذج استجابة فارغة.';
+                } catch (e) { lastError = e.name === 'AbortError' ? 'انتهت مهلة الاتصال.' : 'انقطع الاتصال بخدمة الذكاء الاصطناعي.'; lastAIError = lastError; }
+                finally { clearTimeout(timeoutId); }
             }
             return null;
+        }
+        let lastAIError = 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
+        let chatMemory = safeParse('zp_chat_memory', []); if (!Array.isArray(chatMemory)) chatMemory = [];
+        function sampleLectureSlides(text) {
+            const slides = pdfSlidesData.length ? pdfSlidesData : [{pageNum:1,text}];
+            const budget = 18000;
+            let result = slides.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join('\n\n');
+            if (result.length <= budget) return result;
+            const perSlide = Math.max(250, Math.floor(budget / slides.length));
+            return slides.map(s => `[Slide ${s.pageNum}]: ${s.text.slice(0,perSlide)}`).join('\n\n').slice(0,budget);
+        }
+        function parseAIJson(raw) {
+            try { const t=(raw||'').replace(/```json/gi,'').replace(/```/g,'').trim(); return JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1)); } catch (_) { return null; }
+        }
+        function evidenceIsInLecture(q, text) {
+            const evidence = String(q?.evidence || '').trim();
+            return evidence.length >= 12 && text.toLowerCase().includes(evidence.toLowerCase());
+        }
+        async function reviewQuestions(questions, text, kind) {
+            if (!questions.length) return [];
+            const prompt = `راجع كل سؤال وإجابته من نص المحاضرة. أعد فقط الأسئلة الصحيحة التي جوابها مثبت صراحة في النص، واحتفظ بحقل evidence مقتبس حرفياً. أعِد JSON بالشكل {"questions":[...]}. النوع ${kind}.\nالأسئلة: ${JSON.stringify({questions})}\nنص المحاضرة:\n${text}`;
+            const raw = await callStrictAcademicAI(prompt, 'أنت مدقق أكاديمي. لا تقبل أي معلومة لا يثبتها النص. أخرج JSON فقط.', null, true);
+            const reviewed = parseAIJson(raw)?.questions || [];
+            return reviewed.filter(q => evidenceIsInLecture(q,text));
         }
 
         async function executeAiCustomTask() {
@@ -1804,6 +1798,7 @@
             syncManualLectureText();
 
             const scopedContent = getScopedLectureContent();
+            const sampledContent = sampleLectureSlides(scopedContent);
             if (!scopedContent || scopedContent.length < 20) {
                 alert("يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
                 return;
@@ -1815,7 +1810,7 @@
             const displayStyle = document.getElementById('ai-display-style').value;
 
             // نظام التخزين المؤقت المحلي (Local Cache) لتجنب استهلاك الرصيد عند تكرار نفس الطلب
-            const cacheKey = 'zp_quiz_cache_' + hashString(scopedContent.substring(0, 7500)) + '_' + selectedAiTaskType + '_' + qCount;
+            const cacheKey = 'zp_quiz_cache_v2_' + hashString(sampledContent) + '_' + selectedAiTaskType + '_' + qCount;
             const cachedData = localStorage.getItem(cacheKey);
 
             let cachedQuiz = null;
@@ -1852,7 +1847,7 @@
             if (selectedAiTaskType === 'summary') {
                 const prompt = `افحص واستوعب كامل محتوى السلايدات التالية وصغ ملخصاً أكاديمياً شاملاً ومكثفاً مستنداً بنسبة 100% على ما ورد فيها فقط:
 """
-${scopedContent.substring(0, 7500)}
+${sampledContent}
 """
 الصياغة بأسلوب Markdown منظم (عناوين ونقاط بوليتس) باللغة العربية مع الحفاظ على المصطلحات الإنجليزية الأساسية.`;
 
@@ -1867,7 +1862,7 @@ ${scopedContent.substring(0, 7500)}
 {"questions":[{"q":"Question in English","q_ar":"ترجمة السؤال باللغة العربية","answer":"الجواب النموذجي المستخرج حرفياً من السلايد","explanation":"رقم السلايد أو السياق المعتمد"}]}
 محتوى السلايدات:
 """
-${scopedContent.substring(0, 7500)}
+${sampledContent}
 """`;
 
                 const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط بدون مقدمات.", loadingId);
@@ -1901,46 +1896,35 @@ ${scopedContent.substring(0, 7500)}
                 }
 
             } else {
-                const prompt = `افحص السلايدات التالية بدقة وافهم كل ما ورد فيها، ثم صغ تماماً (${qCount}) أسئلة اختبار اختيار من متعدد (MCQ) معتمدة بنسبة 100% على نصوصها فقط.
-أخرج الناتج بصيغة JSON حصراً بهذا الهيكل لكل سؤال:
-{"questions":[{"q":"Question text in English","q_ar":"ترجمة السؤال باللغة العربية بدقة","options":[{"t":"A) Choice 1","correct":false},{"t":"B) Choice 2","correct":true},{"t":"C) Choice 3","correct":false},{"t":"D) Choice 4","correct":false}],"why_correct":"تعليل دقيق لسبب صحة هذا الخيار مستنداً لنص السلايد","why_incorrect":"توضيح لما الخيارات الأخرى غير صحيحة أو غير متطابقة مع السلايد","source_ref":"رقم السلايد أو الجملة المعتمدة"}]}
-نصوص السلايدات:
-"""
-${scopedContent.substring(0, 7500)}
-"""`;
-
-                const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط.", loadingId);
+                const accepted = [], seen = new Set();
+                let failureReason = 'تعذر توليد أسئلة كافية من محتوى المحاضرة.';
+                for (let batch = 0; batch < 3 && accepted.length < qCount; batch++) {
+                    const needed = qCount - accepted.length;
+                    const prompt = `أنشئ ${needed} سؤال MCQ جديداً وفريداً اعتماداً حصراً على نص السلايدات. لكل سؤال اقتبس دليلاً حرفياً لا يقل عن 12 حرفاً في evidence. أربعة خيارات بالضبط وخيار صحيح واحد. JSON فقط بالشكل {"questions":[{"q":"...","q_ar":"...","evidence":"اقتباس حرفي من النص","options":[{"t":"...","correct":false}],"why_correct":"...","why_incorrect":"...","source_ref":"..."}]}. لا تكرر هذه الأسئلة: ${JSON.stringify(accepted.map(q=>q.q))}\nالنص:\n${sampledContent}`;
+                    const raw = await callStrictAcademicAI(prompt, strictSystemPrompt + ' أخرج كائن JSON صالحاً فقط.', loadingId, true);
+                    let batchQuestions = parseAIJson(raw)?.questions || [];
+                    batchQuestions = batchQuestions.filter(q => isValidMCQ(q) && q.options.length === 4 && q.options.filter(o=>o.correct).length === 1 && evidenceIsInLecture(q,sampledContent));
+                    batchQuestions = await reviewQuestions(batchQuestions, sampledContent, 'MCQ');
+                    for (const q of batchQuestions) {
+                        const key = String(q.q).toLowerCase().replace(/\W/g,'');
+                        if (key && !seen.has(key)) { seen.add(key); q.options = shuffleAndRenumberOptions(q.options); accepted.push(q); }
+                        if (accepted.length >= qCount) break;
+                    }
+                    if (!raw) failureReason = lastAIError;
+                }
+                let questions = accepted.slice(0,qCount);
+                if (questions.length < qCount) {
+                    const fallback = generateSmartLocalQuizFromLecture(sampledContent, qCount - questions.length, seen);
+                    questions = questions.concat(fallback);
+                }
                 document.getElementById(loadingId)?.remove();
-
-                let data = null;
-                try {
-                    const cleanJson = (rawReply || '').replace(/```json/gi, '').replace(/```/g, '').trim();
-                    const s = cleanJson.indexOf('{'), e = cleanJson.lastIndexOf('}');
-                    if (s !== -1 && e !== -1) data = JSON.parse(cleanJson.substring(s, e + 1));
-                } catch(e) {}
-
-                const validQuestions = (data && Array.isArray(data.questions))
-                    ? data.questions.filter(isValidMCQ).slice(0, qCount)
-                    : [];
-                if (validQuestions.length === 0) {
-                    data = { questions: [generateSmartLocalQuizFromLecture(scopedContent)] };
-                } else {
-                    data = { questions: validQuestions };
-                    // لا يُخزَّن في الكاش إلا ناتج الذكاء الاصطناعي الفعلي (وليس السؤال الاحتياطي العشوائي)
-                    safeSetItem(cacheKey, JSON.stringify(data));
-                }
-
+                if (questions.length < qCount || accepted.length === 0) showAIError(failureReason);
+                data = {questions};
+                if (accepted.length >= qCount) safeSetItem(cacheKey, JSON.stringify(data));
                 if (displayStyle === 'interactive') {
-                    activeQuizSessionState = {
-                        questions: data.questions,
-                        currentIndex: 0,
-                        score: 0,
-                        qCount: data.questions.length
-                    };
+                    activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
                     renderCurrentInteractiveQuizQuestion();
-                } else {
-                    renderTextSheetMCQ(data.questions);
-                }
+                } else renderTextSheetMCQ(questions);
             }
         }
 
@@ -1950,27 +1934,29 @@ ${scopedContent.substring(0, 7500)}
                 && q.options.some(o => o.correct === true);
         }
 
-        function generateSmartLocalQuizFromLecture(text) {
-            const clean = text.replace(/\[Slide \d+\]:/g, '').replace(/\s+/g, ' ').trim();
-            const sentences = clean.split(/[.!?\n]+/).map(s => s.trim()).filter(s => s.length > 35 && s.length < 200);
-            const target = sentences[Math.floor(Math.random() * sentences.length)] || clean.substring(0, 120);
-            const words = target.split(' ').filter(w => w.length > 4);
-            const keyWord = words[Math.floor(words.length / 2)] || "Parameter";
-            const blanked = target.replace(keyWord, "______");
-
-            return {
-                q: `Based on the lecture text, select the correct term to complete the statement:\n"${blanked}"`,
-                q_ar: "استناداً لنص المحاضرة، اختر المصطلح الصحيح لإكمال العبارة:",
-                options: [
-                    { t: `A) ${keyWord}`, correct: true },
-                    { t: "B) Differential Baseline", correct: false },
-                    { t: "C) Secondary Protocol", correct: false },
-                    { t: "D) Variable Index", correct: false }
-                ].sort(() => Math.random() - 0.5),
-                why_correct: `هذا الخيار هو المطابق تماماً للجملة المعتمدة في السلايد: "${target}"`,
-                why_incorrect: "الخيارات الأخرى غير مذكورة كحل مطابق لسياق هذه الجملة في المحاضرة.",
-                source_ref: "نص المحاضرة الفعلي"
-            };
+        function shuffleAndRenumberOptions(options) {
+            const shuffled = [...options].sort(() => Math.random() - 0.5);
+            return shuffled.map((o,i) => ({...o,t:`${String.fromCharCode(65+i)}) ${o.t.replace(/^[A-D][).]\s*/, '')}`}));
+        }
+        function generateSmartLocalQuizFromLecture(text, count = 1, seen = new Set()) {
+            const slides = pdfSlidesData.length ? pdfSlidesData : [{pageNum:1,text}];
+            const sentences = slides.flatMap(s => (s.text||'').split(/[.!?\n]+/).map(x=>({text:x.trim(),page:s.pageNum})))
+                .filter(x=>x.text.length>35 && x.text.length<240);
+            const made=[]; let cursor=0;
+            while (made.length<count && sentences.length && cursor<sentences.length*2) {
+                const item=sentences[(cursor++ * Math.ceil(sentences.length/Math.max(count,1))) % sentences.length];
+                const words=item.text.split(/\s+/).filter(w=>w.length>4); const answer=words[Math.floor(words.length/2)];
+                if (!answer || seen.has(item.text.toLowerCase())) continue;
+                seen.add(item.text.toLowerCase());
+                const distractors=[...new Set(sentences.map(x=>x.text.split(/\s+/).filter(w=>w.length>4)[0]).filter(w=>w&&w.toLowerCase()!==answer.toLowerCase()))].slice(0,3);
+                while(distractors.length<3) distractors.push(words.find(w=>w!==answer)||'المعلومة');
+                const opts=shuffleAndRenumberOptions([{t:answer,correct:true},...distractors.map(t=>({t,correct:false}))]);
+                made.push({q:`Complete the statement from the lecture: "${item.text.replace(answer,'______')}"`,q_ar:'أكمل العبارة اعتماداً على نص المحاضرة:',evidence:item.text,options:opts,why_correct:`الإجابة مثبتة في النص: ${item.text}`,why_incorrect:'الخيارات الأخرى لا تكمل العبارة الواردة في السلايد.',source_ref:`السلايد ${item.page}`});
+            }
+            return made;
+        }
+        function showAIError(message) {
+            document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-xs text-rose-600 font-bold p-3">تعذر إكمال توليد أسئلة الذكاء الاصطناعي: ${escapeHtml(message || lastAIError)}</div>`);
         }
 
         function renderSummaryCard(text) {
@@ -2224,14 +2210,15 @@ ${scopedContent.substring(0, 7500)}
                 </div>`);
             feed.scrollTop = feed.scrollHeight;
 
+            chatMemory.push({role:'user',content:txt}); chatMemory = chatMemory.slice(-12);
             const systemPrompt = `أنت المساعد الأكاديمي الصارم لمنصة ZeroPlus في العراق. 
 مهمتك: الإجابة على استفسار الطالب بالاعتماد بنسبة 100% فقط على محتوى السلايدات التالي. إذا لم ترد الإجابة في المحاضرة، وضح للطالب بلباقة أن هذه الجزئية غير مذكورة في الملف المرفق. خاطب الطالب بصفته وباسمه (${currentUserName || 'الزميل'}). لا تستخدم أي إيموجيات.
 محتوى السلايدات المعتمد:
 """
-${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف بعد'}
+${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع ملف بعد'}
 """`;
 
-            let reply = await callStrictAcademicAI(txt, systemPrompt, loadingId);
+            let reply = await callStrictAcademicAI(`${chatMemory.slice(0,-1).map(m=>`${m.role}: ${m.content}`).join('\n')}\nuser: ${txt}`, systemPrompt, loadingId);
             document.getElementById(loadingId)?.remove();
 
             if (!reply) {
@@ -2243,6 +2230,7 @@ ${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف 
                 }
             }
 
+            chatMemory.push({role:'assistant',content:reply}); chatMemory = chatMemory.slice(-12); safeSetItem('zp_chat_memory', JSON.stringify(chatMemory));
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-xl bg-santorini-deepNavy text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
@@ -2253,9 +2241,7 @@ ${scopedContent ? scopedContent.substring(0, 7500) : 'لم يتم رفع ملف 
             feed.scrollTop = feed.scrollHeight;
         }
 
-        function clearChatHistory() { 
-            document.getElementById('zero-chat-feed').innerHTML = ''; 
-        }
+        function clearChatHistory() { document.getElementById('zero-chat-feed').innerHTML = ''; chatMemory = []; localStorage.removeItem('zp_chat_memory'); }
 
         // ------------------ SHARE MODAL ------------------
         function openShareModal() {
