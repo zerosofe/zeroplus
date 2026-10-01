@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
-    <!-- Favicon & Icons -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg?v=26">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=26">
     <link rel="shortcut icon" href="/icon.svg?v=26">
 
-    <!-- PWA Settings -->
     <link rel="manifest" href="/manifest.json?v=26">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,7 +16,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ZeroPlus">
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -54,11 +51,8 @@
         }
     </script>
 
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- PDF.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -137,6 +131,17 @@
             background-color: #e0f2fe !important;
         }
 
+        .opt-correct {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            border-color: #10b981 !important;
+            color: #10b981 !important;
+        }
+        .opt-wrong {
+            background-color: rgba(244, 63, 94, 0.15) !important;
+            border-color: #f43f5e !important;
+            color: #f43f5e !important;
+        }
+
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #0284c7; border-radius: 10px; }
@@ -144,7 +149,6 @@
 </head>
 <body class="bg-sky-50 dark:bg-theme-darkBase text-slate-800 dark:text-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-theme-teal selection:text-white">
 
-    <!-- شريط تذكير الإشعارات الذكي -->
     <div id="notify-reminder-banner" class="hidden bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md flex items-center justify-between">
         <div class="max-w-4xl mx-auto w-full flex items-center justify-between gap-3">
             <div class="flex items-center gap-2">
@@ -172,7 +176,6 @@
                 </p>
             </div>
 
-            <!-- تعريف كامل بأقسام المنصة -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
                     <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center font-bold">
@@ -207,7 +210,6 @@
                 </div>
             </div>
 
-            <!-- تعريف المطور -->
             <div class="bg-gradient-to-r from-theme-sky/10 to-theme-teal/10 dark:from-theme-sky/10 dark:to-theme-teal/10 border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl text-center">
                 <div class="flex items-center justify-center gap-2 text-xs font-black text-slate-800 dark:text-white">
                     <i class="fa-solid fa-code text-theme-sky"></i>
@@ -218,7 +220,6 @@
                 </p>
             </div>
 
-            <!-- نموذج تسجيل الدخول / إنشاء الحساب بالاسم والباسوورد أو Google -->
             <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder p-6 sm:p-8 rounded-4xl shadow-xl max-w-md mx-auto space-y-5 text-right">
                 <div class="text-center space-y-1">
                     <h3 id="auth-modal-title" class="font-black text-lg text-slate-900 dark:text-white">مرحباً بك زميلنا الكريم</h3>
@@ -276,7 +277,6 @@
                 </div>
             </div>
 
-            <!-- نبذة عن المطور والدعم الفني -->
             <div class="text-center space-y-2 pt-4 border-t border-sky-100 dark:border-theme-darkBorder">
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                     تم تطوير هذه المنصة بكل فخر بواسطة <strong class="text-theme-sky">مصطفى عبد علي</strong> | بغداد، العراق.
@@ -488,7 +488,6 @@
         </div>
     </div>
 
-    <!-- Top Navigation Header مع إظهار زر الملف الشخصي وزر التثبيت والمشاركة وتغيير المظهر -->
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0 transition-colors">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
@@ -503,7 +502,6 @@
                 </div>
             </div>
 
-            <!-- أزرار الإجراءات العلوية مع النصوص التوضيحية المدمجة -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تنزيل التطبيق على جهازك">
                     <i class="fa-solid fa-download text-xs"></i>
@@ -530,10 +528,9 @@
         </div>
     </header>
 
-    <!-- Main Workspace -->
     <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
 
-        <!-- ================= SECTION 1: TO-DO (طابع تركوازي وسمائي) ================= -->
+        <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
             <div class="gradient-todo p-6 rounded-4xl text-white shadow-glow-teal flex items-center justify-between">
                 <div>
@@ -569,7 +566,7 @@
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO (طابع أخضر وسمائي) ================= -->
+        <!-- ================= SECTION 2: POMODORO ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
@@ -641,7 +638,7 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 3: البناء اللغوي (طابع سمائي وأبيض) ================= -->
+        <!-- ================= SECTION 3: ENGLISH ================= -->
         <section id="tab-english" class="hidden space-y-5">
             <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
@@ -678,7 +675,7 @@
             </div>
         </section>
 
-        <!-- ================= MODAL: INTERACTIVE LESSON / DUOLINGO ENGINE ================= -->
+        <!-- ================= MODAL: INTERACTIVE LESSON ================= -->
         <div id="lesson-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
             <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl">
                 <div class="space-y-3">
@@ -721,7 +718,7 @@
             </div>
         </div>
 
-        <!-- ================= SECTION 4: ZERO STUDY CONSOLE (طابع تركوازي وأخضر) ================= -->
+        <!-- ================= SECTION 4: ZERO STUDY CONSOLE ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -763,7 +760,6 @@
                 </div>
             </div>
 
-            <!-- Workspace Console -->
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 <div class="p-4 border-b border-teal-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-teal-50/30 dark:bg-theme-darkBase/40">
                     <div class="flex items-center gap-3">
@@ -866,7 +862,6 @@
         </div>
     </nav>
 
-    <!-- ================= JAVASCRIPT LOGIC & ENGINES ================= -->
     <script>
         // ------------------ HELPERS ------------------
         function escapeHtml(v) {
@@ -885,23 +880,20 @@
             try { localStorage.setItem(key, value); return true; }
             catch (e) { console.warn('localStorage write failed for', key, e); return false; }
         }
-        function hashString(str) {
-            let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
-            for (let i = 0; i < str.length; i++) {
-                const ch = str.charCodeAt(i);
-                h1 = Math.imul(h1 ^ ch, 2654435761);
-                h2 = Math.imul(h2 ^ ch, 1597334677);
-            }
-            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-            return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
-        }
         function deptLabel(key) {
             const opt = document.querySelector(`#auth-dept option[value="${key}"]`);
             return opt ? opt.textContent.trim() : key;
         }
+        function getDeviceId() {
+            let id = localStorage.getItem('zp_device_id');
+            if (!id) {
+                id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+                localStorage.setItem('zp_device_id', id);
+            }
+            return id;
+        }
 
-        // ------------------ SUPABASE INTEGRATION & CREDENTIALS ------------------
+        // ------------------ SUPABASE ------------------
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -929,7 +921,7 @@
             }
         }
 
-        // ================= AUTHENTICATION & PROFILE ENGINE =================
+        // ================= AUTHENTICATION =================
         let isLoginMode = false;
 
         function toggleAuthMode() {
@@ -961,16 +953,19 @@
                 alert("يرجى إدخال اسم الطالب وكلمة المرور.");
                 return;
             }
+            if (passwordInput.length < 6) {
+                alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
+                return;
+            }
 
             const pseudoEmail = `${usernameInput.toLowerCase().replace(/\s+/g, '_')}@zeroplus.edu`;
 
             if (!supabaseClient) {
-                alert("تعذر الاتصال بـ Supabase.");
+                alert("تعذر الاتصال بـ Supabase. تحقق من اتصالك بالإنترنت.");
                 return;
             }
 
             if (isLoginMode) {
-                // تسجيل الدخول
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: pseudoEmail,
                     password: passwordInput
@@ -983,7 +978,6 @@
 
                 await loadUserDataAfterAuth(data.user);
             } else {
-                // إنشاء حساب جديد
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: pseudoEmail,
                     password: passwordInput,
@@ -1032,7 +1026,6 @@
             localStorage.setItem('zp_user_registered', 'true');
             localStorage.setItem('zp_auth_uid', authUser.id);
 
-            // جلب البيانات من جدول profiles
             const { data, error: profileLoadError } = await supabaseClient
                 .from('profiles')
                 .select('*')
@@ -1046,9 +1039,17 @@
                 if (data.unlocked_stage_max) unlockedNodeMax = data.unlocked_stage_max;
                 if (data.node_crowns) nodeCrowns = data.node_crowns;
                 if (data.learning_track) currentLearningTrack = data.learning_track;
+                if (typeof data.total_focus_mins === 'number') totalFocusMins = data.total_focus_mins;
                 if (data.avatar_url) localStorage.setItem('zp_avatar_url', data.avatar_url);
+                if (data.streak_count) userStreak = data.streak_count;
+
+                localStorage.setItem('zp_xp', userXP);
+                localStorage.setItem('zp_username', currentUserName);
+                localStorage.setItem('zp_user_department', activeDepartmentKey);
+                localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
+                localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
+                localStorage.setItem('zp_focus_mins', totalFocusMins);
             } else if (!profileLoadError) {
-                // إنشاء ملف شخصي تلقائياً عند أول دخول عبر Google.
                 const googleName =
                     authUser.user_metadata?.full_name ||
                     authUser.user_metadata?.name ||
@@ -1088,11 +1089,32 @@
         }
 
         async function checkExistingAuthSession() {
-            if (!supabaseClient) return;
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session && session.user) {
-                await loadUserDataAfterAuth(session.user);
-            } else {
+            if (!supabaseClient) {
+                const localReg = localStorage.getItem('zp_user_registered');
+                if (localReg === 'true' && currentUserName) {
+                    document.getElementById('landing-view').classList.add('hidden');
+                    updateGreetingHeader();
+                    updateHeaderAvatar();
+                } else {
+                    document.getElementById('landing-view').classList.remove('hidden');
+                }
+                return;
+            }
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    await loadUserDataAfterAuth(session.user);
+                } else {
+                    const localReg = localStorage.getItem('zp_user_registered');
+                    if (localReg === 'true' && currentUserName) {
+                        document.getElementById('landing-view').classList.add('hidden');
+                        updateGreetingHeader();
+                        updateHeaderAvatar();
+                    } else {
+                        document.getElementById('landing-view').classList.remove('hidden');
+                    }
+                }
+            } catch (e) {
                 const localReg = localStorage.getItem('zp_user_registered');
                 if (localReg === 'true' && currentUserName) {
                     document.getElementById('landing-view').classList.add('hidden');
@@ -1127,7 +1149,8 @@
 
         function updateHeaderAvatar() {
             const avatarUrl = localStorage.getItem('zp_avatar_url');
-            const avatarContainer = document.getElementById('header-avatar-initial').parentElement;
+            const avatarContainer = document.getElementById('header-avatar-initial')?.parentElement;
+            if (!avatarContainer) return;
             if (avatarUrl) {
                 avatarContainer.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-2xl">`;
             } else {
@@ -1137,7 +1160,19 @@
 
         async function uploadProfileAvatar(e) {
             const file = e.target.files[0];
-            if (!file || !supabaseClient) return;
+            if (!file) return;
+            if (!supabaseClient) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    localStorage.setItem('zp_avatar_url', ev.target.result);
+                    document.getElementById('profile-avatar-preview').src = ev.target.result;
+                    document.getElementById('profile-avatar-preview').classList.remove('hidden');
+                    document.getElementById('profile-avatar-placeholder').classList.add('hidden');
+                    updateHeaderAvatar();
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
             const uid = localStorage.getItem('zp_auth_uid') || getDeviceId();
             const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
             const filePath = `avatars/${uid}_${Date.now()}.${extension}`;
@@ -1178,6 +1213,10 @@
             localStorage.setItem('zp_user_department', activeDepartmentKey);
 
             if (newPass && supabaseClient) {
+                if (newPass.length < 6) {
+                    alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
+                    return;
+                }
                 const { error } = await supabaseClient.auth.updateUser({ password: newPass });
                 if (error) alert("تعذر تحديث كلمة المرور: " + error.message);
                 else alert("تم تحديث كلمة المرور بنجاح.");
@@ -1190,17 +1229,20 @@
         }
 
         async function handleUserLogout() {
-            if (supabaseClient) await supabaseClient.auth.signOut();
-            localStorage.clear();
-            location.reload();
+            if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+                if (supabaseClient) await supabaseClient.auth.signOut();
+                localStorage.clear();
+                location.reload();
+            }
         }
 
         async function syncProfileWithCloud() {
             if (!supabaseClient || !navigator.onLine) return;
             const uid = localStorage.getItem('zp_auth_uid');
             const deviceId = getDeviceId();
+            updateCloudIndicator('syncing');
             try {
-                await supabaseClient.from('profiles').upsert({
+                const payload = {
                     user_id: uid || null,
                     device_id: deviceId,
                     user_name: currentUserName,
@@ -1212,32 +1254,41 @@
                     streak_count: userStreak,
                     node_crowns: nodeCrowns,
                     learning_track: currentLearningTrack,
-                    avatar_url: localStorage.getItem('zp_avatar_url') || null,
                     last_active: new Date().toISOString()
-                }, { onConflict: uid ? 'user_id' : 'device_id' });
-            } catch (e) {}
+                };
+                await supabaseClient.from('profiles').upsert(payload, { onConflict: uid ? 'user_id' : 'device_id' });
+                updateCloudIndicator('online');
+            } catch (e) {
+                updateCloudIndicator('offline');
+            }
         }
 
         async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
             if (!supabaseClient || !navigator.onLine) return;
+            const uid = localStorage.getItem('zp_auth_uid');
+            const deviceId = getDeviceId();
             try {
                 await supabaseClient.from('user_node_progress').upsert({
-                    device_id: getDeviceId(),
+                    user_id: uid || null,
+                    device_id: deviceId,
                     node_id: nodeId,
                     completed: isCompleted,
                     score: score,
                     updated_at: new Date().toISOString()
-                }, { onConflict: 'device_id,node_id' });
+                }, { onConflict: uid ? 'user_id,node_id' : 'device_id,node_id' });
             } catch (err) {}
         }
 
         async function syncTasksToCloud() {
             if (!supabaseClient || !navigator.onLine) return;
+            const uid = localStorage.getItem('zp_auth_uid');
+            const deviceId = getDeviceId();
             try {
                 if (tasks && tasks.length > 0) {
                     const payload = tasks.map(t => ({
                         id: t.id,
-                        device_id: getDeviceId(),
+                        user_id: uid || null,
+                        device_id: deviceId,
                         title: t.title,
                         done: !!t.done,
                         tag: t.tag || '',
@@ -1251,16 +1302,19 @@
         async function deleteTaskFromCloud(taskId) {
             if (!supabaseClient || !navigator.onLine) return;
             try {
-                await supabaseClient.from('tasks').delete().eq('id', taskId).eq('device_id', getDeviceId());
+                await supabaseClient.from('tasks').delete().eq('id', taskId);
             } catch (e) {}
         }
 
         async function syncSessionToCloud(sessionObj) {
             if (!supabaseClient || !navigator.onLine) return;
+            const uid = localStorage.getItem('zp_auth_uid');
+            const deviceId = getDeviceId();
             try {
                 await supabaseClient.from('user_focus_sessions').upsert({
                     id: sessionObj.id,
-                    device_id: getDeviceId(),
+                    user_id: uid || null,
+                    device_id: deviceId,
                     session_name: sessionObj.name,
                     duration_mins: currentPomoMins,
                     session_time: sessionObj.time
@@ -1268,9 +1322,10 @@
             } catch (e) {}
         }
 
-        // ------------------ DUOLINGO CEFR CURRICULUM ------------------
+        // ------------------ CEFR CURRICULUM ------------------
         let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
         let nodeCrowns = safeParse('zp_node_crowns', {});
+        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
 
         const GLOBAL_CURRICULUM = {
             general: [
@@ -1399,10 +1454,9 @@
             ]
         };
 
-        // ------------------ STATE VARIABLES ------------------
+        // ------------------ STATE ------------------
         let currentUserName = localStorage.getItem('zp_username') || '';
         let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
-        let currentSectionId = localStorage.getItem('zp_current_section') || 'sec_01';
         let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
         let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
         let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
@@ -1410,9 +1464,9 @@
         let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
         let isHintVisible = false;
 
-        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
+        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0, displayMode: 'interactive' };
 
-        // ------------------ TREE RENDERING & GAMIFICATION ------------------
+        // ------------------ GAMIFICATION ------------------
         function updateGamificationBar() {
             const h = document.getElementById('path-hearts-count');
             const s = document.getElementById('path-streak-count');
@@ -1476,19 +1530,19 @@
                         let btnHtml = '';
                         if (isCompleted) {
                             btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg transition active:scale-95 hover:scale-105" title="متقن بالكامل 👑">
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg transition active:scale-95 hover:scale-105" title="متقن بالكامل 👑">
                                     <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
                                     <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
                                 </button>`;
                         } else if (isUnlocked && crowns > 0) {
                             btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse">
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse">
                                     <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
                                     <span class="text-xs font-black">مستوى ${crowns + 1}/3</span>
                                 </button>`;
                         } else if (isUnlocked) {
                             btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse" title="بدء المحطة">
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse" title="بدء المحطة">
                                     <i class="fa-solid fa-play mr-0.5 text-base"></i>
                                 </button>`;
                         } else {
@@ -1502,7 +1556,7 @@
                             <div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
                                 ${btnHtml}
                                 <div class="mt-2.5 text-center max-w-[240px]">
-                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${node.title}</h4>
+                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
                                     <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
                                 </div>
                             </div>`;
@@ -1516,7 +1570,7 @@
             if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
 
-        // ------------------ DUOLINGO INTERACTIVE EXERCISES ENGINE ------------------
+        // ------------------ LESSON ENGINE ------------------
         async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
@@ -1543,7 +1597,7 @@
 
             let exercises = null;
             try {
-                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات Duolingo. أخرج كود JSON فقط بدون إضافات.", null, true);
+                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات Duolingo. أخرج كود JSON فقط بدون إضافات.", true);
                 const parsed = parseAIJson(raw);
                 if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) {
                     exercises = parsed.exercises;
@@ -1559,6 +1613,22 @@
                         correct_index: 0,
                         explanation: currentLearningTrack === 'medical' ? "Intravenous يعني وريدي مباشر." : "يضاف s المفرد للفعل مع الضمير She.",
                         hint: currentLearningTrack === 'medical' ? "البادئة Intra- تعني داخل و Venous تعني الوريد." : "انتبه لقاعدة المضارع البسيط مع المفرد الغائب."
+                    },
+                    {
+                        question: currentLearningTrack === 'medical' ? "Blood pressure is measured in ______." : "They ______ to the library every weekend.",
+                        translation: currentLearningTrack === 'medical' ? "يُقاس ضغط الدم بوحدة المليمتر زئبق." : "هم يذهبون إلى المكتبة كل عطلة.",
+                        options: currentLearningTrack === 'medical' ? ["mmHg", "mg", "mL", "mEq"] : ["go", "goes", "going", "went"],
+                        correct_index: 0,
+                        explanation: currentLearningTrack === 'medical' ? "mmHg = millimeters of mercury." : "مع They نستخدم الفعل بصيغته الأساسية.",
+                        hint: currentLearningTrack === 'medical' ? "اختصار شائع في الأجهزة الطبية." : "الضمير They جمع."
+                    },
+                    {
+                        question: currentLearningTrack === 'medical' ? "The doctor will ______ the patient's vital signs." : "My brother ______ a new bicycle yesterday.",
+                        translation: currentLearningTrack === 'medical' ? "سيقوم الطبيب بمراقبة العلامات الحيوية للمريض." : "اشترى أخي دراجة جديدة أمس.",
+                        options: currentLearningTrack === 'medical' ? ["monitor", "monitors", "monitoring", "monitored"] : ["buy", "buys", "bought", "buying"],
+                        correct_index: 0,
+                        explanation: currentLearningTrack === 'medical' ? "بعد will نستخدم المصدر." : "yesterday تدل على الماضي.",
+                        hint: currentLearningTrack === 'medical' ? "الفعل بعد will يكون مصدراً." : "انتبه للزمن الماضي."
                     }
                 ];
             }
@@ -1600,7 +1670,7 @@
             let optsHtml = '';
             ex.options.forEach((opt, optIdx) => {
                 optsHtml += `
-                    <button onclick="handleExerciseChoice(${optIdx})" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">
+                    <button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">
                         ${escapeHtml(opt)}
                     </button>
                 `;
@@ -1628,7 +1698,12 @@
             const feedback = document.getElementById('exercise-feedback');
             const actionBtn = document.getElementById('lesson-action-btn');
             
-            document.querySelectorAll('.ex-opt-btn').forEach(b => b.disabled = true);
+            document.querySelectorAll('.ex-opt-btn').forEach(b => {
+                b.disabled = true;
+                const idx = parseInt(b.getAttribute('data-optidx'));
+                if (idx === ex.correct_index) b.classList.add('opt-correct');
+                else if (idx === chosenIdx) b.classList.add('opt-wrong');
+            });
             feedback.classList.remove('hidden');
 
             const isCorrect = (chosenIdx === ex.correct_index);
@@ -1689,9 +1764,9 @@
             renderPathTree();
 
             if (crowns < 3) {
-                alert(`عاشت إيدك! أكملت المستوى ${crowns}/3 لهذه المحطة بنجاح. تتبقى لك مستويات لتتقن التاج الذهبي.`);
+                setTimeout(() => alert(`عاشت إيدك! أكملت المستوى ${crowns}/3 لهذه المحطة بنجاح. تتبقى لك مستويات لتتقن التاج الذهبي.`), 300);
             } else {
-                alert("تهانينا! حصلت على التاج الذهبي الكامل (3/3) لهذه المحطة وفككت قفل المحطة التالية!");
+                setTimeout(() => alert("تهانينا! حصلت على التاج الذهبي الكامل (3/3) لهذه المحطة وفككت قفل المحطة التالية!"), 300);
             }
         }
 
@@ -1704,7 +1779,7 @@
             }
         }
 
-        // ------------------ GLOBAL APP STATE & ACTIONS ------------------
+        // ------------------ GLOBAL STATE ------------------
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
 
@@ -1835,9 +1910,10 @@
             }
         }
 
-        // ------------------ TO-DO LOGIC ------------------
+        // ------------------ TO-DO ------------------
         let tasks = safeParse('zp_tasks', []);
         if (!Array.isArray(tasks)) tasks = [];
+
         function renderTasks() {
             const list = document.getElementById('todo-list');
             if (!list) return;
@@ -1870,6 +1946,7 @@
             if (pctBadge) pctBadge.innerText = `${pct}%`;
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
+
         function addTodo() {
             const inp = document.getElementById('todo-input');
             const tag = document.getElementById('todo-tag')?.value || 'مقرر تخصصي';
@@ -1882,18 +1959,20 @@
             awardXP(5);
             syncTasksToCloud();
         }
+
         function toggleTask(id) {
             tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
             renderTasks();
             syncTasksToCloud();
         }
+
         function deleteTask(id) {
             tasks = tasks.filter(t => t.id !== id);
             renderTasks();
             deleteTaskFromCloud(id);
         }
 
-        // ------------------ POMODORO LOGIC ------------------
+        // ------------------ POMODORO ------------------
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
         let userForest = safeParse('zp_forest', []);
@@ -1917,6 +1996,7 @@
                     </div>`;
             });
         }
+
         function updatePomoDisplay() {
             const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
             const s = String(pomoRemaining % 60).padStart(2, '0');
@@ -1928,6 +2008,7 @@
                 circle.style.strokeDashoffset = offset;
             }
         }
+
         function setPomoMode(mins, msg, btn) {
             resetPomo();
             currentPomoMins = mins; pomoDuration = mins * 60; pomoRemaining = pomoDuration;
@@ -1937,6 +2018,7 @@
             if (btn) btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm';
             updatePomoDisplay();
         }
+
         function finishPomoSession() {
             clearInterval(pomoInterval); pomoInterval = null;
             localStorage.removeItem('zp_pomo_end_time');
@@ -1957,6 +2039,7 @@
             syncProfileWithCloud();
             resetPomo();
         }
+
         function togglePomo() {
             const btn = document.getElementById('pomo-play-btn');
             if (pomoInterval) {
@@ -1988,6 +2071,7 @@
                 }, 500);
             }
         }
+
         function resetPomo() {
             clearInterval(pomoInterval); pomoInterval = null;
             localStorage.removeItem('zp_pomo_end_time');
@@ -1999,13 +2083,14 @@
             if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
+
         function clearForestConfirmation() {
             if (confirm("هل ترغب في إعادة تهيئة سجل الجلسات؟")) {
                 userForest = []; localStorage.setItem('zp_forest', JSON.stringify([])); renderForest();
             }
         }
 
-        // ------------------ AI ENGINE & MISC ------------------
+        // ------------------ AI ENGINE ------------------
         let pdfSlidesData = safeParse('zp_slides_array', []);
         if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
         let lastManualLectureText = '';
@@ -2119,31 +2204,50 @@
         }
 
         function togglePasteArea() { document.getElementById('lecture-paste-container')?.classList.toggle('hidden'); }
+
         function resetLectureContext() {
             currentLectureText = ""; pdfSlidesData = [];
             localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
             document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
             const status = document.getElementById('upload-file-status');
             if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+            const ta = document.getElementById('lecture-text-content');
+            if (ta) ta.value = '';
+            lastManualLectureText = '';
         }
 
-        async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
+        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
             try {
                 const res = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: userPrompt }], jsonMode })
+                    body: JSON.stringify({ 
+                        messages: [
+                            { role: 'system', content: systemInstruction }, 
+                            { role: 'user', content: userPrompt }
+                        ], 
+                        jsonMode 
+                    })
                 });
+                if (!res.ok) return null;
                 const data = await res.json().catch(() => ({}));
-                return data.choices?.[0]?.message?.content || null;
+                return data.choices?.[0]?.message?.content || data.content || data.text || null;
             } catch (e) {
+                console.warn("AI call failed:", e);
                 return null;
             }
         }
 
         function parseAIJson(raw) {
-            const clean = String(raw || '').replace(/```json/gi, '').replace(/```/g, '').trim();
-            try { return JSON.parse(clean); } catch(e) { return null; }
+            if (!raw) return null;
+            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
+            try { return JSON.parse(clean); } catch(e) {}
+            const start = clean.indexOf('{');
+            const end = clean.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
+            }
+            return null;
         }
 
         async function executeAiCustomTask() {
@@ -2154,52 +2258,267 @@
                 alert("يرجى إدخال محتوى أو رفع محاضرة أولاً.");
                 return;
             }
+
+            const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
+            const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
+
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
             if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">جاري معالجة المحاضرة وصياغة المخرجات الأكاديمية...</div>`);
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري معالجة المحاضرة وصياغة المخرجات الأكاديمية...</div>`);
                 feed.scrollTop = feed.scrollHeight;
             }
-            const reply = await callStrictAcademicAI(`لخص المنهج التالي:\n${scopedContent}`, "أنت مساعد أكاديمي صارم.", loadingId);
+
+            let systemInstruction = "";
+            let userPrompt = "";
+            let expectJson = false;
+
+            if (selectedAiTaskType === 'summary') {
+                systemInstruction = "أنت مساعد أكاديمي متخصص. لخّص المحتوى التالي بشكل مكثف ومنظم بعناوين ونقاط رئيسية باللغة العربية، مع الحفاظ على المصطلحات العلمية بالإنجليزية عند الحاجة.";
+                userPrompt = `لخّص المحاضرة التالية بشكل مكثف:\n\n${scopedContent}`;
+            } else if (selectedAiTaskType === 'mcq') {
+                expectJson = true;
+                systemInstruction = `أنت خبير إعداد اختبارات أكاديمية. أخرج JSON فقط بدون أي شرح.`;
+                userPrompt = `من المحتوى التالي، صغ ${qCount} أسئلة خيارات متعددة (MCQ).\nأخرج JSON حصراً بالهيكل:\n{"questions":[{"question":"...","options":["A","B","C","D"],"correct_index":0,"explanation":"..."}]}\n\nالمحتوى:\n${scopedContent}`;
+            } else if (selectedAiTaskType === 'short') {
+                expectJson = true;
+                systemInstruction = `أنت خبير إعداد اختبارات أكاديمية. أخرج JSON فقط بدون أي شرح.`;
+                userPrompt = `من المحتوى التالي، صغ ${qCount} أسئلة إجابة قصيرة.\nأخرج JSON حصراً بالهيكل:\n{"questions":[{"question":"...","answer":"...","explanation":"..."}]}\n\nالمحتوى:\n${scopedContent}`;
+            }
+
+            const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
             document.getElementById(loadingId)?.remove();
-            if (feed && reply) {
-                feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
-                feed.scrollTop = feed.scrollHeight;
+
+            if (!reply) {
+                if (feed) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من إعداد endpoint /api/ai على السيرفر.</div>`);
+                    feed.scrollTop = feed.scrollHeight;
+                }
+                return;
+            }
+
+            if (selectedAiTaskType === 'summary') {
+                if (feed) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
+                    feed.scrollTop = feed.scrollHeight;
+                }
+                awardXP(20);
+            } else {
+                const parsed = parseAIJson(reply);
+                if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+                    if (feed) {
+                        feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
+                        feed.scrollTop = feed.scrollHeight;
+                    }
+                    return;
+                }
+
+                if (displayStyle === 'text') {
+                    let textHtml = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار النموذجية (${parsed.questions.length} سؤال)</div>`;
+                    parsed.questions.forEach((q, i) => {
+                        textHtml += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
+                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i + 1}: ${escapeHtml(q.question)}</div>`;
+                        if (Array.isArray(q.options)) {
+                            q.options.forEach((opt, oi) => {
+                                const mark = oi === q.correct_index ? '✅' : '';
+                                textHtml += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65 + oi)}. ${escapeHtml(opt)} ${mark}</div>`;
+                            });
+                        }
+                        if (q.answer) textHtml += `<div class="text-emerald-600 dark:text-emerald-400 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
+                        if (q.explanation) textHtml += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
+                        textHtml += `</div>`;
+                    });
+                    textHtml += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ الورقة</button></div>`;
+                    if (feed) {
+                        feed.insertAdjacentHTML('beforeend', textHtml);
+                        feed.scrollTop = feed.scrollHeight;
+                    }
+                    awardXP(15);
+                } else {
+                    startQuizSession(parsed.questions);
+                }
             }
         }
 
-        function sendZeroChat() {
+        function copyQuizText(btn) {
+            const container = btn.closest('.chat-bot-bubble');
+            const text = container.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerText = '✅ تم النسخ';
+                setTimeout(() => btn.innerText = '📋 نسخ الورقة', 1500);
+            });
+        }
+
+        // ------------------ INTERACTIVE QUIZ SESSION ------------------
+        function startQuizSession(questions) {
+            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length, displayMode: 'interactive' };
+            renderQuizInFeed();
+        }
+
+        function renderQuizInFeed() {
+            const feed = document.getElementById('zero-chat-feed');
+            if (!feed) return;
+            const { questions, currentIndex } = activeQuizSessionState;
+            const q = questions[currentIndex];
+            const quizId = 'quiz_' + Date.now();
+
+            let optsHtml = '';
+            if (Array.isArray(q.options)) {
+                q.options.forEach((opt, oi) => {
+                    optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
+                });
+            }
+
+            feed.insertAdjacentHTML('beforeend', `
+                <div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex + 1} من ${questions.length}</span>
+                        <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
+                    </div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(q.question)}</div>
+                    <div class="quiz-options">${optsHtml}</div>
+                    <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
+                </div>
+            `);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function answerQuizChoice(quizId, chosenIdx) {
+            const container = document.getElementById(quizId);
+            if (!container) return;
+            const { questions, currentIndex } = activeQuizSessionState;
+            const q = questions[currentIndex];
+            const feedback = container.querySelector('.quiz-feedback');
+
+            container.querySelectorAll('.quiz-opt-btn').forEach(b => {
+                b.disabled = true;
+                const oi = parseInt(b.getAttribute('data-opt'));
+                if (oi === q.correct_index) b.classList.add('opt-correct');
+                else if (oi === chosenIdx) b.classList.add('opt-wrong');
+            });
+
+            const isCorrect = chosenIdx === q.correct_index;
+            if (isCorrect) {
+                activeQuizSessionState.score++;
+                playChime(true);
+                awardXP(10);
+            } else {
+                playChime(false);
+            }
+
+            feedback.classList.remove('hidden');
+            feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
+            feedback.innerHTML = `
+                <div class="font-black mb-1">${isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة خاطئة'}</div>
+                ${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}
+            `;
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2';
+            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 عرض النتيجة النهائية';
+            nextBtn.onclick = () => {
+                if (currentIndex + 1 < questions.length) {
+                    activeQuizSessionState.currentIndex++;
+                    renderQuizInFeed();
+                } else {
+                    showQuizFinalResult(quizId);
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        function showQuizFinalResult(quizId) {
+            const container = document.getElementById(quizId);
+            if (!container) return;
+            const { questions, score } = activeQuizSessionState;
+            const pct = Math.round((score / questions.length) * 100);
+            let msg = pct >= 80 ? '🏆 ممتاز! أداء أكاديمي عالي' : pct >= 50 ? '👍 جيد، يمكن التحسين' : '💪 يحتاج مراجعة إضافية';
+
+            container.innerHTML = `
+                <div class="text-center space-y-3 py-4">
+                    <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
+                    <div class="text-lg font-black">${pct}%</div>
+                    <div class="text-sm font-bold">${msg}</div>
+                    <div class="text-xs text-slate-400">حصلت على ${score * 10} XP من هذا الاختبار</div>
+                </div>
+            `;
+            if (pct >= 80) triggerConfetti();
+        }
+
+        // ------------------ ZERO CHAT ------------------
+        async function sendZeroChat() {
             const inp = document.getElementById('zero-user-msg');
             const txt = inp?.value.trim();
             if (!txt) return;
             inp.value = '';
+
             const feed = document.getElementById('zero-chat-feed');
             if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
-                feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">عذراً، يرجى استخدام زر "تخصيص الاختبار والمراجعة" لتوليد الكويزات والأسئلة بدقة من السلايدات.</div>`);
+                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
+            }
+
+            const loadingId = 'loading_' + Date.now();
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ جاري التفكير...</div>`);
+                feed.scrollTop = feed.scrollHeight;
+            }
+
+            let context = "";
+            if (currentLectureText && currentLectureText.trim().length > 20) {
+                const scoped = getScopedLectureContent();
+                context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
+            }
+
+            const reply = await callStrictAcademicAI(
+                `سؤال الطالب: ${txt}${context}`,
+                "أنت المساعد الأكاديمي ZeroPlus. أجب بدقة من المحتوى المرفق إذا وُجد، وإلا اعتمد على معرفتك العلمية. استخدم نقاط واضحة واذكر المصطلحات الإنجليزية عند الحاجة."
+            );
+
+            document.getElementById(loadingId)?.remove();
+
+            if (feed) {
+                if (reply) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
+                    awardXP(3);
+                } else {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد من المحرك. تأكد من إعداد endpoint /api/ai.</div>`);
+                }
                 feed.scrollTop = feed.scrollHeight;
             }
         }
 
         function clearChatHistory() {
-            const feed = document.getElementById('zero-chat-feed');
-            if (feed) feed.innerHTML = '';
+            if (confirm("إفراغ المحادثة بالكامل؟")) {
+                const feed = document.getElementById('zero-chat-feed');
+                if (feed) feed.innerHTML = '';
+            }
         }
 
-        function openShareModal() { document.getElementById('share-modal')?.classList.remove('hidden'); }
+        // ------------------ SHARE ------------------
+        function openShareModal() {
+            const shareXp = document.getElementById('share-xp');
+            const shareTrees = document.getElementById('share-trees');
+            if (shareXp) shareXp.innerText = `${userXP} XP`;
+            if (shareTrees) shareTrees.innerText = `${userForest.length} جلسة`;
+            renderPathTree();
+            document.getElementById('share-modal')?.classList.remove('hidden');
+        }
         function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
         function copyShareText() {
-            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP`).then(() => alert("تم نسخ التقرير."));
+            const text = `🎓 تقرير الإنجاز الأكاديمي - ZeroPlus\n👤 الطالب: ${currentUserName}\n🏛️ القسم: ${deptLabel(activeDepartmentKey)}\n⚡ النقاط: ${userXP} XP\n⏱️ وقت التركيز: ${totalFocusMins} دقيقة\n🌳 الجلسات المكتملة: ${userForest.length}\n\nتم التطوير بواسطة مصطفى عبد علي`;
+            navigator.clipboard.writeText(text).then(() => alert("تم نسخ التقرير."));
         }
         function executeShare() {
-            if (navigator.share) navigator.share({ title: 'ZeroPlus', text: `إنجازي: ${userXP} XP` }).catch(() => {});
+            const text = `🎓 تقرير ZeroPlus\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nجلسات التركيز: ${userForest.length}`;
+            if (navigator.share) navigator.share({ title: 'ZeroPlus - تقرير الإنجاز', text }).catch(() => {});
             else copyShareText();
         }
 
-        // Startup Initialization
+        // ------------------ STARTUP ------------------
         document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
             if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+            if (document.getElementById('pomo-count-stat')) document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
             
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js?v=26').catch(() => {});
@@ -2211,6 +2530,14 @@
             const savedTab = localStorage.getItem('zp_active_tab');
             showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
             updatePomoDisplay();
+            updateGamificationBar();
+
+            if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
+                pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);
+                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) {
+                    togglePomo();
+                }
+            }
         });
     </script>
 </body>
