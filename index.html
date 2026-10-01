@@ -662,7 +662,6 @@
         function escapeHtml(v) {
             return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
-        // نص آمن مع أسطر جديدة و **خط عريض** بسيط
         function formatRichText(v) {
             return escapeHtml(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
         }
@@ -850,6 +849,8 @@
                     document.getElementById('app-xp').innerText = `${userXP} XP`;
                     updateGamificationBar();
                     renderPathTree();
+                    updateCloudIndicator('online');
+                    return;
                 }
             } catch (e) {
                 console.warn('Could not restore profile from cloud:', e);
@@ -1251,7 +1252,6 @@
             const items = activeNodeSession.items;
             const currentItem = items[activeQuestionIdx];
 
-            // منع تكرار كسب النقاط عند إعادة محطة مكتملة سابقاً
             const alreadyCompleted = activeNodeSession.order < unlockedNodeMax;
 
             recordWordMasteryToCloud(currentItem.term, true);
@@ -1573,7 +1573,6 @@
                 btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             } else {
                 btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
-                // الاعتماد على الوقت الفعلي بدل العدّ كل ثانية لأن المتصفح يبطّئ المؤقتات في الخلفية
                 pomoEndAt = Date.now() + pomoRemaining * 1000;
                 pomoInterval = setInterval(() => {
                     pomoRemaining = Math.max(0, Math.ceil((pomoEndAt - Date.now()) / 1000));
@@ -1601,9 +1600,7 @@
         let lastManualLectureText = '';
         let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
         let selectedAiTaskType = 'mcq';
-        const GROQ_API_KEY = "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";
 
-        // دمج النص الملصق يدوياً كمصدر للمحاضرة (كان يُقرأ فقط عند التنفيذ فيمنع فتح نافذة الخيارات)
         function syncManualLectureText() {
             const box = document.getElementById('lecture-text-content');
             const manual = box ? box.value.trim() : '';
@@ -1636,7 +1633,6 @@
             singleEl.max = total;
             fromEl.max = total;
             toEl.max = total;
-            // ضبط القيم داخل حدود المحاضرة الفعلية بدل تصفير نطاق الطالب في كل فتح للنافذة
             const clamp = (el, fallback) => {
                 const n = parseInt(el.value, 10);
                 const safe = Number.isFinite(n) ? Math.min(Math.max(n, 1), total) : fallback;
@@ -1691,7 +1687,6 @@
                 const toEl = document.getElementById('modal-range-slide-to');
                 const from = withinScope(fromEl, 1);
                 const to = Math.max(from, withinScope(toEl, last));
-                // مزامنة الحقول مع النطاق المصحح ليرى الطالب ما سيُرسل فعلياً
                 if (fromEl) fromEl.value = from;
                 if (toEl) toEl.value = to;
                 const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
@@ -1733,7 +1728,6 @@
                     safeSetItem('zp_active_lecture_text', text);
                 }
 
-                // الملف المرفوع يحلّ محل أي نص ملصق سابقاً
                 document.getElementById('lecture-text-content').value = '';
                 lastManualLectureText = '';
                 showLectureLoadedBadge();
@@ -1766,37 +1760,48 @@
         let chatMemory = safeParse('zp_chat_memory', []);
         if (!Array.isArray(chatMemory)) chatMemory = [];
 
+        // دالة الاتصال المحمية: تتصل بالسيرفر الخلفي عبر /api/ai بدلاً من كشف المفتاح في الواجهة
         async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
             const label = loadingElId && document.getElementById(loadingElId)?.querySelector('.thinking-step-text');
-            const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
             let lastError = null;
             for (let attempt = 0; attempt < 3; attempt++) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 58000);
                 try {
-                    const model = models[Math.min(attempt, models.length - 1)];
-                    if (label) label.innerText = `محاولة ${attempt + 1} من 3 — مراجعة المحتوى...`;
-                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                        method: 'POST', headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY.trim(), 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ model, messages: [{role:'system',content:systemInstruction},{role:'user',content:userPrompt}], temperature: 0.15,
-                            ...(jsonMode ? {response_format:{type:'json_object'}} : {}) }), signal: controller.signal
+                    if (label) label.innerText = `محاولة ${attempt + 1} من 3 — معالجة الطلب الآمن...`;
+                    const res = await fetch('/api/ai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [
+                                { role: 'system', content: systemInstruction },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            jsonMode: jsonMode
+                        }),
+                        signal: controller.signal
                     });
                     const data = await res.json().catch(() => ({}));
                     if (!res.ok) {
                         const code = data.error?.code || '';
-                        lastError = res.status === 401 ? 'مفتاح API غير صالح.' : (res.status === 429 || code.includes('rate')) ? 'تم تجاوز حد الطلبات؛ انتظر قليلاً.' : `تعذر الاتصال بخدمة الذكاء الاصطناعي (${res.status}).`; lastAIError = lastError;
+                        lastError = res.status === 401 ? 'مفتاح API غير صالح في إعدادات السيرفر.' : (res.status === 429 || code.includes('rate')) ? 'تم تجاوز حد الطلبات؛ انتظر قليلاً.' : `تعذر الاتصال بخدمة الذكاء الاصطناعي (${res.status}).`;
+                        lastAIError = lastError;
                         if (res.status === 401) break;
                         continue;
                     }
                     const content = data.choices?.[0]?.message?.content;
                     if (content) return content;
                     lastError = 'أعاد النموذج استجابة فارغة.';
-                } catch (e) { lastError = e.name === 'AbortError' ? 'انتهت مهلة الاتصال.' : 'انقطع الاتصال بخدمة الذكاء الاصطناعي.'; lastAIError = lastError; }
-                finally { clearTimeout(timeoutId); }
+                } catch (e) {
+                    lastError = e.name === 'AbortError' ? 'انتهت مهلة الاتصال.' : 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
+                    lastAIError = lastError;
+                } finally {
+                    clearTimeout(timeoutId);
+                }
             }
             return null;
         }
-        // يحوّل النص المُحدد (نطاق السلايدات) إلى قائمة سلايدات فعلية مع الحفاظ على ترقيمها الأصلي
+
         function scopedSlidesFromText(text) {
             const raw = String(text || '').trim();
             if (!raw) return [];
@@ -1804,7 +1809,7 @@
             if (!matches.length) return [{ pageNum: 1, text: raw }];
             return matches.map(m => ({ pageNum: parseInt(m[1], 10), text: String(m[2] || '').trim() })).filter(s => s.text);
         }
-        // أخذ عيّنة موزعة على كامل السلايدات المحددة دون تجاوز ميزانية الطلب
+
         function sampleLectureSlides(text) {
             const slides = scopedSlidesFromText(text);
             if (!slides.length) return '';
@@ -1814,6 +1819,7 @@
             const perSlide = Math.max(250, Math.floor(budget / slides.length));
             return slides.map(s => `[Slide ${s.pageNum}]: ${s.text.slice(0, perSlide)}`).join('\n\n').slice(0, budget);
         }
+
         function shuffleArray(arr) {
             const a = [...arr];
             for (let i = a.length - 1; i > 0; i--) {
@@ -1822,6 +1828,7 @@
             }
             return a;
         }
+
         function parseAIJson(raw) {
             const clean = String(raw || '').replace(/```json/gi, '').replace(/```/g, '').trim();
             if (!clean) return null;
@@ -1830,7 +1837,6 @@
             if (direct) return direct;
             const objStart = clean.indexOf('{'), objEnd = clean.lastIndexOf('}');
             const arrStart = clean.indexOf('['), arrEnd = clean.lastIndexOf(']');
-            // المصفوفة الجذرية [{...},{...}] تُقبل أيضاً وتُغلَّف تلقائياً
             if (arrStart !== -1 && arrEnd > arrStart && (objStart === -1 || arrStart < objStart)) {
                 const parsedArr = attempt(clean.slice(arrStart, arrEnd + 1));
                 if (parsedArr) return Array.isArray(parsedArr) ? { questions: parsedArr } : parsedArr;
@@ -1838,7 +1844,7 @@
             if (objStart !== -1 && objEnd > objStart) return attempt(clean.slice(objStart, objEnd + 1));
             return null;
         }
-        // توحيد المسافات وعلامات التنصيص لأن نصوص PDF المستخرجة تحتوي فواصل أسطر ومسافات متعددة
+
         function normalizeForEvidence(v) {
             return String(v || '')
                 .replace(/[\u2018\u2019\u201B\u2032]/g, "'")
@@ -1848,13 +1854,13 @@
                 .trim()
                 .toLowerCase();
         }
+
         function evidenceIsInLecture(q, text) {
             const evidence = normalizeForEvidence(q?.evidence);
             if (evidence.length < 12) return false;
             const rawHaystack = normalizeForEvidence(typeof text === 'string' ? text : '');
             if (!rawHaystack) return false;
             if (rawHaystack.includes(evidence)) return true;
-            // مطابقة ثانوية: تجاهل أرقام السلايدات وعلامات الحذف، ثم اسمح بفروق بسيطة في التقطيع
             const clean = (s) => s.replace(/\[slide\s*\d+\]\s*:?/g, ' ').replace(/\.{3,}/g, ' ').replace(/\s+/g, ' ').trim();
             const cleanEvidence = clean(evidence);
             const cleanHaystack = clean(rawHaystack);
@@ -1864,15 +1870,16 @@
             const matched = words.filter(w => cleanHaystack.includes(w)).length;
             return (matched / words.length) >= 0.85;
         }
+
         function questionKey(v) {
             return String(v || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
         }
 
-        // حفظ عيّنة واحدة فقط من الاختبارات في الذاكرة المحلية حتى لا تتضخم بيانات المتصفح
         function readQuizCache(key) {
             const parsed = safeParse(key, null);
             return parsed && Array.isArray(parsed.questions) && parsed.questions.length ? parsed : null;
         }
+
         function pruneQuizCache(keepKey) {
             try {
                 Object.keys(localStorage)
@@ -1883,7 +1890,6 @@
 
         async function reviewQuestions(questions, text, kind) {
             if (!questions.length) return [];
-            // إن كان كل سؤال يحمل اقتباساً حرفياً مطابقاً للنص فلا حاجة لاستهلاك رصيد إضافي في التدقيق
             if (questions.every(q => evidenceIsInLecture(q, text))) return questions;
 
             const compact = questions.map(q => ({
@@ -1895,9 +1901,8 @@
             const prompt = `راجع كل سؤال وإجابته من نص المحاضرة. أعد فقط الأسئلة الصحيحة التي جوابها مثبت صراحة في النص، واحتفظ بحقل evidence مقتبساً حرفياً. أعِد JSON بالشكل {"questions":[...]}. النوع ${kind}.\nالأسئلة: ${JSON.stringify({ questions: compact })}\nنص المحاضرة:\n${text}`;
             const raw = await callStrictAcademicAI(prompt, 'أنت مدقق أكاديمي. لا تقبل أي معلومة لا يثبتها النص. أخرج JSON فقط.', null, true);
             const reviewed = parseAIJson(raw)?.questions;
-            if (!Array.isArray(reviewed) || !reviewed.length) return questions; // فشل التدقيق لا يُفقد الطالب أسئلته الأصلية
+            if (!Array.isArray(reviewed) || !reviewed.length) return questions;
 
-            // دمج مخرجات المدقق مع السؤال الأصلي حتى لا تُفقد الخيارات أو التوضيحات
             const merged = reviewed.map(r => {
                 const original = questions.find(q => questionKey(q.q) === questionKey(r.q)) || {};
                 const options = Array.isArray(r.options) && r.options.length ? r.options : original.options;
@@ -1934,7 +1939,6 @@
             const qCount = parseInt(document.getElementById('ai-questions-count').value) || 1;
             const displayStyle = document.getElementById('ai-display-style').value;
 
-            // نظام التخزين المؤقت المحلي (Local Cache) لتجنب استهلاك الرصيد عند تكرار نفس الطلب
             const cacheKey = 'zp_quiz_cache_v2_' + hashString(sampledContent) + '_' + selectedAiTaskType + '_' + qCount;
             const cachedQuiz = readQuizCache(cacheKey);
             if (cachedQuiz && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
@@ -2044,7 +2048,6 @@ ${sampledContent}
                     showAINotice(`تم توليد ${accepted.length} من ${qCount} سؤالاً بالذكاء الاصطناعي، واستُكملت بقية الأسئلة محلياً من نص المحاضرة نفسه.`);
                 }
                 data = {questions};
-                // لا نحفظ في الذاكرة إلا الاختبار المولّد بالكامل من الذكاء الاصطناعي وضمن النطاق المحدد
                 if (accepted.length >= qCount) { pruneQuizCache(cacheKey); safeSetItem(cacheKey, JSON.stringify(data)); }
                 if (displayStyle === 'interactive') {
                     activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
@@ -2063,8 +2066,8 @@ ${sampledContent}
             const shuffled = shuffleArray(options);
             return shuffled.map((o,i) => ({...o,t:`${String.fromCharCode(65+i)}) ${String(o.t).replace(/^[A-D][).]\s*/, '')}`}));
         }
+
         function generateSmartLocalQuizFromLecture(text, count = 1, seen = new Set()) {
-            // الأسئلة المحلية تُبنى من النطاق المحدد نفسه، لا من كامل المحاضرة
             const slides = scopedSlidesFromText(text);
             const source = slides.length ? slides : pdfSlidesData;
             const sentences = source.flatMap(s => (s.text||'').split(/[.!?\n]+/).map(x=>({text:x.trim(),page:s.pageNum})))
@@ -2077,7 +2080,6 @@ ${sampledContent}
                 if (words.length < 3) continue;
                 const answer=words[Math.floor(words.length/2)];
                 if (!answer) continue;
-                // الخيارات الخاطئة كلمات لا ترد في نفس الجملة، فلا يمكن أن تكمل الفراغ بشكل صحيح
                 const pool=[...new Set(sentences.flatMap(x=>x.text.split(/\s+/).filter(w=>w.length>5 && !/^\d+$/.test(w))))]
                     .filter(w=>w.toLowerCase()!==answer.toLowerCase() && !item.text.toLowerCase().includes(w.toLowerCase()));
                 const distractors=shuffleArray(pool).slice(0,3);
@@ -2092,9 +2094,11 @@ ${sampledContent}
             }
             return made;
         }
+
         function showAIError(message) {
             document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-xs text-rose-600 font-bold p-3">تعذر إكمال توليد أسئلة الذكاء الاصطناعي: ${escapeHtml(message || lastAIError)}</div>`);
         }
+
         function showAINotice(message) {
             document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-[11px] text-amber-700 dark:text-amber-400 font-bold p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-2">${escapeHtml(message)}</div>`);
         }
@@ -2200,7 +2204,7 @@ ${sampledContent}
             feed.scrollTop = feed.scrollHeight;
         }
 
-        // ------------------ التتابع التفاعلي (السؤال تلو الآخر وتصغير السؤال السابق) ------------------
+        // ------------------ التتابع التفاعلي ------------------
         function renderCurrentInteractiveQuizQuestion() {
             const feed = document.getElementById('zero-chat-feed');
             const state = activeQuizSessionState;
@@ -2211,7 +2215,6 @@ ${sampledContent}
             const currentItem = state.questions[qIdx];
             const qId = 'quiz_active_card_' + qIdx;
 
-            // تصغير الأسئلة السابقة لإفساح المساحة وعدم تشتيت الطالب
             if (qIdx > 0) {
                 for (let i = 0; i < qIdx; i++) {
                     const prevCard = document.getElementById('quiz_active_card_' + i);
@@ -2245,7 +2248,6 @@ ${sampledContent}
                             <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue ml-1">ترجمة السؤال:</span> ${escapeHtml(currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق')}
                         </div>
                         <div class="space-y-2 options-container pt-1">${optHtml}</div>
-                        <!-- مكان الرد والتغذية الراجعة يقع أسفل الأزرار مباشرة بمسافة واضحة -->
                         <div class="feedback-container hidden space-y-3 pt-3 border-t border-slate-100 dark:border-santorini-darkBorder mt-3"></div>
                     </div>
                 </div>`);
@@ -2257,7 +2259,6 @@ ${sampledContent}
             const chosenOption = currentItem.options[optIdx];
             const card = document.getElementById('quiz_active_card_' + qIdx);
             
-            // تعطيل كافة أزرار الاختيارات للسؤال الحالي
             card.querySelectorAll('.options-container button').forEach(b => b.disabled = true);
             const fb = card.querySelector('.feedback-container');
             fb.classList.remove('hidden');
@@ -2297,7 +2298,6 @@ ${sampledContent}
                 playChime(false);
             }
 
-            // زر الانتقال للسؤال التالي أو إنهاء الاختبار بعد استنفاد كامل العدد المحدد
             const isLastQuestion = (qIdx + 1) >= activeQuizSessionState.qCount;
             if (!isLastQuestion) {
                 fb.insertAdjacentHTML('beforeend', `
@@ -2335,7 +2335,6 @@ ${sampledContent}
             const feed = document.getElementById('zero-chat-feed');
             feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
 
-            // لا نفتح نافذة الاختبار إلا لأمر قصير وصريح، حتى لا تُحتجز أسئلة الشرح الطويلة
             const quizIntent = /(كويز|اختبرني|اختبار|أسئلة|اسئلة|\bquiz\b|\bmcq\b)/i.test(txt);
             if (quizIntent && txt.length <= 40) {
                 openAiConfigModal();
@@ -2360,7 +2359,7 @@ ${sampledContent}
 ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع ملف بعد'}
 """`;
 
-            let reply = await callStrictAcademicAI(`${chatMemory.slice(0,-1).map(m=>`${m.role}: ${m.content}`).join('\n')}\nuser: ${txt}`, systemPrompt, loadingId);
+            let reply = await callStrictAcademicAI(`${chatMemory.slice(0,-1).map(m=>`${m.role}:${m.content}`).join('\n')}\nuser: ${txt}`, systemPrompt, loadingId);
             document.getElementById(loadingId)?.remove();
 
             if (!reply) {
@@ -2408,7 +2407,6 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
         }
 
         // ------------------ INITIAL STARTUP ------------------
-        // سلسلة الأيام المتتالية (Streak): كانت ثابتة على 1 ولا تتغير أبداً
         (function updateDailyStreak() {
             const today = new Date().toISOString().slice(0, 10);
             const last = localStorage.getItem('zp_last_active_date');
@@ -2421,7 +2419,6 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
             safeSetItem('zp_last_active_date', today);
         })();
 
-        // مزامنة الواجهة مع الحالة المحفوظة عند التحميل
         document.getElementById('app-xp').innerText = `${userXP} XP`;
         document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
         if ('Notification' in window && Notification.permission === 'granted') {
