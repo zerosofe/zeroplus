@@ -5,18 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
 
-    <!-- 🚨 مانع الكاش -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- 🚨 حذف كل Service Workers القديمة فوراً (يعمل مرة واحدة ثم يمكن حذفه) -->
     <script>
         (function killOldSW() {
             if (!('serviceWorker' in navigator)) return;
             navigator.serviceWorker.getRegistrations().then((regs) => {
                 regs.forEach((r) => {
-                    // احذف فقط إذا كانت النسخة قديمة
                     if (r.active && r.active.scriptURL && !r.active.scriptURL.includes('v=')) {
                         r.unregister();
                     }
@@ -25,20 +22,17 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v27')) {
-                            caches.delete(k);
-                        }
+                        if (!k.startsWith('zeroplus-v27')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=27">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=27">
-    <link rel="shortcut icon" href="/icon.svg?v=27">
-
-    <link rel="manifest" href="/manifest.json?v=27">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=28">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=28">
+    <link rel="shortcut icon" href="/icon.svg?v=28">
+    <link rel="manifest" href="/manifest.json?v=28">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,17 +47,9 @@
                 extend: {
                     colors: {
                         theme: {
-                            sky: '#0284c7',
-                            skyLight: '#e0f2fe',
-                            teal: '#0d9488',
-                            tealLight: '#ccfbf1',
-                            green: '#10b981',
-                            greenLight: '#d1fae5',
-                            mint: '#059669',
-                            white: '#ffffff',
-                            darkBase: '#07131b',
-                            darkCard: '#0c222e',
-                            darkBorder: '#163d52'
+                            sky: '#0284c7', skyLight: '#e0f2fe', teal: '#0d9488', tealLight: '#ccfbf1',
+                            green: '#10b981', greenLight: '#d1fae5', mint: '#059669', white: '#ffffff',
+                            darkBase: '#07131b', darkCard: '#0c222e', darkBorder: '#163d52'
                         }
                     },
                     borderRadius: { '3xl': '1.75rem', '4xl': '2.25rem' },
@@ -93,10 +79,6 @@
             padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
         }
         .gradient-todo { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%) !important; }
-        .gradient-pomodoro { background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important; }
-        .gradient-english { background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%) !important; }
-        .gradient-zero { background: linear-gradient(135deg, #0d9488 0%, #10b981 100%) !important; }
-        .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
         .chat-user-bubble {
             background: linear-gradient(135deg, #0d9488, #10b981) !important;
             color: #ffffff !important;
@@ -105,16 +87,14 @@
             padding: 0.9rem 1.25rem !important;
         }
         html.dark .chat-bot-bubble {
-            background-color: #0c222e !important;
-            color: #ffffff !important;
+            background-color: #0c222e !important; color: #ffffff !important;
             border: 1px solid #163d52 !important;
             border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
             padding: 1rem 1.25rem !important;
         }
         html:not(.dark) .chat-bot-bubble {
-            background-color: #ffffff !important;
-            color: #07131b !important;
+            background-color: #ffffff !important; color: #07131b !important;
             border: 1px solid #ccfbf1 !important;
             border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
             box-shadow: 0 6px 20px rgba(13, 148, 136, 0.05);
@@ -128,83 +108,41 @@
         html:not(.dark) .chat-quiz-opt:hover { border-color: #0d9488 !important; background-color: #e0f2fe !important; }
         .opt-correct { background-color: rgba(16, 185, 129, 0.15) !important; border-color: #10b981 !important; color: #10b981 !important; }
         .opt-wrong { background-color: rgba(244, 63, 94, 0.15) !important; border-color: #f43f5e !important; color: #f43f5e !important; }
+        .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #0284c7; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-sky-50 dark:bg-theme-darkBase text-slate-800 dark:text-white min-h-screen flex flex-col transition-colors duration-300 selection:bg-theme-teal selection:text-white">
+<body class="bg-sky-50 dark:bg-theme-darkBase text-slate-800 dark:text-white min-h-screen flex flex-col transition-colors duration-300">
 
-    <div id="notify-reminder-banner" class="hidden bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md flex items-center justify-between">
+    <div id="notify-reminder-banner" class="hidden bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold shadow-md flex items-center justify-between">
         <div class="max-w-4xl mx-auto w-full flex items-center justify-between gap-3">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bell text-sm animate-bounce"></i>
-                <span>فعّل الإشعارات لتنبيهك فور انتهاء وقت المذاكرة أثناء قفل الهاتف أو الخروج.</span>
+                <span>فعّل الإشعارات لتنبيهك فور انتهاء وقت المذاكرة.</span>
             </div>
-            <button onclick="requestNotificationPermission()" class="bg-theme-darkBase text-white px-3.5 py-1.5 rounded-xl text-[11px] font-black hover:opacity-90 active:scale-95 transition shrink-0">
-                تفعيل الآن
-            </button>
+            <button onclick="requestNotificationPermission()" class="bg-theme-darkBase text-white px-3.5 py-1.5 rounded-xl text-[11px] font-black">تفعيل الآن</button>
         </div>
     </div>
 
-    <!-- ================= LANDING PAGE ================= -->
+    <!-- ================= LANDING ================= -->
     <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8">
         <div class="max-w-3xl w-full mx-auto space-y-8 my-auto py-10">
             <div class="text-center space-y-4">
-                <div class="w-20 h-20 rounded-4xl bg-gradient-to-br from-theme-sky to-theme-teal text-white mx-auto flex items-center justify-center font-black text-3xl shadow-glow-sky" dir="ltr">
-                    Z+
-                </div>
+                <div class="w-20 h-20 rounded-4xl bg-gradient-to-br from-theme-sky to-theme-teal text-white mx-auto flex items-center justify-center font-black text-3xl shadow-glow-sky" dir="ltr">Z+</div>
                 <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white" dir="ltr">
                     <span>Zero</span><span class="text-theme-sky">Plus</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 dark:text-theme-skyLight max-w-xl mx-auto leading-relaxed font-semibold">
-                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام، جلسات التركيز، تعلم الإنجليزية، والمساعد الأكاديمي الذكي في مكان واحد، لمساعدة الطالب على الدراسة والمتابعة بطريقة منظمة.
+                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام، جلسات التركيز، تعلم الإنجليزية، والمساعد الأكاديمي الذكي.
                 </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
-                    <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-list-check"></i>
-                    </div>
-                    <h3 class="font-black text-sm text-slate-900 dark:text-white">المهام وتنظيم الدراسة</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">أنشئ مهامك الدراسية، حدد نوعها وأولويتها، وتابع إنجازك اليومي بسهولة.</p>
-                </div>
-                <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-clock"></i>
-                    </div>
-                    <h3 class="font-black text-sm text-slate-900 dark:text-white">التركيز بنظام Pomodoro</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">جلسات تركيز 25 دقيقة مع تتبع الوقت والجلسات المكتملة وسجل إنجازك الدراسي.</p>
-                </div>
-                <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
-                    <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-language"></i>
-                    </div>
-                    <h3 class="font-black text-sm text-slate-900 dark:text-white">مسار اللغة الإنجليزية</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">تدرج تعليمي لمهارات الإنجليزية العامة والطبية وفق مسار CEFR مع متابعة التقدم.</p>
-                </div>
-                <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
-                    <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </div>
-                    <h3 class="font-black text-sm text-slate-900 dark:text-white">المساعد الأكاديمي الذكي</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">ارفع محاضرتك PDF أو أدخل النص، ثم أنشئ ملخصات وMCQ وأسئلة قصيرة من المحتوى.</p>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-theme-sky/10 to-theme-teal/10 border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl text-center">
-                <div class="flex items-center justify-center gap-2 text-xs font-black text-slate-800 dark:text-white">
-                    <i class="fa-solid fa-code text-theme-sky"></i>
-                    <span>تم تطوير ZeroPlus بواسطة مصطفى عبد علي</span>
-                </div>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">تصميم وبرمجة وتطوير المنصة لتجمع أدوات الدراسة والإنتاجية في تجربة واحدة.</p>
             </div>
 
             <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder p-6 sm:p-8 rounded-4xl shadow-xl max-w-md mx-auto space-y-5 text-right">
                 <div class="text-center space-y-1">
                     <h3 id="auth-modal-title" class="font-black text-lg text-slate-900 dark:text-white">مرحباً بك زميلنا الكريم</h3>
-                    <p class="text-xs text-slate-400">سجّل باستخدام الاسم وكلمة المرور فقط، أو تابع باستخدام Google</p>
+                    <p class="text-xs text-slate-400">سجّل باستخدام الاسم وكلمة المرور فقط</p>
                 </div>
                 <div class="space-y-3">
                     <div>
@@ -258,12 +196,12 @@
                     تم تطوير هذه المنصة بكل فخر بواسطة <strong class="text-theme-sky">مصطفى عبد علي</strong> | بغداد، العراق.
                 </p>
                 <div class="flex items-center justify-center gap-4 text-xs font-bold pt-1">
-                    <a href="https://t.me/pritxv" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:underline">
-                        <i class="fa-brands fa-telegram"></i> <span>الدعم الفني (Telegram)</span>
+                    <a href="https://t.me/pritxv" target="_blank" class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:underline">
+                        <i class="fa-brands fa-telegram"></i> <span>Telegram</span>
                     </a>
-                    <span class="text-slate-300 dark:text-slate-700">|</span>
-                    <a href="https://instagram.com/txv3" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-rose-500 hover:underline">
-                        <i class="fa-brands fa-instagram"></i> <span>(Instagram)</span>
+                    <span class="text-slate-300">|</span>
+                    <a href="https://instagram.com/txv3" target="_blank" class="flex items-center gap-1.5 text-rose-500 hover:underline">
+                        <i class="fa-brands fa-instagram"></i> <span>Instagram</span>
                     </a>
                 </div>
             </div>
@@ -272,65 +210,51 @@
 
     <!-- ================= PROFILE MODAL ================= -->
     <div id="profile-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-7 space-y-5 shadow-2xl">
+        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 space-y-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-3">
                 <h3 class="font-black text-base text-slate-900 dark:text-white">إدارة الملف الشخصي</h3>
-                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeProfileModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col items-center space-y-2">
-                <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center shadow-md">
-                    <img id="profile-avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center">
+                    <img id="profile-avatar-preview" src="" alt="" class="w-full h-full object-cover hidden">
                     <i id="profile-avatar-placeholder" class="fa-solid fa-user text-2xl text-theme-sky"></i>
                 </div>
                 <label class="cursor-pointer text-[11px] text-theme-sky font-bold hover:underline">
-                    تغيير الصورة الشخصية
+                    تغيير الصورة
                     <input type="file" accept="image/*" onchange="uploadProfileAvatar(event)" class="hidden">
                 </label>
             </div>
             <div class="space-y-3 text-right text-xs">
                 <div>
-                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
+                    <label class="font-bold text-slate-500 block mb-1">الاسم:</label>
                     <input id="profile-input-name" type="text" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                 </div>
                 <div>
-                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">التخصص / القسم:</label>
+                    <label class="font-bold text-slate-500 block mb-1">القسم:</label>
                     <select id="profile-select-dept" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
-                        <option value="general">عام / مشترك لكافة الأقسام الطبية</option>
-                        <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
-                        <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
-                        <option value="optics">تقنيات البصريات والعيون</option>
-                        <option value="radiology">تقنيات الأشعة والسونار</option>
-                        <option value="dental_tech">تقنيات صناعة الأسنان</option>
-                        <option value="physiotherapy">تقنيات العلاج الطبيعي والتأهيل</option>
-                        <option value="community_health">تقنيات صحة المجتمع والوبائيات</option>
-                        <option value="medicine">الطب العام والجراحة</option>
-                        <option value="dentistry">طب وجراحة الفم والأسنان</option>
-                        <option value="pharmacy">الصيدلة السريرية والعقاقير</option>
-                        <option value="nursing">التمريض السريري والرعاية الحرجة</option>
+                        <option value="general">عام</option>
+                        <option value="anesthesia">تقنيات التخدير</option>
+                        <option value="labs">تقنيات المختبرات</option>
+                        <option value="optics">تقنيات البصريات</option>
+                        <option value="radiology">تقنيات الأشعة</option>
+                        <option value="dental_tech">صناعة الأسنان</option>
+                        <option value="physiotherapy">العلاج الطبيعي</option>
+                        <option value="community_health">صحة المجتمع</option>
+                        <option value="medicine">الطب العام</option>
+                        <option value="dentistry">طب الأسنان</option>
+                        <option value="pharmacy">الصيدلة</option>
+                        <option value="nursing">التمريض</option>
                     </select>
                 </div>
                 <div>
-                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">كلمة المرور الجديدة:</label>
-                    <input id="profile-input-pass" type="password" placeholder="اتركها فارغة إذا لم ترد تغييرها" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
+                    <label class="font-bold text-slate-500 block mb-1">كلمة مرور جديدة (اختياري):</label>
+                    <input id="profile-input-pass" type="password" placeholder="اتركها فارغة" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-2 pt-1">
-                <a href="https://t.me/pritxv" target="_blank" rel="noopener noreferrer"
-                   class="bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-sky-600 dark:text-sky-400 py-2.5 rounded-2xl font-bold text-[11px] flex items-center justify-center gap-1.5 hover:opacity-90 transition">
-                    <i class="fa-brands fa-telegram"></i> الدعم عبر Telegram
-                </a>
-                <a href="https://instagram.com/txv3" target="_blank" rel="noopener noreferrer"
-                   class="bg-rose-50 dark:bg-theme-darkBase border border-rose-200 dark:border-theme-darkBorder text-rose-500 py-2.5 rounded-2xl font-bold text-[11px] flex items-center justify-center gap-1.5 hover:opacity-90 transition">
-                    <i class="fa-brands fa-instagram"></i> الدعم عبر Instagram
-                </a>
-            </div>
             <div class="space-y-2 pt-2">
-                <button onclick="saveProfileChanges()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky transition active:scale-95">
-                    حفظ التعديلات
-                </button>
-                <button onclick="handleUserLogout()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2.5 rounded-2xl font-bold text-xs transition">
-                    تسجيل الخروج
-                </button>
+                <button onclick="saveProfileChanges()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky">حفظ التعديلات</button>
+                <button onclick="handleUserLogout()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2.5 rounded-2xl font-bold text-xs">تسجيل الخروج</button>
             </div>
         </div>
     </div>
@@ -342,87 +266,85 @@
                 <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
             <div>
-                <h3 class="font-black text-base text-slate-900 dark:text-white">تثبيت منصة ZeroPlus على جهازك</h3>
-                <p class="text-xs text-slate-500 dark:text-theme-skyLight mt-1">تطبيق سريع وخفيف يعمل حتى دون إنترنت</p>
+                <h3 class="font-black text-base text-slate-900 dark:text-white">تثبيت ZeroPlus</h3>
+                <p class="text-xs text-slate-500 mt-1">تطبيق سريع يعمل حتى دون إنترنت</p>
             </div>
             <div id="install-guide-ios" class="text-right bg-sky-50 dark:bg-theme-darkBase p-4 rounded-2xl border border-slate-200 dark:border-theme-darkBorder space-y-2 text-xs">
-                <span class="font-black text-theme-sky dark:text-white block">خطوات تثبيت آيفون / آيباد (Safari):</span>
-                <p class="text-slate-600 dark:text-slate-300">1. اضغط على زر المشاركة <i class="fa-solid fa-arrow-up-from-bracket text-theme-sky mx-1"></i> أسفل الشاشة.</p>
-                <p class="text-slate-600 dark:text-slate-300">2. مرر للأسفل واختر <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.</p>
-                <p class="text-slate-600 dark:text-slate-300">3. اضغط <strong>إضافة (Add)</strong> وسيظهر التطبيق في شاشتك الرئيسية فوراً.</p>
+                <span class="font-black text-theme-sky block">خطوات iOS:</span>
+                <p class="text-slate-600 dark:text-slate-300">1. اضغط زر المشاركة <i class="fa-solid fa-arrow-up-from-bracket text-theme-sky"></i></p>
+                <p class="text-slate-600 dark:text-slate-300">2. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></p>
+                <p class="text-slate-600 dark:text-slate-300">3. اضغط <strong>إضافة</strong></p>
             </div>
             <div id="install-guide-android" class="hidden">
-                <button onclick="triggerAndroidPwaInstall()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-download"></i> <span>تثبيت التطبيق بنقرة واحدة</span>
+                <button onclick="triggerAndroidPwaInstall()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs">
+                    <i class="fa-solid fa-download"></i> تثبيت بنقرة واحدة
                 </button>
             </div>
-            <button onclick="closeInstallModal()" class="w-full bg-slate-100 dark:bg-theme-darkBase text-slate-600 dark:text-slate-300 py-2.5 rounded-xl font-bold text-xs hover:opacity-90 transition">
-                إغلاق
-            </button>
+            <button onclick="closeInstallModal()" class="w-full bg-slate-100 dark:bg-theme-darkBase text-slate-600 dark:text-slate-300 py-2.5 rounded-xl font-bold text-xs">إغلاق</button>
         </div>
     </div>
 
     <!-- ================= AI CONFIG MODAL ================= -->
     <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-theme-sky text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
                         <i class="fa-solid fa-sliders"></i>
                     </div>
                     <div>
-                        <h3 class="font-black text-base text-theme-sky dark:text-white">تخصيص الاختبار والمراجعة</h3>
-                        <p class="text-[11px] text-slate-400">حدد نوع المخرج الأكاديمي وطريقة عرضه ونطاق السلايدات</p>
+                        <h3 class="font-black text-base text-theme-sky dark:text-white">تخصيص الاختبار</h3>
+                        <p class="text-[11px] text-slate-400">حدد نوع المخرج وطريقة العرض</p>
                     </div>
                 </div>
-                <button onclick="closeAiConfigModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-theme-darkBase text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center transition">
+                <button onclick="closeAiConfigModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-theme-darkBase text-slate-400 flex items-center justify-center">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
             <div class="space-y-2">
-                <label class="text-xs font-bold text-theme-sky dark:text-theme-skyLight block">نوع المخرج الأكاديمي المطلوب:</label>
+                <label class="text-xs font-bold text-theme-sky block">نوع المخرج:</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="setAiTaskType('mcq', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5 transition">
+                    <button type="button" onclick="setAiTaskType('mcq', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-list-check"></i>
-                        <span>خيارات (MCQ)</span>
+                        <span>خيارات</span>
                     </button>
-                    <button type="button" onclick="setAiTaskType('short', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition">
+                    <button type="button" onclick="setAiTaskType('short', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-pen-to-square"></i>
                         <span>إجابة قصيرة</span>
                     </button>
-                    <button type="button" onclick="setAiTaskType('summary', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition">
+                    <button type="button" onclick="setAiTaskType('summary', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-file-lines"></i>
-                        <span>ملخص مكثف</span>
+                        <span>ملخص</span>
                     </button>
                 </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="ai-count-and-style-box">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-theme-sky dark:text-theme-skyLight block">طريقة العرض:</label>
-                    <select id="ai-display-style" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
-                        <option value="interactive">تفاعلي (حل فوري وتقييم درجات)</option>
-                        <option value="text">نصي كامل (ورقة نموذجية قابلة للنسخ)</option>
+                    <label class="text-xs font-bold text-theme-sky block">طريقة العرض:</label>
+                    <select id="ai-display-style" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <option value="interactive">تفاعلي</option>
+                        <option value="text">نصي كامل</option>
                     </select>
                 </div>
                 <div class="space-y-1.5" id="ai-question-count-wrapper">
-                    <label class="text-xs font-bold text-theme-sky dark:text-theme-skyLight block">عدد الأسئلة المطلوبة:</label>
-                    <select id="ai-questions-count" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
-                        <option value="1">سؤال واحد</option>
-                        <option value="3" selected>3 أسئلة</option>
-                        <option value="5">5 أسئلة</option>
-                        <option value="10">10 أسئلة (اختبار كامل)</option>
+                    <label class="text-xs font-bold text-theme-sky block">عدد الأسئلة:</label>
+                    <select id="ai-questions-count" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <option value="1">1</option>
+                        <option value="3" selected>3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
                     </select>
                 </div>
             </div>
             <div class="space-y-2 border-t border-slate-100 dark:border-theme-darkBorder pt-3">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <label class="text-theme-sky dark:text-theme-skyLight">نطاق السلايدات المستهدفة:</label>
-                    <span id="modal-slides-total-badge" class="text-slate-400">إجمالي السلايدات: 1</span>
+                    <label class="text-theme-sky">نطاق السلايدات:</label>
+                    <span id="modal-slides-total-badge" class="text-slate-400">الإجمالي: 1</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                         <input type="radio" name="modal_slide_scope" value="all" checked onchange="toggleModalScopeInputs()">
-                        <span>كامل المحاضرة</span>
+                        <span>كامل</span>
                     </label>
                     <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                         <input type="radio" name="modal_slide_scope" value="single" onchange="toggleModalScopeInputs()">
@@ -430,7 +352,7 @@
                     </label>
                     <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                         <input type="radio" name="modal_slide_scope" value="range" onchange="toggleModalScopeInputs()">
-                        <span>نطاق معين</span>
+                        <span>نطاق</span>
                     </label>
                 </div>
                 <div id="modal-single-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
@@ -438,111 +360,109 @@
                     <input id="modal-single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
                 </div>
                 <div id="modal-range-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
-                    <span class="font-bold text-slate-500">من سلايد:</span>
+                    <span class="font-bold text-slate-500">من:</span>
                     <input id="modal-range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                    <span class="font-bold text-slate-500">إلى سلايد:</span>
+                    <span class="font-bold text-slate-500">إلى:</span>
                     <input id="modal-range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
                 </div>
             </div>
             <button onclick="executeAiCustomTask()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
-                <span>تأكيد وبدء المعالجة الأكاديمية</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>تأكيد وبدء المعالجة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
             </button>
         </div>
     </div>
 
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0 transition-colors">
+    <!-- HEADER -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0 cursor-pointer" onclick="openProfileModal()" title="إدارة الملف الشخصي">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0 cursor-pointer" onclick="openProfileModal()">
                     <span id="header-avatar-initial">Z+</span>
                 </div>
                 <div>
                     <h1 class="font-black text-base sm:text-lg leading-tight flex items-center gap-1 text-slate-900 dark:text-white" dir="ltr">
                         <span>Zero</span><span class="text-theme-sky">Plus</span>
                     </h1>
-                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight line-clamp-1 cursor-pointer hover:underline" onclick="openProfileModal()">بوابة التعليم التخصصي</span>
+                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight cursor-pointer hover:underline" onclick="openProfileModal()">بوابة التعليم</span>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تنزيل التطبيق">
+                <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i class="fa-solid fa-download text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">تثبيت 📲</span>
+                    <span class="text-[11px] hidden sm:inline">تثبيت</span>
                 </button>
-                <button onclick="openShareModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="مشاركة التقرير">
+                <button onclick="openShareModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">مشاركة 📤</span>
+                    <span class="text-[11px] hidden sm:inline">مشاركة</span>
                 </button>
-                <button id="notify-btn" onclick="requestNotificationPermission()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="التنبيهات">
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">تنبيهات 🔔</span>
+                    <span class="text-[11px] hidden sm:inline">تنبيهات</span>
                 </button>
                 <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-3 py-1.5 rounded-xl text-xs font-bold text-theme-sky flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-emerald-500 text-xs"></i>
                     <span id="app-xp" class="text-xs">140 XP</span>
                 </div>
-                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300" title="جاري الاتصال بالسحابة"></div>
-                <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تبديل المظهر">
+                <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">المظهر ☀️</span>
                 </button>
             </div>
         </div>
     </header>
 
     <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+        <!-- TODO -->
         <section id="tab-todo" class="hidden space-y-4">
             <div class="gradient-todo p-6 rounded-4xl text-white shadow-glow-teal flex items-center justify-between">
                 <div>
                     <span class="text-[11px] font-bold tracking-wider text-theme-skyLight uppercase">الجدول الأكاديمي اليومي</span>
                     <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-1">0 من 0 مهام مكتملة</h2>
-                    <p id="todo-motivational" class="text-xs text-sky-100 mt-1">متابعة مقررات المنهج والواجبات والمحاضرات النظرية والعملية</p>
+                    <p class="text-xs text-sky-100 mt-1">متابعة المقررات والواجبات</p>
                 </div>
-                <div id="todo-percent-badge" class="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20 shadow-inner">
-                    0%
-                </div>
+                <div id="todo-percent-badge" class="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20">0%</div>
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-sm">
-                <input id="todo-input" type="text" placeholder="عنوان المقرر، الفصل، أو رقم المحاضرة..."
-                    onkeydown="if(event.key==='Enter') addTodo()"
-                    class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white">
-                <select id="todo-tag" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
+                <input id="todo-input" type="text" placeholder="عنوان المهمة..." onkeydown="if(event.key==='Enter') addTodo()" class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none text-slate-900 dark:text-white">
+                <select id="todo-tag" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200">
                     <option value="مقرر تخصصي">مقرر تخصصي</option>
                     <option value="منهج وزاري">منهج وزاري</option>
                     <option value="مراجعة دورية">مراجعة دورية</option>
                     <option value="اختبار وتقييم">اختبار وتقييم</option>
-                    <option value="مختبر وتطبيق عملي">مختبر وتطبيق عملي</option>
+                    <option value="مختبر وتطبيق عملي">مختبر</option>
                 </select>
-                <select id="todo-prio" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
+                <select id="todo-prio" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200">
                     <option value="high">أولوية قصوى</option>
-                    <option value="normal">أولوية اعتيادية</option>
+                    <option value="normal">اعتيادية</option>
                 </select>
-                <button onclick="addTodo()" class="w-full sm:w-auto bg-theme-teal hover:bg-teal-700 text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-glow-teal transition active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-plus text-xs"></i> <span>إدراج مهمة</span>
+                <button onclick="addTodo()" class="w-full sm:w-auto bg-theme-teal hover:bg-teal-700 text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-glow-teal flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i> <span>إدراج</span>
                 </button>
             </div>
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
+        <!-- POMODORO -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
-                    <span class="text-[11px] text-slate-400 dark:text-theme-greenLight font-bold block">إجمالي وقت التركيز</span>
+                    <span class="text-[11px] text-slate-400 font-bold block">إجمالي التركيز</span>
                     <span id="stat-total-mins" class="text-base sm:text-xl font-black text-theme-mint dark:text-white mt-1 block">0 دقيقة</span>
                 </div>
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
-                    <span class="text-[11px] text-slate-400 dark:text-theme-greenLight font-bold block">جلسات اليوم</span>
+                    <span class="text-[11px] text-slate-400 font-bold block">جلسات اليوم</span>
                     <span id="pomo-count-stat" class="text-base sm:text-xl font-black text-theme-mint dark:text-white mt-1 block">0 جلسات</span>
                 </div>
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
-                    <span class="text-[11px] text-slate-400 dark:text-theme-greenLight font-bold block">الجلسات المكتملة</span>
+                    <span class="text-[11px] text-slate-400 font-bold block">مكتملة</span>
                     <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-1 block">0 جلسة</span>
                 </div>
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-sm space-y-6">
                 <div class="flex justify-center gap-2 bg-emerald-50 dark:bg-theme-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
-                    <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm">تركيز (25 د)</button>
-                    <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5 د)</button>
-                    <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15 د)</button>
+                    <button onclick="setPomoMode(25, 'جلسة تركيز (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm">تركيز 25</button>
+                    <button onclick="setPomoMode(5, 'استراحة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة 5</button>
+                    <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة 15</button>
                 </div>
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -550,7 +470,7 @@
                         <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="#10b981" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div id="pomo-tree-preview" class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center text-lg mb-2 border border-emerald-200 dark:border-theme-darkBorder">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center text-lg mb-2 border border-emerald-200 dark:border-theme-darkBorder">
                             <i class="fa-solid fa-hourglass-half"></i>
                         </div>
                         <span id="pomo-display" class="text-5xl sm:text-6xl font-black tracking-tight text-theme-mint dark:text-white">25:00</span>
@@ -558,15 +478,13 @@
                 </div>
                 <div class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200/60 dark:border-theme-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">
-                        جلسة تركيز دراسي (25 دقيقة)
-                    </span>
+                    <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">جلسة تركيز (25 دقيقة)</span>
                 </div>
                 <div class="flex justify-center gap-3 pt-2">
-                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-theme-mint hover:bg-emerald-700 text-white font-black px-10 py-3.5 rounded-2xl shadow-glow-green transition active:scale-95 flex items-center gap-2">
-                        <span>بدء المؤقت</span> <i class="fa-solid fa-play text-xs"></i>
+                    <button id="pomo-play-btn" onclick="togglePomo()" class="bg-theme-mint hover:bg-emerald-700 text-white font-black px-10 py-3.5 rounded-2xl shadow-glow-green flex items-center gap-2">
+                        <span>بدء</span> <i class="fa-solid fa-play text-xs"></i>
                     </button>
-                    <button onclick="resetPomo()" class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold hover:border-theme-mint transition active:scale-95" title="إعادة ضبط">
+                    <button onclick="resetPomo()" class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                 </div>
@@ -578,16 +496,17 @@
                             <i class="fa-solid fa-chart-simple"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">سجل الجلسات الأكاديمية</h3>
-                            <p class="text-[11px] text-slate-400">توثيق فترات التركيز المستمرة خلال اليوم</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">سجل الجلسات</h3>
+                            <p class="text-[11px] text-slate-400">فترات التركيز خلال اليوم</p>
                         </div>
                     </div>
-                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 transition font-bold">مسح السجل</button>
+                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 font-bold">مسح</button>
                 </div>
                 <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2"></div>
             </div>
         </section>
 
+        <!-- ENGLISH -->
         <section id="tab-english" class="hidden space-y-5">
             <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
@@ -601,35 +520,32 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 bg-sky-50 dark:bg-theme-darkBase p-1 rounded-2xl border border-sky-200/50 dark:border-theme-darkBorder">
-                    <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-theme-sky text-white shadow-sm">
-                        <i class="fa-solid fa-earth-americas text-xs"></i>
-                        <span>إنجليزي عام</span>
+                    <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-theme-sky text-white shadow-sm">
+                        <i class="fa-solid fa-earth-americas text-xs"></i> <span>عام</span>
                     </button>
-                    <button id="mode-btn-medical" onclick="setLearningTrackMode('medical')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                        <i class="fa-solid fa-user-doctor text-xs"></i>
-                        <span>المسار الطبي 🩺</span>
+                    <button id="mode-btn-medical" onclick="setLearningTrackMode('medical')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-user-doctor text-xs"></i> <span>طبي</span>
                     </button>
                 </div>
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl shadow-sm flex flex-col items-center">
                 <div class="mb-4 text-center">
                     <h3 class="text-base font-black text-theme-sky dark:text-white flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-layer-group text-theme-teal"></i> <span>مسار البناء اللغوي التراكمي (CEFR)</span>
+                        <i class="fa-solid fa-layer-group text-theme-teal"></i> <span>مسار البناء اللغوي (CEFR)</span>
                     </h3>
-                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات العالمية للحصول على التيجان الذهبية (3/3) لكل مهارة</p>
+                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات للحصول على التيجان الذهبية</p>
                 </div>
                 <div id="learning-path-tree" class="w-full flex flex-col items-center"></div>
             </div>
         </section>
 
+        <!-- LESSON MODAL -->
         <div id="lesson-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
             <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl">
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
-                        <button onclick="closeLessonModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
-                            <i class="fa-solid fa-xmark text-sm"></i>
-                        </button>
-                        <div class="flex-1 mx-4 bg-slate-100 dark:bg-theme-darkBase h-2.5 rounded-full overflow-hidden border border-slate-200 dark:border-theme-darkBorder">
+                        <button onclick="closeLessonModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-sm"></i></button>
+                        <div class="flex-1 mx-4 bg-slate-100 dark:bg-theme-darkBase h-2.5 rounded-full overflow-hidden">
                             <div id="lesson-progress-bar" class="h-full bg-theme-teal rounded-full transition-all duration-300" style="width: 25%;"></div>
                         </div>
                         <div class="flex items-center gap-1 text-xs font-bold text-rose-500">
@@ -639,13 +555,12 @@
                     </div>
                     <div class="flex items-center justify-between pt-1">
                         <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">تمرين 1 من 3</span>
-                        <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-sky-300/60 bg-sky-50 dark:bg-sky-900/20 text-theme-sky text-xs font-bold transition active:scale-95">
-                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
-                            <span>تلميح لغوي</span>
+                        <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-sky-300/60 bg-sky-50 dark:bg-sky-900/20 text-theme-sky text-xs font-bold">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> <span>تلميح</span>
                         </button>
                     </div>
                 </div>
-                <div id="lesson-hint-box" class="hidden p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-xs font-semibold text-theme-sky dark:text-white transition-opacity">
+                <div id="lesson-hint-box" class="hidden p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-xs font-semibold text-theme-sky dark:text-white">
                     <div class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-info text-theme-sky mt-0.5"></i>
                         <p id="lesson-hint-text" class="leading-relaxed"></p>
@@ -653,13 +568,12 @@
                 </div>
                 <div id="lesson-body-area" class="space-y-4 pt-1"></div>
                 <div class="pt-2 flex gap-3">
-                    <button id="lesson-action-btn" class="hidden w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95">
-                        التالي
-                    </button>
+                    <button id="lesson-action-btn" class="hidden w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm">التالي</button>
                 </div>
             </div>
         </div>
 
+        <!-- ZERO ASSISTANT -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -668,63 +582,59 @@
                             <i class="fa-solid fa-book-bookmark"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار والمراجعة</h3>
-                            <p class="text-[11px] text-slate-400">تحميل المحاضرة وفحص المنهج بالكامل وصياغة المخرجات</p>
+                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار</h3>
+                            <p class="text-[11px] text-slate-400">حمّل المحاضرة وصغ المخرجات</p>
                         </div>
                     </div>
-                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-teal-50 dark:bg-theme-darkBase text-theme-teal px-3 py-1 rounded-full border border-teal-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span>المحرك الأكاديمي جاهز للتحليل</span>
+                    <span class="text-[10px] font-bold bg-teal-50 dark:bg-theme-darkBase text-theme-teal px-3 py-1 rounded-full border border-teal-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> المحرك جاهز
                     </span>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
+                    <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
                         <i class="fa-solid fa-file-arrow-up text-theme-teal"></i>
-                        <span id="upload-file-status">تحميل ملف المحاضرة (صيغة PDF أو نص)</span>
+                        <span id="upload-file-status">تحميل ملف (PDF أو نص)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
-                    <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-teal transition shadow-sm">
-                        إدخال نصي مباشر
+                    <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-teal shadow-sm">
+                        إدخال نصي
                     </button>
                 </div>
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white resize-none"></textarea>
                 </div>
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
-                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج وفحصه</span>
+                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم فحص المنهج</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="openAiConfigModal()" class="text-[11px] text-theme-teal underline font-bold">تغيير خيارات الاختبار</button>
-                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
+                        <button onclick="openAiConfigModal()" class="text-[11px] text-theme-teal underline font-bold">تغيير الخيارات</button>
+                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء</button>
                     </div>
                 </div>
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 <div class="p-4 border-b border-teal-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-teal-50/30 dark:bg-theme-darkBase/40">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
-                            Z+
-                        </div>
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">Z+</div>
                         <div>
                             <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
                                 المساعد الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </h4>
-                            <p class="text-[11px] text-slate-400">تحليل المنهج وفهم تفاصيله بدقة والإجابة من صلب المحاضرة</p>
+                            <p class="text-[11px] text-slate-400">تحليل المنهج والإجابة من صلب المحاضرة</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openAiConfigModal()" class="bg-theme-teal hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-teal hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
-                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص الاختبار والمراجعة</span>
+                        <button onclick="openAiConfigModal()" class="bg-theme-teal hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-teal flex items-center gap-1.5">
+                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص</span>
                         </button>
-                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="إفراغ المحادثة">
+                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
                 <div class="p-3 border-t border-teal-100 dark:border-theme-darkBorder bg-teal-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة معقدة من المحاضرة، استفسار علمي، أو كويز..."
-                        onkeydown="if(event.key==='Enter') sendZeroChat()"
-                        class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
-                    <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal hover:opacity-95 transition active:scale-95 shrink-0">
+                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة أو استفسار علمي..." onkeydown="if(event.key==='Enter') sendZeroChat()" class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white font-semibold">
+                    <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal shrink-0">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </div>
@@ -732,68 +642,62 @@
         </section>
     </main>
 
+    <!-- SHARE MODAL -->
     <div id="share-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
             <div id="share-card" class="gradient-todo p-6 rounded-3xl text-white shadow-glow-teal space-y-3 text-center">
-                <div class="w-12 h-12 rounded-2xl bg-white/10 mx-auto flex items-center justify-center font-black text-2xl border border-white/20" dir="ltr">
-                    Z+
-                </div>
+                <div class="w-12 h-12 rounded-2xl bg-white/10 mx-auto flex items-center justify-center font-black text-2xl border border-white/20" dir="ltr">Z+</div>
                 <div>
-                    <h3 class="font-black text-xl">تقرير الإنجاز الأكاديمي</h3>
-                    <p id="share-card-user" class="text-xs text-sky-100">سجل الطالب الجامعي</p>
+                    <h3 class="font-black text-xl">تقرير الإنجاز</h3>
+                    <p id="share-card-user" class="text-xs text-sky-100">الطالب</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
-                        <span class="block text-white/70 text-[10px]">مستوى الخبرة</span>
-                        <span id="share-xp" class="text-amber-300 font-black text-sm">140 XP</span>
+                        <span class="block text-white/70 text-[10px]">XP</span>
+                        <span id="share-xp" class="text-amber-300 font-black text-sm">140</span>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">الجلسات المكتملة</span>
-                        <span id="share-trees" class="text-emerald-300 font-black text-sm">0 جلسة</span>
+                        <span class="block text-white/70 text-[10px]">جلسات</span>
+                        <span id="share-trees" class="text-emerald-300 font-black text-sm">0</span>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">المحطات المنجزة</span>
+                        <span class="block text-white/70 text-[10px]">محطات</span>
                         <span id="share-nodes" class="text-sky-300 font-black text-sm">0</span>
                     </div>
                 </div>
             </div>
             <div class="flex gap-2">
-                <button onclick="executeShare()" class="flex-1 bg-theme-sky text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-2 shadow-glow-sky">
-                    <i class="fa-solid fa-share-nodes text-xs"></i> <span>مشاركة التقرير</span>
+                <button onclick="executeShare()" class="flex-1 bg-theme-sky text-white py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-glow-sky">
+                    <i class="fa-solid fa-share-nodes text-xs"></i> مشاركة
                 </button>
-                <button onclick="copyShareText()" class="bg-sky-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs hover:border-theme-sky transition">
-                    نسخ النص
-                </button>
+                <button onclick="copyShareText()" class="bg-sky-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs">نسخ</button>
             </div>
-            <button onclick="closeShareModal()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition font-bold">إغلاق</button>
+            <button onclick="closeShareModal()" class="text-xs text-slate-400 font-bold">إغلاق</button>
         </div>
     </div>
 
+    <!-- NAV -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-theme-darkBase/95 backdrop-blur-2xl border-t border-sky-100 dark:border-theme-darkBorder pt-2.5 ios-nav-safe z-40 shadow-sm">
         <div class="max-w-md mx-auto flex justify-around items-center px-4">
             <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
-                <i class="fa-solid fa-list-check text-base mb-1"></i>
-                <span>المهام</span>
+                <i class="fa-solid fa-list-check text-base mb-1"></i> <span>المهام</span>
             </button>
             <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-mint transition">
-                <i class="fa-solid fa-clock text-base mb-1"></i>
-                <span>التركيز</span>
+                <i class="fa-solid fa-clock text-base mb-1"></i> <span>التركيز</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs transition">
-                <i class="fa-solid fa-language text-base mb-1"></i>
-                <span>البناء اللغوي</span>
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs">
+                <i class="fa-solid fa-language text-base mb-1"></i> <span>البناء اللغوي</span>
             </button>
             <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
-                <i class="fa-solid fa-graduation-cap text-base mb-1"></i>
-                <span>المساعد</span>
+                <i class="fa-solid fa-graduation-cap text-base mb-1"></i> <span>المساعد</span>
             </button>
         </div>
     </nav>
 
     <script>
-        // ------------------ HELPERS ------------------
+        // ============ HELPERS ============
         function escapeHtml(v) {
             return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
@@ -801,29 +705,32 @@
             return escapeHtml(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
         }
         function safeParse(key, fallback) {
-            try {
-                const v = JSON.parse(localStorage.getItem(key));
-                return v === null || v === undefined ? fallback : v;
-            } catch (e) { return fallback; }
+            try { const v = JSON.parse(localStorage.getItem(key)); return v === null || v === undefined ? fallback : v; }
+            catch (e) { return fallback; }
         }
         function safeSetItem(key, value) {
             try { localStorage.setItem(key, value); return true; }
-            catch (e) { console.warn('localStorage write failed for', key, e); return false; }
+            catch (e) { return false; }
         }
         function deptLabel(key) {
             const opt = document.querySelector(`#auth-dept option[value="${key}"]`);
             return opt ? opt.textContent.trim() : key;
         }
-        function getDeviceId() {
-            let id = localStorage.getItem('zp_device_id');
-            if (!id) {
-                id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-                localStorage.setItem('zp_device_id', id);
+        function simpleHash(str) {
+            let h = 0;
+            for (let i = 0; i < str.length; i++) {
+                h = ((h << 5) - h) + str.charCodeAt(i);
+                h |= 0;
             }
-            return id;
+            return Math.abs(h).toString(36);
+        }
+        async function hashPassword(pwd) {
+            const buf = new TextEncoder().encode('zp_salt_v1_' + pwd);
+            const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+            return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ------------------ SUPABASE ------------------
+        // ============ SUPABASE ============
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -837,20 +744,38 @@
             const ind = document.getElementById('cloud-indicator');
             if (!ind) return;
             if (status === 'online') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50';
-                ind.title = 'متصل بالسحابة وتتم المزامنة الشاملة';
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+                ind.title = 'متصل ومزامن';
             } else if (status === 'syncing') {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping';
-                ind.title = 'جاري مزامنة البيانات...';
+                ind.title = 'جاري المزامنة...';
             } else {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600';
-                ind.title = 'العمل في وضع عدم الاتصال (Offline)';
+                ind.title = 'غير متصل';
             }
         }
 
-        // ------------------ AUTH ------------------
+        // ============ STATE ============
+        let currentUserName = localStorage.getItem('zp_username') || '';
+        let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
+        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
+        let nodeCrowns = safeParse('zp_node_crowns', {});
+        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
+        let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
+        let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
+        let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
+        let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
+        let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
         let isLoginMode = false;
+        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
+        let isHintVisible = false;
+        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
+        let tasks = safeParse('zp_tasks', []);
+        if (!Array.isArray(tasks)) tasks = [];
+        let userForest = safeParse('zp_forest', []);
+        if (!Array.isArray(userForest)) userForest = [];
 
+        // ============ AUTH ============
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             const title = document.getElementById('auth-modal-title');
@@ -858,15 +783,15 @@
             const deptBox = document.getElementById('auth-dept-box');
             const submitBtn = document.getElementById('auth-submit-btn');
             if (isLoginMode) {
-                title.innerText = 'تسجيل الدخول إلى حسابك';
-                switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
+                title.innerText = 'تسجيل الدخول';
+                switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً';
                 deptBox.classList.add('hidden');
                 submitBtn.querySelector('span').innerText = 'تسجيل الدخول';
             } else {
-                title.innerText = 'إنشاء حساب أكاديمي جديد';
-                switchBtn.innerText = 'لديك حساب مسبقاً؟ تسجيل الدخول';
+                title.innerText = 'إنشاء حساب جديد';
+                switchBtn.innerText = 'لديك حساب؟ سجّل الدخول';
                 deptBox.classList.remove('hidden');
-                submitBtn.querySelector('span').innerText = 'إنشاء الحساب وبدء المنصة';
+                submitBtn.querySelector('span').innerText = 'إنشاء الحساب';
             }
         }
 
@@ -874,32 +799,75 @@
             const usernameInput = document.getElementById('auth-username').value.trim();
             const passwordInput = document.getElementById('auth-password').value.trim();
             const deptInput = document.getElementById('auth-dept').value;
-            if (!usernameInput || !passwordInput) { alert("يرجى إدخال اسم الطالب وكلمة المرور."); return; }
-            if (passwordInput.length < 6) { alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل."); return; }
-            const pseudoEmail = `${usernameInput.toLowerCase().replace(/\s+/g, '_')}@zeroplus.edu`;
-            if (!supabaseClient) { alert("تعذر الاتصال بـ Supabase. تحقق من اتصالك بالإنترنت."); return; }
 
-            if (isLoginMode) {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email: pseudoEmail, password: passwordInput });
-                if (error) { alert("خطأ في تسجيل الدخول: تأكد من صحة الاسم وكلمة المرور."); return; }
-                await loadUserDataAfterAuth(data.user);
-            } else {
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: pseudoEmail,
-                    password: passwordInput,
-                    options: { data: { display_username: usernameInput, department: deptInput } }
-                });
-                if (error) { alert("خطأ في إنشاء الحساب: " + error.message); return; }
-                if (data.user) {
-                    await supabaseClient.from('profiles').upsert({
-                        user_id: data.user.id,
+            if (!usernameInput) { alert("يرجى إدخال الاسم."); return; }
+            if (!passwordInput || passwordInput.length < 4) { alert("كلمة المرور 4 أحرف على الأقل."); return; }
+
+            const deviceId = 'u_' + simpleHash(usernameInput.toLowerCase().trim());
+            const pwdHash = await hashPassword(passwordInput);
+
+            if (!supabaseClient || !navigator.onLine) {
+                alert("يجب الاتصال بالإنترنت."); return;
+            }
+
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> جاري المعالجة...';
+            submitBtn.disabled = true;
+
+            try {
+                if (isLoginMode) {
+                    const { data, error } = await supabaseClient
+                        .from('profiles').select('*').eq('device_id', deviceId).maybeSingle();
+                    if (error || !data) {
+                        alert("لا يوجد حساب بهذا الاسم. جرّب إنشاء حساب.");
+                        return;
+                    }
+                    if (data.password_hash && data.password_hash !== pwdHash) {
+                        alert("كلمة المرور غير صحيحة.");
+                        return;
+                    }
+                    await loadUserDataFromSupabase(deviceId);
+                    enterApp();
+                } else {
+                    const { data: existing } = await supabaseClient
+                        .from('profiles').select('device_id').eq('device_id', deviceId).maybeSingle();
+                    if (existing) {
+                        alert("هذا الاسم مستخدم مسبقاً. جرّب تسجيل الدخول.");
+                        return;
+                    }
+
+                    const { error: insErr } = await supabaseClient.from('profiles').insert({
+                        device_id: deviceId,
                         user_name: usernameInput,
                         department: deptInput,
+                        password_hash: pwdHash,
+                        auth_provider: 'local',
                         xp: 140,
-                        unlocked_stage_max: 1
-                    }, { onConflict: 'user_id' });
-                    await loadUserDataAfterAuth(data.user);
+                        unlocked_stage_max: 1,
+                        node_crowns: {},
+                        total_focus_mins: 0,
+                        learning_track: 'general'
+                    });
+                    if (insErr) {
+                        alert("تعذر إنشاء الحساب: " + insErr.message);
+                        return;
+                    }
+
+                    currentUserName = usernameInput;
+                    activeDepartmentKey = deptInput;
+                    userXP = 140;
+                    unlockedNodeMax = 1;
+                    nodeCrowns = {};
+                    totalFocusMins = 0;
+                    saveLocalSession(deviceId, usernameInput, deptInput);
+                    enterApp();
                 }
+            } catch(e) {
+                alert("حدث خطأ: " + e.message);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
         }
 
@@ -909,100 +877,194 @@
                 provider: 'google',
                 options: { redirectTo: window.location.origin }
             });
-            if (error) alert("خطأ في تسجيل دخول Google: " + error.message);
+            if (error) alert("خطأ في تسجيل Google: " + error.message);
         }
 
-        async function loadUserDataAfterAuth(authUser) {
-            currentUserName = authUser.user_metadata?.display_username || authUser.email.split('@')[0];
-            activeDepartmentKey = authUser.user_metadata?.department || 'general';
-            localStorage.setItem('zp_username', currentUserName);
-            localStorage.setItem('zp_user_department', activeDepartmentKey);
+        function saveLocalSession(deviceId, name, dept) {
+            localStorage.setItem('zp_device_id', deviceId);
+            localStorage.setItem('zp_username', name);
+            localStorage.setItem('zp_user_department', dept);
             localStorage.setItem('zp_user_registered', 'true');
-            localStorage.setItem('zp_auth_uid', authUser.id);
+        }
 
-            const { data, error: profileLoadError } = await supabaseClient
-                .from('profiles').select('*').eq('user_id', authUser.id).maybeSingle();
-
-            if (data) {
-                if (data.user_name) currentUserName = data.user_name;
-                if (data.department) activeDepartmentKey = data.department;
-                if (typeof data.xp === 'number') userXP = data.xp;
-                if (data.unlocked_stage_max) unlockedNodeMax = data.unlocked_stage_max;
-                if (data.node_crowns) nodeCrowns = data.node_crowns;
-                if (data.learning_track) currentLearningTrack = data.learning_track;
-                if (typeof data.total_focus_mins === 'number') totalFocusMins = data.total_focus_mins;
-                if (data.avatar_url) localStorage.setItem('zp_avatar_url', data.avatar_url);
-                if (data.streak_count) userStreak = data.streak_count;
-                localStorage.setItem('zp_xp', userXP);
-                localStorage.setItem('zp_username', currentUserName);
-                localStorage.setItem('zp_user_department', activeDepartmentKey);
-                localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-                localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
-                localStorage.setItem('zp_focus_mins', totalFocusMins);
-            } else if (!profileLoadError) {
-                const googleName = authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'طالب';
-                const googleAvatar = authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '';
-                currentUserName = googleName;
-                activeDepartmentKey = 'general';
-                await supabaseClient.from('profiles').upsert({
-                    user_id: authUser.id,
-                    user_name: currentUserName,
-                    department: activeDepartmentKey,
-                    avatar_url: googleAvatar || null,
-                    xp: 140,
-                    unlocked_stage_max: 1
-                }, { onConflict: 'user_id' });
-                if (googleAvatar) localStorage.setItem('zp_avatar_url', googleAvatar);
-                localStorage.setItem('zp_username', currentUserName);
-                localStorage.setItem('zp_user_department', activeDepartmentKey);
-            }
-
+        function enterApp() {
             document.getElementById('landing-view').classList.add('hidden');
             updateGreetingHeader();
             updateHeaderAvatar();
             renderPathTree();
             updateGamificationBar();
-            document.getElementById('app-xp').innerText = `${userXP} XP`;
+            renderTasks();
+            renderForest();
+            const xpEl = document.getElementById('app-xp');
+            if (xpEl) xpEl.innerText = `${userXP} XP`;
+            const minsEl = document.getElementById('stat-total-mins');
+            if (minsEl) minsEl.innerText = `${totalFocusMins} دقيقة`;
             updateCloudIndicator('online');
             triggerConfetti();
         }
 
+        async function loadUserDataFromSupabase(deviceId) {
+            if (!supabaseClient) return;
+            updateCloudIndicator('syncing');
+
+            const { data: profile } = await supabaseClient
+                .from('profiles').select('*').eq('device_id', deviceId).maybeSingle();
+
+            if (profile) {
+                currentUserName = profile.user_name || currentUserName;
+                activeDepartmentKey = profile.department || 'general';
+                userXP = profile.xp ?? 140;
+                unlockedNodeMax = profile.unlocked_stage_max ?? 1;
+                nodeCrowns = profile.node_crowns || {};
+                totalFocusMins = profile.total_focus_mins ?? 0;
+                userStreak = profile.streak_count ?? 1;
+                currentLearningTrack = profile.learning_track || 'general';
+                if (profile.avatar_url) localStorage.setItem('zp_avatar_url', profile.avatar_url);
+
+                localStorage.setItem('zp_username', currentUserName);
+                localStorage.setItem('zp_user_department', activeDepartmentKey);
+                localStorage.setItem('zp_xp', userXP);
+                localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
+                localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
+                localStorage.setItem('zp_focus_mins', totalFocusMins);
+                localStorage.setItem('zp_learning_track', currentLearningTrack);
+            }
+
+            // Tasks
+            const { data: cloudTasks } = await supabaseClient
+                .from('user_tasks').select('*').eq('device_id', deviceId);
+            if (cloudTasks && cloudTasks.length > 0) {
+                tasks = cloudTasks.map(t => ({ id: t.id, title: t.title, done: t.done, tag: t.tag, prio: t.prio }));
+                localStorage.setItem('zp_tasks', JSON.stringify(tasks));
+            }
+
+            // Sessions
+            const { data: cloudSessions } = await supabaseClient
+                .from('user_focus_sessions').select('*').eq('device_id', deviceId)
+                .order('created_at', { ascending: false }).limit(50);
+            if (cloudSessions && cloudSessions.length > 0) {
+                userForest = cloudSessions.map(s => ({ id: s.id, name: s.session_name, time: s.session_time }));
+                localStorage.setItem('zp_forest', JSON.stringify(userForest));
+            }
+
+            updateCloudIndicator('online');
+        }
+
         async function checkExistingAuthSession() {
-            if (!supabaseClient) {
-                const localReg = localStorage.getItem('zp_user_registered');
-                if (localReg === 'true' && currentUserName) {
-                    document.getElementById('landing-view').classList.add('hidden');
-                    updateGreetingHeader();
-                    updateHeaderAvatar();
-                } else {
-                    document.getElementById('landing-view').classList.remove('hidden');
-                }
-                return;
-            }
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    await loadUserDataAfterAuth(session.user);
-                } else {
-                    const localReg = localStorage.getItem('zp_user_registered');
-                    if (localReg === 'true' && currentUserName) {
-                        document.getElementById('landing-view').classList.add('hidden');
-                        updateGreetingHeader();
-                        updateHeaderAvatar();
-                    } else {
-                        document.getElementById('landing-view').classList.remove('hidden');
+            // Google session
+            if (supabaseClient) {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session?.user) {
+                        const googleEmail = session.user.email;
+                        const googleId = 'g_' + simpleHash(googleEmail);
+                        const { data: profile } = await supabaseClient
+                            .from('profiles').select('*').eq('device_id', googleId).maybeSingle();
+                        if (profile && profile.user_name) {
+                            await loadUserDataFromSupabase(googleId);
+                            saveLocalSession(googleId, profile.user_name, profile.department || 'general');
+                            enterApp();
+                            return;
+                        } else {
+                            // اطلب الاسم
+                            showNameInputModal(googleId, googleEmail);
+                            return;
+                        }
                     }
-                }
-            } catch (e) {
-                const localReg = localStorage.getItem('zp_user_registered');
-                if (localReg === 'true' && currentUserName) {
-                    document.getElementById('landing-view').classList.add('hidden');
-                    updateGreetingHeader();
-                    updateHeaderAvatar();
-                } else {
-                    document.getElementById('landing-view').classList.remove('hidden');
-                }
+                } catch(e) {}
             }
+
+            // Local session
+            const localReg = localStorage.getItem('zp_user_registered');
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (localReg === 'true' && deviceId) {
+                document.getElementById('landing-view').classList.add('hidden');
+                updateGreetingHeader();
+                updateHeaderAvatar();
+                loadUserDataFromSupabase(deviceId).then(() => {
+                    renderPathTree();
+                    updateGamificationBar();
+                    renderTasks();
+                    renderForest();
+                    const xpEl = document.getElementById('app-xp');
+                    if (xpEl) xpEl.innerText = `${userXP} XP`;
+                });
+            } else {
+                document.getElementById('landing-view').classList.remove('hidden');
+            }
+        }
+
+        function showNameInputModal(googleId, googleEmail) {
+            document.getElementById('landing-view').classList.add('hidden');
+            const modal = document.createElement('div');
+            modal.id = 'google-name-modal';
+            modal.className = 'fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-md w-full p-7 space-y-5 shadow-2xl text-right">
+                    <div class="text-center space-y-2">
+                        <div class="w-16 h-16 rounded-3xl bg-gradient-to-br from-theme-sky to-theme-teal text-white mx-auto flex items-center justify-center text-2xl shadow-glow-sky">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-slate-900 dark:text-white">أهلاً بك في ZeroPlus</h3>
+                        <p class="text-xs text-slate-500">تم تسجيل دخولك بـ Google. أدخل اسمك للمتابعة.</p>
+                        <p class="text-[10px] text-slate-400">${escapeHtml(googleEmail)}</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 block mb-1">اسمك:</label>
+                            <input id="google-name-input" type="text" placeholder="مثال: مصطفى عبد علي" class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-sm focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 block mb-1">القسم:</label>
+                            <select id="google-dept-input" class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold">
+                                <option value="general">عام</option>
+                                <option value="anesthesia">تقنيات التخدير</option>
+                                <option value="labs">تقنيات المختبرات</option>
+                                <option value="optics">تقنيات البصريات</option>
+                                <option value="radiology">تقنيات الأشعة</option>
+                                <option value="dental_tech">صناعة الأسنان</option>
+                                <option value="physiotherapy">العلاج الطبيعي</option>
+                                <option value="community_health">صحة المجتمع</option>
+                                <option value="medicine">الطب العام</option>
+                                <option value="dentistry">طب الأسنان</option>
+                                <option value="pharmacy">الصيدلة</option>
+                                <option value="nursing">التمريض</option>
+                            </select>
+                        </div>
+                        <button onclick="completeGoogleSignup('${googleId}', '${escapeHtml(googleEmail)}')" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky">
+                            متابعة →
+                        </button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+            setTimeout(() => document.getElementById('google-name-input')?.focus(), 100);
+        }
+
+        async function completeGoogleSignup(googleId, googleEmail) {
+            const name = document.getElementById('google-name-input').value.trim();
+            const dept = document.getElementById('google-dept-input').value;
+            if (!name || name.length < 2) { alert("يرجى إدخال اسمك."); return; }
+
+            await supabaseClient.from('profiles').upsert({
+                device_id: googleId,
+                user_name: name,
+                department: dept,
+                email: googleEmail,
+                auth_provider: 'google',
+                xp: 140,
+                unlocked_stage_max: 1,
+                node_crowns: {},
+                total_focus_mins: 0,
+                learning_track: 'general'
+            }, { onConflict: 'device_id' });
+
+            document.getElementById('google-name-modal')?.remove();
+
+            currentUserName = name;
+            activeDepartmentKey = dept;
+            saveLocalSession(googleId, name, dept);
+            await loadUserDataFromSupabase(googleId);
+            enterApp();
         }
 
         function openProfileModal() {
@@ -1037,69 +1099,61 @@
         async function uploadProfileAvatar(e) {
             const file = e.target.files[0];
             if (!file) return;
-            if (!supabaseClient) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    localStorage.setItem('zp_avatar_url', ev.target.result);
-                    document.getElementById('profile-avatar-preview').src = ev.target.result;
-                    document.getElementById('profile-avatar-preview').classList.remove('hidden');
-                    document.getElementById('profile-avatar-placeholder').classList.add('hidden');
-                    updateHeaderAvatar();
-                };
-                reader.readAsDataURL(file);
-                return;
-            }
-            const uid = localStorage.getItem('zp_auth_uid') || getDeviceId();
-            const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-            const filePath = `avatars/${uid}_${Date.now()}.${extension}`;
-            const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: true, contentType: file.type || 'image/jpeg' });
-            if (uploadErr) { alert("تعذر رفع الصورة: " + uploadErr.message); return; }
-            const { data: { publicUrl } } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
-            localStorage.setItem('zp_avatar_url', publicUrl);
-            document.getElementById('profile-avatar-preview').src = publicUrl;
-            document.getElementById('profile-avatar-preview').classList.remove('hidden');
-            document.getElementById('profile-avatar-placeholder').classList.add('hidden');
-            updateHeaderAvatar();
-            syncProfileWithCloud();
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                localStorage.setItem('zp_avatar_url', ev.target.result);
+                document.getElementById('profile-avatar-preview').src = ev.target.result;
+                document.getElementById('profile-avatar-preview').classList.remove('hidden');
+                document.getElementById('profile-avatar-placeholder').classList.add('hidden');
+                updateHeaderAvatar();
+                syncProfileWithCloud();
+            };
+            reader.readAsDataURL(file);
         }
 
         async function saveProfileChanges() {
             const newName = document.getElementById('profile-input-name').value.trim();
             const newDept = document.getElementById('profile-select-dept').value;
             const newPass = document.getElementById('profile-input-pass').value.trim();
-            if (!newName) { alert("يرجى إدخال الاسم الأكاديمي."); return; }
+            if (!newName) { alert("يرجى إدخال الاسم."); return; }
+
             currentUserName = newName;
             activeDepartmentKey = newDept;
             localStorage.setItem('zp_username', currentUserName);
             localStorage.setItem('zp_user_department', activeDepartmentKey);
-            if (newPass && supabaseClient) {
-                if (newPass.length < 6) { alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل."); return; }
-                const { error } = await supabaseClient.auth.updateUser({ password: newPass });
-                if (error) alert("تعذر تحديث كلمة المرور: " + error.message);
-                else alert("تم تحديث كلمة المرور بنجاح.");
+
+            if (newPass) {
+                if (newPass.length < 4) { alert("كلمة المرور 4 أحرف على الأقل."); return; }
+                const deviceId = localStorage.getItem('zp_device_id');
+                if (deviceId && supabaseClient) {
+                    const pwdHash = await hashPassword(newPass);
+                    await supabaseClient.from('profiles').update({ password_hash: pwdHash }).eq('device_id', deviceId);
+                    alert("تم تحديث كلمة المرور.");
+                }
             }
+
             await syncProfileWithCloud();
             updateGreetingHeader();
             closeProfileModal();
-            alert("تم حفظ التعديلات بنجاح.");
+            alert("تم حفظ التعديلات.");
         }
 
         async function handleUserLogout() {
             if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
                 if (supabaseClient) await supabaseClient.auth.signOut();
-                localStorage.clear();
+                localStorage.removeItem('zp_user_registered');
+                localStorage.removeItem('zp_device_id');
                 location.reload();
             }
         }
 
         async function syncProfileWithCloud() {
             if (!supabaseClient || !navigator.onLine) return;
-            const uid = localStorage.getItem('zp_auth_uid');
-            const deviceId = getDeviceId();
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (!deviceId) return;
             updateCloudIndicator('syncing');
             try {
-                const payload = {
-                    user_id: uid || null,
+                await supabaseClient.from('profiles').upsert({
                     device_id: deviceId,
                     user_name: currentUserName,
                     department: activeDepartmentKey,
@@ -1111,62 +1165,49 @@
                     node_crowns: nodeCrowns,
                     learning_track: currentLearningTrack,
                     last_active: new Date().toISOString()
-                };
-                await supabaseClient.from('profiles').upsert(payload, { onConflict: uid ? 'user_id' : 'device_id' });
+                }, { onConflict: 'device_id' });
                 updateCloudIndicator('online');
             } catch (e) { updateCloudIndicator('offline'); }
         }
 
-        async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
-            if (!supabaseClient || !navigator.onLine) return;
-            const uid = localStorage.getItem('zp_auth_uid');
-            const deviceId = getDeviceId();
-            try {
-                await supabaseClient.from('user_node_progress').upsert({
-                    user_id: uid || null,
-                    device_id: deviceId,
-                    node_id: nodeId,
-                    completed: isCompleted,
-                    score: score,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: uid ? 'user_id,node_id' : 'device_id,node_id' });
-            } catch (err) {}
-        }
-
         async function syncTasksToCloud() {
             if (!supabaseClient || !navigator.onLine) return;
-            const uid = localStorage.getItem('zp_auth_uid');
-            const deviceId = getDeviceId();
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (!deviceId || !tasks || tasks.length === 0) return;
             try {
-                if (tasks && tasks.length > 0) {
-                    const payload = tasks.map(t => ({
-                        id: t.id,
-                        user_id: uid || null,
-                        device_id: deviceId,
-                        title: t.title,
-                        done: !!t.done,
-                        tag: t.tag || '',
-                        prio: t.prio || 'normal'
-                    }));
-                    await supabaseClient.from('tasks').upsert(payload, { onConflict: 'id' });
-                }
+                const payload = tasks.map(t => ({
+                    id: t.id, device_id: deviceId, title: t.title,
+                    done: !!t.done, tag: t.tag || '', prio: t.prio || 'normal'
+                }));
+                await supabaseClient.from('user_tasks').upsert(payload, { onConflict: 'id' });
             } catch (e) {}
         }
 
         async function deleteTaskFromCloud(taskId) {
             if (!supabaseClient || !navigator.onLine) return;
-            try { await supabaseClient.from('tasks').delete().eq('id', taskId); } catch (e) {}
+            try { await supabaseClient.from('user_tasks').delete().eq('id', taskId); } catch (e) {}
+        }
+
+        async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
+            if (!supabaseClient || !navigator.onLine) return;
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (!deviceId) return;
+            try {
+                await supabaseClient.from('user_node_progress').upsert({
+                    device_id: deviceId, node_id: nodeId,
+                    completed: isCompleted, score: score,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'device_id,node_id' });
+            } catch (err) {}
         }
 
         async function syncSessionToCloud(sessionObj) {
             if (!supabaseClient || !navigator.onLine) return;
-            const uid = localStorage.getItem('zp_auth_uid');
-            const deviceId = getDeviceId();
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (!deviceId) return;
             try {
                 await supabaseClient.from('user_focus_sessions').upsert({
-                    id: sessionObj.id,
-                    user_id: uid || null,
-                    device_id: deviceId,
+                    id: sessionObj.id, device_id: deviceId,
                     session_name: sessionObj.name,
                     duration_mins: currentPomoMins,
                     session_time: sessionObj.time
@@ -1174,85 +1215,55 @@
             } catch (e) {}
         }
 
-        // ------------------ CEFR CURRICULUM ------------------
-        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
-        let nodeCrowns = safeParse('zp_node_crowns', {});
-        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
-
+        // ============ CURRICULUM ============
         const GLOBAL_CURRICULUM = {
             general: [
-                { level: "A1", title_ar: "المستوى A1: التأسيس والمحادثة اليومية", units: [
-                    { unit_title: "الوحدة 1: التعارف والجمل البسيطة", nodes: [
-                        { id: "gen_a1_01", title: "التحيات وتقديم النفس (Introductions)", order: 1 },
-                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر (To Be & Pronouns)", order: 2 },
-                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة (Everyday Objects)", order: 3 }
+                { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
+                    { unit_title: "الوحدة 1: التعارف", nodes: [
+                        { id: "gen_a1_01", title: "التحيات وتقديم النفس", order: 1 },
+                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر", order: 2 },
+                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة", order: 3 }
                     ]},
-                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
-                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم (Daily Routine)", order: 4 },
-                        { id: "gen_a1_05", title: "صفات المقارنة والوصف (Describing Things)", order: 5 }
+                    { unit_title: "الوحدة 2: الروتين", nodes: [
+                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم", order: 4 },
+                        { id: "gen_a1_05", title: "صفات المقارنة والوصف", order: 5 }
                     ]}
                 ]},
-                { level: "A2", title_ar: "المستوى A2: الأسئلة والمواقف الحياتية", units: [
-                    { unit_title: "الوحدة 3: الماضي والذكريات", nodes: [
-                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة (Past Simple)", order: 6 },
-                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق (Out & About)", order: 7 }
-                    ]},
-                    { unit_title: "الوحدة 4: المستقبل والخطط", nodes: [
-                        { id: "gen_a2_03", title: "الخطط المستقبلية (Going to & Will)", order: 8 },
-                        { id: "gen_a2_04", title: "أدوات الربط وحروف الجر (Connectors & Prepositions)", order: 9 }
+                { level: "A2", title_ar: "المستوى A2: الأسئلة والمواقف", units: [
+                    { unit_title: "الوحدة 3: الماضي", nodes: [
+                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة", order: 6 },
+                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق", order: 7 }
                     ]}
                 ]},
-                { level: "B1", title_ar: "المستوى B1: الطلاقة وسرد القصص", units: [
-                    { unit_title: "الوحدة 5: السفر والخبرات المتراكمة", nodes: [
-                        { id: "gen_b1_01", title: "المضارع التام والخبرات (Present Perfect)", order: 10 },
-                        { id: "gen_b1_02", title: "إبداء الرأي والموافقة والاعتراض (Opinions & Debate)", order: 11 }
-                    ]}
-                ]},
-                { level: "B2", title_ar: "المستوى B2: النقاش الاحترافي والتعقيد اللغوي", units: [
-                    { unit_title: "الوحدة 6: اللغة الأكاديمية والمهنية", nodes: [
-                        { id: "gen_b2_01", title: "المبني للمجهول في المقالات (Passive Voice)", order: 12 },
-                        { id: "gen_b2_02", title: "الجمل الشرطية المتقدمة (Conditionals 2 & 3)", order: 13 }
+                { level: "B1", title_ar: "المستوى B1: الطلاقة", units: [
+                    { unit_title: "الوحدة 4: الخبرات", nodes: [
+                        { id: "gen_b1_01", title: "المضارع التام والخبرات", order: 8 },
+                        { id: "gen_b1_02", title: "إبداء الرأي والمناقشة", order: 9 }
                     ]}
                 ]}
             ],
             medical: [
-                { level: "A1", title_ar: "المستوى A1 (طبي): تفكيك الكلمات والمصطلحات الأساسية", units: [
-                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
-                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
-                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy, -oma)", order: 2 },
-                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
+                { level: "A1", title_ar: "المستوى A1 (طبي): المصطلحات الأساسية", units: [
+                    { unit_title: "الوحدة 1: البادئات واللواحق", nodes: [
+                        { id: "med_a1_01", title: "بادئات السرعة والضغط", order: 1 },
+                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال", order: 2 },
+                        { id: "med_a1_03", title: "الأعضاء الأساسية", order: 3 }
                     ]}
                 ]},
-                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات السريرية", units: [
-                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
-                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
-                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone, Trendelenburg)", order: 5 }
+                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية", units: [
+                    { unit_title: "الوحدة 2: قياسات المريض", nodes: [
+                        { id: "med_a2_01", title: "العلامات الحيوية", order: 4 },
+                        { id: "med_a2_02", title: "الوضعيات الجراحية", order: 5 }
                     ]}
                 ]},
-                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والوصفات الطبية", units: [
-                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
-                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation, Infusion)", order: 6 },
-                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية (Adverse Effects)", order: 7 }
-                    ]}
-                ]},
-                { level: "B2", title_ar: "المستوى B2 (طبي): بروتوكولات الإنعاش وتسليم الحالات", units: [
-                    { unit_title: "الوحدة 4: التواصل السريري والإنعاش الحرج", nodes: [
-                        { id: "med_b2_01", title: "تسليم الحالات بنموذج SBAR الاحترافي", order: 8 },
-                        { id: "med_b2_02", title: "إدارة مجرى الهواء والتنفس الاصطناعي (Airway & Ventilation)", order: 9 }
+                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج", units: [
+                    { unit_title: "الوحدة 3: الجرعات والأدوية", nodes: [
+                        { id: "med_b1_01", title: "مسارات الحقن", order: 6 },
+                        { id: "med_b1_02", title: "الأعراض الجانبية", order: 7 }
                     ]}
                 ]}
             ]
         };
-
-        // ------------------ STATE ------------------
-        let currentUserName = localStorage.getItem('zp_username') || '';
-        let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
-        let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
-        let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
-        let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
-        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
-        let isHintVisible = false;
-        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0, displayMode: 'interactive' };
 
         function updateGamificationBar() {
             const h = document.getElementById('path-hearts-count');
@@ -1288,19 +1299,17 @@
             let totalCompletedNodes = 0;
 
             sections.forEach((sec) => {
-                container.innerHTML += `
-                    <div class="w-full my-8 text-center">
-                        <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white shadow-sm">
-                            ${sec.title_ar} (${sec.level})
-                        </span>
-                    </div>`;
+                container.innerHTML += `<div class="w-full my-8 text-center">
+                    <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white shadow-sm">
+                        ${sec.title_ar} (${sec.level})
+                    </span>
+                </div>`;
                 sec.units.forEach((unit) => {
-                    container.innerHTML += `
-                        <div class="w-full flex items-center justify-center gap-3 my-5">
-                            <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                            <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
-                            <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                        </div>`;
+                    container.innerHTML += `<div class="w-full flex items-center justify-center gap-3 my-5">
+                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
+                        <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
+                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
+                    </div>`;
                     unit.nodes.forEach((node) => {
                         const orderNum = nodeCounter;
                         const crowns = nodeCrowns[node.id] || 0;
@@ -1310,36 +1319,31 @@
                         const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
                         let btnHtml = '';
                         if (isCompleted) {
-                            btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg transition active:scale-95 hover:scale-105" title="متقن بالكامل 👑">
-                                    <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
-                                    <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
-                                </button>`;
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
+                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن</span>
+                            </button>`;
                         } else if (isUnlocked && crowns > 0) {
-                            btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse">
-                                    <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
-                                    <span class="text-xs font-black">مستوى ${crowns + 1}/3</span>
-                                </button>`;
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse">
+                                <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
+                                <span class="text-xs font-black">${crowns + 1}/3</span>
+                            </button>`;
                         } else if (isUnlocked) {
-                            btnHtml = `
-                                <button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky transition active:scale-95 hover:scale-105 ring-4 ring-sky-300/30 animate-pulse" title="بدء المحطة">
-                                    <i class="fa-solid fa-play mr-0.5 text-base"></i>
-                                </button>`;
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse">
+                                <i class="fa-solid fa-play mr-0.5 text-base"></i>
+                            </button>`;
                         } else {
-                            btnHtml = `
-                                <div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base cursor-not-allowed opacity-50">
-                                    <i class="fa-solid fa-lock"></i>
-                                </div>`;
-                        }
-                        container.innerHTML += `
-                            <div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
-                                ${btnHtml}
-                                <div class="mt-2.5 text-center max-w-[240px]">
-                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
-                                    <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
-                                </div>
+                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50">
+                                <i class="fa-solid fa-lock"></i>
                             </div>`;
+                        }
+                        container.innerHTML += `<div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
+                            ${btnHtml}
+                            <div class="mt-2.5 text-center max-w-[240px]">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
+                                <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
+                            </div>
+                        </div>`;
                         nodeCounter++;
                     });
                 });
@@ -1348,7 +1352,7 @@
             if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
 
-        // ------------------ LESSON ENGINE ------------------
+        // ============ LESSON ============
         async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
@@ -1356,50 +1360,34 @@
             modal.classList.remove('hidden');
             document.getElementById('lesson-hint-box').classList.add('hidden');
             isHintVisible = false;
-            bodyArea.innerHTML = `
-                <div class="p-8 text-center space-y-3">
-                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-theme-sky"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد محطة (${escapeHtml(title)}) - المستوى ${currentCrown + 1}...</p>
-                </div>
-            `;
+            bodyArea.innerHTML = `<div class="p-8 text-center space-y-3">
+                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-theme-sky"></i>
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد المحطة...</p>
+            </div>`;
             actionBtn.classList.add('hidden');
-            const prompt = `أنت خبير إعداد مناهج لغة إنجليزية تفاعلي بأسلوب Duolingo.
-صغ 3 تمارين متنوعة لـ: "${title}".
-النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي وسريري' : 'إنجليزي عام ومحادثة'}.
-المستوى: تاج ${currentCrown + 1} من 3.
-أخرج JSON حصراً بالهيكل التالي:
-{"exercises":[{"question":"Sentence with blank ______","translation":"الترجمة بالعربية","options":["A","B","C","D"],"correct_index":0,"explanation":"شرح القاعدة بالعربية","hint":"تلميح سريع"}]}`;
+
+            const prompt = `أنت خبير إعداد مناهج إنجليزية. صغ 3 تمارين لـ: "${title}".
+النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي' : 'إنجليزي عام'}.
+المستوى: ${currentCrown + 1}/3.
+أخرج JSON فقط:
+{"exercises":[{"question":"Sentence with ______","translation":"الترجمة","options":["A","B","C","D"],"correct_index":0,"explanation":"الشرح","hint":"تلميح"}]}`;
+
             let exercises = null;
             try {
-                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات Duolingo. أخرج كود JSON فقط بدون إضافات.", true);
+                const raw = await callStrictAcademicAI(prompt, "أخرج JSON فقط.", true);
                 const parsed = parseAIJson(raw);
                 if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) exercises = parsed.exercises;
             } catch(e) {}
-            if (!exercises || exercises.length === 0) {
+
+            if (!exercises) {
                 exercises = [
                     {
-                        question: currentLearningTrack === 'medical' ? "The emergency patient needs an immediate ______ infusion." : "She ______ English fluently every day.",
-                        translation: currentLearningTrack === 'medical' ? "يحتاج مريض الطوارئ إلى تسريب وريدي مباشر." : "هي تتحدث الإنجليزية بطلاقة كل يوم.",
-                        options: currentLearningTrack === 'medical' ? ["intravenous", "subcutaneous", "oral", "topical"] : ["speaks", "speak", "speaking", "spoke"],
+                        question: currentLearningTrack === 'medical' ? "The patient needs ______ infusion." : "She ______ English every day.",
+                        translation: "أكمل الجملة",
+                        options: currentLearningTrack === 'medical' ? ["intravenous","oral","topical","subcutaneous"] : ["speaks","speak","speaking","spoke"],
                         correct_index: 0,
-                        explanation: currentLearningTrack === 'medical' ? "Intravenous يعني وريدي مباشر." : "يضاف s المفرد للفعل مع الضمير She.",
-                        hint: currentLearningTrack === 'medical' ? "البادئة Intra- تعني داخل و Venous تعني الوريد." : "انتبه لقاعدة المضارع البسيط مع المفرد الغائب."
-                    },
-                    {
-                        question: currentLearningTrack === 'medical' ? "Blood pressure is measured in ______." : "They ______ to the library every weekend.",
-                        translation: currentLearningTrack === 'medical' ? "يُقاس ضغط الدم بوحدة المليمتر زئبق." : "هم يذهبون إلى المكتبة كل عطلة.",
-                        options: currentLearningTrack === 'medical' ? ["mmHg", "mg", "mL", "mEq"] : ["go", "goes", "going", "went"],
-                        correct_index: 0,
-                        explanation: currentLearningTrack === 'medical' ? "mmHg = millimeters of mercury." : "مع They نستخدم الفعل بصيغته الأساسية.",
-                        hint: currentLearningTrack === 'medical' ? "اختصار شائع في الأجهزة الطبية." : "الضمير They جمع."
-                    },
-                    {
-                        question: currentLearningTrack === 'medical' ? "The doctor will ______ the patient's vital signs." : "My brother ______ a new bicycle yesterday.",
-                        translation: currentLearningTrack === 'medical' ? "سيقوم الطبيب بمراقبة العلامات الحيوية للمريض." : "اشترى أخي دراجة جديدة أمس.",
-                        options: currentLearningTrack === 'medical' ? ["monitor", "monitors", "monitoring", "monitored"] : ["buy", "buys", "bought", "buying"],
-                        correct_index: 0,
-                        explanation: currentLearningTrack === 'medical' ? "بعد will نستخدم المصدر." : "yesterday تدل على الماضي.",
-                        hint: currentLearningTrack === 'medical' ? "الفعل بعد will يكون مصدراً." : "انتبه للزمن الماضي."
+                        explanation: "الإجابة الصحيحة موضحة.",
+                        hint: "انتبه للسياق."
                     }
                 ];
             }
@@ -1415,7 +1403,7 @@
             const hintText = document.getElementById('lesson-hint-text');
             isHintVisible = !isHintVisible;
             if (isHintVisible) {
-                hintText.innerText = ex?.hint || ex?.explanation || "تأمل في سياق الجملة وقواعد الربط الأساسية.";
+                hintText.innerText = ex?.hint || ex?.explanation || "تأمل في السياق.";
                 hintBox.classList.remove('hidden');
             } else {
                 hintBox.classList.add('hidden');
@@ -1434,21 +1422,17 @@
             isHintVisible = false;
             let optsHtml = '';
             ex.options.forEach((opt, optIdx) => {
-                optsHtml += `
-                    <button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">
-                        ${escapeHtml(opt)}
-                    </button>`;
+                optsHtml += `<button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">${escapeHtml(opt)}</button>`;
             });
-            bodyArea.innerHTML = `
-                <div class="space-y-4">
-                    <div class="text-center py-2 space-y-2">
-                        <span class="text-[11px] font-bold text-theme-sky block">اختر الكلمة الصحيحة لإكمال الجملة:</span>
-                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white" dir="ltr">${escapeHtml(ex.question)}</h3>
-                        <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
-                    </div>
-                    <div id="exercise-options" class="space-y-2 pt-1">${optsHtml}</div>
-                    <div id="exercise-feedback" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
-                </div>`;
+            bodyArea.innerHTML = `<div class="space-y-4">
+                <div class="text-center py-2 space-y-2">
+                    <span class="text-[11px] font-bold text-theme-sky block">اختر الإجابة الصحيحة:</span>
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white" dir="ltr">${escapeHtml(ex.question)}</h3>
+                    <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
+                </div>
+                <div class="space-y-2 pt-1">${optsHtml}</div>
+                <div id="exercise-feedback" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
+            </div>`;
             actionBtn.classList.add('hidden');
         }
 
@@ -1468,20 +1452,18 @@
             if (isCorrect) {
                 playChime(true); awardXP(15); triggerConfetti();
                 feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300';
-                feedback.innerHTML = `
-                    <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span>ممتاز! إجابة صحيحة (+15 XP)</span></div>
+                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> صحيح! (+15 XP)</div>
                     <p class="text-[11px] font-semibold">${escapeHtml(ex.explanation)}</p>`;
             } else {
                 playChime(false);
                 feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300';
-                feedback.innerHTML = `
-                    <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span></div>
-                    <p class="text-[11px] font-semibold">الإجابة الصحيحة هي: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
+                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> خطأ</div>
+                    <p class="text-[11px] font-semibold">الصحيحة: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
                     <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>`;
             }
             actionBtn.classList.remove('hidden');
             actionBtn.onclick = advanceExerciseOrFinish;
-            actionBtn.innerText = (index + 1 < exercises.length) ? "التمرين التالي" : "إنهاء المحطة واحتساب التاج 👑";
+            actionBtn.innerText = (index + 1 < exercises.length) ? "التمرين التالي" : "إنهاء واحتساب التاج 👑";
         }
 
         function advanceExerciseOrFinish() {
@@ -1512,11 +1494,7 @@
             playChime(true);
             syncProfileWithCloud();
             renderPathTree();
-            if (crowns < 3) {
-                setTimeout(() => alert(`عاشت إيدك! أكملت المستوى ${crowns}/3 لهذه المحطة بنجاح. تتبقى لك مستويات لتتقن التاج الذهبي.`), 300);
-            } else {
-                setTimeout(() => alert("تهانينا! حصلت على التاج الذهبي الكامل (3/3) لهذه المحطة وفككت قفل المحطة التالية!"), 300);
-            }
+            alert(crowns < 3 ? `أكملت المستوى ${crowns}/3!` : "🎉 حصلت على التاج الذهبي! فُتحت المحطة التالية.");
         }
 
         function updateGreetingHeader() {
@@ -1528,14 +1506,11 @@
             }
         }
 
-        // ------------------ GLOBAL STATE ------------------
-        let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
-        let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
-
         function awardXP(amount) {
             userXP += amount;
             localStorage.setItem('zp_xp', userXP);
-            document.getElementById('app-xp').innerText = `${userXP} XP`;
+            const el = document.getElementById('app-xp');
+            if (el) el.innerText = `${userXP} XP`;
             syncProfileWithCloud();
         }
 
@@ -1646,33 +1621,29 @@
             }
         }
 
-        // ------------------ TO-DO ------------------
-        let tasks = safeParse('zp_tasks', []);
-        if (!Array.isArray(tasks)) tasks = [];
-
+        // ============ TODO ============
         function renderTasks() {
             const list = document.getElementById('todo-list');
             if (!list) return;
             list.innerHTML = '';
             let completed = 0;
             if (tasks.length === 0) {
-                list.innerHTML = `<div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">لا توجد مهام مدرجة في جدولك حالياً.</div>`;
+                list.innerHTML = `<div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">لا توجد مهام.</div>`;
             } else {
                 tasks.forEach(t => {
                     if (t.done) completed++;
-                    list.innerHTML += `
-                        <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 rounded-3xl flex items-center justify-between shadow-sm transition ${t.done ? 'opacity-55' : ''}">
-                            <div class="flex items-center gap-3">
-                                <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-theme-teal text-white' : 'border-2 border-teal-300 dark:border-slate-600'} flex items-center justify-center text-xs cursor-pointer transition">
-                                    ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${escapeHtml(t.title)}</p>
-                                    ${t.tag ? `<span class="text-[10px] text-theme-teal dark:text-theme-skyLight font-semibold">${escapeHtml(t.tag)}</span>` : ''}
-                                </div>
+                    list.innerHTML += `<div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 rounded-3xl flex items-center justify-between shadow-sm ${t.done ? 'opacity-55' : ''}">
+                        <div class="flex items-center gap-3">
+                            <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-theme-teal text-white' : 'border-2 border-teal-300 dark:border-slate-600'} flex items-center justify-center text-xs cursor-pointer">
+                                ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
                             </div>
-                            <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
-                        </div>`;
+                            <div>
+                                <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${escapeHtml(t.title)}</p>
+                                ${t.tag ? `<span class="text-[10px] text-theme-teal dark:text-theme-skyLight font-semibold">${escapeHtml(t.tag)}</span>` : ''}
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
                 });
             }
             const pct = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
@@ -1708,11 +1679,9 @@
             deleteTaskFromCloud(id);
         }
 
-        // ------------------ POMODORO ------------------
+        // ============ POMODORO ============
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
-        let userForest = safeParse('zp_forest', []);
-        if (!Array.isArray(userForest)) userForest = [];
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
@@ -1721,15 +1690,14 @@
             const treeCount = document.getElementById('stat-tree-count');
             if (treeCount) treeCount.innerText = `${userForest.length} جلسة`;
             if (userForest.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">لا توجد جلسات دراسية مكتملة مسجلة في هذا اليوم.</div>`;
+                grid.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">لا توجد جلسات مسجلة.</div>`;
                 return;
             }
             userForest.forEach(s => {
-                grid.innerHTML += `
-                    <div class="bg-emerald-50/50 dark:bg-theme-darkBase border border-emerald-100 dark:border-theme-darkBorder p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
-                        <span class="text-sm font-black text-theme-mint dark:text-emerald-400 mb-0.5"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> ${escapeHtml(s.name)}</span>
-                        <span class="text-[10px] text-slate-400 font-semibold">${escapeHtml(s.time)}</span>
-                    </div>`;
+                grid.innerHTML += `<div class="bg-emerald-50/50 dark:bg-theme-darkBase border border-emerald-100 dark:border-theme-darkBorder p-3 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
+                    <span class="text-sm font-black text-theme-mint dark:text-emerald-400 mb-0.5"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> ${escapeHtml(s.name)}</span>
+                    <span class="text-[10px] text-slate-400 font-semibold">${escapeHtml(s.time)}</span>
+                </div>`;
             });
         }
 
@@ -1786,15 +1754,15 @@
                 }
                 if (btn) btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             } else {
-                if (btn) btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
+                if (btn) btn.innerHTML = '<span>إيقاف</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
                 pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
                 localStorage.setItem('zp_pomo_end_time', pomoEndTimestamp);
                 if (navigator.serviceWorker?.controller) {
                     navigator.serviceWorker.controller.postMessage({
                         type: 'START_POMO_TIMER',
                         durationMs: pomoRemaining * 1000,
-                        title: 'ZeroPlus | انتهت جلسة التركيز! ⏳',
-                        body: `عاشت إيدك! اكتملت جلسة ${currentPomoMins} دقيقة بنجاح.`
+                        title: 'ZeroPlus | انتهى الوقت!',
+                        body: `انتهت جلسة ${currentPomoMins} دقيقة.`
                     });
                 }
                 pomoInterval = setInterval(() => {
@@ -1814,17 +1782,17 @@
             }
             pomoRemaining = pomoDuration;
             const btn = document.getElementById('pomo-play-btn');
-            if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            if (btn) btn.innerHTML = '<span>بدء</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
 
         function clearForestConfirmation() {
-            if (confirm("هل ترغب في إعادة تهيئة سجل الجلسات؟")) {
+            if (confirm("إعادة تهيئة السجل؟")) {
                 userForest = []; localStorage.setItem('zp_forest', JSON.stringify([])); renderForest();
             }
         }
 
-        // ------------------ AI ENGINE ------------------
+        // ============ AI ENGINE ============
         let pdfSlidesData = safeParse('zp_slides_array', []);
         if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
         let lastManualLectureText = '';
@@ -1848,18 +1816,17 @@
             const badge = document.getElementById('lecture-loaded-badge');
             const info = document.getElementById('lecture-loaded-info');
             if (badge) badge.classList.remove('hidden');
-            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
+            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص المنهج (${pdfSlidesData.length || 1} سلايد)`;
         }
 
         function openAiConfigModal() {
             syncManualLectureText();
             if (!currentLectureText || currentLectureText.trim().length < 20) {
-                alert("يرجى تحميل ملف المحاضرة أولاً ليتمكن المساعد من فحصها واستيعابها.");
-                return;
+                alert("يرجى تحميل ملف المحاضرة أولاً."); return;
             }
             const total = pdfSlidesData.length || 1;
             const badge = document.getElementById('modal-slides-total-badge');
-            if (badge) badge.innerText = `إجمالي السلايدات المفحوصة: ${total}`;
+            if (badge) badge.innerText = `الإجمالي: ${total}`;
             document.getElementById('ai-config-modal').classList.remove('hidden');
         }
 
@@ -1867,8 +1834,8 @@
 
         function setAiTaskType(type, btn) {
             selectedAiTaskType = type;
-            document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition');
-            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5 transition';
+            document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5');
+            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5';
             const countWrapper = document.getElementById('ai-question-count-wrapper');
             if (countWrapper) countWrapper.classList.toggle('hidden', type === 'summary');
         }
@@ -1892,16 +1859,15 @@
                 const from = parseInt(document.getElementById('modal-range-slide-from')?.value || '1', 10);
                 const to = parseInt(document.getElementById('modal-range-slide-to')?.value || String(pdfSlidesData.length), 10);
                 return pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to).map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
-            } else {
-                return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
             }
+            return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
         }
 
         async function handleFileUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = `جاري فحص واستخراج محتوى الملف: ${file.name}...`;
+            if (status) status.innerText = `جاري الفحص: ${file.name}...`;
             try {
                 if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
                     if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
@@ -1927,12 +1893,12 @@
                     safeSetItem('zp_active_lecture_text', text);
                 }
                 showLectureLoadedBadge();
-                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
+                if (status) status.innerText = `تم: ${file.name}`;
                 e.target.value = '';
                 setTimeout(() => openAiConfigModal(), 400);
             } catch(err) {
-                alert("تعذر استخراج محتوى الملف، يرجى لصق النص يدوياً.");
-                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+                alert("تعذر استخراج المحتوى.");
+                if (status) status.innerText = "تحميل ملف (PDF أو نص)";
             }
         }
 
@@ -1943,7 +1909,7 @@
             localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
             document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
             const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+            if (status) status.innerText = "تحميل ملف (PDF أو نص)";
             const ta = document.getElementById('lecture-text-content');
             if (ta) ta.value = '';
             lastManualLectureText = '';
@@ -1965,10 +1931,7 @@
                 if (!res.ok) return null;
                 const data = await res.json().catch(() => ({}));
                 return data.choices?.[0]?.message?.content || data.content || data.text || null;
-            } catch (e) {
-                console.warn("AI call failed:", e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         function parseAIJson(raw) {
@@ -1988,38 +1951,36 @@
             syncManualLectureText();
             const scopedContent = getScopedLectureContent();
             if (!scopedContent || scopedContent.trim().length < 20) {
-                alert("يرجى إدخال محتوى أو رفع محاضرة أولاً.");
-                return;
+                alert("يرجى إدخال محتوى أو رفع محاضرة."); return;
             }
             const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
             const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
             if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري معالجة المحاضرة وصياغة المخرجات الأكاديمية...</div>`);
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري المعالجة...</div>`);
                 feed.scrollTop = feed.scrollHeight;
             }
             let systemInstruction = "";
             let userPrompt = "";
             let expectJson = false;
             if (selectedAiTaskType === 'summary') {
-                systemInstruction = "أنت مساعد أكاديمي متخصص. لخّص المحتوى التالي بشكل مكثف ومنظم بعناوين ونقاط رئيسية باللغة العربية، مع الحفاظ على المصطلحات العلمية بالإنجليزية عند الحاجة.";
-                userPrompt = `لخّص المحاضرة التالية بشكل مكثف:\n\n${scopedContent}`;
+                systemInstruction = "أنت مساعد أكاديمي. لخّص المحتوى التالي بشكل مكثف بالعربية.";
+                userPrompt = `لخّص:\n\n${scopedContent}`;
             } else if (selectedAiTaskType === 'mcq') {
                 expectJson = true;
-                systemInstruction = `أنت خبير إعداد اختبارات أكاديمية. أخرج JSON فقط بدون أي شرح.`;
-                userPrompt = `من المحتوى التالي، صغ ${qCount} أسئلة خيارات متعددة (MCQ).\nأخرج JSON حصراً بالهيكل:\n{"questions":[{"question":"...","options":["A","B","C","D"],"correct_index":0,"explanation":"..."}]}\n\nالمحتوى:\n${scopedContent}`;
+                systemInstruction = `أخرج JSON فقط.`;
+                userPrompt = `صغ ${qCount} أسئلة MCQ من:\n\n${scopedContent}\n\n{"questions":[{"question":"...","options":["A","B","C","D"],"correct_index":0,"explanation":"..."}]}`;
             } else if (selectedAiTaskType === 'short') {
                 expectJson = true;
-                systemInstruction = `أنت خبير إعداد اختبارات أكاديمية. أخرج JSON فقط بدون أي شرح.`;
-                userPrompt = `من المحتوى التالي، صغ ${qCount} أسئلة إجابة قصيرة.\nأخرج JSON حصراً بالهيكل:\n{"questions":[{"question":"...","answer":"...","explanation":"..."}]}\n\nالمحتوى:\n${scopedContent}`;
+                systemInstruction = `أخرج JSON فقط.`;
+                userPrompt = `صغ ${qCount} أسئلة إجابة قصيرة من:\n\n${scopedContent}\n\n{"questions":[{"question":"...","answer":"...","explanation":"..."}]}`;
             }
             const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
             document.getElementById(loadingId)?.remove();
             if (!reply) {
                 if (feed) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من إعداد endpoint /api/ai على السيرفر.</div>`);
-                    feed.scrollTop = feed.scrollHeight;
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بالذكاء الاصطناعي. تأكد من /api/ai</div>`);
                 }
                 return;
             }
@@ -2034,28 +1995,27 @@
                 if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
                     if (feed) {
                         feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
-                        feed.scrollTop = feed.scrollHeight;
                     }
                     return;
                 }
                 if (displayStyle === 'text') {
-                    let textHtml = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار النموذجية (${parsed.questions.length} سؤال)</div>`;
+                    let html = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار (${parsed.questions.length} سؤال)</div>`;
                     parsed.questions.forEach((q, i) => {
-                        textHtml += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
-                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i + 1}: ${escapeHtml(q.question)}</div>`;
+                        html += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
+                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i+1}: ${escapeHtml(q.question)}</div>`;
                         if (Array.isArray(q.options)) {
                             q.options.forEach((opt, oi) => {
                                 const mark = oi === q.correct_index ? '✅' : '';
-                                textHtml += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65 + oi)}. ${escapeHtml(opt)} ${mark}</div>`;
+                                html += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65+oi)}. ${escapeHtml(opt)} ${mark}</div>`;
                             });
                         }
-                        if (q.answer) textHtml += `<div class="text-emerald-600 dark:text-emerald-400 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
-                        if (q.explanation) textHtml += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
-                        textHtml += `</div>`;
+                        if (q.answer) html += `<div class="text-emerald-600 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
+                        if (q.explanation) html += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
+                        html += `</div>`;
                     });
-                    textHtml += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ الورقة</button></div>`;
+                    html += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ</button></div>`;
                     if (feed) {
-                        feed.insertAdjacentHTML('beforeend', textHtml);
+                        feed.insertAdjacentHTML('beforeend', html);
                         feed.scrollTop = feed.scrollHeight;
                     }
                     awardXP(15);
@@ -2067,15 +2027,14 @@
 
         function copyQuizText(btn) {
             const container = btn.closest('.chat-bot-bubble');
-            const text = container.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                btn.innerText = '✅ تم النسخ';
-                setTimeout(() => btn.innerText = '📋 نسخ الورقة', 1500);
+            navigator.clipboard.writeText(container.innerText).then(() => {
+                btn.innerText = '✅ تم';
+                setTimeout(() => btn.innerText = '📋 نسخ', 1500);
             });
         }
 
         function startQuizSession(questions) {
-            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length, displayMode: 'interactive' };
+            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
             renderQuizInFeed();
         }
 
@@ -2091,17 +2050,15 @@
                     optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
                 });
             }
-            feed.insertAdjacentHTML('beforeend', `
-                <div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex + 1} من ${questions.length}</span>
-                        <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
-                    </div>
-                    <div class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(q.question)}</div>
-                    <div class="quiz-options">${optsHtml}</div>
-                    <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
+            feed.insertAdjacentHTML('beforeend', `<div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex+1} من ${questions.length}</span>
+                    <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
                 </div>
-            `);
+                <div class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(q.question)}</div>
+                <div>${optsHtml}</div>
+                <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
+            </div>`);
             feed.scrollTop = feed.scrollHeight;
         }
 
@@ -2118,22 +2075,14 @@
                 else if (oi === chosenIdx) b.classList.add('opt-wrong');
             });
             const isCorrect = chosenIdx === q.correct_index;
-            if (isCorrect) {
-                activeQuizSessionState.score++;
-                playChime(true);
-                awardXP(10);
-            } else {
-                playChime(false);
-            }
+            if (isCorrect) { activeQuizSessionState.score++; playChime(true); awardXP(10); }
+            else { playChime(false); }
             feedback.classList.remove('hidden');
             feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
-            feedback.innerHTML = `
-                <div class="font-black mb-1">${isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة خاطئة'}</div>
-                ${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}
-            `;
+            feedback.innerHTML = `<div class="font-black mb-1">${isCorrect ? '✅ صحيح!' : '❌ خطأ'}</div>${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}`;
             const nextBtn = document.createElement('button');
             nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2';
-            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 عرض النتيجة النهائية';
+            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 النتيجة';
             nextBtn.onclick = () => {
                 if (currentIndex + 1 < questions.length) {
                     activeQuizSessionState.currentIndex++;
@@ -2150,14 +2099,12 @@
             if (!container) return;
             const { questions, score } = activeQuizSessionState;
             const pct = Math.round((score / questions.length) * 100);
-            let msg = pct >= 80 ? '🏆 ممتاز! أداء أكاديمي عالي' : pct >= 50 ? '👍 جيد، يمكن التحسين' : '💪 يحتاج مراجعة إضافية';
-            container.innerHTML = `
-                <div class="text-center space-y-3 py-4">
-                    <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
-                    <div class="text-lg font-black">${pct}%</div>
-                    <div class="text-sm font-bold">${msg}</div>
-                    <div class="text-xs text-slate-400">حصلت على ${score * 10} XP من هذا الاختبار</div>
-                </div>`;
+            let msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 50 ? '👍 جيد' : '💪 راجع';
+            container.innerHTML = `<div class="text-center space-y-3 py-4">
+                <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
+                <div class="text-lg font-black">${pct}%</div>
+                <div class="text-sm font-bold">${msg}</div>
+            </div>`;
             if (pct >= 80) triggerConfetti();
         }
 
@@ -2172,17 +2119,17 @@
             }
             const loadingId = 'loading_' + Date.now();
             if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ جاري التفكير...</div>`);
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ يفكر...</div>`);
                 feed.scrollTop = feed.scrollHeight;
             }
             let context = "";
             if (currentLectureText && currentLectureText.trim().length > 20) {
                 const scoped = getScopedLectureContent();
-                context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
+                context = `\n\nسياق المحاضرة:\n${scoped.slice(0, 8000)}`;
             }
             const reply = await callStrictAcademicAI(
-                `سؤال الطالب: ${txt}${context}`,
-                "أنت المساعد الأكاديمي ZeroPlus. أجب بدقة من المحتوى المرفق إذا وُجد، وإلا اعتمد على معرفتك العلمية. استخدم نقاط واضحة واذكر المصطلحات الإنجليزية عند الحاجة."
+                `سؤال: ${txt}${context}`,
+                "أنت المساعد الأكاديمي ZeroPlus. أجب بدقة من المحتوى إن وُجد."
             );
             document.getElementById(loadingId)?.remove();
             if (feed) {
@@ -2190,14 +2137,14 @@
                     feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
                     awardXP(3);
                 } else {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد من المحرك. تأكد من إعداد endpoint /api/ai.</div>`);
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد.</div>`);
                 }
                 feed.scrollTop = feed.scrollHeight;
             }
         }
 
         function clearChatHistory() {
-            if (confirm("إفراغ المحادثة بالكامل؟")) {
+            if (confirm("إفراغ المحادثة؟")) {
                 const feed = document.getElementById('zero-chat-feed');
                 if (feed) feed.innerHTML = '';
             }
@@ -2213,27 +2160,25 @@
         }
         function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
         function copyShareText() {
-            const text = `🎓 تقرير الإنجاز الأكاديمي - ZeroPlus\n👤 الطالب: ${currentUserName}\n🏛️ القسم: ${deptLabel(activeDepartmentKey)}\n⚡ النقاط: ${userXP} XP\n⏱️ وقت التركيز: ${totalFocusMins} دقيقة\n🌳 الجلسات المكتملة: ${userForest.length}\n\nتم التطوير بواسطة مصطفى عبد علي`;
-            navigator.clipboard.writeText(text).then(() => alert("تم نسخ التقرير."));
+            const text = `🎓 ZeroPlus\n👤 ${currentUserName}\n⚡ ${userXP} XP\n⏱️ ${totalFocusMins} دقيقة\n🌳 ${userForest.length} جلسة`;
+            navigator.clipboard.writeText(text).then(() => alert("تم النسخ."));
         }
         function executeShare() {
-            const text = `🎓 تقرير ZeroPlus\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nجلسات التركيز: ${userForest.length}`;
-            if (navigator.share) navigator.share({ title: 'ZeroPlus - تقرير الإنجاز', text }).catch(() => {});
+            const text = `🎓 ZeroPlus\n${currentUserName}\n${userXP} XP`;
+            if (navigator.share) navigator.share({ title: 'ZeroPlus', text }).catch(() => {});
             else copyShareText();
         }
 
-        // ------------------ STARTUP ------------------
+        // ============ STARTUP ============
         document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
             if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
             if (document.getElementById('pomo-count-stat')) document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
 
-            // ✅ تسجيل Service Worker محدّث مع كشف التحديثات
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
                     regs.forEach((reg) => reg.update());
                 });
-
                 navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
                     .then((reg) => {
                         reg.update();
@@ -2242,7 +2187,6 @@
                     .catch((err) => console.warn('SW register failed:', err));
             }
 
-            // إعادة تحميل عند تفعيل SW جديد
             let refreshing = false;
             navigator.serviceWorker?.addEventListener('controllerchange', () => {
                 if (refreshing) return;
