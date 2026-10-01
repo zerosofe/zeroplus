@@ -427,10 +427,11 @@
 
         <!-- ================= SECTION 3: البناء اللغوي (LEARNING PATH & TREE) ================= -->
         <section id="tab-english" class="hidden space-y-5">
-            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini flex items-center justify-between">
+            <!-- شريط تحكم المسار ونمط التعلم مثل دولينجو -->
+            <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-1.5 text-xs font-bold text-rose-500">
-                        <i class="fa-solid fa-heart text-sm"></i>
+                        <i class="fa-solid fa-heart text-sm animate-pulse"></i>
                         <span id="path-hearts-count">5</span>
                     </div>
                     <div class="flex items-center gap-1.5 text-xs font-bold text-amber-500">
@@ -438,37 +439,32 @@
                         <span id="path-streak-count">1 يوم</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400">القسم:</span>
-                    <select id="active-dept-selector" onchange="changeActiveDepartment(this.value)" class="bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder rounded-2xl px-3 py-1.5 text-xs font-bold text-santorini-deepNavy dark:text-santorini-softBlue focus:outline-none">
-                        <option value="general">عام / مشترك لكافة الأقسام</option>
-                        <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
-                        <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
-                        <option value="optics">تقنيات البصريات والعيون</option>
-                        <option value="radiology">تقنيات الأشعة والسونار</option>
-                        <option value="dental_tech">تقنيات صناعة الأسنان</option>
-                        <option value="physiotherapy">تقنيات العلاج الطبيعي والتأهيل</option>
-                        <option value="community_health">تقنيات صحة المجتمع والوبائيات</option>
-                        <option value="medicine">الطب العام والجراحة</option>
-                        <option value="dentistry">طب وجراحة الفم والأسنان</option>
-                        <option value="pharmacy">الصيدلة السريرية والعقاقير</option>
-                        <option value="nursing">التمريض السريري والرعاية الحرجة</option>
-                    </select>
+
+                <!-- زر التبديل بين العام والمسار التخصصي الطبي -->
+                <div class="flex items-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1 rounded-2xl border border-slate-200 dark:border-santorini-darkBorder">
+                    <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-santorini-deepNavy text-white shadow-sm">
+                        <i class="fa-solid fa-earth-americas text-xs"></i>
+                        <span>إنجليزي عام</span>
+                    </button>
+                    <button id="mode-btn-medical" onclick="setLearningTrackMode('medical')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-user-doctor text-xs"></i>
+                        <span>المسار الطبي 🩺</span>
+                    </button>
                 </div>
             </div>
 
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-6 sm:p-10 rounded-4xl shadow-santorini flex flex-col items-center">
                 <div class="mb-4 text-center">
                     <h3 class="text-base font-black text-santorini-deepNavy dark:text-santorini-white flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-layer-group text-santorini-softBlue"></i> <span>مسار البناء اللغوي الأكاديمي</span>
+                        <i class="fa-solid fa-layer-group text-santorini-softBlue"></i> <span>مسار البناء اللغوي التراكمي (CEFR)</span>
                     </h3>
-                    <p class="text-[11px] text-slate-400 mt-1">تدرج من تفكيك الكلمات الأساسية إلى صياغة التقارير السريرية الاحترافية</p>
+                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات العالمية للحصول على التيجان الذهبية (3/3) لكل مهارة</p>
                 </div>
                 <div id="learning-path-tree" class="w-full flex flex-col items-center"></div>
             </div>
         </section>
 
-        <!-- ================= MODAL: INTERACTIVE LESSON / NODE MODAL ================= -->
+        <!-- ================= MODAL: INTERACTIVE LESSON / DUOLINGO ENGINE ================= -->
         <div id="lesson-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl">
                 <div class="space-y-3">
@@ -486,10 +482,10 @@
                     </div>
 
                     <div class="flex items-center justify-between pt-1">
-                        <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">سؤال 1 من 4</span>
+                        <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">تمرين 1 من 3</span>
                         <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-santorini-softBlue/60 bg-santorini-softBlue/10 hover:bg-santorini-softBlue/20 text-santorini-deepNavy dark:text-santorini-softBlue text-xs font-bold transition active:scale-95">
                             <i class="fa-solid fa-lightbulb text-amber-500"></i>
-                            <span>تلميح سريري</span>
+                            <span>تلميح لغوي</span>
                         </button>
                     </div>
                 </div>
@@ -504,8 +500,8 @@
                 <div id="lesson-body-area" class="space-y-4 pt-1"></div>
 
                 <div class="pt-2 flex gap-3">
-                    <button id="lesson-action-btn" onclick="submitCurrentExercise()" class="w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95">
-                        فهمت المصطلح، التالي
+                    <button id="lesson-action-btn" class="hidden w-full bg-santorini-deepNavy hover:bg-santorini-hoverNavy text-white py-3.5 rounded-2xl font-black text-sm shadow-santorini-btn transition active:scale-95">
+                        التالي
                     </button>
                 </div>
             </div>
@@ -850,7 +846,6 @@
                     updateGamificationBar();
                     renderPathTree();
                     updateCloudIndicator('online');
-                    return;
                 }
             } catch (e) {
                 console.warn('Could not restore profile from cloud:', e);
@@ -862,212 +857,136 @@
             restoreUserDataFromCloud();
         });
 
-        // ------------------ البناء اللغوي: MASTER SECTIONS ------------------
-        const MASTER_SECTIONS = [
-            {
-                section_id: "sec_01",
-                title_en: "Section 1: Foundations",
-                title_ar: "المستوى 1: الأساسيات وتفكيك الكلمة (A1)",
-                cefr: "A1",
-                units: [
-                    {
-                        unit_id: "unit_01",
-                        unit_title: "الوحدة 1: البادئات واللواحق الطبية (Prefixes & Suffixes)",
-                        nodes: [
-                            {
-                                node_id: "node_01_01",
-                                node_title: "بادئات السرعة والكمية (Tachy, Brady, Hyper, Hypo)",
-                                order: 1,
-                                items: [
-                                    {
-                                        term: "Bradycardia",
-                                        phonetic: "/ˌbreɪ.dɪˈkɑː.di.ə/",
-                                        translation: "تباطؤ معدل ضربات القلب تحت 60 نبضة/د",
-                                        anatomy: "Brady- (slow) + card- (heart) + -ia (condition)",
-                                        sentence_en: "The monitor alerted the team to acute sinus bradycardia.",
-                                        sentence_ar: "نبه جهاز المراقبة الفريق إلى وجود تباطؤ قلبي جيبي حاد.",
-                                        hint: "البادئة (Brady-) تعني بطء دائماً، عكسها تماماً (Tachy-)."
-                                    },
-                                    {
-                                        term: "Hypertension",
-                                        phonetic: "/ˌhaɪ.pəˈten.ʃən/",
-                                        translation: "ارتفاع ضغط الدم الوعائي فوق المعدل",
-                                        anatomy: "Hyper- (excessive) + tension (pressure)",
-                                        sentence_en: "Uncontrolled hypertension increases systemic vascular resistance.",
-                                        sentence_ar: "ارتفاع ضغط الدم غير المعالج يزيد من المقاومة الوعائية الجهازية.",
-                                        hint: "البادئة (Hyper-) تفيد الزيادة أو الارتفاع، مثل Hyperglycemia."
-                                    }
-                                ]
-                            },
-                            {
-                                node_id: "node_01_02",
-                                node_title: "اللواحق والالتهابات (-itis, -ectomy, -algia)",
-                                order: 2,
-                                items: [
-                                    {
-                                        term: "Appendicitis",
-                                        phonetic: "/əˌpen.dɪˈsaɪ.tɪs/",
-                                        translation: "التهاب نسيج الزائدة الدودية الحاد",
-                                        anatomy: "Appendic- (appendix) + -itis (inflammation)",
-                                        sentence_en: "Acute appendicitis requires emergency surgical evaluation.",
-                                        sentence_ar: "يتطلب التهاب الزائدة الدودية الحاد تقييماً جراحياً طارئاً.",
-                                        hint: "اللاحقة (-itis) تفيد دائماً وجود التهاب نسيجي حاد أو مزمن."
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        unit_id: "unit_02",
-                        unit_title: "الوحدة 2: جذور الأعضاء الرئيسية (Major Organ Roots)",
-                        nodes: [
-                            {
-                                node_id: "node_02_01",
-                                node_title: "القلب والرئتان (Cardio, Pulmo, Pneumo)",
-                                order: 3,
-                                items: [
-                                    {
-                                        term: "Pneumothorax",
-                                        phonetic: "/ˌnjuː.məˈθɔː.ræks/",
-                                        translation: "استرواح الصدر / انحباس الهواء في التجويف الجنبي",
-                                        anatomy: "Pneum/o- (air/lung) + thorax (chest cavity)",
-                                        sentence_en: "Tension pneumothorax causes rapid hemodynamic compromise.",
-                                        sentence_ar: "يسبب استرواح الصدر الضاغط تدهوراً هيموديناميكياً سريعاً.",
-                                        hint: "الجذر (Pneumo-) يعني هواء أو رئة، وThorax يعني التجويف الصدري."
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                section_id: "sec_02",
-                title_en: "Section 2: Explorer",
-                title_ar: "المستوى 2: العلامات الحيوية والاتجاهات التشريحية (A2)",
-                cefr: "A2",
-                units: [
-                    {
-                        unit_id: "unit_04",
-                        unit_title: "الوحدة 3: العلامات الحيوية (Vital Signs & Measurements)",
-                        nodes: [
-                            {
-                                node_id: "node_04_01",
-                                node_title: "ضغط الدم والتروية (MAP, Systolic, Diastolic)",
-                                order: 4,
-                                items: [
-                                    {
-                                        term: "Mean Arterial Pressure",
-                                        phonetic: "/miːn ɑːˈtɪə.ri.əl ˈpreʃ.ər/",
-                                        translation: "متوسط الضغط الشرياني لتروية الأعضاء الحيوية",
-                                        anatomy: "MAP = DBP + 1/3(SBP - DBP)",
-                                        sentence_en: "Maintain Mean Arterial Pressure above 65 mmHg to ensure organ perfusion.",
-                                        sentence_ar: "حافظ على متوسط الضغط الشرياني أعلى من 65 لضمان تروية الأعضاء.",
-                                        hint: "هو المؤشر الذهبي لتروية الأعضاء، ويجب ألا يقل عن 65 mmHg."
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        unit_id: "unit_05",
-                        unit_title: "الوحدة 4: الوضعيات السريرية (Anatomical Positions)",
-                        nodes: [
-                            {
-                                node_id: "node_05_01",
-                                node_title: "وضعيات المريض (Supine, Prone, Fowler's)",
-                                order: 5,
-                                items: [
-                                    {
-                                        term: "Prone Position",
-                                        phonetic: "/prəʊn pəˈzɪʃ.ən/",
-                                        translation: "وضعية الاستلقاء على البطن والوجه للأسفل",
-                                        anatomy: "Prone (face down / ventral side down)",
-                                        sentence_en: "Prone positioning significantly improves oxygenation in severe ARDS.",
-                                        sentence_ar: "وضعية الاستلقاء على البطن تحسن تشبع الأكسجين بشكل كبير في متلازمة الضائقة التنفسية الحادة.",
-                                        hint: "وضعية Prone تكون على البطن، بينما Supine تكون على الظهر والوجه للأعلى."
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                section_id: "sec_03",
-                title_en: "Section 3: Trailblazer",
-                title_ar: "المستوى 3: مسارات الأدوية والإجراءات السريرية (B1)",
-                cefr: "B1",
-                units: [
-                    {
-                        unit_id: "unit_07",
-                        unit_title: "الوحدة 5: مسارات إعطاء العلاج (Administration Routes)",
-                        nodes: [
-                            {
-                                node_id: "node_07_01",
-                                node_title: "الحقن الوريدي والعضلي (IV, IM, SC, PO)",
-                                order: 6,
-                                items: [
-                                    {
-                                        term: "Intravenous Bolus",
-                                        phonetic: "/ˌɪn.trəˈviː.nəs ˈbəʊ.ləs/",
-                                        translation: "دفعة دوائية وريدية سريعة ومباشرة",
-                                        anatomy: "Intra- (inside) + ven- (vein) + Bolus (single rapid dose)",
-                                        sentence_en: "Administer the emergency analgesic via an intravenous bolus.",
-                                        sentence_ar: "أعطِ المسكن الإسعافي كدفعة وريدية مباشرة وسريعة.",
-                                        hint: "كلمة Bolus تعني إعطاء الجرعة دفعة واحدة، وليست تسريباً بطيئاً."
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                section_id: "sec_04",
-                title_en: "Section 4: Adventurer",
-                title_ar: "المستوى 4: التواصل السريري المتقدم والإنعاش (B2)",
-                cefr: "B2",
-                units: [
-                    {
-                        unit_id: "unit_10",
-                        unit_title: "الوحدة 6: تسليم الحالات ونموذج SBAR (Clinical Handover)",
-                        nodes: [
-                            {
-                                node_id: "node_10_01",
-                                node_title: "أركان بروتوكول SBAR السريري المعتمد",
-                                order: 7,
-                                items: [
-                                    {
-                                        term: "Clinical Handover",
-                                        phonetic: "/ˈklɪn.ɪ.kəl ˈhændˌəʊ.vər/",
-                                        translation: "التسليم السريري للمريض ونقل المسؤولية الطبية",
-                                        anatomy: "Transfer of accountability & clinical information",
-                                        sentence_en: "Utilize SBAR framework for effective clinical handover during shift changes.",
-                                        sentence_ar: "استخدم نموذج SBAR للتسليم السريري الفعال أثناء تبديل النوبات الطبية.",
-                                        hint: "نموذج SBAR يختصر: الحالة (Situation)، الخلفية (Background)، التقييم (Assessment)، التوصية (Recommendation)."
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ];
+        // ------------------ DUOLINGO CEFR CURRICULUM (GENERAL & MEDICAL) ------------------
+        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
+        let nodeCrowns = safeParse('zp_node_crowns', {});
 
-        let FLAT_NODES = [];
-        MASTER_SECTIONS.forEach(sec => {
-            sec.units.forEach(u => {
-                u.nodes.forEach(n => {
-                    FLAT_NODES.push({
-                        ...n,
-                        section_id: sec.section_id,
-                        unit_id: u.unit_id,
-                        unit_title: u.unit_title
-                    });
-                });
-            });
-        });
+        const GLOBAL_CURRICULUM = {
+            general: [
+                {
+                    level: "A1",
+                    title_ar: "المستوى A1: التأسيس والمحادثة اليومية",
+                    units: [
+                        {
+                            unit_title: "الوحدة 1: التعارف والجمل البسيطة",
+                            nodes: [
+                                { id: "gen_a1_01", title: "التحيات وتقديم النفس (Introductions)", order: 1 },
+                                { id: "gen_a1_02", title: "أفعال الكينونة والضمائر (To Be & Pronouns)", order: 2 },
+                                { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة (Everyday Objects)", order: 3 }
+                            ]
+                        },
+                        {
+                            unit_title: "الوحدة 2: الروتين والوصف",
+                            nodes: [
+                                { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم (Daily Routine)", order: 4 },
+                                { id: "gen_a1_05", title: "صفات المقارنة والوصف (Describing Things)", order: 5 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "A2",
+                    title_ar: "المستوى A2: الأسئلة والمواقف الحياتية",
+                    units: [
+                        {
+                            unit_title: "الوحدة 3: الماضي والذكريات",
+                            nodes: [
+                                { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة (Past Simple)", order: 6 },
+                                { id: "gen_a2_02", title: "المواقف في المطعم والتسوق (Out & About)", order: 7 }
+                            ]
+                        },
+                        {
+                            unit_title: "الوحدة 4: المستقبل والخطط",
+                            nodes: [
+                                { id: "gen_a2_03", title: "الخطط المستقبلية (Going to & Will)", order: 8 },
+                                { id: "gen_a2_04", title: "أدوات الربط وحروف الجر (Connectors & Prepositions)", order: 9 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "B1",
+                    title_ar: "المستوى B1: الطلاقة وسرد القصص",
+                    units: [
+                        {
+                            unit_title: "الوحدة 5: السفر والخبرات المتراكمة",
+                            nodes: [
+                                { id: "gen_b1_01", title: "المضارع التام والخبرات (Present Perfect)", order: 10 },
+                                { id: "gen_b1_02", title: "إبداء الرأي والموافقة والاعتراض (Opinions & Debate)", order: 11 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "B2",
+                    title_ar: "المستوى B2: النقاش الاحترافي والتعقيد اللغوي",
+                    units: [
+                        {
+                            unit_title: "الوحدة 6: اللغة الأكاديمية والمهنية",
+                            nodes: [
+                                { id: "gen_b2_01", title: "المبني للمجهول في المقالات (Passive Voice)", order: 12 },
+                                { id: "gen_b2_02", title: "الجمل الشرطية المتقدمة (Conditionals 2 & 3)", order: 13 }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            medical: [
+                {
+                    level: "A1",
+                    title_ar: "المستوى A1 (طبي): تفكيك الكلمات والمصطلحات الأساسية",
+                    units: [
+                        {
+                            unit_title: "الوحدة 1: البادئات واللواحق والكميات",
+                            nodes: [
+                                { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
+                                { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy, -oma)", order: 2 },
+                                { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "A2",
+                    title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات السريرية",
+                    units: [
+                        {
+                            unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية",
+                            nodes: [
+                                { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
+                                { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone, Trendelenburg)", order: 5 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "B1",
+                    title_ar: "المستوى B1 (طبي): مسارات العلاج والوصفات الطبية",
+                    units: [
+                        {
+                            unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية",
+                            nodes: [
+                                { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation, Infusion)", order: 6 },
+                                { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية (Adverse Effects)", order: 7 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    level: "B2",
+                    title_ar: "المستوى B2 (طبي): بروتوكولات الإنعاش وتسليم الحالات",
+                    units: [
+                        {
+                            unit_title: "الوحدة 4: التواصل السريري والإنعاش الحرج",
+                            nodes: [
+                                { id: "med_b2_01", title: "تسليم الحالات بنموذج SBAR الاحترافي", order: 8 },
+                                { id: "med_b2_02", title: "إدارة مجرى الهواء والتنفس الاصطناعي (Airway & Ventilation)", order: 9 }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
 
         // ------------------ STATE VARIABLES ------------------
         let currentUserName = localStorage.getItem('zp_username') || '';
@@ -1077,8 +996,7 @@
         let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
         let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
 
-        let activeNodeSession = null;
-        let activeQuestionIdx = 0;
+        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
         let isHintVisible = false;
 
         let activeQuizSessionState = {
@@ -1098,60 +1016,87 @@
             if (sh) sh.innerText = userHearts;
         }
 
+        function setLearningTrackMode(mode) {
+            currentLearningTrack = mode;
+            localStorage.setItem('zp_learning_track', mode);
+            
+            const btnGen = document.getElementById('mode-btn-general');
+            const btnMed = document.getElementById('mode-btn-medical');
+            
+            if (mode === 'general') {
+                btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-santorini-deepNavy text-white shadow-sm';
+                btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
+            } else {
+                btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-santorini-deepNavy text-white shadow-sm';
+                btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
+            }
+            renderPathTree();
+        }
+
         function renderPathTree() {
             const container = document.getElementById('learning-path-tree');
             if (!container) return;
             container.innerHTML = '';
 
+            const sections = GLOBAL_CURRICULUM[currentLearningTrack] || GLOBAL_CURRICULUM.general;
             let nodeCounter = 1;
+            let totalCompletedNodes = 0;
 
-            MASTER_SECTIONS.forEach((sec) => {
+            sections.forEach((sec) => {
                 container.innerHTML += `
-                    <div class="w-full my-6 text-center">
-                        <span class="text-[11px] font-black uppercase tracking-wider px-4 py-1.5 rounded-full bg-santorini-deepNavy text-white shadow-sm">
-                            ${sec.title_ar}
+                    <div class="w-full my-8 text-center">
+                        <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-santorini-deepNavy text-white shadow-md border border-santorini-softBlue/30">
+                            ${sec.title_ar} (${sec.level})
                         </span>
                     </div>`;
 
                 sec.units.forEach((unit) => {
                     container.innerHTML += `
-                        <div class="w-full flex items-center justify-center gap-3 my-4">
+                        <div class="w-full flex items-center justify-center gap-3 my-5">
                             <div class="h-[1px] flex-1 bg-slate-200 dark:bg-santorini-darkBorder"></div>
-                            <span class="text-xs font-bold text-slate-500 dark:text-santorini-softBlue">${unit.unit_title}</span>
+                            <span class="text-xs font-bold text-slate-500 dark:text-santorini-softBlue px-2">${unit.unit_title}</span>
                             <div class="h-[1px] flex-1 bg-slate-200 dark:bg-santorini-darkBorder"></div>
                         </div>`;
 
                     unit.nodes.forEach((node) => {
                         const orderNum = nodeCounter;
+                        const crowns = nodeCrowns[node.id] || 0;
                         const isUnlocked = orderNum <= unlockedNodeMax;
-                        const isCompleted = orderNum < unlockedNodeMax;
-                        const isCurrent = orderNum === unlockedNodeMax;
-
-                        const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-8' : 'sm:-translate-x-8';
+                        const isCompleted = crowns >= 3;
+                        if (isCompleted) totalCompletedNodes++;
+                        const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
 
                         let btnHtml = '';
                         if (isCompleted) {
                             btnHtml = `
-                                <button onclick="startNodeSession('${node.node_id}')" class="w-16 h-16 rounded-3xl bg-emerald-500/15 border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-black shadow-sm transition active:scale-95 hover:scale-105" title="مراجعة المحطة">
-                                    <i class="fa-solid fa-check"></i>
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg transition active:scale-95 hover:scale-105" title="متقن بالكامل 👑">
+                                    <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
+                                    <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
                                 </button>`;
-                        } else if (isCurrent) {
+                        } else if (isUnlocked && crowns > 0) {
                             btnHtml = `
-                                <button onclick="startNodeSession('${node.node_id}')" class="w-20 h-20 rounded-4xl bg-santorini-deepNavy text-santorini-white flex items-center justify-center text-2xl font-black shadow-santorini-btn transition active:scale-95 hover:scale-105 ring-4 ring-santorini-softBlue/30 animate-pulse" title="بدء المحطة">
-                                    <i class="fa-solid fa-play mr-1 text-lg"></i>
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-santorini-deepNavy text-santorini-white flex flex-col items-center justify-center font-black shadow-santorini-btn transition active:scale-95 hover:scale-105 ring-4 ring-santorini-softBlue/30 animate-pulse">
+                                    <i class="fa-solid fa-star text-amber-400 text-sm mb-0.5"></i>
+                                    <span class="text-xs font-black">مستوى ${crowns + 1}/3</span>
+                                </button>`;
+                        } else if (isUnlocked) {
+                            btnHtml = `
+                                <button onclick="startInteractiveLesson('${node.id}', '${node.title}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-santorini-deepNavy text-santorini-white flex items-center justify-center text-2xl font-black shadow-santorini-btn transition active:scale-95 hover:scale-105 ring-4 ring-santorini-softBlue/30 animate-pulse" title="بدء المحطة">
+                                    <i class="fa-solid fa-play mr-0.5 text-base"></i>
                                 </button>`;
                         } else {
                             btnHtml = `
-                                <div class="w-16 h-16 rounded-3xl bg-slate-100 dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-400 flex items-center justify-center text-base cursor-not-allowed opacity-60">
+                                <div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder text-slate-400 flex items-center justify-center text-base cursor-not-allowed opacity-50">
                                     <i class="fa-solid fa-lock"></i>
                                 </div>`;
                         }
 
                         container.innerHTML += `
-                            <div class="flex flex-col items-center justify-center my-3 transition-transform ${offsetClass}">
+                            <div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
                                 ${btnHtml}
-                                <div class="mt-2 text-center max-w-[220px]">
-                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${node.node_title}</h4>
+                                <div class="mt-2.5 text-center max-w-[240px]">
+                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${node.title}</h4>
+                                    <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
                                 </div>
                             </div>`;
 
@@ -1161,134 +1106,186 @@
             });
 
             const shareNodes = document.getElementById('share-nodes');
-            if (shareNodes) shareNodes.innerText = `${Math.max(0, unlockedNodeMax - 1)}`;
+            if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
 
-        // ------------------ INTERACTIVE NODE LESSON LOGIC ------------------
-        function startNodeSession(nodeId) {
-            const found = FLAT_NODES.find(n => n.node_id === nodeId);
-            if (!found) return;
+        // ------------------ DUOLINGO INTERACTIVE EXERCISES ENGINE ------------------
+        async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
+            const modal = document.getElementById('lesson-modal');
+            const bodyArea = document.getElementById('lesson-body-area');
+            const actionBtn = document.getElementById('lesson-action-btn');
 
-            activeNodeSession = found;
-            activeQuestionIdx = 0;
+            modal.classList.remove('hidden');
+            document.getElementById('lesson-hint-box').classList.add('hidden');
             isHintVisible = false;
 
-            document.getElementById('lesson-modal').classList.remove('hidden');
-            renderActiveLessonItem();
+            bodyArea.innerHTML = `
+                <div class="p-8 text-center space-y-3">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-santorini-deepNavy dark:text-santorini-softBlue"></i>
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد محطة (${escapeHtml(title)}) - المستوى ${currentCrown + 1}...</p>
+                </div>
+            `;
+            actionBtn.classList.add('hidden');
+
+            const prompt = `أنت خبير إعداد مناهج لغة إنجليزية تفاعلي بأسلوب Duolingo.
+صغ 3 تمارين متنوعة لـ: "${title}".
+النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي وسريري' : 'إنجليزي عام ومحادثة'}.
+المستوى: تاج ${currentCrown + 1} من 3.
+أخرج JSON حصراً بالهيكل التالي:
+{"exercises":[{"question":"Sentence with blank ______","translation":"الترجمة بالعربية","options":["A","B","C","D"],"correct_index":0,"explanation":"شرح القاعدة بالعربية","hint":"تلميح سريع"}]}`;
+
+            let exercises = null;
+            try {
+                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات Duolingo. أخرج كود JSON فقط بدون إضافات.", null, true);
+                const parsed = parseAIJson(raw);
+                if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) {
+                    exercises = parsed.exercises;
+                }
+            } catch(e) {}
+
+            if (!exercises || exercises.length === 0) {
+                exercises = [
+                    {
+                        question: currentLearningTrack === 'medical' ? "The emergency patient needs an immediate ______ infusion." : "She ______ English fluently every day.",
+                        translation: currentLearningTrack === 'medical' ? "يحتاج مريض الطوارئ إلى تسريب وريدي مباشر." : "هي تتحدث الإنجليزية بطلاقة كل يوم.",
+                        options: currentLearningTrack === 'medical' ? ["intravenous", "subcutaneous", "oral", "topical"] : ["speaks", "speak", "speaking", "spoke"],
+                        correct_index: 0,
+                        explanation: currentLearningTrack === 'medical' ? "Intravenous يعني وريدي مباشر." : "يضاف s المفرد للفعل مع الضمير She.",
+                        hint: currentLearningTrack === 'medical' ? "البادئة Intra- تعني داخل و Venous تعني الوريد." : "انتبه لقاعدة المضارع البسيط مع المفرد الغائب."
+                    }
+                ];
+            }
+
+            dynamicSessionState = { exercises, index: 0, nodeId, orderNum, currentCrown, title };
+            renderDynamicExerciseStep();
         }
 
         function closeLessonModal() {
             document.getElementById('lesson-modal').classList.add('hidden');
-            activeNodeSession = null;
         }
 
         function toggleSmartHint() {
-            if (!activeNodeSession) return;
-            const currentItem = activeNodeSession.items[activeQuestionIdx];
+            const ex = dynamicSessionState.exercises[dynamicSessionState.index];
             const hintBox = document.getElementById('lesson-hint-box');
             const hintText = document.getElementById('lesson-hint-text');
 
             isHintVisible = !isHintVisible;
             if (isHintVisible) {
-                hintText.innerText = currentItem.hint || "لا يوجد تلميح إضافي.";
+                hintText.innerText = ex?.hint || ex?.explanation || "تأمل في سياق الجملة وقواعد الربط الأساسية.";
                 hintBox.classList.remove('hidden');
             } else {
                 hintBox.classList.add('hidden');
             }
         }
 
-        function speakLessonTerm(text) {
-            if ('speechSynthesis' in window) {
-                const u = new SpeechSynthesisUtterance(text);
-                u.lang = 'en-US';
-                u.rate = 0.85;
-                window.speechSynthesis.speak(u);
-            }
-        }
+        function renderDynamicExerciseStep() {
+            const { exercises, index } = dynamicSessionState;
+            const ex = exercises[index];
+            const bodyArea = document.getElementById('lesson-body-area');
+            const actionBtn = document.getElementById('lesson-action-btn');
 
-        function renderActiveLessonItem() {
-            if (!activeNodeSession) return;
-            const items = activeNodeSession.items;
-            const current = items[activeQuestionIdx];
-
-            document.getElementById('lesson-step-badge').innerText = `مصطلح ${activeQuestionIdx + 1} من ${items.length}`;
-            const pct = Math.round(((activeQuestionIdx + 1) / items.length) * 100);
+            document.getElementById('lesson-step-badge').innerText = `تمرين ${index + 1} من ${exercises.length}`;
+            const pct = Math.round(((index + 1) / exercises.length) * 100);
             document.getElementById('lesson-progress-bar').style.width = `${pct}%`;
-
-            const hintBox = document.getElementById('lesson-hint-box');
-            hintBox.classList.add('hidden');
+            document.getElementById('lesson-hint-box').classList.add('hidden');
             isHintVisible = false;
 
-            const area = document.getElementById('lesson-body-area');
-            area.innerHTML = `
+            let optsHtml = '';
+            ex.options.forEach((opt, optIdx) => {
+                optsHtml += `
+                    <button onclick="handleExerciseChoice(${optIdx})" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs sm:text-sm font-bold hover:border-santorini-softBlue transition">
+                        ${escapeHtml(opt)}
+                    </button>
+                `;
+            });
+
+            bodyArea.innerHTML = `
                 <div class="space-y-4">
-                    <div class="text-center py-2">
-                        <div class="flex items-center justify-center gap-2">
-                            <h2 class="text-3xl font-black text-santorini-deepNavy dark:text-santorini-white" dir="ltr">${current.term}</h2>
-                            <button onclick="speakLessonTerm(activeNodeSession.items[activeQuestionIdx].term)" class="w-8 h-8 rounded-xl bg-santorini-lightBg dark:bg-santorini-darkBase text-santorini-deepNavy dark:text-santorini-softBlue flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm">
-                                <i class="fa-solid fa-volume-high text-xs"></i>
-                            </button>
-                        </div>
-                        <span class="text-xs text-slate-400 font-mono block mt-1" dir="ltr">${current.phonetic}</span>
-                        <p class="text-base font-bold text-slate-700 dark:text-slate-200 mt-2">${current.translation}</p>
+                    <div class="text-center py-2 space-y-2">
+                        <span class="text-[11px] font-bold text-santorini-softBlue block">اختر الكلمة الصحيحة لإكمال الجملة:</span>
+                        <h3 class="text-base sm:text-lg font-black text-santorini-deepNavy dark:text-santorini-white" dir="ltr">${escapeHtml(ex.question)}</h3>
+                        <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
                     </div>
-
-                    <div class="p-4 rounded-3xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs text-right space-y-1.5">
-                        <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue block"><i class="fa-solid fa-cubes-stacked ml-1"></i> تفكيك المصطلح (Word Anatomy):</span>
-                        <p class="font-semibold text-slate-800 dark:text-slate-200" dir="ltr">${current.anatomy}</p>
+                    <div id="exercise-options" class="space-y-2 pt-1">
+                        ${optsHtml}
                     </div>
-
-                    <div class="p-4 rounded-3xl bg-santorini-lightBg dark:bg-santorini-darkBase border border-slate-200 dark:border-santorini-darkBorder text-xs text-right space-y-1.5">
-                        <span class="font-bold text-santorini-deepNavy dark:text-santorini-softBlue block"><i class="fa-solid fa-stethoscope ml-1"></i> السياق السريري (Clinical Context):</span>
-                        <p class="font-bold text-santorini-deepNavy dark:text-white" dir="ltr">"${current.sentence_en}"</p>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">${current.sentence_ar}</p>
-                    </div>
+                    <div id="exercise-feedback" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
                 </div>
             `;
+            actionBtn.classList.add('hidden');
         }
 
-        function submitCurrentExercise() {
-            if (!activeNodeSession) return;
-            const items = activeNodeSession.items;
-            const currentItem = items[activeQuestionIdx];
+        function handleExerciseChoice(chosenIdx) {
+            const { exercises, index } = dynamicSessionState;
+            const ex = exercises[index];
+            const feedback = document.getElementById('exercise-feedback');
+            const actionBtn = document.getElementById('lesson-action-btn');
+            
+            document.querySelectorAll('.ex-opt-btn').forEach(b => b.disabled = true);
+            feedback.classList.remove('hidden');
 
-            const alreadyCompleted = activeNodeSession.order < unlockedNodeMax;
+            const isCorrect = (chosenIdx === ex.correct_index);
 
-            recordWordMasteryToCloud(currentItem.term, true);
-
-            playChime(true);
-            if (!alreadyCompleted) awardXP(10);
-
-            if (activeQuestionIdx + 1 < items.length) {
-                activeQuestionIdx++;
-                renderActiveLessonItem();
+            if (isCorrect) {
+                playChime(true);
+                awardXP(15);
+                triggerConfetti();
+                feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300';
+                feedback.innerHTML = `
+                    <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span>ممتاز! إجابة صحيحة (+15 XP)</span></div>
+                    <p class="text-[11px] font-semibold">${escapeHtml(ex.explanation)}</p>
+                `;
             } else {
-                completeNodeSuccess(activeNodeSession.order, activeNodeSession.node_id);
+                playChime(false);
+                feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300';
+                feedback.innerHTML = `
+                    <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span></div>
+                    <p class="text-[11px] font-semibold">الإجابة الصحيحة هي: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
+                    <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>
+                `;
+            }
+
+            actionBtn.classList.remove('hidden');
+            actionBtn.onclick = advanceExerciseOrFinish;
+            actionBtn.innerText = (index + 1 < exercises.length) ? "التمرين التالي" : "إنهاء المحطة واحتساب التاج 👑";
+        }
+
+        function advanceExerciseOrFinish() {
+            if (dynamicSessionState.index + 1 < dynamicSessionState.exercises.length) {
+                dynamicSessionState.index++;
+                renderDynamicExerciseStep();
+            } else {
+                advanceNodeCrownLevel(dynamicSessionState.nodeId, dynamicSessionState.orderNum);
             }
         }
 
-        function completeNodeSuccess(nodeOrder, nodeId) {
+        function advanceNodeCrownLevel(nodeId, nodeOrder) {
+            let crowns = nodeCrowns[nodeId] || 0;
+            crowns = Math.min(3, crowns + 1);
+            nodeCrowns[nodeId] = crowns;
+            safeSetItem('zp_node_crowns', JSON.stringify(nodeCrowns));
+
+            if (crowns >= 3) {
+                if (nodeOrder === unlockedNodeMax) {
+                    unlockedNodeMax++;
+                    localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
+                }
+                syncNodeProgressToCloud(nodeId, true, 100);
+            } else {
+                syncNodeProgressToCloud(nodeId, false, crowns * 33);
+            }
+
             closeLessonModal();
             triggerConfetti();
             playChime(true);
-
-            if (nodeOrder === unlockedNodeMax && unlockedNodeMax <= FLAT_NODES.length) {
-                unlockedNodeMax++;
-                localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-            }
-
-            syncNodeProgressToCloud(nodeId, true, 100);
             syncProfileWithCloud();
-
             renderPathTree();
-            alert("عاشت إيدك! أكملت المحطة بنجاح وفككت قفل المحطة التالية.");
-        }
 
-        function changeActiveDepartment(newDept) {
-            activeDepartmentKey = newDept;
-            localStorage.setItem('zp_user_department', newDept);
-            updateGreetingHeader();
-            syncProfileWithCloud();
+            if (crowns < 3) {
+                alert(`عاشت إيدك! أكملت المستوى ${crowns}/3 لهذه المحطة بنجاح. تتبقى لك مستويات لتتقن التاج الذهبي.`);
+            } else {
+                alert("تهانينا! حصلت على التاج الذهبي الكامل (3/3) لهذه المحطة وفككت قفل المحطة التالية!");
+            }
         }
 
         // ------------------ ONBOARDING & IDENTIFICATION (PERSISTENT CLOUD SYNC) ------------------
@@ -1365,7 +1362,7 @@
                 if (greeting) greeting.innerText = `${currentUserName} | ${deptLabel(activeDepartmentKey)}`;
                 const shareGreeting = document.getElementById('share-card-user');
                 if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName}`;
-                const sel = document.getElementById('active-dept-selector');
+                const sel = document.getElementById('onboard-user-dept');
                 if (sel) sel.value = activeDepartmentKey;
             }
         }
@@ -1594,7 +1591,7 @@
         }
         renderForest();
 
-        // ------------------ REFINED ACADEMIC AI ENGINE (STRICT LECTURE COMPLIANCE) ------------------
+        // ------------------ REFINED ACADEMIC AI ENGINE ------------------
         let pdfSlidesData = safeParse('zp_slides_array', []);
         if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
         let lastManualLectureText = '';
@@ -1760,7 +1757,6 @@
         let chatMemory = safeParse('zp_chat_memory', []);
         if (!Array.isArray(chatMemory)) chatMemory = [];
 
-        // دالة الاتصال المحمية: تتصل بالسيرفر الخلفي عبر /api/ai بدلاً من كشف المفتاح في الواجهة
         async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
             const label = loadingElId && document.getElementById(loadingElId)?.querySelector('.thinking-step-text');
             let lastError = null;
@@ -1839,7 +1835,7 @@
             const arrStart = clean.indexOf('['), arrEnd = clean.lastIndexOf(']');
             if (arrStart !== -1 && arrEnd > arrStart && (objStart === -1 || arrStart < objStart)) {
                 const parsedArr = attempt(clean.slice(arrStart, arrEnd + 1));
-                if (parsedArr) return Array.isArray(parsedArr) ? { questions: parsedArr } : parsedArr;
+                if (parsedArr) return Array.isArray(parsedArr) ? { questions: parsedArr, exercises: parsedArr } : parsedArr;
             }
             if (objStart !== -1 && objEnd > objStart) return attempt(clean.slice(objStart, objEnd + 1));
             return null;
@@ -1943,11 +1939,12 @@
             const cachedQuiz = readQuizCache(cacheKey);
             if (cachedQuiz && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
                 activeQuizSessionState = {
-                    questions: cachedQuiz.questions,
+                    questions: cachedQuiz.questions.slice(0, qCount),
                     currentIndex: 0,
                     score: 0,
-                    qCount: cachedQuiz.questions.length
+                    qCount: Math.min(qCount, cachedQuiz.questions.length)
                 };
+                feed.innerHTML = '';
                 showAINotice('تم استرجاع هذا الاختبار من الذاكرة المحلية لنفس النطاق دون استهلاك رصيد الذكاء الاصطناعي.');
                 playChime(true);
                 renderCurrentInteractiveQuizQuestion();
@@ -1967,7 +1964,7 @@
             const strictSystemPrompt = `أنت المساعد الأكاديمي الرسمي الصارم لمنصة ZeroPlus الجامعية في العراق. 
 قواعدك الصارمة:
 1. اعتمد بنسبة 100% فقط على محتوى السلايدات المرفقة للطالب، ولا تضف أي معلومة خارجية.
-2. استخرج تماماً (${qCount}) أسئلة من صلب نصوص السلايدات حرفياً.
+2. استخرج تماماً وبدقة (${qCount}) أسئلة فقط من صلب نصوص السلايدات حرفياً.
 3. التزم باللغة الأكاديمية التخصصية الخالية من الإيموجيات.`;
 
             if (selectedAiTaskType === 'summary') {
@@ -1992,7 +1989,7 @@ ${sampledContent}
 ${sampledContent}
 """`;
 
-                const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط بدون مقدمات.", loadingId);
+                const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط بدون مقدمات.", loadingId, true);
                 document.getElementById(loadingId)?.remove();
 
                 let data = parseAIJson(rawReply);
@@ -2041,15 +2038,17 @@ ${sampledContent}
                     const fallback = generateSmartLocalQuizFromLecture(scopedContent, qCount - questions.length, seen);
                     questions = questions.concat(fallback);
                 }
+                questions = questions.slice(0, qCount);
                 document.getElementById(loadingId)?.remove();
                 if (accepted.length === 0) {
                     showAIError(failureReason);
                 } else if (questions.length > accepted.length) {
                     showAINotice(`تم توليد ${accepted.length} من ${qCount} سؤالاً بالذكاء الاصطناعي، واستُكملت بقية الأسئلة محلياً من نص المحاضرة نفسه.`);
                 }
-                data = {questions};
-                if (accepted.length >= qCount) { pruneQuizCache(cacheKey); safeSetItem(cacheKey, JSON.stringify(data)); }
+                const finalQuizData = { questions };
+                if (accepted.length >= qCount) { pruneQuizCache(cacheKey); safeSetItem(cacheKey, JSON.stringify(finalQuizData)); }
                 if (displayStyle === 'interactive') {
+                    feed.innerHTML = '';
                     activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
                     renderCurrentInteractiveQuizQuestion();
                 } else renderTextSheetMCQ(questions);
@@ -2396,7 +2395,7 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
             document.getElementById('share-modal').classList.add('hidden'); 
         }
         function copyShareText() {
-            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nمسار البناء اللغوي الطبي.`)
+            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nمسار البناء اللغوي.`)
                 .then(() => alert("تم نسخ التقرير بنجاح."))
                 .catch(() => alert("تعذر النسخ تلقائياً، يرجى نسخ النص يدوياً."));
         }
@@ -2431,7 +2430,7 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
         showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
         updatePomoDisplay();
         checkOnboarding();
-        renderPathTree();
+        setLearningTrackMode(currentLearningTrack);
         updateGamificationBar();
     </script>
 </body>
