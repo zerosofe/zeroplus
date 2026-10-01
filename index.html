@@ -4,12 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
-    
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=26">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=26">
-    <link rel="shortcut icon" href="/icon.svg?v=26">
 
-    <link rel="manifest" href="/manifest.json?v=26">
+    <!-- 🚨 مانع الكاش -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- 🚨 حذف كل Service Workers القديمة فوراً (يعمل مرة واحدة ثم يمكن حذفه) -->
+    <script>
+        (function killOldSW() {
+            if (!('serviceWorker' in navigator)) return;
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((r) => {
+                    // احذف فقط إذا كانت النسخة قديمة
+                    if (r.active && r.active.scriptURL && !r.active.scriptURL.includes('v=')) {
+                        r.unregister();
+                    }
+                });
+            }).catch(() => {});
+            if (window.caches) {
+                caches.keys().then((keys) => {
+                    keys.forEach((k) => {
+                        if (!k.startsWith('zeroplus-v27')) {
+                            caches.delete(k);
+                        }
+                    });
+                }).catch(() => {});
+            }
+        })();
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=27">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=27">
+    <link rel="shortcut icon" href="/icon.svg?v=27">
+
+    <link rel="manifest" href="/manifest.json?v=27">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,10 +66,7 @@
                             darkBorder: '#163d52'
                         }
                     },
-                    borderRadius: {
-                        '3xl': '1.75rem',
-                        '4xl': '2.25rem'
-                    },
+                    borderRadius: { '3xl': '1.75rem', '4xl': '2.25rem' },
                     boxShadow: {
                         'glow-sky': '0 8px 25px rgba(2, 132, 199, 0.15)',
                         'glow-teal': '0 8px 25px rgba(13, 148, 136, 0.15)',
@@ -59,23 +85,18 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
-        body { 
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Cairo", "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent; 
+            -webkit-tap-highlight-color: transparent;
             padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
         }
-
         .gradient-todo { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%) !important; }
         .gradient-pomodoro { background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important; }
         .gradient-english { background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%) !important; }
         .gradient-zero { background: linear-gradient(135deg, #0d9488 0%, #10b981 100%) !important; }
-
-        .ios-nav-safe {
-            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-        }
-
+        .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
         .chat-user-bubble {
             background: linear-gradient(135deg, #0d9488, #10b981) !important;
             color: #ffffff !important;
@@ -83,7 +104,6 @@
             box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
             padding: 0.9rem 1.25rem !important;
         }
-
         html.dark .chat-bot-bubble {
             background-color: #0c222e !important;
             color: #ffffff !important;
@@ -100,48 +120,14 @@
             box-shadow: 0 6px 20px rgba(13, 148, 136, 0.05);
             padding: 1rem 1.25rem !important;
         }
-
-        html.dark .chat-quiz-card {
-            background-color: #0c222e !important;
-            color: #ffffff !important;
-            border: 1px solid #163d52 !important;
-        }
-        html:not(.dark) .chat-quiz-card {
-            background-color: #ffffff !important;
-            color: #07131b !important;
-            border: 1px solid #e0f2fe !important;
-        }
-
-        html.dark .chat-quiz-opt {
-            background-color: #07131b !important;
-            color: #ffffff !important;
-            border: 1px solid #163d52 !important;
-        }
-        html.dark .chat-quiz-opt:hover {
-            border-color: #0284c7 !important;
-            background-color: #0f2d3d !important;
-        }
-        html:not(.dark) .chat-quiz-opt {
-            background-color: #f0fdfa !important;
-            color: #07131b !important;
-            border: 1px solid #ccfbf1 !important;
-        }
-        html:not(.dark) .chat-quiz-opt:hover {
-            border-color: #0d9488 !important;
-            background-color: #e0f2fe !important;
-        }
-
-        .opt-correct {
-            background-color: rgba(16, 185, 129, 0.15) !important;
-            border-color: #10b981 !important;
-            color: #10b981 !important;
-        }
-        .opt-wrong {
-            background-color: rgba(244, 63, 94, 0.15) !important;
-            border-color: #f43f5e !important;
-            color: #f43f5e !important;
-        }
-
+        html.dark .chat-quiz-card { background-color: #0c222e !important; color: #ffffff !important; border: 1px solid #163d52 !important; }
+        html:not(.dark) .chat-quiz-card { background-color: #ffffff !important; color: #07131b !important; border: 1px solid #e0f2fe !important; }
+        html.dark .chat-quiz-opt { background-color: #07131b !important; color: #ffffff !important; border: 1px solid #163d52 !important; }
+        html.dark .chat-quiz-opt:hover { border-color: #0284c7 !important; background-color: #0f2d3d !important; }
+        html:not(.dark) .chat-quiz-opt { background-color: #f0fdfa !important; color: #07131b !important; border: 1px solid #ccfbf1 !important; }
+        html:not(.dark) .chat-quiz-opt:hover { border-color: #0d9488 !important; background-color: #e0f2fe !important; }
+        .opt-correct { background-color: rgba(16, 185, 129, 0.15) !important; border-color: #10b981 !important; color: #10b981 !important; }
+        .opt-wrong { background-color: rgba(244, 63, 94, 0.15) !important; border-color: #f43f5e !important; color: #f43f5e !important; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #0284c7; border-radius: 10px; }
@@ -161,7 +147,7 @@
         </div>
     </div>
 
-    <!-- ================= LANDING PAGE & AUTH MODAL ================= -->
+    <!-- ================= LANDING PAGE ================= -->
     <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8">
         <div class="max-w-3xl w-full mx-auto space-y-8 my-auto py-10">
             <div class="text-center space-y-4">
@@ -184,7 +170,6 @@
                     <h3 class="font-black text-sm text-slate-900 dark:text-white">المهام وتنظيم الدراسة</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">أنشئ مهامك الدراسية، حدد نوعها وأولويتها، وتابع إنجازك اليومي بسهولة.</p>
                 </div>
-
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center font-bold">
                         <i class="fa-solid fa-clock"></i>
@@ -192,7 +177,6 @@
                     <h3 class="font-black text-sm text-slate-900 dark:text-white">التركيز بنظام Pomodoro</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">جلسات تركيز 25 دقيقة مع تتبع الوقت والجلسات المكتملة وسجل إنجازك الدراسي.</p>
                 </div>
-
                 <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
                     <div class="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky flex items-center justify-center font-bold">
                         <i class="fa-solid fa-language"></i>
@@ -200,7 +184,6 @@
                     <h3 class="font-black text-sm text-slate-900 dark:text-white">مسار اللغة الإنجليزية</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">تدرج تعليمي لمهارات الإنجليزية العامة والطبية وفق مسار CEFR مع متابعة التقدم.</p>
                 </div>
-
                 <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2 hover:-translate-y-0.5 transition">
                     <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center font-bold">
                         <i class="fa-solid fa-graduation-cap"></i>
@@ -210,14 +193,12 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-theme-sky/10 to-theme-teal/10 dark:from-theme-sky/10 dark:to-theme-teal/10 border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl text-center">
+            <div class="bg-gradient-to-r from-theme-sky/10 to-theme-teal/10 border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl text-center">
                 <div class="flex items-center justify-center gap-2 text-xs font-black text-slate-800 dark:text-white">
                     <i class="fa-solid fa-code text-theme-sky"></i>
                     <span>تم تطوير ZeroPlus بواسطة مصطفى عبد علي</span>
                 </div>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-                    تصميم وبرمجة وتطوير المنصة لتجمع أدوات الدراسة والإنتاجية في تجربة واحدة.
-                </p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">تصميم وبرمجة وتطوير المنصة لتجمع أدوات الدراسة والإنتاجية في تجربة واحدة.</p>
             </div>
 
             <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder p-6 sm:p-8 rounded-4xl shadow-xl max-w-md mx-auto space-y-5 text-right">
@@ -225,16 +206,15 @@
                     <h3 id="auth-modal-title" class="font-black text-lg text-slate-900 dark:text-white">مرحباً بك زميلنا الكريم</h3>
                     <p class="text-xs text-slate-400">سجّل باستخدام الاسم وكلمة المرور فقط، أو تابع باستخدام Google</p>
                 </div>
-
                 <div class="space-y-3">
                     <div>
                         <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
-                        <input id="auth-username" type="text" placeholder="مثال: مصطفى عبد علي" 
+                        <input id="auth-username" type="text" placeholder="مثال: مصطفى عبد علي"
                             class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
                     </div>
                     <div>
                         <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">كلمة المرور:</label>
-                        <input id="auth-password" type="password" placeholder="••••••••" 
+                        <input id="auth-password" type="password" placeholder="••••••••"
                             class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
                     </div>
                     <div id="auth-dept-box">
@@ -254,21 +234,17 @@
                             <option value="nursing">التمريض السريري والرعاية الحرجة</option>
                         </select>
                     </div>
-
                     <button onclick="handleUserAuthentication()" id="auth-submit-btn" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
                         <span>دخول / إنشاء الحساب</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                     </button>
-
                     <div class="relative flex py-2 items-center">
                         <div class="flex-grow border-t border-slate-200 dark:border-theme-darkBorder"></div>
                         <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold">أو</span>
                         <div class="flex-grow border-t border-slate-200 dark:border-theme-darkBorder"></div>
                     </div>
-
                     <button onclick="handleGoogleLogin()" class="w-full bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-white py-3 rounded-2xl font-bold text-xs hover:bg-sky-50 dark:hover:bg-theme-darkBase transition flex items-center justify-center gap-2.5 shadow-sm">
                         <i class="fa-brands fa-google text-rose-500"></i> <span>المتابعة باستخدام Google</span>
                     </button>
-
                     <div class="text-center pt-2">
                         <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-[11px] text-theme-teal dark:text-theme-skyLight font-bold hover:underline">
                             لديك حساب مسبقاً؟ تسجيل الدخول
@@ -294,14 +270,13 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: PROFILE MANAGEMENT ================= -->
+    <!-- ================= PROFILE MODAL ================= -->
     <div id="profile-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-7 space-y-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-3">
                 <h3 class="font-black text-base text-slate-900 dark:text-white">إدارة الملف الشخصي</h3>
                 <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
             <div class="flex flex-col items-center space-y-2">
                 <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center shadow-md">
                     <img id="profile-avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
@@ -312,7 +287,6 @@
                     <input type="file" accept="image/*" onchange="uploadProfileAvatar(event)" class="hidden">
                 </label>
             </div>
-
             <div class="space-y-3 text-right text-xs">
                 <div>
                     <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
@@ -340,7 +314,6 @@
                     <input id="profile-input-pass" type="password" placeholder="اتركها فارغة إذا لم ترد تغييرها" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                 </div>
             </div>
-
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <a href="https://t.me/pritxv" target="_blank" rel="noopener noreferrer"
                    class="bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-sky-600 dark:text-sky-400 py-2.5 rounded-2xl font-bold text-[11px] flex items-center justify-center gap-1.5 hover:opacity-90 transition">
@@ -351,7 +324,6 @@
                     <i class="fa-brands fa-instagram"></i> الدعم عبر Instagram
                 </a>
             </div>
-
             <div class="space-y-2 pt-2">
                 <button onclick="saveProfileChanges()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky transition active:scale-95">
                     حفظ التعديلات
@@ -363,7 +335,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: INSTALL APP INSTRUCTIONS ================= -->
+    <!-- ================= INSTALL MODAL ================= -->
     <div id="install-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
             <div class="w-14 h-14 rounded-3xl bg-theme-sky text-white mx-auto flex items-center justify-center text-2xl shadow-glow-sky">
@@ -373,27 +345,24 @@
                 <h3 class="font-black text-base text-slate-900 dark:text-white">تثبيت منصة ZeroPlus على جهازك</h3>
                 <p class="text-xs text-slate-500 dark:text-theme-skyLight mt-1">تطبيق سريع وخفيف يعمل حتى دون إنترنت</p>
             </div>
-            
             <div id="install-guide-ios" class="text-right bg-sky-50 dark:bg-theme-darkBase p-4 rounded-2xl border border-slate-200 dark:border-theme-darkBorder space-y-2 text-xs">
                 <span class="font-black text-theme-sky dark:text-white block">خطوات تثبيت آيفون / آيباد (Safari):</span>
                 <p class="text-slate-600 dark:text-slate-300">1. اضغط على زر المشاركة <i class="fa-solid fa-arrow-up-from-bracket text-theme-sky mx-1"></i> أسفل الشاشة.</p>
                 <p class="text-slate-600 dark:text-slate-300">2. مرر للأسفل واختر <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.</p>
                 <p class="text-slate-600 dark:text-slate-300">3. اضغط <strong>إضافة (Add)</strong> وسيظهر التطبيق في شاشتك الرئيسية فوراً.</p>
             </div>
-
             <div id="install-guide-android" class="hidden">
                 <button onclick="triggerAndroidPwaInstall()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-download"></i> <span>تثبيت التطبيق بنقرة واحدة</span>
                 </button>
             </div>
-
             <button onclick="closeInstallModal()" class="w-full bg-slate-100 dark:bg-theme-darkBase text-slate-600 dark:text-slate-300 py-2.5 rounded-xl font-bold text-xs hover:opacity-90 transition">
                 إغلاق
             </button>
         </div>
     </div>
 
-    <!-- ================= MODAL: CONFIGURATION & AI GENERATOR DIALOG ================= -->
+    <!-- ================= AI CONFIG MODAL ================= -->
     <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-4">
@@ -410,7 +379,6 @@
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
-
             <div class="space-y-2">
                 <label class="text-xs font-bold text-theme-sky dark:text-theme-skyLight block">نوع المخرج الأكاديمي المطلوب:</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -428,7 +396,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="ai-count-and-style-box">
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-theme-sky dark:text-theme-skyLight block">طريقة العرض:</label>
@@ -447,13 +414,11 @@
                     </select>
                 </div>
             </div>
-
             <div class="space-y-2 border-t border-slate-100 dark:border-theme-darkBorder pt-3">
                 <div class="flex items-center justify-between text-xs font-bold">
                     <label class="text-theme-sky dark:text-theme-skyLight">نطاق السلايدات المستهدفة:</label>
                     <span id="modal-slides-total-badge" class="text-slate-400">إجمالي السلايدات: 1</span>
                 </div>
-                
                 <div class="grid grid-cols-3 gap-2">
                     <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                         <input type="radio" name="modal_slide_scope" value="all" checked onchange="toggleModalScopeInputs()">
@@ -468,12 +433,10 @@
                         <span>نطاق معين</span>
                     </label>
                 </div>
-
                 <div id="modal-single-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
                     <span class="font-bold text-slate-500">رقم السلايد:</span>
                     <input id="modal-single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
                 </div>
-
                 <div id="modal-range-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
                     <span class="font-bold text-slate-500">من سلايد:</span>
                     <input id="modal-range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
@@ -481,7 +444,6 @@
                     <input id="modal-range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
                 </div>
             </div>
-
             <button onclick="executeAiCustomTask()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
                 <span>تأكيد وبدء المعالجة الأكاديمية</span> <i class="fa-solid fa-arrow-left text-xs"></i>
             </button>
@@ -501,9 +463,8 @@
                     <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight line-clamp-1 cursor-pointer hover:underline" onclick="openProfileModal()">بوابة التعليم التخصصي</span>
                 </div>
             </div>
-
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تنزيل التطبيق على جهازك">
+                <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تنزيل التطبيق">
                     <i class="fa-solid fa-download text-xs"></i>
                     <span class="text-[11px] hidden sm:inline">تثبيت 📲</span>
                 </button>
@@ -529,8 +490,6 @@
     </header>
 
     <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
-
-        <!-- ================= SECTION 1: TO-DO ================= -->
         <section id="tab-todo" class="hidden space-y-4">
             <div class="gradient-todo p-6 rounded-4xl text-white shadow-glow-teal flex items-center justify-between">
                 <div>
@@ -542,9 +501,8 @@
                     0%
                 </div>
             </div>
-
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-sm">
-                <input id="todo-input" type="text" placeholder="عنوان المقرر، الفصل، أو رقم المحاضرة..." 
+                <input id="todo-input" type="text" placeholder="عنوان المقرر، الفصل، أو رقم المحاضرة..."
                     onkeydown="if(event.key==='Enter') addTodo()"
                     class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white">
                 <select id="todo-tag" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none">
@@ -562,11 +520,9 @@
                     <i class="fa-solid fa-plus text-xs"></i> <span>إدراج مهمة</span>
                 </button>
             </div>
-
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
@@ -582,20 +538,17 @@
                     <span id="stat-tree-count" class="text-base sm:text-xl font-black text-emerald-500 mt-1 block">0 جلسة</span>
                 </div>
             </div>
-
             <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-sm space-y-6">
                 <div class="flex justify-center gap-2 bg-emerald-50 dark:bg-theme-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
                     <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm">تركيز (25 د)</button>
                     <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة (5 د)</button>
                     <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة (15 د)</button>
                 </div>
-
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
                     <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="44" fill="none" class="stroke-slate-100 dark:stroke-theme-darkBase" stroke-width="4.5"></circle>
                         <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="#10b981" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
                     </svg>
-
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                         <div id="pomo-tree-preview" class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center text-lg mb-2 border border-emerald-200 dark:border-theme-darkBorder">
                             <i class="fa-solid fa-hourglass-half"></i>
@@ -603,14 +556,12 @@
                         <span id="pomo-display" class="text-5xl sm:text-6xl font-black tracking-tight text-theme-mint dark:text-white">25:00</span>
                     </div>
                 </div>
-
                 <div class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200/60 dark:border-theme-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">
                         جلسة تركيز دراسي (25 دقيقة)
                     </span>
                 </div>
-
                 <div class="flex justify-center gap-3 pt-2">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="bg-theme-mint hover:bg-emerald-700 text-white font-black px-10 py-3.5 rounded-2xl shadow-glow-green transition active:scale-95 flex items-center gap-2">
                         <span>بدء المؤقت</span> <i class="fa-solid fa-play text-xs"></i>
@@ -620,7 +571,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-6 rounded-4xl shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
@@ -638,7 +588,6 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 3: ENGLISH ================= -->
         <section id="tab-english" class="hidden space-y-5">
             <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
@@ -651,7 +600,6 @@
                         <span id="path-streak-count">1 يوم</span>
                     </div>
                 </div>
-
                 <div class="flex items-center gap-2 bg-sky-50 dark:bg-theme-darkBase p-1 rounded-2xl border border-sky-200/50 dark:border-theme-darkBorder">
                     <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-theme-sky text-white shadow-sm">
                         <i class="fa-solid fa-earth-americas text-xs"></i>
@@ -663,7 +611,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl shadow-sm flex flex-col items-center">
                 <div class="mb-4 text-center">
                     <h3 class="text-base font-black text-theme-sky dark:text-white flex items-center justify-center gap-2">
@@ -675,7 +622,6 @@
             </div>
         </section>
 
-        <!-- ================= MODAL: INTERACTIVE LESSON ================= -->
         <div id="lesson-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
             <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl">
                 <div class="space-y-3">
@@ -691,7 +637,6 @@
                             <span id="session-hearts-count">5</span>
                         </div>
                     </div>
-
                     <div class="flex items-center justify-between pt-1">
                         <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">تمرين 1 من 3</span>
                         <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-sky-300/60 bg-sky-50 dark:bg-sky-900/20 text-theme-sky text-xs font-bold transition active:scale-95">
@@ -700,16 +645,13 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="lesson-hint-box" class="hidden p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-xs font-semibold text-theme-sky dark:text-white transition-opacity">
                     <div class="flex items-start gap-2">
                         <i class="fa-solid fa-circle-info text-theme-sky mt-0.5"></i>
                         <p id="lesson-hint-text" class="leading-relaxed"></p>
                     </div>
                 </div>
-
                 <div id="lesson-body-area" class="space-y-4 pt-1"></div>
-
                 <div class="pt-2 flex gap-3">
                     <button id="lesson-action-btn" class="hidden w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95">
                         التالي
@@ -718,7 +660,6 @@
             </div>
         </div>
 
-        <!-- ================= SECTION 4: ZERO STUDY CONSOLE ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -735,7 +676,6 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span>المحرك الأكاديمي جاهز للتحليل</span>
                     </span>
                 </div>
-
                 <div class="flex flex-col sm:flex-row gap-2">
                     <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
                         <i class="fa-solid fa-file-arrow-up text-theme-teal"></i>
@@ -746,11 +686,9 @@
                         إدخال نصي مباشر
                     </button>
                 </div>
-
                 <div id="lecture-paste-container" class="hidden">
                     <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
-
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
                     <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج وفحصه</span>
                     <div class="flex items-center gap-3">
@@ -759,7 +697,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
                 <div class="p-4 border-b border-teal-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-teal-50/30 dark:bg-theme-darkBase/40">
                     <div class="flex items-center gap-3">
@@ -782,11 +719,9 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
-
                 <div class="p-3 border-t border-teal-100 dark:border-theme-darkBorder bg-teal-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة معقدة من المحاضرة، استفسار علمي، أو كويز..." 
+                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة معقدة من المحاضرة، استفسار علمي، أو كويز..."
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
                         class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
                     <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal hover:opacity-95 transition active:scale-95 shrink-0">
@@ -794,12 +729,9 @@
                     </button>
                 </div>
             </div>
-
         </section>
-
     </main>
 
-    <!-- ================= MODAL: SHARE RECORD ================= -->
     <div id="share-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
             <div id="share-card" class="gradient-todo p-6 rounded-3xl text-white shadow-glow-teal space-y-3 text-center">
@@ -827,7 +759,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex gap-2">
                 <button onclick="executeShare()" class="flex-1 bg-theme-sky text-white py-3 rounded-2xl font-bold text-xs hover:opacity-95 transition flex items-center justify-center gap-2 shadow-glow-sky">
                     <i class="fa-solid fa-share-nodes text-xs"></i> <span>مشاركة التقرير</span>
@@ -840,7 +771,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Dock -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-theme-darkBase/95 backdrop-blur-2xl border-t border-sky-100 dark:border-theme-darkBorder pt-2.5 ios-nav-safe z-40 shadow-sm">
         <div class="max-w-md mx-auto flex justify-around items-center px-4">
             <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
@@ -899,11 +829,8 @@
 
         let supabaseClient = null;
         if (window.supabase) {
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch(e) {
-                console.warn("Supabase init error:", e);
-            }
+            try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+            catch(e) { console.warn("Supabase init error:", e); }
         }
 
         function updateCloudIndicator(status) {
@@ -921,7 +848,7 @@
             }
         }
 
-        // ================= AUTHENTICATION =================
+        // ------------------ AUTH ------------------
         let isLoginMode = false;
 
         function toggleAuthMode() {
@@ -930,7 +857,6 @@
             const switchBtn = document.getElementById('auth-switch-text');
             const deptBox = document.getElementById('auth-dept-box');
             const submitBtn = document.getElementById('auth-submit-btn');
-
             if (isLoginMode) {
                 title.innerText = 'تسجيل الدخول إلى حسابك';
                 switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
@@ -948,52 +874,22 @@
             const usernameInput = document.getElementById('auth-username').value.trim();
             const passwordInput = document.getElementById('auth-password').value.trim();
             const deptInput = document.getElementById('auth-dept').value;
-
-            if (!usernameInput || !passwordInput) {
-                alert("يرجى إدخال اسم الطالب وكلمة المرور.");
-                return;
-            }
-            if (passwordInput.length < 6) {
-                alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
-                return;
-            }
-
+            if (!usernameInput || !passwordInput) { alert("يرجى إدخال اسم الطالب وكلمة المرور."); return; }
+            if (passwordInput.length < 6) { alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل."); return; }
             const pseudoEmail = `${usernameInput.toLowerCase().replace(/\s+/g, '_')}@zeroplus.edu`;
-
-            if (!supabaseClient) {
-                alert("تعذر الاتصال بـ Supabase. تحقق من اتصالك بالإنترنت.");
-                return;
-            }
+            if (!supabaseClient) { alert("تعذر الاتصال بـ Supabase. تحقق من اتصالك بالإنترنت."); return; }
 
             if (isLoginMode) {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: pseudoEmail,
-                    password: passwordInput
-                });
-
-                if (error) {
-                    alert("خطأ في تسجيل الدخول: تأكد من صحة الاسم وكلمة المرور.");
-                    return;
-                }
-
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email: pseudoEmail, password: passwordInput });
+                if (error) { alert("خطأ في تسجيل الدخول: تأكد من صحة الاسم وكلمة المرور."); return; }
                 await loadUserDataAfterAuth(data.user);
             } else {
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: pseudoEmail,
                     password: passwordInput,
-                    options: {
-                        data: {
-                            display_username: usernameInput,
-                            department: deptInput
-                        }
-                    }
+                    options: { data: { display_username: usernameInput, department: deptInput } }
                 });
-
-                if (error) {
-                    alert("خطأ في إنشاء الحساب: " + error.message);
-                    return;
-                }
-
+                if (error) { alert("خطأ في إنشاء الحساب: " + error.message); return; }
                 if (data.user) {
                     await supabaseClient.from('profiles').upsert({
                         user_id: data.user.id,
@@ -1002,7 +898,6 @@
                         xp: 140,
                         unlocked_stage_max: 1
                     }, { onConflict: 'user_id' });
-
                     await loadUserDataAfterAuth(data.user);
                 }
             }
@@ -1020,17 +915,13 @@
         async function loadUserDataAfterAuth(authUser) {
             currentUserName = authUser.user_metadata?.display_username || authUser.email.split('@')[0];
             activeDepartmentKey = authUser.user_metadata?.department || 'general';
-
             localStorage.setItem('zp_username', currentUserName);
             localStorage.setItem('zp_user_department', activeDepartmentKey);
             localStorage.setItem('zp_user_registered', 'true');
             localStorage.setItem('zp_auth_uid', authUser.id);
 
             const { data, error: profileLoadError } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('user_id', authUser.id)
-                .maybeSingle();
+                .from('profiles').select('*').eq('user_id', authUser.id).maybeSingle();
 
             if (data) {
                 if (data.user_name) currentUserName = data.user_name;
@@ -1042,7 +933,6 @@
                 if (typeof data.total_focus_mins === 'number') totalFocusMins = data.total_focus_mins;
                 if (data.avatar_url) localStorage.setItem('zp_avatar_url', data.avatar_url);
                 if (data.streak_count) userStreak = data.streak_count;
-
                 localStorage.setItem('zp_xp', userXP);
                 localStorage.setItem('zp_username', currentUserName);
                 localStorage.setItem('zp_user_department', activeDepartmentKey);
@@ -1050,20 +940,10 @@
                 localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
                 localStorage.setItem('zp_focus_mins', totalFocusMins);
             } else if (!profileLoadError) {
-                const googleName =
-                    authUser.user_metadata?.full_name ||
-                    authUser.user_metadata?.name ||
-                    authUser.email?.split('@')[0] ||
-                    'طالب';
-
-                const googleAvatar =
-                    authUser.user_metadata?.avatar_url ||
-                    authUser.user_metadata?.picture ||
-                    '';
-
+                const googleName = authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'طالب';
+                const googleAvatar = authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '';
                 currentUserName = googleName;
                 activeDepartmentKey = 'general';
-
                 await supabaseClient.from('profiles').upsert({
                     user_id: authUser.id,
                     user_name: currentUserName,
@@ -1072,7 +952,6 @@
                     xp: 140,
                     unlocked_stage_max: 1
                 }, { onConflict: 'user_id' });
-
                 if (googleAvatar) localStorage.setItem('zp_avatar_url', googleAvatar);
                 localStorage.setItem('zp_username', currentUserName);
                 localStorage.setItem('zp_user_department', activeDepartmentKey);
@@ -1142,10 +1021,7 @@
             }
             document.getElementById('profile-modal').classList.remove('hidden');
         }
-
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-        }
+        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
 
         function updateHeaderAvatar() {
             const avatarUrl = localStorage.getItem('zp_avatar_url');
@@ -1176,18 +1052,8 @@
             const uid = localStorage.getItem('zp_auth_uid') || getDeviceId();
             const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
             const filePath = `avatars/${uid}_${Date.now()}.${extension}`;
-
-            const { error: uploadErr } = await supabaseClient.storage
-                .from('avatars')
-                .upload(filePath, file, {
-                    upsert: true,
-                    contentType: file.type || 'image/jpeg'
-                });
-            if (uploadErr) {
-                alert("تعذر رفع الصورة: " + uploadErr.message);
-                return;
-            }
-
+            const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: true, contentType: file.type || 'image/jpeg' });
+            if (uploadErr) { alert("تعذر رفع الصورة: " + uploadErr.message); return; }
             const { data: { publicUrl } } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
             localStorage.setItem('zp_avatar_url', publicUrl);
             document.getElementById('profile-avatar-preview').src = publicUrl;
@@ -1201,27 +1067,17 @@
             const newName = document.getElementById('profile-input-name').value.trim();
             const newDept = document.getElementById('profile-select-dept').value;
             const newPass = document.getElementById('profile-input-pass').value.trim();
-
-            if (!newName) {
-                alert("يرجى إدخال الاسم الأكاديمي.");
-                return;
-            }
-
+            if (!newName) { alert("يرجى إدخال الاسم الأكاديمي."); return; }
             currentUserName = newName;
             activeDepartmentKey = newDept;
             localStorage.setItem('zp_username', currentUserName);
             localStorage.setItem('zp_user_department', activeDepartmentKey);
-
             if (newPass && supabaseClient) {
-                if (newPass.length < 6) {
-                    alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
-                    return;
-                }
+                if (newPass.length < 6) { alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل."); return; }
                 const { error } = await supabaseClient.auth.updateUser({ password: newPass });
                 if (error) alert("تعذر تحديث كلمة المرور: " + error.message);
                 else alert("تم تحديث كلمة المرور بنجاح.");
             }
-
             await syncProfileWithCloud();
             updateGreetingHeader();
             closeProfileModal();
@@ -1258,9 +1114,7 @@
                 };
                 await supabaseClient.from('profiles').upsert(payload, { onConflict: uid ? 'user_id' : 'device_id' });
                 updateCloudIndicator('online');
-            } catch (e) {
-                updateCloudIndicator('offline');
-            }
+            } catch (e) { updateCloudIndicator('offline'); }
         }
 
         async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
@@ -1301,9 +1155,7 @@
 
         async function deleteTaskFromCloud(taskId) {
             if (!supabaseClient || !navigator.onLine) return;
-            try {
-                await supabaseClient.from('tasks').delete().eq('id', taskId);
-            } catch (e) {}
+            try { await supabaseClient.from('tasks').delete().eq('id', taskId); } catch (e) {}
         }
 
         async function syncSessionToCloud(sessionObj) {
@@ -1329,128 +1181,66 @@
 
         const GLOBAL_CURRICULUM = {
             general: [
-                {
-                    level: "A1",
-                    title_ar: "المستوى A1: التأسيس والمحادثة اليومية",
-                    units: [
-                        {
-                            unit_title: "الوحدة 1: التعارف والجمل البسيطة",
-                            nodes: [
-                                { id: "gen_a1_01", title: "التحيات وتقديم النفس (Introductions)", order: 1 },
-                                { id: "gen_a1_02", title: "أفعال الكينونة والضمائر (To Be & Pronouns)", order: 2 },
-                                { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة (Everyday Objects)", order: 3 }
-                            ]
-                        },
-                        {
-                            unit_title: "الوحدة 2: الروتين والوصف",
-                            nodes: [
-                                { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم (Daily Routine)", order: 4 },
-                                { id: "gen_a1_05", title: "صفات المقارنة والوصف (Describing Things)", order: 5 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "A2",
-                    title_ar: "المستوى A2: الأسئلة والمواقف الحياتية",
-                    units: [
-                        {
-                            unit_title: "الوحدة 3: الماضي والذكريات",
-                            nodes: [
-                                { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة (Past Simple)", order: 6 },
-                                { id: "gen_a2_02", title: "المواقف في المطعم والتسوق (Out & About)", order: 7 }
-                            ]
-                        },
-                        {
-                            unit_title: "الوحدة 4: المستقبل والخطط",
-                            nodes: [
-                                { id: "gen_a2_03", title: "الخطط المستقبلية (Going to & Will)", order: 8 },
-                                { id: "gen_a2_04", title: "أدوات الربط وحروف الجر (Connectors & Prepositions)", order: 9 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "B1",
-                    title_ar: "المستوى B1: الطلاقة وسرد القصص",
-                    units: [
-                        {
-                            unit_title: "الوحدة 5: السفر والخبرات المتراكمة",
-                            nodes: [
-                                { id: "gen_b1_01", title: "المضارع التام والخبرات (Present Perfect)", order: 10 },
-                                { id: "gen_b1_02", title: "إبداء الرأي والموافقة والاعتراض (Opinions & Debate)", order: 11 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "B2",
-                    title_ar: "المستوى B2: النقاش الاحترافي والتعقيد اللغوي",
-                    units: [
-                        {
-                            unit_title: "الوحدة 6: اللغة الأكاديمية والمهنية",
-                            nodes: [
-                                { id: "gen_b2_01", title: "المبني للمجهول في المقالات (Passive Voice)", order: 12 },
-                                { id: "gen_b2_02", title: "الجمل الشرطية المتقدمة (Conditionals 2 & 3)", order: 13 }
-                            ]
-                        }
-                    ]
-                }
+                { level: "A1", title_ar: "المستوى A1: التأسيس والمحادثة اليومية", units: [
+                    { unit_title: "الوحدة 1: التعارف والجمل البسيطة", nodes: [
+                        { id: "gen_a1_01", title: "التحيات وتقديم النفس (Introductions)", order: 1 },
+                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر (To Be & Pronouns)", order: 2 },
+                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة (Everyday Objects)", order: 3 }
+                    ]},
+                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
+                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم (Daily Routine)", order: 4 },
+                        { id: "gen_a1_05", title: "صفات المقارنة والوصف (Describing Things)", order: 5 }
+                    ]}
+                ]},
+                { level: "A2", title_ar: "المستوى A2: الأسئلة والمواقف الحياتية", units: [
+                    { unit_title: "الوحدة 3: الماضي والذكريات", nodes: [
+                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة (Past Simple)", order: 6 },
+                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق (Out & About)", order: 7 }
+                    ]},
+                    { unit_title: "الوحدة 4: المستقبل والخطط", nodes: [
+                        { id: "gen_a2_03", title: "الخطط المستقبلية (Going to & Will)", order: 8 },
+                        { id: "gen_a2_04", title: "أدوات الربط وحروف الجر (Connectors & Prepositions)", order: 9 }
+                    ]}
+                ]},
+                { level: "B1", title_ar: "المستوى B1: الطلاقة وسرد القصص", units: [
+                    { unit_title: "الوحدة 5: السفر والخبرات المتراكمة", nodes: [
+                        { id: "gen_b1_01", title: "المضارع التام والخبرات (Present Perfect)", order: 10 },
+                        { id: "gen_b1_02", title: "إبداء الرأي والموافقة والاعتراض (Opinions & Debate)", order: 11 }
+                    ]}
+                ]},
+                { level: "B2", title_ar: "المستوى B2: النقاش الاحترافي والتعقيد اللغوي", units: [
+                    { unit_title: "الوحدة 6: اللغة الأكاديمية والمهنية", nodes: [
+                        { id: "gen_b2_01", title: "المبني للمجهول في المقالات (Passive Voice)", order: 12 },
+                        { id: "gen_b2_02", title: "الجمل الشرطية المتقدمة (Conditionals 2 & 3)", order: 13 }
+                    ]}
+                ]}
             ],
             medical: [
-                {
-                    level: "A1",
-                    title_ar: "المستوى A1 (طبي): تفكيك الكلمات والمصطلحات الأساسية",
-                    units: [
-                        {
-                            unit_title: "الوحدة 1: البادئات واللواحق والكميات",
-                            nodes: [
-                                { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
-                                { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy, -oma)", order: 2 },
-                                { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "A2",
-                    title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات السريرية",
-                    units: [
-                        {
-                            unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية",
-                            nodes: [
-                                { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
-                                { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone, Trendelenburg)", order: 5 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "B1",
-                    title_ar: "المستوى B1 (طبي): مسارات العلاج والوصفات الطبية",
-                    units: [
-                        {
-                            unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية",
-                            nodes: [
-                                { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation, Infusion)", order: 6 },
-                                { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية (Adverse Effects)", order: 7 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    level: "B2",
-                    title_ar: "المستوى B2 (طبي): بروتوكولات الإنعاش وتسليم الحالات",
-                    units: [
-                        {
-                            unit_title: "الوحدة 4: التواصل السريري والإنعاش الحرج",
-                            nodes: [
-                                { id: "med_b2_01", title: "تسليم الحالات بنموذج SBAR الاحترافي", order: 8 },
-                                { id: "med_b2_02", title: "إدارة مجرى الهواء والتنفس الاصطناعي (Airway & Ventilation)", order: 9 }
-                            ]
-                        }
-                    ]
-                }
+                { level: "A1", title_ar: "المستوى A1 (طبي): تفكيك الكلمات والمصطلحات الأساسية", units: [
+                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
+                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
+                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy, -oma)", order: 2 },
+                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
+                    ]}
+                ]},
+                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات السريرية", units: [
+                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
+                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
+                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone, Trendelenburg)", order: 5 }
+                    ]}
+                ]},
+                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والوصفات الطبية", units: [
+                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
+                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation, Infusion)", order: 6 },
+                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية (Adverse Effects)", order: 7 }
+                    ]}
+                ]},
+                { level: "B2", title_ar: "المستوى B2 (طبي): بروتوكولات الإنعاش وتسليم الحالات", units: [
+                    { unit_title: "الوحدة 4: التواصل السريري والإنعاش الحرج", nodes: [
+                        { id: "med_b2_01", title: "تسليم الحالات بنموذج SBAR الاحترافي", order: 8 },
+                        { id: "med_b2_02", title: "إدارة مجرى الهواء والتنفس الاصطناعي (Airway & Ventilation)", order: 9 }
+                    ]}
+                ]}
             ]
         };
 
@@ -1460,13 +1250,10 @@
         let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
         let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
         let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
-
         let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
         let isHintVisible = false;
-
         let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0, displayMode: 'interactive' };
 
-        // ------------------ GAMIFICATION ------------------
         function updateGamificationBar() {
             const h = document.getElementById('path-hearts-count');
             const s = document.getElementById('path-streak-count');
@@ -1479,10 +1266,8 @@
         function setLearningTrackMode(mode) {
             currentLearningTrack = mode;
             localStorage.setItem('zp_learning_track', mode);
-            
             const btnGen = document.getElementById('mode-btn-general');
             const btnMed = document.getElementById('mode-btn-medical');
-            
             if (mode === 'general') {
                 btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-theme-sky text-white shadow-sm';
                 btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
@@ -1498,7 +1283,6 @@
             const container = document.getElementById('learning-path-tree');
             if (!container) return;
             container.innerHTML = '';
-
             const sections = GLOBAL_CURRICULUM[currentLearningTrack] || GLOBAL_CURRICULUM.general;
             let nodeCounter = 1;
             let totalCompletedNodes = 0;
@@ -1510,7 +1294,6 @@
                             ${sec.title_ar} (${sec.level})
                         </span>
                     </div>`;
-
                 sec.units.forEach((unit) => {
                     container.innerHTML += `
                         <div class="w-full flex items-center justify-center gap-3 my-5">
@@ -1518,7 +1301,6 @@
                             <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
                             <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
                         </div>`;
-
                     unit.nodes.forEach((node) => {
                         const orderNum = nodeCounter;
                         const crowns = nodeCrowns[node.id] || 0;
@@ -1526,7 +1308,6 @@
                         const isCompleted = crowns >= 3;
                         if (isCompleted) totalCompletedNodes++;
                         const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
-
                         let btnHtml = '';
                         if (isCompleted) {
                             btnHtml = `
@@ -1551,7 +1332,6 @@
                                     <i class="fa-solid fa-lock"></i>
                                 </div>`;
                         }
-
                         container.innerHTML += `
                             <div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
                                 ${btnHtml}
@@ -1560,12 +1340,10 @@
                                     <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
                                 </div>
                             </div>`;
-
                         nodeCounter++;
                     });
                 });
             });
-
             const shareNodes = document.getElementById('share-nodes');
             if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
@@ -1575,11 +1353,9 @@
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
             const actionBtn = document.getElementById('lesson-action-btn');
-
             modal.classList.remove('hidden');
             document.getElementById('lesson-hint-box').classList.add('hidden');
             isHintVisible = false;
-
             bodyArea.innerHTML = `
                 <div class="p-8 text-center space-y-3">
                     <i class="fa-solid fa-circle-notch fa-spin text-2xl text-theme-sky"></i>
@@ -1587,23 +1363,18 @@
                 </div>
             `;
             actionBtn.classList.add('hidden');
-
             const prompt = `أنت خبير إعداد مناهج لغة إنجليزية تفاعلي بأسلوب Duolingo.
 صغ 3 تمارين متنوعة لـ: "${title}".
 النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي وسريري' : 'إنجليزي عام ومحادثة'}.
 المستوى: تاج ${currentCrown + 1} من 3.
 أخرج JSON حصراً بالهيكل التالي:
 {"exercises":[{"question":"Sentence with blank ______","translation":"الترجمة بالعربية","options":["A","B","C","D"],"correct_index":0,"explanation":"شرح القاعدة بالعربية","hint":"تلميح سريع"}]}`;
-
             let exercises = null;
             try {
                 const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات Duolingo. أخرج كود JSON فقط بدون إضافات.", true);
                 const parsed = parseAIJson(raw);
-                if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) {
-                    exercises = parsed.exercises;
-                }
+                if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) exercises = parsed.exercises;
             } catch(e) {}
-
             if (!exercises || exercises.length === 0) {
                 exercises = [
                     {
@@ -1632,20 +1403,16 @@
                     }
                 ];
             }
-
             dynamicSessionState = { exercises, index: 0, nodeId, orderNum, currentCrown, title };
             renderDynamicExerciseStep();
         }
 
-        function closeLessonModal() {
-            document.getElementById('lesson-modal').classList.add('hidden');
-        }
+        function closeLessonModal() { document.getElementById('lesson-modal').classList.add('hidden'); }
 
         function toggleSmartHint() {
             const ex = dynamicSessionState.exercises[dynamicSessionState.index];
             const hintBox = document.getElementById('lesson-hint-box');
             const hintText = document.getElementById('lesson-hint-text');
-
             isHintVisible = !isHintVisible;
             if (isHintVisible) {
                 hintText.innerText = ex?.hint || ex?.explanation || "تأمل في سياق الجملة وقواعد الربط الأساسية.";
@@ -1660,22 +1427,18 @@
             const ex = exercises[index];
             const bodyArea = document.getElementById('lesson-body-area');
             const actionBtn = document.getElementById('lesson-action-btn');
-
             document.getElementById('lesson-step-badge').innerText = `تمرين ${index + 1} من ${exercises.length}`;
             const pct = Math.round(((index + 1) / exercises.length) * 100);
             document.getElementById('lesson-progress-bar').style.width = `${pct}%`;
             document.getElementById('lesson-hint-box').classList.add('hidden');
             isHintVisible = false;
-
             let optsHtml = '';
             ex.options.forEach((opt, optIdx) => {
                 optsHtml += `
                     <button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">
                         ${escapeHtml(opt)}
-                    </button>
-                `;
+                    </button>`;
             });
-
             bodyArea.innerHTML = `
                 <div class="space-y-4">
                     <div class="text-center py-2 space-y-2">
@@ -1683,12 +1446,9 @@
                         <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white" dir="ltr">${escapeHtml(ex.question)}</h3>
                         <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
                     </div>
-                    <div id="exercise-options" class="space-y-2 pt-1">
-                        ${optsHtml}
-                    </div>
+                    <div id="exercise-options" class="space-y-2 pt-1">${optsHtml}</div>
                     <div id="exercise-feedback" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
-                </div>
-            `;
+                </div>`;
             actionBtn.classList.add('hidden');
         }
 
@@ -1697,7 +1457,6 @@
             const ex = exercises[index];
             const feedback = document.getElementById('exercise-feedback');
             const actionBtn = document.getElementById('lesson-action-btn');
-            
             document.querySelectorAll('.ex-opt-btn').forEach(b => {
                 b.disabled = true;
                 const idx = parseInt(b.getAttribute('data-optidx'));
@@ -1705,28 +1464,21 @@
                 else if (idx === chosenIdx) b.classList.add('opt-wrong');
             });
             feedback.classList.remove('hidden');
-
             const isCorrect = (chosenIdx === ex.correct_index);
-
             if (isCorrect) {
-                playChime(true);
-                awardXP(15);
-                triggerConfetti();
+                playChime(true); awardXP(15); triggerConfetti();
                 feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300';
                 feedback.innerHTML = `
                     <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span>ممتاز! إجابة صحيحة (+15 XP)</span></div>
-                    <p class="text-[11px] font-semibold">${escapeHtml(ex.explanation)}</p>
-                `;
+                    <p class="text-[11px] font-semibold">${escapeHtml(ex.explanation)}</p>`;
             } else {
                 playChime(false);
                 feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300';
                 feedback.innerHTML = `
                     <div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span></div>
                     <p class="text-[11px] font-semibold">الإجابة الصحيحة هي: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
-                    <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>
-                `;
+                    <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>`;
             }
-
             actionBtn.classList.remove('hidden');
             actionBtn.onclick = advanceExerciseOrFinish;
             actionBtn.innerText = (index + 1 < exercises.length) ? "التمرين التالي" : "إنهاء المحطة واحتساب التاج 👑";
@@ -1746,7 +1498,6 @@
             crowns = Math.min(3, crowns + 1);
             nodeCrowns[nodeId] = crowns;
             safeSetItem('zp_node_crowns', JSON.stringify(nodeCrowns));
-
             if (crowns >= 3) {
                 if (nodeOrder === unlockedNodeMax) {
                     unlockedNodeMax++;
@@ -1756,13 +1507,11 @@
             } else {
                 syncNodeProgressToCloud(nodeId, false, crowns * 33);
             }
-
             closeLessonModal();
             triggerConfetti();
             playChime(true);
             syncProfileWithCloud();
             renderPathTree();
-
             if (crowns < 3) {
                 setTimeout(() => alert(`عاشت إيدك! أكملت المستوى ${crowns}/3 لهذه المحطة بنجاح. تتبقى لك مستويات لتتقن التاج الذهبي.`), 300);
             } else {
@@ -1805,12 +1554,7 @@
 
         function triggerConfetti() {
             if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 70,
-                    spread: 75,
-                    origin: { y: 0.7 },
-                    colors: ['#0284c7', '#0d9488', '#10b981', '#ffffff']
-                });
+                confetti({ particleCount: 70, spread: 75, origin: { y: 0.7 }, colors: ['#0284c7', '#0d9488', '#10b981', '#ffffff'] });
             }
         }
 
@@ -1819,8 +1563,7 @@
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
+                osc.connect(gain); gain.connect(ctx.destination);
                 osc.type = 'sine';
                 if (success) {
                     osc.frequency.setValueAtTime(587.33, ctx.currentTime);
@@ -1831,8 +1574,7 @@
                 }
                 gain.gain.setValueAtTime(0.1, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
+                osc.start(); osc.stop(ctx.currentTime + 0.3);
             } catch(e){}
         }
 
@@ -1878,10 +1620,7 @@
         }
 
         function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                alert("المتصفح لا يدعم الإشعارات.");
-                return;
-            }
+            if (!("Notification" in window)) { alert("المتصفح لا يدعم الإشعارات."); return; }
             Notification.requestPermission().then(p => {
                 checkNotificationBanner();
                 if (p === "granted") playChime(true);
@@ -1903,10 +1642,7 @@
         function triggerAndroidPwaInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
-                    closeInstallModal();
-                });
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); });
             }
         }
 
@@ -2053,16 +1789,14 @@
                 if (btn) btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
                 pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
                 localStorage.setItem('zp_pomo_end_time', pomoEndTimestamp);
-                
                 if (navigator.serviceWorker?.controller) {
                     navigator.serviceWorker.controller.postMessage({
                         type: 'START_POMO_TIMER',
                         durationMs: pomoRemaining * 1000,
                         title: 'ZeroPlus | انتهت جلسة التركيز! ⏳',
-                        body: `عاشت إيدك! اكتملت جلسة ${currentPomoMins} دقيقة بنجاح. ارجع لتسجيل إنجازك.`
+                        body: `عاشت إيدك! اكتملت جلسة ${currentPomoMins} دقيقة بنجاح.`
                     });
                 }
-
                 pomoInterval = setInterval(() => {
                     const now = Date.now();
                     pomoRemaining = Math.max(0, Math.ceil((pomoEndTimestamp - now) / 1000));
@@ -2119,9 +1853,9 @@
 
         function openAiConfigModal() {
             syncManualLectureText();
-            if (!currentLectureText || currentLectureText.trim().length < 20) { 
-                alert("يرجى تحميل ملف المحاضرة أولاً ليتمكن المساعد من فحصها واستيعابها."); 
-                return; 
+            if (!currentLectureText || currentLectureText.trim().length < 20) {
+                alert("يرجى تحميل ملف المحاضرة أولاً ليتمكن المساعد من فحصها واستيعابها.");
+                return;
             }
             const total = pdfSlidesData.length || 1;
             const badge = document.getElementById('modal-slides-total-badge');
@@ -2168,13 +1902,12 @@
             if (!file) return;
             const status = document.getElementById('upload-file-status');
             if (status) status.innerText = `جاري فحص واستخراج محتوى الملف: ${file.name}...`;
-
             try {
                 if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
                     if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
                     const buf = await file.arrayBuffer();
                     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-                    let fullText = ""; 
+                    let fullText = "";
                     pdfSlidesData = [];
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
@@ -2221,12 +1954,12 @@
                 const res = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         messages: [
-                            { role: 'system', content: systemInstruction }, 
+                            { role: 'system', content: systemInstruction },
                             { role: 'user', content: userPrompt }
-                        ], 
-                        jsonMode 
+                        ],
+                        jsonMode
                     })
                 });
                 if (!res.ok) return null;
@@ -2258,21 +1991,17 @@
                 alert("يرجى إدخال محتوى أو رفع محاضرة أولاً.");
                 return;
             }
-
             const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
             const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
-
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
             if (feed) {
                 feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري معالجة المحاضرة وصياغة المخرجات الأكاديمية...</div>`);
                 feed.scrollTop = feed.scrollHeight;
             }
-
             let systemInstruction = "";
             let userPrompt = "";
             let expectJson = false;
-
             if (selectedAiTaskType === 'summary') {
                 systemInstruction = "أنت مساعد أكاديمي متخصص. لخّص المحتوى التالي بشكل مكثف ومنظم بعناوين ونقاط رئيسية باللغة العربية، مع الحفاظ على المصطلحات العلمية بالإنجليزية عند الحاجة.";
                 userPrompt = `لخّص المحاضرة التالية بشكل مكثف:\n\n${scopedContent}`;
@@ -2285,10 +2014,8 @@
                 systemInstruction = `أنت خبير إعداد اختبارات أكاديمية. أخرج JSON فقط بدون أي شرح.`;
                 userPrompt = `من المحتوى التالي، صغ ${qCount} أسئلة إجابة قصيرة.\nأخرج JSON حصراً بالهيكل:\n{"questions":[{"question":"...","answer":"...","explanation":"..."}]}\n\nالمحتوى:\n${scopedContent}`;
             }
-
             const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
             document.getElementById(loadingId)?.remove();
-
             if (!reply) {
                 if (feed) {
                     feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من إعداد endpoint /api/ai على السيرفر.</div>`);
@@ -2296,7 +2023,6 @@
                 }
                 return;
             }
-
             if (selectedAiTaskType === 'summary') {
                 if (feed) {
                     feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
@@ -2312,7 +2038,6 @@
                     }
                     return;
                 }
-
                 if (displayStyle === 'text') {
                     let textHtml = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار النموذجية (${parsed.questions.length} سؤال)</div>`;
                     parsed.questions.forEach((q, i) => {
@@ -2349,7 +2074,6 @@
             });
         }
 
-        // ------------------ INTERACTIVE QUIZ SESSION ------------------
         function startQuizSession(questions) {
             activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length, displayMode: 'interactive' };
             renderQuizInFeed();
@@ -2361,14 +2085,12 @@
             const { questions, currentIndex } = activeQuizSessionState;
             const q = questions[currentIndex];
             const quizId = 'quiz_' + Date.now();
-
             let optsHtml = '';
             if (Array.isArray(q.options)) {
                 q.options.forEach((opt, oi) => {
                     optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
                 });
             }
-
             feed.insertAdjacentHTML('beforeend', `
                 <div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
                     <div class="flex items-center justify-between">
@@ -2389,14 +2111,12 @@
             const { questions, currentIndex } = activeQuizSessionState;
             const q = questions[currentIndex];
             const feedback = container.querySelector('.quiz-feedback');
-
             container.querySelectorAll('.quiz-opt-btn').forEach(b => {
                 b.disabled = true;
                 const oi = parseInt(b.getAttribute('data-opt'));
                 if (oi === q.correct_index) b.classList.add('opt-correct');
                 else if (oi === chosenIdx) b.classList.add('opt-wrong');
             });
-
             const isCorrect = chosenIdx === q.correct_index;
             if (isCorrect) {
                 activeQuizSessionState.score++;
@@ -2405,14 +2125,12 @@
             } else {
                 playChime(false);
             }
-
             feedback.classList.remove('hidden');
             feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
             feedback.innerHTML = `
                 <div class="font-black mb-1">${isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة خاطئة'}</div>
                 ${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}
             `;
-
             const nextBtn = document.createElement('button');
             nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2';
             nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 عرض النتيجة النهائية';
@@ -2433,49 +2151,40 @@
             const { questions, score } = activeQuizSessionState;
             const pct = Math.round((score / questions.length) * 100);
             let msg = pct >= 80 ? '🏆 ممتاز! أداء أكاديمي عالي' : pct >= 50 ? '👍 جيد، يمكن التحسين' : '💪 يحتاج مراجعة إضافية';
-
             container.innerHTML = `
                 <div class="text-center space-y-3 py-4">
                     <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
                     <div class="text-lg font-black">${pct}%</div>
                     <div class="text-sm font-bold">${msg}</div>
                     <div class="text-xs text-slate-400">حصلت على ${score * 10} XP من هذا الاختبار</div>
-                </div>
-            `;
+                </div>`;
             if (pct >= 80) triggerConfetti();
         }
 
-        // ------------------ ZERO CHAT ------------------
         async function sendZeroChat() {
             const inp = document.getElementById('zero-user-msg');
             const txt = inp?.value.trim();
             if (!txt) return;
             inp.value = '';
-
             const feed = document.getElementById('zero-chat-feed');
             if (feed) {
                 feed.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
             }
-
             const loadingId = 'loading_' + Date.now();
             if (feed) {
                 feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ جاري التفكير...</div>`);
                 feed.scrollTop = feed.scrollHeight;
             }
-
             let context = "";
             if (currentLectureText && currentLectureText.trim().length > 20) {
                 const scoped = getScopedLectureContent();
                 context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
             }
-
             const reply = await callStrictAcademicAI(
                 `سؤال الطالب: ${txt}${context}`,
                 "أنت المساعد الأكاديمي ZeroPlus. أجب بدقة من المحتوى المرفق إذا وُجد، وإلا اعتمد على معرفتك العلمية. استخدم نقاط واضحة واذكر المصطلحات الإنجليزية عند الحاجة."
             );
-
             document.getElementById(loadingId)?.remove();
-
             if (feed) {
                 if (reply) {
                     feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
@@ -2494,7 +2203,6 @@
             }
         }
 
-        // ------------------ SHARE ------------------
         function openShareModal() {
             const shareXp = document.getElementById('share-xp');
             const shareTrees = document.getElementById('share-trees');
@@ -2519,10 +2227,29 @@
             if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
             if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
             if (document.getElementById('pomo-count-stat')) document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
-            
+
+            // ✅ تسجيل Service Worker محدّث مع كشف التحديثات
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=26').catch(() => {});
+                navigator.serviceWorker.getRegistrations().then((regs) => {
+                    regs.forEach((reg) => reg.update());
+                });
+
+                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+                    .then((reg) => {
+                        reg.update();
+                        setInterval(() => reg.update(), 60000);
+                    })
+                    .catch((err) => console.warn('SW register failed:', err));
             }
+
+            // إعادة تحميل عند تفعيل SW جديد
+            let refreshing = false;
+            navigator.serviceWorker?.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+            });
+
             checkNotificationBanner();
             checkExistingAuthSession();
             renderTasks();
@@ -2534,9 +2261,7 @@
 
             if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
                 pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);
-                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) {
-                    togglePomo();
-                }
+                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) togglePomo();
             }
         });
     </script>
