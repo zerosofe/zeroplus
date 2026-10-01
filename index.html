@@ -157,27 +157,142 @@
         </div>
     </div>
 
-    <!-- ================= MODAL 1: ONBOARDING USERNAME & DEPARTMENT ================= -->
-    <div id="onboarding-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-8 text-center space-y-5 shadow-2xl">
-            <div class="w-16 h-16 rounded-3xl bg-theme-teal text-white mx-auto flex items-center justify-center font-black text-2xl shadow-glow-teal" dir="ltr">
-                Z+
-            </div>
-            <div>
-                <h3 class="font-black text-xl text-theme-teal dark:text-white">منصة ZeroPlus الأكاديمية</h3>
-                <p class="text-xs text-slate-500 dark:text-theme-skyLight mt-1.5 leading-relaxed">
-                    يرجى إدخال اسمك وتحديد قسمك الأكاديمي لتخصيص مسار البناء اللغوي وحفظ سجلك الدراسي سحابياً.
+    <!-- ================= LANDING PAGE & AUTH MODAL ================= -->
+    <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8">
+        <div class="max-w-3xl w-full mx-auto space-y-8 my-auto py-10">
+            <div class="text-center space-y-4">
+                <div class="w-20 h-20 rounded-4xl bg-gradient-to-br from-theme-sky to-theme-teal text-white mx-auto flex items-center justify-center font-black text-3xl shadow-glow-sky" dir="ltr">
+                    Z+
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white" dir="ltr">
+                    <span>Zero</span><span class="text-theme-sky">Plus</span>
+                </h1>
+                <p class="text-sm sm:text-base text-slate-600 dark:text-theme-skyLight max-w-xl mx-auto leading-relaxed font-semibold">
+                    المنصة الأكاديمية التخصصية المتكاملة لطلبة الجامعات. ارفع محاضراتك، استشر المساعد الذكي، تطور في اللغات بأسلوب ديولينجو، ونظّم وقتك باحترافية.
                 </p>
             </div>
-            <div class="space-y-3 text-right">
+
+            <!-- بطاقات تعريفية بأقسام التطبيق -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2">
+                    <div class="w-9 h-9 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">المساعد الأكاديمي الصارم</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">تحليل محتوى محاضرات الـ PDF بدقة وتوليد اختبارات وملازم حصرية من صلب المنهج.</p>
+                </div>
+                <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-3xl shadow-sm space-y-2">
+                    <div class="w-9 h-9 rounded-2xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-language"></i>
+                    </div>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">مسار البناء اللغوي (CEFR)</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">تدرج عبر مستويات اللغة الإنجليزية العامة والطبية مع نظام التيجان الذهبية الثلاثية.</p>
+                </div>
+            </div>
+
+            <!-- نموذج تسجيل الدخول / إنشاء الحساب بالاسم والباسوورد أو Google -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder p-6 sm:p-8 rounded-4xl shadow-xl max-w-md mx-auto space-y-5 text-right">
+                <div class="text-center space-y-1">
+                    <h3 id="auth-modal-title" class="font-black text-lg text-slate-900 dark:text-white">مرحباً بك زميلنا الكريم</h3>
+                    <p class="text-xs text-slate-400">أدخل اسمك وكلمة المرور للبدء الفوري</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
+                        <input id="auth-username" type="text" placeholder="مثال: مصطفى عبد علي" 
+                            class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">كلمة المرور:</label>
+                        <input id="auth-password" type="password" placeholder="••••••••" 
+                            class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
+                    </div>
+                    <div id="auth-dept-box">
+                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">التخصص / القسم:</label>
+                        <select id="auth-dept" class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
+                            <option value="general">عام / مشترك لكافة الأقسام الطبية</option>
+                            <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
+                            <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
+                            <option value="optics">تقنيات البصريات والعيون</option>
+                            <option value="radiology">تقنيات الأشعة والسونار</option>
+                            <option value="dental_tech">تقنيات صناعة الأسنان</option>
+                            <option value="physiotherapy">تقنيات العلاج الطبيعي والتأهيل</option>
+                            <option value="community_health">تقنيات صحة المجتمع والوبائيات</option>
+                            <option value="medicine">الطب العام والجراحة</option>
+                            <option value="dentistry">طب وجراحة الفم والأسنان</option>
+                            <option value="pharmacy">الصيدلة السريرية والعقاقير</option>
+                            <option value="nursing">التمريض السريري والرعاية الحرجة</option>
+                        </select>
+                    </div>
+
+                    <button onclick="handleUserAuthentication()" id="auth-submit-btn" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
+                        <span>دخول / إنشاء الحساب</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </button>
+
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-200 dark:border-theme-darkBorder"></div>
+                        <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold">أو</span>
+                        <div class="flex-grow border-t border-slate-200 dark:border-theme-darkBorder"></div>
+                    </div>
+
+                    <button onclick="handleGoogleLogin()" class="w-full bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-white py-3 rounded-2xl font-bold text-xs hover:bg-sky-50 dark:hover:bg-theme-darkBase transition flex items-center justify-center gap-2.5 shadow-sm">
+                        <i class="fa-brands fa-google text-rose-500"></i> <span>المتابعة باستخدام Google</span>
+                    </button>
+
+                    <div class="text-center pt-2">
+                        <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-[11px] text-theme-teal dark:text-theme-skyLight font-bold hover:underline">
+                            لديك حساب مسبقاً؟ تسجيل الدخول
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نبذة عن المطور والدعم الفني -->
+            <div class="text-center space-y-2 pt-4 border-t border-sky-100 dark:border-theme-darkBorder">
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                    تم تطوير هذه المنصة بكل فخر بواسطة <strong class="text-theme-sky">مصطفى عبد علي</strong> | بغداد، العراق.
+                </p>
+                <div class="flex items-center justify-center gap-4 text-xs font-bold pt-1">
+                    <a href="https://t.me/pritxv" target="_blank" class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:underline">
+                        <i class="fa-brands fa-telegram"></i> <span>الدعم الفني (Telegram)</span>
+                    </a>
+                    <span class="text-slate-300 dark:text-slate-700">|</span>
+                    <a href="https://instagram.com/txv3" target="_blank" class="flex items-center gap-1.5 text-rose-500 hover:underline">
+                        <i class="fa-brands fa-instagram"></i> <span>(Instagram)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: PROFILE MANAGEMENT ================= -->
+    <div id="profile-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 sm:p-7 space-y-5 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-3">
+                <h3 class="font-black text-base text-slate-900 dark:text-white">إدارة الملف الشخصي</h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex flex-col items-center space-y-2">
+                <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center shadow-md">
+                    <img id="profile-avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                    <i id="profile-avatar-placeholder" class="fa-solid fa-user text-2xl text-theme-sky"></i>
+                </div>
+                <label class="cursor-pointer text-[11px] text-theme-sky font-bold hover:underline">
+                    تغيير الصورة الشخصية
+                    <input type="file" accept="image/*" onchange="uploadProfileAvatar(event)" class="hidden">
+                </label>
+            </div>
+
+            <div class="space-y-3 text-right text-xs">
                 <div>
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
-                    <input id="onboard-user-name" type="text" placeholder="الاسم الثلاثي أو اللقب..." 
-                        class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
+                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">الاسم الأكاديمي:</label>
+                    <input id="profile-input-name" type="text" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                 </div>
                 <div>
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">التخصص / القسم:</label>
-                    <select id="onboard-user-dept" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold transition">
+                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">التخصص / القسم:</label>
+                    <select id="profile-select-dept" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                         <option value="general">عام / مشترك لكافة الأقسام الطبية</option>
                         <option value="anesthesia">تقنيات التخدير والعناية المركزة</option>
                         <option value="labs">تقنيات المختبرات والتحليلات المرضية</option>
@@ -192,11 +307,20 @@
                         <option value="nursing">التمريض السريري والرعاية الحرجة</option>
                     </select>
                 </div>
-                <button onclick="saveUserNameAndDept()" class="w-full bg-theme-teal hover:bg-teal-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-teal transition active:scale-95 flex items-center justify-center gap-2 mt-2">
-                    <span>تأكيد وبدء المنصة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
+                <div>
+                    <label class="font-bold text-slate-500 dark:text-slate-400 block mb-1">كلمة المرور الجديدة:</label>
+                    <input id="profile-input-pass" type="password" placeholder="اتركها فارغة إذا لم ترد تغييرها" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <button onclick="saveProfileChanges()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky transition active:scale-95">
+                    حفظ التعديلات
+                </button>
+                <button onclick="handleUserLogout()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2.5 rounded-2xl font-bold text-xs transition">
+                    تسجيل الخروج
                 </button>
             </div>
-            <span class="text-[10px] text-slate-400 block font-semibold">يتم حفظ الحساب سحابياً ومحلياً لضمان استمراريته</span>
         </div>
     </div>
 
@@ -230,7 +354,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL 2: CONFIGURATION & AI GENERATOR DIALOG ================= -->
+    <!-- ================= MODAL: CONFIGURATION & AI GENERATOR DIALOG ================= -->
     <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-4">
@@ -325,18 +449,18 @@
         </div>
     </div>
 
-    <!-- Top Navigation Header مع إظهار وظيفة كل زر والاسم المدمج -->
+    <!-- Top Navigation Header مع إظهار زر الملف الشخصي وزر التثبيت والمشاركة وتغيير المظهر -->
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0 transition-colors">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0" dir="ltr">
-                    Z+
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0 cursor-pointer" onclick="openProfileModal()" title="إدارة الملف الشخصي">
+                    <span id="header-avatar-initial">Z+</span>
                 </div>
                 <div>
                     <h1 class="font-black text-base sm:text-lg leading-tight flex items-center gap-1 text-slate-900 dark:text-white" dir="ltr">
                         <span>Zero</span><span class="text-theme-sky">Plus</span>
                     </h1>
-                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight line-clamp-1">بوابة التعليم التخصصي والوزاري</span>
+                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight line-clamp-1 cursor-pointer hover:underline" onclick="openProfileModal()">بوابة التعليم التخصصي</span>
                 </div>
             </div>
 
@@ -734,7 +858,7 @@
             return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
         }
         function deptLabel(key) {
-            const opt = document.querySelector(`#onboard-user-dept option[value="${key}"]`);
+            const opt = document.querySelector(`#auth-dept option[value="${key}"]`);
             return opt ? opt.textContent.trim() : key;
         }
 
@@ -749,15 +873,6 @@
             } catch(e) {
                 console.warn("Supabase init error:", e);
             }
-        }
-
-        function getDeviceId() {
-            let devId = localStorage.getItem('zp_device_id');
-            if (!devId) {
-                devId = 'zp_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
-                localStorage.setItem('zp_device_id', devId);
-            }
-            return devId;
         }
 
         function updateCloudIndicator(status) {
@@ -775,69 +890,275 @@
             }
         }
 
-        // ================= SUPABASE SYNC ENGINE =================
-        async function syncProfileWithCloud() {
-            if (!supabaseClient || !navigator.onLine) {
-                updateCloudIndicator('offline');
+        // ================= AUTHENTICATION & PROFILE ENGINE =================
+        let isLoginMode = false;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('auth-modal-title');
+            const switchBtn = document.getElementById('auth-switch-text');
+            const deptBox = document.getElementById('auth-dept-box');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (isLoginMode) {
+                title.innerText = 'تسجيل الدخول إلى حسابك';
+                switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
+                deptBox.classList.add('hidden');
+                submitBtn.querySelector('span').innerText = 'تسجيل الدخول';
+            } else {
+                title.innerText = 'إنشاء حساب أكاديمي جديد';
+                switchBtn.innerText = 'لديك حساب مسبقاً؟ تسجيل الدخول';
+                deptBox.classList.remove('hidden');
+                submitBtn.querySelector('span').innerText = 'إنشاء الحساب وبدء المنصة';
+            }
+        }
+
+        async function handleUserAuthentication() {
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+            const deptInput = document.getElementById('auth-dept').value;
+
+            if (!usernameInput || !passwordInput) {
+                alert("يرجى إدخال اسم الطالب وكلمة المرور.");
                 return;
             }
 
-            const deviceId = getDeviceId();
-            updateCloudIndicator('syncing');
+            const pseudoEmail = `${usernameInput.toLowerCase().replace(/\s+/g, '_')}@zeroplus.edu`;
 
-            try {
-                const { error } = await supabaseClient
-                    .from('profiles')
-                    .upsert({
-                        device_id: deviceId,
-                        user_name: currentUserName || 'طالب ZeroPlus',
-                        department: activeDepartmentKey || 'general',
-                        xp: userXP,
-                        total_focus_mins: totalFocusMins,
-                        current_section_id: currentSectionId || 'sec_01',
-                        unlocked_stage_max: unlockedNodeMax || 1,
-                        streak_count: userStreak || 1,
-                        node_crowns: nodeCrowns,
-                        learning_track: currentLearningTrack,
-                        last_active: new Date().toISOString()
-                    }, { onConflict: 'device_id' });
-
-                if (!error) {
-                    updateCloudIndicator('online');
-                } else {
-                    console.error('Supabase Profile Sync Error:', error);
-                    updateCloudIndicator('offline');
-                }
-            } catch (e) {
-                updateCloudIndicator('offline');
+            if (!supabaseClient) {
+                alert("تعذر الاتصال بـ Supabase.");
+                return;
             }
+
+            if (isLoginMode) {
+                // تسجيل الدخول
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: pseudoEmail,
+                    password: passwordInput
+                });
+
+                if (error) {
+                    alert("خطأ في تسجيل الدخول: تأكد من صحة الاسم وكلمة المرور.");
+                    return;
+                }
+
+                await loadUserDataAfterAuth(data.user);
+            } else {
+                // إنشاء حساب جديد
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: pseudoEmail,
+                    password: passwordInput,
+                    options: {
+                        data: {
+                            display_username: usernameInput,
+                            department: deptInput
+                        }
+                    }
+                });
+
+                if (error) {
+                    alert("خطأ في إنشاء الحساب: " + error.message);
+                    return;
+                }
+
+                if (data.user) {
+                    await supabaseClient.from('profiles').upsert({
+                        user_id: data.user.id,
+                        user_name: usernameInput,
+                        department: deptInput,
+                        xp: 140,
+                        unlocked_stage_max: 1
+                    }, { onConflict: 'user_id' });
+
+                    await loadUserDataAfterAuth(data.user);
+                }
+            }
+        }
+
+        async function handleGoogleLogin() {
+            if (!supabaseClient) return;
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin }
+            });
+            if (error) alert("خطأ في تسجيل دخول Google: " + error.message);
+        }
+
+        async function loadUserDataAfterAuth(authUser) {
+            currentUserName = authUser.user_metadata?.display_username || authUser.email.split('@')[0];
+            activeDepartmentKey = authUser.user_metadata?.department || 'general';
+
+            localStorage.setItem('zp_username', currentUserName);
+            localStorage.setItem('zp_user_department', activeDepartmentKey);
+            localStorage.setItem('zp_user_registered', 'true');
+            localStorage.setItem('zp_auth_uid', authUser.id);
+
+            // جلب البيانات من جدول profiles
+            const { data } = await supabaseClient.from('profiles').select('*').eq('user_id', authUser.id).maybeSingle();
+            if (data) {
+                if (data.user_name) currentUserName = data.user_name;
+                if (data.department) activeDepartmentKey = data.department;
+                if (data.xp) userXP = data.xp;
+                if (data.unlocked_stage_max) unlockedNodeMax = data.unlocked_stage_max;
+                if (data.node_crowns) nodeCrowns = data.node_crowns;
+                if (data.learning_track) currentLearningTrack = data.learning_track;
+                if (data.avatar_url) localStorage.setItem('zp_avatar_url', data.avatar_url);
+            }
+
+            document.getElementById('landing-view').classList.add('hidden');
+            updateGreetingHeader();
+            updateHeaderAvatar();
+            renderPathTree();
+            updateGamificationBar();
+            document.getElementById('app-xp').innerText = `${userXP} XP`;
+            updateCloudIndicator('online');
+            triggerConfetti();
+        }
+
+        async function checkExistingAuthSession() {
+            if (!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                await loadUserDataAfterAuth(session.user);
+            } else {
+                const localReg = localStorage.getItem('zp_user_registered');
+                if (localReg === 'true' && currentUserName) {
+                    document.getElementById('landing-view').classList.add('hidden');
+                    updateGreetingHeader();
+                    updateHeaderAvatar();
+                } else {
+                    document.getElementById('landing-view').classList.remove('hidden');
+                }
+            }
+        }
+
+        function openProfileModal() {
+            document.getElementById('profile-input-name').value = currentUserName;
+            document.getElementById('profile-select-dept').value = activeDepartmentKey;
+            const avatarUrl = localStorage.getItem('zp_avatar_url');
+            const preview = document.getElementById('profile-avatar-preview');
+            const placeholder = document.getElementById('profile-avatar-placeholder');
+            if (avatarUrl) {
+                preview.src = avatarUrl;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function updateHeaderAvatar() {
+            const avatarUrl = localStorage.getItem('zp_avatar_url');
+            const avatarContainer = document.getElementById('header-avatar-initial').parentElement;
+            if (avatarUrl) {
+                avatarContainer.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-2xl">`;
+            } else {
+                avatarContainer.innerHTML = `<span id="header-avatar-initial">${currentUserName ? currentUserName.charAt(0).toUpperCase() : 'Z+'}</span>`;
+            }
+        }
+
+        async function uploadProfileAvatar(e) {
+            const file = e.target.files[0];
+            if (!file || !supabaseClient) return;
+            const uid = localStorage.getItem('zp_auth_uid') || getDeviceId();
+            const filePath = `avatars/${uid}_${Date.now()}.png`;
+
+            const { error: uploadErr } = await supabaseClient.storage.from('avatars').upload(filePath, file, { upsert: true });
+            if (uploadErr) {
+                alert("تعذر رفع الصورة: " + uploadErr.message);
+                return;
+            }
+
+            const { data: { publicUrl } } = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+            localStorage.setItem('zp_avatar_url', publicUrl);
+            document.getElementById('profile-avatar-preview').src = publicUrl;
+            document.getElementById('profile-avatar-preview').classList.remove('hidden');
+            document.getElementById('profile-avatar-placeholder').classList.add('hidden');
+            updateHeaderAvatar();
+            syncProfileWithCloud();
+        }
+
+        async function saveProfileChanges() {
+            const newName = document.getElementById('profile-input-name').value.trim();
+            const newDept = document.getElementById('profile-select-dept').value;
+            const newPass = document.getElementById('profile-input-pass').value.trim();
+
+            if (!newName) {
+                alert("يرجى إدخال الاسم الأكاديمي.");
+                return;
+            }
+
+            currentUserName = newName;
+            activeDepartmentKey = newDept;
+            localStorage.setItem('zp_username', currentUserName);
+            localStorage.setItem('zp_user_department', activeDepartmentKey);
+
+            if (newPass && supabaseClient) {
+                const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+                if (error) alert("تعذر تحديث كلمة المرور: " + error.message);
+                else alert("تم تحديث كلمة المرور بنجاح.");
+            }
+
+            await syncProfileWithCloud();
+            updateGreetingHeader();
+            closeProfileModal();
+            alert("تم حفظ التعديلات بنجاح.");
+        }
+
+        async function handleUserLogout() {
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            localStorage.clear();
+            location.reload();
+        }
+
+        async function syncProfileWithCloud() {
+            if (!supabaseClient || !navigator.onLine) return;
+            const uid = localStorage.getItem('zp_auth_uid');
+            const deviceId = getDeviceId();
+            try {
+                await supabaseClient.from('profiles').upsert({
+                    user_id: uid || null,
+                    device_id: deviceId,
+                    user_name: currentUserName,
+                    department: activeDepartmentKey,
+                    xp: userXP,
+                    total_focus_mins: totalFocusMins,
+                    unlocked_stage_max: unlockedNodeMax,
+                    streak_count: userStreak,
+                    node_crowns: nodeCrowns,
+                    learning_track: currentLearningTrack,
+                    avatar_url: localStorage.getItem('zp_avatar_url') || null,
+                    last_active: new Date().toISOString()
+                }, { onConflict: uid ? 'user_id' : 'device_id' });
+            } catch (e) {}
         }
 
         async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
             if (!supabaseClient || !navigator.onLine) return;
             try {
-                await supabaseClient
-                    .from('user_node_progress')
-                    .upsert({
-                        device_id: getDeviceId(),
-                        node_id: nodeId,
-                        completed: isCompleted,
-                        score: score,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'device_id,node_id' });
-            } catch (err) {
-                console.warn('Failed to sync node progress:', err);
-            }
+                await supabaseClient.from('user_node_progress').upsert({
+                    device_id: getDeviceId(),
+                    node_id: nodeId,
+                    completed: isCompleted,
+                    score: score,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'device_id,node_id' });
+            } catch (err) {}
         }
 
         async function syncTasksToCloud() {
             if (!supabaseClient || !navigator.onLine) return;
             try {
-                const deviceId = getDeviceId();
                 if (tasks && tasks.length > 0) {
                     const payload = tasks.map(t => ({
                         id: t.id,
-                        device_id: deviceId,
+                        device_id: getDeviceId(),
                         title: t.title,
                         done: !!t.done,
                         tag: t.tag || '',
@@ -845,9 +1166,7 @@
                     }));
                     await supabaseClient.from('tasks').upsert(payload, { onConflict: 'id' });
                 }
-            } catch (e) {
-                console.warn('Tasks sync error:', e);
-            }
+            } catch (e) {}
         }
 
         async function deleteTaskFromCloud(taskId) {
@@ -867,104 +1186,8 @@
                     duration_mins: currentPomoMins,
                     session_time: sessionObj.time
                 }, { onConflict: 'id' });
-            } catch (e) {
-                console.warn('Focus session sync error:', e);
-            }
+            } catch (e) {}
         }
-
-        async function restoreUserDataFromCloud() {
-            if (!supabaseClient || !navigator.onLine) return;
-            const deviceId = getDeviceId();
-            try {
-                const { data: profile, error } = await supabaseClient
-                    .from('profiles')
-                    .select('*')
-                    .eq('device_id', deviceId)
-                    .maybeSingle();
-
-                if (profile && !error) {
-                    if (profile.user_name) {
-                        currentUserName = profile.user_name;
-                        localStorage.setItem('zp_username', currentUserName);
-                        localStorage.setItem('zp_user_registered', 'true');
-                    }
-                    if (profile.department) {
-                        activeDepartmentKey = profile.department;
-                        localStorage.setItem('zp_user_department', activeDepartmentKey);
-                    }
-                    if (profile.xp) {
-                        userXP = profile.xp;
-                        localStorage.setItem('zp_xp', userXP);
-                    }
-                    if (profile.unlocked_stage_max) {
-                        unlockedNodeMax = profile.unlocked_stage_max;
-                        localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-                    }
-                    if (profile.streak_count) {
-                        userStreak = profile.streak_count;
-                        localStorage.setItem('zp_med_streak', userStreak);
-                    }
-                    if (profile.node_crowns && typeof profile.node_crowns === 'object') {
-                        nodeCrowns = profile.node_crowns;
-                        localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
-                    }
-                    if (profile.learning_track) {
-                        currentLearningTrack = profile.learning_track;
-                        localStorage.setItem('zp_learning_track', currentLearningTrack);
-                        setLearningTrackMode(currentLearningTrack);
-                    }
-
-                    updateGreetingHeader();
-                    document.getElementById('app-xp').innerText = `${userXP} XP`;
-                    updateGamificationBar();
-                    renderPathTree();
-                    updateCloudIndicator('online');
-                }
-
-                const { data: cloudTasks } = await supabaseClient
-                    .from('tasks')
-                    .select('*')
-                    .eq('device_id', deviceId)
-                    .order('created_at', { ascending: false });
-
-                if (cloudTasks && cloudTasks.length > 0) {
-                    tasks = cloudTasks.map(t => ({
-                        id: t.id,
-                        title: t.title,
-                        done: t.done,
-                        tag: t.tag,
-                        prio: t.prio
-                    }));
-                    localStorage.setItem('zp_tasks', JSON.stringify(tasks));
-                    renderTasks();
-                }
-
-                const { data: cloudSessions } = await supabaseClient
-                    .from('user_focus_sessions')
-                    .select('*')
-                    .eq('device_id', deviceId)
-                    .order('created_at', { ascending: false });
-
-                if (cloudSessions && cloudSessions.length > 0) {
-                    userForest = cloudSessions.map(s => ({
-                        id: s.id,
-                        name: s.session_name,
-                        time: s.session_time
-                    }));
-                    localStorage.setItem('zp_forest', JSON.stringify(userForest));
-                    renderForest();
-                }
-
-            } catch (e) {
-                console.warn('Could not restore profile from cloud:', e);
-            }
-        }
-
-        window.addEventListener('online', () => {
-            syncProfileWithCloud();
-            syncTasksToCloud();
-            restoreUserDataFromCloud();
-        });
 
         // ------------------ DUOLINGO CEFR CURRICULUM ------------------
         let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
@@ -1108,12 +1331,7 @@
         let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
         let isHintVisible = false;
 
-        let activeQuizSessionState = {
-            questions: [],
-            currentIndex: 0,
-            score: 0,
-            qCount: 0
-        };
+        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
 
         // ------------------ TREE RENDERING & GAMIFICATION ------------------
         function updateGamificationBar() {
@@ -1398,82 +1616,12 @@
             }
         }
 
-        // ------------------ ONBOARDING & IDENTIFICATION (PERSISTENT CLOUD SYNC) ------------------
-        async function checkOnboarding() {
-            const deviceId = getDeviceId();
-            
-            if (supabaseClient && navigator.onLine) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('profiles')
-                        .select('*')
-                        .eq('device_id', deviceId)
-                        .maybeSingle();
-
-                    if (data && data.user_name && !error) {
-                        currentUserName = data.user_name;
-                        activeDepartmentKey = data.department || 'general';
-                        userXP = data.xp || 140;
-                        unlockedNodeMax = data.unlocked_stage_max || 1;
-                        userStreak = data.streak_count || 1;
-
-                        localStorage.setItem('zp_username', currentUserName);
-                        localStorage.setItem('zp_user_department', activeDepartmentKey);
-                        localStorage.setItem('zp_user_registered', 'true');
-                        localStorage.setItem('zp_xp', userXP);
-                        localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-
-                        document.getElementById('onboarding-modal').classList.add('hidden');
-                        updateGreetingHeader();
-                        renderPathTree();
-                        updateGamificationBar();
-                        document.getElementById('app-xp').innerText = `${userXP} XP`;
-                        updateCloudIndicator('online');
-                        return;
-                    }
-                } catch(e) {}
-            }
-
-            const isRegistered = localStorage.getItem('zp_user_registered');
-            currentUserName = localStorage.getItem('zp_username') || '';
-
-            if (!isRegistered || !currentUserName) {
-                document.getElementById('onboarding-modal').classList.remove('hidden');
-            } else {
-                updateGreetingHeader();
-                syncProfileWithCloud();
-            }
-        }
-
-        async function saveUserNameAndDept() {
-            const nameInput = document.getElementById('onboard-user-name');
-            const deptInput = document.getElementById('onboard-user-dept');
-            const nameVal = nameInput.value.trim();
-            if (!nameVal) {
-                alert("يرجى إدخال الاسم الأكاديمي للاستمرار.");
-                return;
-            }
-
-            currentUserName = nameVal;
-            activeDepartmentKey = deptInput.value;
-            localStorage.setItem('zp_username', currentUserName);
-            localStorage.setItem('zp_user_department', activeDepartmentKey);
-            localStorage.setItem('zp_user_registered', 'true');
-            
-            document.getElementById('onboarding-modal').classList.add('hidden');
-            updateGreetingHeader();
-            await syncProfileWithCloud();
-            triggerConfetti();
-        }
-
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
                 if (greeting) greeting.innerText = `${currentUserName} | ${deptLabel(activeDepartmentKey)}`;
                 const shareGreeting = document.getElementById('share-card-user');
                 if (shareGreeting) shareGreeting.innerText = `الطالب: ${currentUserName}`;
-                const sel = document.getElementById('onboard-user-dept');
-                if (sel) sel.value = activeDepartmentKey;
             }
         }
 
@@ -1492,11 +1640,12 @@
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
                 document.getElementById('tab-' + id).classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
-                btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition";
+                if (btn) btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition";
             });
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs transition";
+            if (activeBtn) activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs transition";
             safeSetItem('zp_active_tab', tabId);
         }
 
@@ -1561,7 +1710,6 @@
             }
         }
 
-        // ------------------ NOTIFICATION REMINDER & PWA INSTALLATION ------------------
         function checkNotificationBanner() {
             const banner = document.getElementById('notify-reminder-banner');
             const icon = document.getElementById('notify-icon');
@@ -1582,9 +1730,7 @@
             }
             Notification.requestPermission().then(p => {
                 checkNotificationBanner();
-                if (p === "granted") {
-                    playChime(true);
-                }
+                if (p === "granted") playChime(true);
             });
         }
 
@@ -1598,12 +1744,8 @@
             if (guideIos) guideIos.classList.add('hidden');
         });
 
-        function openInstallModal() {
-            document.getElementById('install-modal').classList.remove('hidden');
-        }
-        function closeInstallModal() {
-            document.getElementById('install-modal').classList.add('hidden');
-        }
+        function openInstallModal() { document.getElementById('install-modal').classList.remove('hidden'); }
+        function closeInstallModal() { document.getElementById('install-modal').classList.add('hidden'); }
         function triggerAndroidPwaInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -1614,11 +1756,12 @@
             }
         }
 
-        // ------------------ TO-DO LOGIC WITH CLOUD PERSISTENCE ------------------
+        // ------------------ TO-DO LOGIC ------------------
         let tasks = safeParse('zp_tasks', []);
         if (!Array.isArray(tasks)) tasks = [];
         function renderTasks() {
             const list = document.getElementById('todo-list');
+            if (!list) return;
             list.innerHTML = '';
             let completed = 0;
             if (tasks.length === 0) {
@@ -1642,8 +1785,10 @@
                 });
             }
             const pct = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
-            document.getElementById('todo-summary-text').innerText = `${completed} من ${tasks.length} مهام مكتملة`;
-            document.getElementById('todo-percent-badge').innerText = `${pct}%`;
+            const sumText = document.getElementById('todo-summary-text');
+            const pctBadge = document.getElementById('todo-percent-badge');
+            if (sumText) sumText.innerText = `${completed} من ${tasks.length} مهام مكتملة`;
+            if (pctBadge) pctBadge.innerText = `${pct}%`;
             localStorage.setItem('zp_tasks', JSON.stringify(tasks));
         }
         function addTodo() {
@@ -1652,8 +1797,7 @@
             const prio = document.getElementById('todo-prio')?.value || 'normal';
             const val = inp.value.trim();
             if (!val) return;
-            const newTask = { id: Date.now(), title: val, done: false, tag, prio };
-            tasks.unshift(newTask);
+            tasks.unshift({ id: Date.now(), title: val, done: false, tag, prio });
             inp.value = '';
             renderTasks();
             awardXP(5);
@@ -1669,9 +1813,8 @@
             renderTasks();
             deleteTaskFromCloud(id);
         }
-        renderTasks();
 
-        // ------------------ POMODORO LOGIC WITH BACKGROUND SUPPORT ------------------
+        // ------------------ POMODORO LOGIC ------------------
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
         let userForest = safeParse('zp_forest', []);
@@ -1679,8 +1822,10 @@
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
+            if (!grid) return;
             grid.innerHTML = '';
-            document.getElementById('stat-tree-count').innerText = `${userForest.length} جلسة`;
+            const treeCount = document.getElementById('stat-tree-count');
+            if (treeCount) treeCount.innerText = `${userForest.length} جلسة`;
             if (userForest.length === 0) {
                 grid.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">لا توجد جلسات دراسية مكتملة مسجلة في هذا اليوم.</div>`;
                 return;
@@ -1696,26 +1841,33 @@
         function updatePomoDisplay() {
             const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
             const s = String(pomoRemaining % 60).padStart(2, '0');
-            document.getElementById('pomo-display').innerText = `${m}:${s}`;
-            const offset = 276 - (pomoDuration ? pomoRemaining / pomoDuration : 0) * 276;
-            document.getElementById('pomo-circle').style.strokeDashoffset = offset;
+            const display = document.getElementById('pomo-display');
+            const circle = document.getElementById('pomo-circle');
+            if (display) display.innerText = `${m}:${s}`;
+            if (circle) {
+                const offset = 276 - (pomoDuration ? pomoRemaining / pomoDuration : 0) * 276;
+                circle.style.strokeDashoffset = offset;
+            }
         }
         function setPomoMode(mins, msg, btn) {
             resetPomo();
             currentPomoMins = mins; pomoDuration = mins * 60; pomoRemaining = pomoDuration;
-            document.getElementById('pomo-status').innerText = msg;
+            const statusEl = document.getElementById('pomo-status');
+            if (statusEl) statusEl.innerText = msg;
             document.querySelectorAll('.pomo-mode-btn').forEach(b => b.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300');
-            btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm';
+            if (btn) btn.className = 'pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm';
             updatePomoDisplay();
         }
         function finishPomoSession() {
             clearInterval(pomoInterval); pomoInterval = null;
             localStorage.removeItem('zp_pomo_end_time');
             pomoCompletedCount++;
-            document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
+            const countStat = document.getElementById('pomo-count-stat');
+            const totalMinsStat = document.getElementById('stat-total-mins');
+            if (countStat) countStat.innerText = `${pomoCompletedCount} جلسات`;
             totalFocusMins += currentPomoMins;
             localStorage.setItem('zp_focus_mins', totalFocusMins);
-            document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+            if (totalMinsStat) totalMinsStat.innerText = `${totalFocusMins} دقيقة`;
             const now = new Date();
             const sessionObj = { id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` };
             userForest.unshift(sessionObj);
@@ -1734,9 +1886,9 @@
                 if (navigator.serviceWorker?.controller) {
                     navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_POMO_TIMER' });
                 }
-                btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+                if (btn) btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             } else {
-                btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
+                if (btn) btn.innerHTML = '<span>إيقاف مؤقت</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
                 pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
                 localStorage.setItem('zp_pomo_end_time', pomoEndTimestamp);
                 
@@ -1764,7 +1916,8 @@
                 navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_POMO_TIMER' });
             }
             pomoRemaining = pomoDuration;
-            document.getElementById('pomo-play-btn').innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            const btn = document.getElementById('pomo-play-btn');
+            if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
         function clearForestConfirmation() {
@@ -1772,22 +1925,8 @@
                 userForest = []; localStorage.setItem('zp_forest', JSON.stringify([])); renderForest();
             }
         }
-        renderForest();
 
-        window.addEventListener('focus', () => {
-            const savedEnd = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
-            if (savedEnd > 0) {
-                const now = Date.now();
-                if (now >= savedEnd) {
-                    finishPomoSession();
-                } else {
-                    pomoRemaining = Math.max(0, Math.ceil((savedEnd - now) / 1000));
-                    updatePomoDisplay();
-                }
-            }
-        });
-
-        // ------------------ REFINED ACADEMIC AI ENGINE ------------------
+        // ------------------ AI ENGINE & MISC ------------------
         let pdfSlidesData = safeParse('zp_slides_array', []);
         if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
         let lastManualLectureText = '';
@@ -1808,8 +1947,10 @@
         }
 
         function showLectureLoadedBadge() {
-            document.getElementById('lecture-loaded-badge').classList.remove('hidden');
-            document.getElementById('lecture-loaded-info').innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
+            const badge = document.getElementById('lecture-loaded-badge');
+            const info = document.getElementById('lecture-loaded-info');
+            if (badge) badge.classList.remove('hidden');
+            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
         }
 
         function openAiConfigModal() {
@@ -1819,71 +1960,40 @@
                 return; 
             }
             const total = pdfSlidesData.length || 1;
-            document.getElementById('modal-slides-total-badge').innerText = `إجمالي السلايدات المفحوصة: ${total}`;
-            const singleEl = document.getElementById('modal-single-slide-num');
-            const fromEl = document.getElementById('modal-range-slide-from');
-            const toEl = document.getElementById('modal-range-slide-to');
-            singleEl.max = total;
-            fromEl.max = total;
-            toEl.max = total;
-            const clamp = (el, fallback) => {
-                const n = parseInt(el.value, 10);
-                const safe = Number.isFinite(n) ? Math.min(Math.max(n, 1), total) : fallback;
-                el.value = safe;
-                return safe;
-            };
-            clamp(singleEl, 1);
-            clamp(fromEl, 1);
-            clamp(toEl, Math.min(5, total));
-            if (parseInt(toEl.value, 10) < parseInt(fromEl.value, 10)) toEl.value = total;
+            const badge = document.getElementById('modal-slides-total-badge');
+            if (badge) badge.innerText = `إجمالي السلايدات المفحوصة: ${total}`;
             document.getElementById('ai-config-modal').classList.remove('hidden');
         }
 
-        function closeAiConfigModal() { 
-            document.getElementById('ai-config-modal').classList.add('hidden'); 
-        }
+        function closeAiConfigModal() { document.getElementById('ai-config-modal').classList.add('hidden'); }
 
         function setAiTaskType(type, btn) {
             selectedAiTaskType = type;
             document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5 transition');
-            btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5 transition';
+            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5 transition';
             const countWrapper = document.getElementById('ai-question-count-wrapper');
-            if (type === 'summary') {
-                countWrapper.classList.add('hidden');
-            } else {
-                countWrapper.classList.remove('hidden');
-            }
+            if (countWrapper) countWrapper.classList.toggle('hidden', type === 'summary');
         }
 
         function toggleModalScopeInputs() {
-            const scope = document.querySelector('input[name="modal_slide_scope"]:checked').value;
-            document.getElementById('modal-single-slide-box').classList.toggle('hidden', scope !== 'single');
-            document.getElementById('modal-range-slide-box').classList.toggle('hidden', scope !== 'range');
+            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
+            const singleBox = document.getElementById('modal-single-slide-box');
+            const rangeBox = document.getElementById('modal-range-slide-box');
+            if (singleBox) singleBox.classList.toggle('hidden', scope !== 'single');
+            if (rangeBox) rangeBox.classList.toggle('hidden', scope !== 'range');
         }
 
         function getScopedLectureContent() {
-            if (pdfSlidesData.length === 0) {
-                return currentLectureText.trim();
-            }
+            if (pdfSlidesData.length === 0) return currentLectureText.trim();
             const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
-            const withinScope = (el, fallback) => {
-                const n = parseInt(el?.value, 10);
-                return Number.isFinite(n) ? Math.min(Math.max(n, 1), pdfSlidesData.length) : fallback;
-            };
             if (scope === 'single') {
-                const num = withinScope(document.getElementById('modal-single-slide-num'), 1);
+                const num = parseInt(document.getElementById('modal-single-slide-num')?.value || '1', 10);
                 const found = pdfSlidesData.find(s => s.pageNum === num);
                 return found ? `[Slide ${num}]: ${found.text}` : `[Slide ${pdfSlidesData[0].pageNum}]: ${pdfSlidesData[0].text}`;
             } else if (scope === 'range') {
-                const last = pdfSlidesData.length;
-                const fromEl = document.getElementById('modal-range-slide-from');
-                const toEl = document.getElementById('modal-range-slide-to');
-                const from = withinScope(fromEl, 1);
-                const to = Math.max(from, withinScope(toEl, last));
-                if (fromEl) fromEl.value = from;
-                if (toEl) toEl.value = to;
-                const filtered = pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to);
-                return filtered.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
+                const from = parseInt(document.getElementById('modal-range-slide-from')?.value || '1', 10);
+                const to = parseInt(document.getElementById('modal-range-slide-to')?.value || String(pdfSlidesData.length), 10);
+                return pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to).map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
             } else {
                 return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
             }
@@ -1893,7 +2003,7 @@
             const file = e.target.files[0];
             if (!file) return;
             const status = document.getElementById('upload-file-status');
-            status.innerText = `جاري فحص واستخراج محتوى الملف كاملاً: ${file.name}...`;
+            if (status) status.innerText = `جاري فحص واستخراج محتوى الملف: ${file.name}...`;
 
             try {
                 if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
@@ -1902,7 +2012,6 @@
                     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
                     let fullText = ""; 
                     pdfSlidesData = [];
-                    
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const tc = await page.getTextContent();
@@ -1920,719 +2029,110 @@
                     safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
                     safeSetItem('zp_active_lecture_text', text);
                 }
-
-                document.getElementById('lecture-text-content').value = '';
-                lastManualLectureText = '';
                 showLectureLoadedBadge();
-                status.innerText = `المصدر المعتمد: ${file.name}`;
+                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
                 e.target.value = '';
                 setTimeout(() => openAiConfigModal(), 400);
             } catch(err) {
-                console.error(err);
-                alert("تعذر استخراج محتوى الملف، يرجى التأكد من ملف الـ PDF أو لصق النص يدوياً.");
-                status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+                alert("تعذر استخراج محتوى الملف، يرجى لصق النص يدوياً.");
+                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             }
         }
 
-        function togglePasteArea() { 
-            document.getElementById('lecture-paste-container').classList.toggle('hidden'); 
-        }
-
+        function togglePasteArea() { document.getElementById('lecture-paste-container')?.classList.toggle('hidden'); }
         function resetLectureContext() {
-            currentLectureText = ""; 
-            pdfSlidesData = [];
-            localStorage.removeItem('zp_active_lecture_text'); 
-            localStorage.removeItem('zp_slides_array');
-            document.getElementById('lecture-loaded-badge').classList.add('hidden');
-            document.getElementById('upload-file-status').innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
-            document.getElementById('lecture-text-content').value = "";
-            lastManualLectureText = '';
+            currentLectureText = ""; pdfSlidesData = [];
+            localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
+            document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
+            const status = document.getElementById('upload-file-status');
+            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
         }
-
-        let lastAIError = 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
-        let chatMemory = safeParse('zp_chat_memory', []);
-        if (!Array.isArray(chatMemory)) chatMemory = [];
 
         async function callStrictAcademicAI(userPrompt, systemInstruction, loadingElId = null, jsonMode = false) {
-            const label = loadingElId && document.getElementById(loadingElId)?.querySelector('.thinking-step-text');
-            let lastError = null;
-            for (let attempt = 0; attempt < 3; attempt++) {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 58000);
-                try {
-                    if (label) label.innerText = `محاولة ${attempt + 1} من 3 — معالجة الطلب الآمن...`;
-                    const res = await fetch('/api/ai', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            messages: [
-                                { role: 'system', content: systemInstruction },
-                                { role: 'user', content: userPrompt }
-                            ],
-                            jsonMode: jsonMode
-                        }),
-                        signal: controller.signal
-                    });
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok) {
-                        const code = data.error?.code || '';
-                        lastError = res.status === 401 ? 'مفتاح API غير صالح في إعدادات السيرفر.' : (res.status === 429 || code.includes('rate')) ? 'تم تجاوز حد الطلبات؛ انتظر قليلاً.' : `تعذر الاتصال بخدمة الذكاء الاصطناعي (${res.status}).`;
-                        lastAIError = lastError;
-                        if (res.status === 401) break;
-                        continue;
-                    }
-                    const content = data.choices?.[0]?.message?.content;
-                    if (content) return content;
-                    lastError = 'أعاد النموذج استجابة فارغة.';
-                } catch (e) {
-                    lastError = e.name === 'AbortError' ? 'انتهت مهلة الاتصال.' : 'انقطع الاتصال بخدمة الذكاء الاصطناعي.';
-                    lastAIError = lastError;
-                } finally {
-                    clearTimeout(timeoutId);
-                }
+            try {
+                const res = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: userPrompt }], jsonMode })
+                });
+                const data = await res.json().catch(() => ({}));
+                return data.choices?.[0]?.message?.content || null;
+            } catch (e) {
+                return null;
             }
-            return null;
-        }
-
-        function scopedSlidesFromText(text) {
-            const raw = String(text || '').trim();
-            if (!raw) return [];
-            const matches = [...raw.matchAll(/\[Slide\s+(\d+)\]\s*:?\s*([\s\S]*?)(?=\n*\[Slide\s+\d+\]|$)/g)];
-            if (!matches.length) return [{ pageNum: 1, text: raw }];
-            return matches.map(m => ({ pageNum: parseInt(m[1], 10), text: String(m[2] || '').trim() })).filter(s => s.text);
-        }
-
-        function sampleLectureSlides(text) {
-            const slides = scopedSlidesFromText(text);
-            if (!slides.length) return '';
-            const budget = 18000;
-            const result = slides.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join('\n\n');
-            if (result.length <= budget) return result;
-            const perSlide = Math.max(250, Math.floor(budget / slides.length));
-            return slides.map(s => `[Slide ${s.pageNum}]: ${s.text.slice(0, perSlide)}`).join('\n\n').slice(0, budget);
-        }
-
-        function shuffleArray(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
         }
 
         function parseAIJson(raw) {
             const clean = String(raw || '').replace(/```json/gi, '').replace(/```/g, '').trim();
-            if (!clean) return null;
-            const attempt = (s) => { try { return JSON.parse(s); } catch (_) { return null; } };
-            const direct = attempt(clean);
-            if (direct) return direct;
-            const objStart = clean.indexOf('{'), objEnd = clean.lastIndexOf('}');
-            const arrStart = clean.indexOf('['), arrEnd = clean.lastIndexOf(']');
-            if (arrStart !== -1 && arrEnd > arrStart && (objStart === -1 || arrStart < objStart)) {
-                const parsedArr = attempt(clean.slice(arrStart, arrEnd + 1));
-                if (parsedArr) return Array.isArray(parsedArr) ? { questions: parsedArr, exercises: parsedArr } : parsedArr;
-            }
-            if (objStart !== -1 && objEnd > objStart) return attempt(clean.slice(objStart, objEnd + 1));
-            return null;
-        }
-
-        function normalizeForEvidence(v) {
-            return String(v || '')
-                .replace(/[\u2018\u2019\u201B\u2032]/g, "'")
-                .replace(/[\u201C\u201D\u201E\u2033]/g, '"')
-                .replace(/[\u2013\u2014\u2212]/g, '-')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .toLowerCase();
-        }
-
-        function evidenceIsInLecture(q, text) {
-            const evidence = normalizeForEvidence(q?.evidence);
-            if (evidence.length < 12) return false;
-            const rawHaystack = normalizeForEvidence(typeof text === 'string' ? text : '');
-            if (!rawHaystack) return false;
-            if (rawHaystack.includes(evidence)) return true;
-            const clean = (s) => s.replace(/\[slide\s*\d+\]\s*:?/g, ' ').replace(/\.{3,}/g, ' ').replace(/\s+/g, ' ').trim();
-            const cleanEvidence = clean(evidence);
-            const cleanHaystack = clean(rawHaystack);
-            if (cleanEvidence.length >= 12 && cleanHaystack.includes(cleanEvidence)) return true;
-            const words = cleanEvidence.split(' ').filter(w => w.length > 2);
-            if (words.length < 4) return false;
-            const matched = words.filter(w => cleanHaystack.includes(w)).length;
-            return (matched / words.length) >= 0.85;
-        }
-
-        function questionKey(v) {
-            return String(v || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
-        }
-
-        function readQuizCache(key) {
-            const parsed = safeParse(key, null);
-            return parsed && Array.isArray(parsed.questions) && parsed.questions.length ? parsed : null;
-        }
-
-        function pruneQuizCache(keepKey) {
-            try {
-                Object.keys(localStorage)
-                    .filter(k => k.startsWith('zp_quiz_cache_v2_') && k !== keepKey)
-                    .forEach(k => localStorage.removeItem(k));
-            } catch (e) { console.warn('تعذر تنظيف ذاكرة الاختبارات المحلية', e); }
-        }
-
-        async function reviewQuestions(questions, text, kind) {
-            if (!questions.length) return [];
-            if (questions.every(q => evidenceIsInLecture(q, text))) return questions;
-
-            const compact = questions.map(q => ({
-                q: q.q,
-                correct: q.options?.find(o => o.correct)?.t || '',
-                evidence: q.evidence || '',
-                why_correct: q.why_correct || ''
-            }));
-            const prompt = `راجع كل سؤال وإجابته من نص المحاضرة. أعد فقط الأسئلة الصحيحة التي جوابها مثبت صراحة في النص، واحتفظ بحقل evidence مقتبساً حرفياً. أعِد JSON بالشكل {"questions":[...]}. النوع ${kind}.\nالأسئلة: ${JSON.stringify({ questions: compact })}\nنص المحاضرة:\n${text}`;
-            const raw = await callStrictAcademicAI(prompt, 'أنت مدقق أكاديمي. لا تقبل أي معلومة لا يثبتها النص. أخرج JSON فقط.', null, true);
-            const reviewed = parseAIJson(raw)?.questions;
-            if (!Array.isArray(reviewed) || !reviewed.length) return questions;
-
-            const merged = reviewed.map(r => {
-                const original = questions.find(q => questionKey(q.q) === questionKey(r.q)) || {};
-                const options = Array.isArray(r.options) && r.options.length ? r.options : original.options;
-                return {
-                    ...original,
-                    ...r,
-                    options,
-                    q_ar: r.q_ar || original.q_ar || '',
-                    evidence: r.evidence || original.evidence || '',
-                    why_correct: r.why_correct || original.why_correct || '',
-                    why_incorrect: r.why_incorrect || original.why_incorrect || '',
-                    source_ref: r.source_ref || original.source_ref || ''
-                };
-            }).filter(q => isValidMCQ(q) && q.options.filter(o => o.correct).length === 1 && evidenceIsInLecture(q, text));
-
-            return merged.length ? merged : questions.filter(q => evidenceIsInLecture(q, text));
+            try { return JSON.parse(clean); } catch(e) { return null; }
         }
 
         async function executeAiCustomTask() {
             closeAiConfigModal();
             syncManualLectureText();
-
             const scopedContent = getScopedLectureContent();
-            const sampledContent = sampleLectureSlides(scopedContent);
-            if (!scopedContent || scopedContent.trim().length < 20 || !sampledContent) {
-                alert(currentLectureText.trim().length >= 20
-                    ? "النطاق المحدد من السلايدات لا يحتوي نصاً كافياً للمعالجة. اختر نطاقاً آخر ثم أعد المحاولة."
-                    : "يرجى تحميل ملف المحاضرة أو إدخال النص أولاً.");
+            if (!scopedContent || scopedContent.trim().length < 20) {
+                alert("يرجى إدخال محتوى أو رفع محاضرة أولاً.");
                 return;
             }
-
             const feed = document.getElementById('zero-chat-feed');
             const loadingId = 'loading_' + Date.now();
-            const qCount = parseInt(document.getElementById('ai-questions-count').value) || 1;
-            const displayStyle = document.getElementById('ai-display-style').value;
-
-            const cacheKey = 'zp_quiz_cache_v2_' + hashString(sampledContent) + '_' + selectedAiTaskType + '_' + qCount;
-            const cachedQuiz = readQuizCache(cacheKey);
-            if (cachedQuiz && selectedAiTaskType === 'mcq' && displayStyle === 'interactive') {
-                activeQuizSessionState = {
-                    questions: cachedQuiz.questions.slice(0, qCount),
-                    currentIndex: 0,
-                    score: 0,
-                    qCount: Math.min(qCount, cachedQuiz.questions.length)
-                };
-                feed.innerHTML = '';
-                showAINotice('تم استرجاع هذا الاختبار من الذاكرة المحلية لنفس النطاق دون استهلاك رصيد الذكاء الاصطناعي.');
-                playChime(true);
-                renderCurrentInteractiveQuizQuestion();
-                return;
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">جاري معالجة المحاضرة وصياغة المخرجات الأكاديمية...</div>`);
+                feed.scrollTop = feed.scrollHeight;
             }
-
-            feed.insertAdjacentHTML('beforeend', `
-                <div id="${loadingId}" class="flex items-center gap-3 p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder text-xs font-bold text-theme-teal animate-pulse">
-                    <i class="fa-solid fa-brain text-base text-theme-teal fa-spin"></i>
-                    <div>
-                        <span class="block text-slate-800 dark:text-white">المساعد الأكاديمي يفحص السلايدات ويستوعب المنهج بدقة</span>
-                        <span class="thinking-step-text text-[11px] text-slate-400 font-semibold">جاري قراءة وفحص نصوص السلايدات بدقة...</span>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-
-            const strictSystemPrompt = `أنت المساعد الأكاديمي الرسمي الصارم لمنصة ZeroPlus الجامعية في العراق. 
-قواعدك الصارمة:
-1. اعتمد بنسبة 100% فقط على محتوى السلايدات المرفقة للطالب، ولا تضف أي معلومة خارجية.
-2. استخرج تماماً وبدقة (${qCount}) أسئلة فقط من صلب نصوص السلايدات حرفياً.
-3. التزم باللغة الأكاديمية التخصصية الخالية من الإيموجيات.`;
-
-            if (selectedAiTaskType === 'summary') {
-                const prompt = `افحص واستوعب كامل محتوى السلايدات التالية وصغ ملخصاً أكاديمياً شاملاً ومكثفاً مستنداً بنسبة 100% على ما ورد فيها فقط:
-"""
-${sampledContent}
-"""
-الصياغة بأسلوب Markdown منظم (عناوين ونقاط بوليتس) باللغة العربية مع الحفاظ على المصطلحات الإنجليزية الأساسية.`;
-
-                const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt, loadingId);
-                document.getElementById(loadingId)?.remove();
-
-                if (!rawReply) showAINotice(`تعذر الوصول إلى الذكاء الاصطناعي (${lastAIError}) — تم عرض خلاصة محلية مبنية على نص السلايدات نفسه.`);
-                const summaryText = rawReply || "خلاصة المنهج المعتمد بناءً على السلايدات المحددة:\n\n• " + scopedContent.split(/[.!?\n]+/).filter(s => s.trim().length > 30).slice(0, 5).join("\n• ");
-                renderSummaryCard(summaryText);
-
-            } else if (selectedAiTaskType === 'short') {
-                const prompt = `افحص السلايدات التالية بدقة واستخرج منها بالضبط ${qCount} أسئلة مقالية قصيرة نموذجية مع ترجمة السؤال للعربية وجوابها المعتمد حصراً من المنهج. أخرج الناتج بصيغة JSON فقط:
-{"questions":[{"q":"Question in English","q_ar":"ترجمة السؤال باللغة العربية","answer":"الجواب النموذجي المستخرج حرفياً من السلايد","explanation":"رقم السلايد أو السياق المعتمد"}]}
-محتوى السلايدات:
-"""
-${sampledContent}
-"""`;
-
-                const rawReply = await callStrictAcademicAI(prompt, strictSystemPrompt + " أخرج كود JSON فقط بدون مقدمات.", loadingId, true);
-                document.getElementById(loadingId)?.remove();
-
-                let data = parseAIJson(rawReply);
-                if (!rawReply) showAINotice(`تعذر الوصول إلى الذكاء الاصطناعي (${lastAIError}) — تم عرض سؤال نموذجي مستخرج من نص المحاضرة.`);
-
-                if (data && Array.isArray(data.questions)) {
-                    data.questions = data.questions.filter(q => q && typeof q.q === 'string' && q.answer).slice(0, qCount);
-                }
-                if (!data || !Array.isArray(data.questions) || data.questions.length === 0) {
-                    data = {
-                        questions: [{
-                            q: "What is the core clinical parameter described in the slides?",
-                            q_ar: "ما هو المعيار السريري الأساسي الموصوف في هذه السلايدات؟",
-                            answer: scopedContent.substring(0, 140) + "...",
-                            explanation: "مستخرج من نص المحاضرة الفعلي"
-                        }]
-                    };
-                }
-
-                if (displayStyle === 'interactive') {
-                    data.questions.forEach(q => renderInteractiveShortAnswerCard(q));
-                } else {
-                    renderTextSheetShortAnswer(data.questions);
-                }
-
-            } else {
-                const accepted = [], seen = new Set();
-                let failureReason = 'تعذر توليد أسئلة كافية من محتوى المحاضرة.';
-                for (let batch = 0; batch < 3 && accepted.length < qCount; batch++) {
-                    const needed = qCount - accepted.length;
-                    const prompt = `أنشئ ${needed} سؤال MCQ جديداً وفريداً اعتماداً حصراً على نص السلايدات. لكل سؤال اقتبس دليلاً حرفياً لا يقل عن 12 حرفاً في evidence. أربعة خيارات بالضبط وخيار صحيح واحد. JSON فقط بالشكل {"questions":[{"q":"...","q_ar":"...","evidence":"اقتباس حرفي من النص","options":[{"t":"...","correct":false}],"why_correct":"...","why_incorrect":"...","source_ref":"..."}]}. لا تكرر هذه الأسئلة: ${JSON.stringify(accepted.map(q=>q.q))}\nالنص:\n${sampledContent}`;
-                    const raw = await callStrictAcademicAI(prompt, strictSystemPrompt + ' أخرج كائن JSON صالحاً فقط.', loadingId, true);
-                    let batchQuestions = parseAIJson(raw)?.questions || [];
-                    batchQuestions = batchQuestions.filter(q => isValidMCQ(q) && q.options.length === 4 && q.options.filter(o=>o.correct).length === 1 && evidenceIsInLecture(q,sampledContent));
-                    batchQuestions = await reviewQuestions(batchQuestions, sampledContent, 'MCQ');
-                    for (const q of batchQuestions) {
-                        const key = String(q.q).toLowerCase().replace(/\W/g,'');
-                        if (key && !seen.has(key)) { seen.add(key); q.options = shuffleAndRenumberOptions(q.options); accepted.push(q); }
-                        if (accepted.length >= qCount) break;
-                    }
-                    if (!raw) failureReason = lastAIError;
-                    else if (!batchQuestions.length) failureReason = 'لم يجد التدقيق الأكاديمي أي سؤال مثبت حرفياً في نطاق السلايدات المحدد.';
-                }
-                let questions = accepted.slice(0,qCount);
-                if (questions.length < qCount) {
-                    const fallback = generateSmartLocalQuizFromLecture(scopedContent, qCount - questions.length, seen);
-                    questions = questions.concat(fallback);
-                }
-                questions = questions.slice(0, qCount);
-                document.getElementById(loadingId)?.remove();
-                if (accepted.length === 0) {
-                    showAIError(failureReason);
-                } else if (questions.length > accepted.length) {
-                    showAINotice(`تم توليد ${accepted.length} من ${qCount} سؤالاً بالذكاء الاصطناعي، واستُكملت بقية الأسئلة محلياً من نص المحاضرة نفسه.`);
-                }
-                const finalQuizData = { questions };
-                if (accepted.length >= qCount) { pruneQuizCache(cacheKey); safeSetItem(cacheKey, JSON.stringify(finalQuizData)); }
-                if (displayStyle === 'interactive') {
-                    feed.innerHTML = '';
-                    activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
-                    renderCurrentInteractiveQuizQuestion();
-                } else renderTextSheetMCQ(questions);
+            const reply = await callStrictAcademicAI(`لخص المنهج التالي:\n${scopedContent}`, "أنت مساعد أكاديمي صارم.", loadingId);
+            document.getElementById(loadingId)?.remove();
+            if (feed && reply) {
+                feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
+                feed.scrollTop = feed.scrollHeight;
             }
         }
 
-        function isValidMCQ(q) {
-            return q && typeof q.q === 'string' && Array.isArray(q.options) && q.options.length >= 2
-                && q.options.every(o => o && typeof o.t === 'string')
-                && q.options.some(o => o.correct === true);
-        }
-
-        function shuffleAndRenumberOptions(options) {
-            const shuffled = shuffleArray(options);
-            return shuffled.map((o,i) => ({...o,t:`${String.fromCharCode(65+i)}) ${String(o.t).replace(/^[A-D][).]\s*/, '')}`}));
-        }
-
-        function generateSmartLocalQuizFromLecture(text, count = 1, seen = new Set()) {
-            const slides = scopedSlidesFromText(text);
-            const source = slides.length ? slides : pdfSlidesData;
-            const sentences = source.flatMap(s => (s.text||'').split(/[.!?\n]+/).map(x=>({text:x.trim(),page:s.pageNum})))
-                .filter(x=>x.text.length>35 && x.text.length<240);
-            const made=[]; let cursor=0;
-            while (made.length<count && sentences.length && cursor<sentences.length*2) {
-                const item=sentences[(cursor++ * Math.ceil(sentences.length/Math.max(count,1))) % sentences.length];
-                if (seen.has(item.text.toLowerCase())) continue;
-                const words=item.text.split(/\s+/).filter(w=>w.length>4 && !/^\d+$/.test(w));
-                if (words.length < 3) continue;
-                const answer=words[Math.floor(words.length/2)];
-                if (!answer) continue;
-                const pool=[...new Set(sentences.flatMap(x=>x.text.split(/\s+/).filter(w=>w.length>5 && !/^\d+$/.test(w))))]
-                    .filter(w=>w.toLowerCase()!==answer.toLowerCase() && !item.text.toLowerCase().includes(w.toLowerCase()));
-                const distractors=shuffleArray(pool).slice(0,3);
-                let filler=1;
-                while(distractors.length<3) {
-                    const candidate=`مصطلح ${filler++}`;
-                    if (!item.text.toLowerCase().includes(candidate.toLowerCase())) distractors.push(candidate);
-                }
-                seen.add(item.text.toLowerCase());
-                const opts=shuffleAndRenumberOptions([{t:answer,correct:true},...distractors.map(t=>({t,correct:false}))]);
-                made.push({q:`Complete the statement from the lecture: "${item.text.replace(answer,'______')}"`,q_ar:'أكمل العبارة اعتماداً على نص المحاضرة:',evidence:item.text,options:opts,why_correct:`الإجابة مثبتة في النص: ${item.text}`,why_incorrect:'الخيارات الأخرى لا تكمل العبارة الواردة في السلايد.',source_ref:`السلايد ${item.page}`});
-            }
-            return made;
-        }
-
-        function showAIError(message) {
-            document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-xs text-rose-600 font-bold p-3">تعذر إكمال توليد أسئلة الذكاء الاصطناعي: ${escapeHtml(message || lastAIError)}</div>`);
-        }
-
-        function showAINotice(message) {
-            document.getElementById('zero-chat-feed').insertAdjacentHTML('beforeend', `<div class="text-[11px] text-teal-700 dark:text-theme-skyLight font-bold p-3 rounded-2xl bg-teal-500/10 border border-teal-500/20 mb-2">${escapeHtml(message)}</div>`);
-        }
-
-        function renderSummaryCard(text) {
-            const feed = document.getElementById('zero-chat-feed');
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
-                            <i class="fa-solid fa-file-lines"></i> <span>ملخص المنهج المستخلص من السلايدات</span>
-                        </div>
-                        <div class="whitespace-pre-line text-slate-800 dark:text-slate-100 font-semibold pt-1">${formatRichText(text)}</div>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function renderInteractiveShortAnswerCard(item) {
-            const feed = document.getElementById('zero-chat-feed');
-            const qId = 'short_' + Date.now() + Math.random().toString(36).substring(4);
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-sm space-y-3">
-                        <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-theme-teal dark:text-theme-skyLight font-bold"><i class="fa-solid fa-pen-to-square ml-1"></i> سؤال مقالي من صلب المحاضرة</span>
-                            <span class="text-slate-400">تقييم المنهج</span>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(item.q)}</h4>
-                        <p class="text-[11px] text-slate-500 dark:text-theme-skyLight font-bold">الترجمة: ${escapeHtml(item.q_ar || '')}</p>
-                        <textarea placeholder="اكتب صياغة إجابتك هنا للمقارنة مع جواب المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
-                        <div class="flex items-center gap-2">
-                            <button onclick="revealShortAnswer('${qId}')" class="bg-theme-teal text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
-                                إظهار الجواب المعتمد في السلايد
-                            </button>
-                        </div>
-                        <div class="model-answer-box hidden p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1">
-                            <span class="font-bold text-emerald-700 dark:text-emerald-400 block"><i class="fa-solid fa-check ml-1"></i> نص الإجابة المعتمدة:</span>
-                            <p class="text-slate-800 dark:text-slate-200 font-semibold">${escapeHtml(item.answer)}</p>
-                            <span class="text-[10px] text-slate-400 block mt-1">${escapeHtml(item.explanation || '')}</span>
-                        </div>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function revealShortAnswer(qId) {
-            const card = document.getElementById(qId);
-            const box = card.querySelector('.model-answer-box');
-            box.classList.remove('hidden');
-            awardXP(10);
-            playChime(true);
-        }
-
-        function renderTextSheetMCQ(list) {
-            const feed = document.getElementById('zero-chat-feed');
-            let content = '';
-            list.forEach((item, idx) => {
-                content += `<strong>س ${idx + 1}: ${escapeHtml(item.q)}</strong><br>`;
-                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${escapeHtml(item.q_ar)}</span><br>`;
-                item.options.forEach(o => {
-                    content += `• ${escapeHtml(o.t)} ${o.correct ? ' (الإجابة الصحيحة)' : ''}<br>`;
-                });
-                content += `<span class="text-[10px] text-emerald-600 dark:text-emerald-400">التعليل: ${escapeHtml(item.why_correct || item.explanation || '')}</span><br><br>`;
-            });
-
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
-                            <i class="fa-solid fa-print"></i> <span>ورقة اختبار نصية كاملة من صلب المنهج</span>
-                        </div>
-                        <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function renderTextSheetShortAnswer(list) {
-            const feed = document.getElementById('zero-chat-feed');
-            let content = '';
-            list.forEach((item, idx) => {
-                content += `<strong>س ${idx + 1}: ${escapeHtml(item.q)}</strong><br>`;
-                if (item.q_ar) content += `<span class="text-xs text-slate-500">الترجمة: ${escapeHtml(item.q_ar)}</span><br>`;
-                content += `• الجواب النموذجي: ${escapeHtml(item.answer)}<br>`;
-                if (item.explanation) content += `<span class="text-[10px] text-slate-400">السياق المعتمد: ${escapeHtml(item.explanation)}</span><br>`;
-                content += `<br>`;
-            });
-
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
-                            <i class="fa-solid fa-print"></i> <span>ورقة أسئلة مقالية ونموذج الإجابة</span>
-                        </div>
-                        <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        // ------------------ التتابع التفاعلي ------------------
-        function renderCurrentInteractiveQuizQuestion() {
-            const feed = document.getElementById('zero-chat-feed');
-            const state = activeQuizSessionState;
-            const qIdx = state.currentIndex;
-            
-            if (qIdx >= state.qCount) return;
-
-            const currentItem = state.questions[qIdx];
-            const qId = 'quiz_active_card_' + qIdx;
-
-            if (qIdx > 0) {
-                for (let i = 0; i < qIdx; i++) {
-                    const prevCard = document.getElementById('quiz_active_card_' + i);
-                    if (prevCard && !prevCard.classList.contains('minimized-question')) {
-                        prevCard.classList.add('opacity-75', 'scale-[0.98]', 'transition-all');
-                        prevCard.style.maxHeight = '110px';
-                        prevCard.style.overflow = 'hidden';
-                        const activeOpts = prevCard.querySelector('.options-container');
-                        if (activeOpts) activeOpts.style.display = 'none';
-                        const badge = prevCard.querySelector('.question-status-badge');
-                        if (badge) badge.innerHTML = `<span class="text-emerald-500 font-bold"><i class="fa-solid fa-check-circle ml-1"></i> تم الإجابة</span>`;
-                    }
-                }
-            }
-
-            let optHtml = '';
-            currentItem.options.forEach((o, optIdx) => {
-                optHtml += `<button onclick="handleMCQSelection(${qIdx}, ${optIdx}, this)" class="chat-quiz-opt w-full text-right p-4 rounded-2xl text-xs sm:text-sm font-bold transition active:scale-98">${escapeHtml(o.t)}</button>`;
-            });
-
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3 mt-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] space-y-3 shadow-sm transition-all duration-300">
-                        <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="question-status-badge text-theme-teal dark:text-theme-skyLight font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
-                            <span class="text-slate-400">منهج معتمد</span>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(currentItem.q)}</h4>
-                        <div class="p-2.5 rounded-xl bg-teal-50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
-                            <span class="font-bold text-theme-teal ml-1">ترجمة السؤال:</span> ${escapeHtml(currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق')}
-                        </div>
-                        <div class="space-y-2 options-container pt-1">${optHtml}</div>
-                        <div class="feedback-container hidden space-y-3 pt-3 border-t border-teal-100 dark:border-theme-darkBorder mt-3"></div>
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function handleMCQSelection(qIdx, optIdx, btnElement) {
-            const currentItem = activeQuizSessionState.questions[qIdx];
-            const chosenOption = currentItem.options[optIdx];
-            const card = document.getElementById('quiz_active_card_' + qIdx);
-            
-            card.querySelectorAll('.options-container button').forEach(b => b.disabled = true);
-            const fb = card.querySelector('.feedback-container');
-            fb.classList.remove('hidden');
-
-            const isCorrect = chosenOption.correct;
-            const correctOpt = currentItem.options.find(o => o.correct) || chosenOption;
-
-            if (isCorrect) {
-                activeQuizSessionState.score++;
-                btnElement.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-500/15 text-emerald-500 font-bold';
-                fb.innerHTML = `
-                    <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1.5 text-slate-800 dark:text-slate-200">
-                        <div class="font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-check"></i> <span>إجابة صحيحة ومطابقة للسلايد (+15 XP)</span>
-                        </div>
-                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-emerald-600 dark:text-emerald-400">لماذا صحيحة:</strong> ${escapeHtml(currentItem.why_correct || currentItem.explanation || 'الخيار يطابق النص الحرفي والتعريف الوارد في المحاضرة.')}</p>
-                        ${currentItem.source_ref ? `<span class="text-[10px] text-slate-400 block">المصدر: ${escapeHtml(currentItem.source_ref)}</span>` : ''}
-                    </div>
-                `;
-                playChime(true);
-                awardXP(15);
-                triggerConfetti();
-            } else {
-                btnElement.className = 'chat-quiz-opt w-full text-right p-4 rounded-2xl border-2 border-rose-500 bg-rose-500/15 text-rose-500 font-bold';
-                fb.innerHTML = `
-                    <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs space-y-1.5 text-slate-800 dark:text-slate-200">
-                        <div class="font-black text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-xmark"></i> <span>إجابة غير صحيحة</span>
-                        </div>
-                        <p class="font-semibold text-[11px] leading-relaxed"><strong class="text-rose-600 dark:text-rose-400">لماذا خطأ:</strong> ${escapeHtml(currentItem.why_incorrect || 'هذا الخيار يخالف المعطيات والتعريف المذكور في المحاضرة.')}</p>
-                        <div class="border-t border-rose-500/20 pt-1.5 mt-1.5 text-[11px] space-y-1">
-                            <div><strong class="text-emerald-600 dark:text-emerald-400">الجواب الصحيح:</strong> ${escapeHtml(correctOpt.t)}</div>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(currentItem.why_correct || currentItem.explanation || '')}</p>
-                        </div>
-                    </div>
-                `;
-                playChime(false);
-            }
-
-            const isLastQuestion = (qIdx + 1) >= activeQuizSessionState.qCount;
-            if (!isLastQuestion) {
-                fb.insertAdjacentHTML('beforeend', `
-                    <button onclick="advanceToNextQuestion()" class="w-full bg-theme-teal hover:bg-teal-700 text-white py-3 rounded-2xl font-bold text-xs shadow-glow-teal transition active:scale-95 flex items-center justify-center gap-2 mt-2">
-                        <span>السؤال التالي</span> <i class="fa-solid fa-arrow-left text-xs"></i>
-                    </button>
-                `);
-            } else {
-                fb.insertAdjacentHTML('beforeend', `
-                    <div class="p-4 rounded-2xl bg-gradient-to-r from-theme-teal to-theme-green text-white text-center space-y-2 mt-3">
-                        <span class="text-xs font-black block">اكتمل الاختبار المنهجي بنجاح</span>
-                        <p class="text-[11px] text-teal-100">نتيجتك الأكاديمية: ${activeQuizSessionState.score} من ${activeQuizSessionState.qCount}</p>
-                        <button onclick="openAiConfigModal()" class="inline-block bg-white text-theme-teal px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm mt-1">
-                            اختبار جديد لنطاق آخر
-                        </button>
-                    </div>
-                `);
-                triggerConfetti();
-            }
-
-            const feed = document.getElementById('zero-chat-feed');
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function advanceToNextQuestion() {
-            activeQuizSessionState.currentIndex++;
-            renderCurrentInteractiveQuizQuestion();
-        }
-
-        async function sendZeroChat() {
+        function sendZeroChat() {
             const inp = document.getElementById('zero-user-msg');
-            const txt = inp.value.trim();
+            const txt = inp?.value.trim();
             if (!txt) return;
             inp.value = '';
             const feed = document.getElementById('zero-chat-feed');
-            feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
-
-            const quizIntent = /(كويز|اختبرني|اختبار|أسئلة|اسئلة|\bquiz\b|\bmcq\b)/i.test(txt);
-            if (quizIntent && txt.length <= 40) {
-                openAiConfigModal();
-                return;
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-start"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
+                feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">عذراً، يرجى استخدام زر "تخصيص الاختبار والمراجعة" لتوليد الكويزات والأسئلة بدقة من السلايدات.</div>`);
+                feed.scrollTop = feed.scrollHeight;
             }
-
-            syncManualLectureText();
-            const scopedContent = getScopedLectureContent();
-            const loadingId = 'loading_chat_' + Date.now();
-            feed.insertAdjacentHTML('beforeend', `
-                <div id="${loadingId}" class="flex items-center gap-2 p-3 text-xs font-bold text-slate-400 animate-pulse">
-                    <i class="fa-solid fa-brain text-theme-teal"></i> 
-                    <span class="thinking-step-text">جاري فحص وتدقيق نصوص المحاضرة لصياغة الإجابة...</span>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
-
-            chatMemory.push({role:'user',content:txt}); chatMemory = chatMemory.slice(-12);
-            const systemPrompt = `أنت المساعد الأكاديمي الصارم لمنصة ZeroPlus في العراق. 
-مهمتك: الإجابة على استفسار الطالب بالاعتماد بنسبة 100% فقط على محتوى السلايدات التالي. إذا لم ترد الإجابة في المحاضرة، وضح للطالب بلباقة أن هذه الجزئية غير مذكورة في الملف المرفق. خاطب الطالب بصفته وباسمه (${currentUserName || 'الزميل'}). لا تستخدم أي إيموجيات.
-محتوى السلايدات المعتمد:
-"""
-${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع ملف بعد'}
-"""`;
-
-            let reply = await callStrictAcademicAI(`${chatMemory.slice(0,-1).map(m=>`${m.role}:${m.content}`).join('\n')}\nuser: ${txt}`, systemPrompt, loadingId);
-            document.getElementById(loadingId)?.remove();
-
-            if (!reply) {
-                if (scopedContent && scopedContent.length > 30) {
-                    const sentences = scopedContent.replace(/\[Slide \d+\]:/g, '').split(/[.!?\n]+/).filter(s => s.trim().length > 30);
-                    showAINotice(`تعذر الوصول إلى خدمة الذكاء الاصطناعي (${lastAIError}) — تم عرض مقتطف موثق من نص المحاضرة.`);
-                    reply = `المعلومات الموثقة في السلايدات حول استفسارك:\n\n• "${sentences.slice(0, 2).join('\n• ')}"`;
-                } else {
-                    showAINotice(`تعذر الوصول إلى خدمة الذكاء الاصطناعي (${lastAIError}).`);
-                    reply = `مرحباً بك زميلنا ${currentUserName || 'المحترم'}. يرجى رفع ملف المحاضرة من زر التحميل أعلاه لكي أقوم بفحصه واستيعابه بدقة والإجابة حصراً من صلب منهجك.`;
-                }
-            }
-
-            chatMemory.push({role:'assistant',content:reply}); chatMemory = chatMemory.slice(-12); safeSetItem('zp_chat_memory', JSON.stringify(chatMemory));
-            feed.insertAdjacentHTML('beforeend', `
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
-                    <div class="chat-bot-bubble p-4 text-xs font-bold max-w-[85%] leading-relaxed">
-                        ${formatRichText(reply)}
-                    </div>
-                </div>`);
-            feed.scrollTop = feed.scrollHeight;
         }
 
-        function clearChatHistory() { document.getElementById('zero-chat-feed').innerHTML = ''; chatMemory = []; localStorage.removeItem('zp_chat_memory'); }
+        function clearChatHistory() {
+            const feed = document.getElementById('zero-chat-feed');
+            if (feed) feed.innerHTML = '';
+        }
 
-        // ------------------ SHARE MODAL ------------------
-        function openShareModal() {
-            document.getElementById('share-xp').innerText = `${userXP} XP`;
-            document.getElementById('share-trees').innerText = `${userForest.length} جلسة`;
-            document.getElementById('share-modal').classList.remove('hidden');
-        }
-        function closeShareModal() { 
-            document.getElementById('share-modal').classList.add('hidden'); 
-        }
+        function openShareModal() { document.getElementById('share-modal')?.classList.remove('hidden'); }
+        function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
         function copyShareText() {
-            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP\nمسار البناء اللغوي.`)
-                .then(() => alert("تم نسخ التقرير بنجاح."))
-                .catch(() => alert("تعذر النسخ تلقائياً، يرجى نسخ النص يدوياً."));
+            navigator.clipboard.writeText(`تقرير الإنجاز الأكاديمي - ZeroPlus:\nالطالب: ${currentUserName}\nالنقاط: ${userXP} XP`).then(() => alert("تم نسخ التقرير."));
         }
         function executeShare() {
-            if (navigator.share) {
-                navigator.share({ title: 'ZeroPlus Report', text: `إنجازي على منصة ZeroPlus الأكاديمية: ${userXP} XP` }).catch(() => {});
-            } else { copyShareText(); }
+            if (navigator.share) navigator.share({ title: 'ZeroPlus', text: `إنجازي: ${userXP} XP` }).catch(() => {});
+            else copyShareText();
         }
 
-        // ------------------ INITIAL STARTUP ------------------
-        (function updateDailyStreak() {
-            const today = new Date().toISOString().slice(0, 10);
-            const last = localStorage.getItem('zp_last_active_date');
-            if (last === today) return;
-            if (last) {
-                const diffDays = Math.round((new Date(today) - new Date(last)) / 86400000);
-                userStreak = diffDays === 1 ? userStreak + 1 : 1;
+        // Startup Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
+            if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js?v=26').catch(() => {});
             }
-            safeSetItem('zp_med_streak', userStreak);
-            safeSetItem('zp_last_active_date', today);
-        })();
-
-        document.getElementById('app-xp').innerText = `${userXP} XP`;
-        document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
-        
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js?v=26').catch(err => console.warn('SW registration failed:', err));
-        }
-
-        checkNotificationBanner();
-
-        if (currentLectureText && currentLectureText.trim().length >= 20) {
-            showLectureLoadedBadge();
-        }
-        const savedTab = localStorage.getItem('zp_active_tab');
-        showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
-        updatePomoDisplay();
-        checkOnboarding();
-        setLearningTrackMode(currentLearningTrack);
-        updateGamificationBar();
+            checkNotificationBanner();
+            checkExistingAuthSession();
+            renderTasks();
+            renderForest();
+            const savedTab = localStorage.getItem('zp_active_tab');
+            showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
+            updatePomoDisplay();
+        });
     </script>
 </body>
 </html>
-```[cite: 1, 2, 3, 4, 5, 6, 7]
