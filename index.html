@@ -74,19 +74,19 @@
         }
 
         .gradient-todo { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%) !important; }
-        .gradient-pomodoro { background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important; }
+        .gradient-pomodoro { background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important; }
         .gradient-english { background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%) !important; }
-        .gradient-zero { background: linear-gradient(135deg, #0284c7 0%, #059669 100%) !important; }
+        .gradient-zero { background: linear-gradient(135deg, #0d9488 0%, #10b981 100%) !important; }
 
         .ios-nav-safe {
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
 
         .chat-user-bubble {
-            background: linear-gradient(135deg, #0284c7, #0d9488) !important;
+            background: linear-gradient(135deg, #0d9488, #10b981) !important;
             color: #ffffff !important;
             border-radius: 1.5rem 1.5rem 0.35rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
             padding: 0.9rem 1.25rem !important;
         }
 
@@ -325,38 +325,43 @@
         </div>
     </div>
 
-    <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-4 py-3.5 shrink-0 transition-colors">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky" dir="ltr">
+    <!-- Top Navigation Header مع إظهار وظيفة كل زر بشكل مدمج وأنيق -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0 transition-colors">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0" dir="ltr">
                     Z+
                 </div>
                 <div>
-                    <h1 class="font-black text-lg leading-tight flex items-center gap-1 text-slate-900 dark:text-white" dir="ltr">
+                    <h1 class="font-black text-base sm:text-lg leading-tight flex items-center gap-1 text-slate-900 dark:text-white" dir="ltr">
                         <span>Zero</span><span class="text-theme-sky">Plus</span>
                     </h1>
-                    <span id="app-user-greeting" class="text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight">بوابة التعليم التخصصي والوزاري</span>
+                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight line-clamp-1">بوابة التعليم التخصصي والوزاري</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5">
-                <button onclick="openInstallModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تنزيل التطبيق على جهازك">
+            <!-- أزرار الإجراءات مع كتابة اسم كل زر بشكل مدمج مع الأيقونة -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تنزيل التطبيق على جهازك">
                     <i class="fa-solid fa-download text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">تثبيت</span>
                 </button>
-                <button onclick="openShareModal()" class="w-9 h-9 rounded-2xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="مشاركة التقرير">
+                <button onclick="openShareModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="مشاركة التقرير">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">مشاركة</span>
                 </button>
-                <button id="notify-btn" onclick="requestNotificationPermission()" class="w-9 h-9 rounded-2xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="التنبيهات">
+                <button id="notify-btn" onclick="requestNotificationPermission()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="التنبيهات">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">تنبيهات</span>
                 </button>
-                <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-3.5 py-1.5 rounded-full text-xs font-bold text-theme-sky flex items-center gap-2 shadow-sm">
+                <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-3 py-1.5 rounded-xl text-xs font-bold text-theme-sky flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-emerald-500 text-xs"></i>
-                    <span id="app-xp">140 XP</span>
+                    <span id="app-xp" class="text-xs">140 XP</span>
                 </div>
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300" title="جاري الاتصال بالسحابة"></div>
-                <button onclick="toggleTheme()" class="w-9 h-9 rounded-2xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-sm" title="تبديل المظهر">
+                <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 hover:scale-105 active:scale-95 transition shadow-sm text-xs font-bold" title="تبديل المظهر">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">المظهر</span>
                 </button>
             </div>
         </div>
@@ -394,14 +399,14 @@
                     <option value="normal">أولوية اعتيادية</option>
                 </select>
                 <button onclick="addTodo()" class="w-full sm:w-auto bg-theme-teal hover:bg-teal-700 text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-glow-teal transition active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-plus text-xs"></i> <span>إدراج</span>
+                    <i class="fa-solid fa-plus text-xs"></i> <span>إدراج مهمة</span>
                 </button>
             </div>
 
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
-        <!-- ================= SECTION 2: POMODORO (طابع أخضر زمردي وأبيض) ================= -->
+        <!-- ================= SECTION 2: POMODORO (طابع أخضر وسمائي) ================= -->
         <section id="tab-pomodoro" class="hidden space-y-6">
             <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm">
@@ -553,12 +558,12 @@
             </div>
         </div>
 
-        <!-- ================= SECTION 4: ZERO STUDY CONSOLE (طابع سمائي وتركوازي وأخضر) ================= -->
+        <!-- ================= SECTION 4: ZERO STUDY CONSOLE (طابع تركوازي وأخضر) ================= -->
         <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
-            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
+            <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
                             <i class="fa-solid fa-book-bookmark"></i>
                         </div>
                         <div>
@@ -566,40 +571,40 @@
                             <p class="text-[11px] text-slate-400">تحميل المحاضرة وفحص المنهج بالكامل وصياغة المخرجات</p>
                         </div>
                     </div>
-                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-sky-50 dark:bg-theme-darkBase text-theme-sky px-3 py-1 rounded-full border border-sky-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
+                    <span id="ai-active-engine-badge" class="text-[10px] font-bold bg-teal-50 dark:bg-theme-darkBase text-theme-teal px-3 py-1 rounded-full border border-teal-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span>المحرك الأكاديمي جاهز للتحليل</span>
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-sky-50/50 dark:bg-theme-darkBase border border-dashed border-sky-200 dark:border-theme-darkBorder hover:border-theme-sky rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
-                        <i class="fa-solid fa-file-arrow-up text-theme-sky"></i>
+                    <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition">
+                        <i class="fa-solid fa-file-arrow-up text-theme-teal"></i>
                         <span id="upload-file-status">تحميل ملف المحاضرة (صيغة PDF أو نص)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
-                    <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-sky transition shadow-sm">
+                    <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-teal transition shadow-sm">
                         إدخال نصي مباشر
                     </button>
                 </div>
 
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة باللغة العربية أو الإنجليزية..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 transition resize-none"></textarea>
                 </div>
 
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
                     <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم تجهيز المنهج وفحصه</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="openAiConfigModal()" class="text-[11px] text-theme-sky underline font-bold">تغيير خيارات الاختبار</button>
+                        <button onclick="openAiConfigModal()" class="text-[11px] text-theme-teal underline font-bold">تغيير خيارات الاختبار</button>
                         <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
                     </div>
                 </div>
             </div>
 
             <!-- Workspace Console -->
-            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
-                <div class="p-4 border-b border-sky-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-sky-50/30 dark:bg-theme-darkBase/40">
+            <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
+                <div class="p-4 border-b border-teal-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-teal-50/30 dark:bg-theme-darkBase/40">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">
                             Z+
                         </div>
                         <div>
@@ -610,7 +615,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openAiConfigModal()" class="bg-theme-sky hover:bg-sky-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-sky hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
+                        <button onclick="openAiConfigModal()" class="bg-theme-teal hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-teal hover:opacity-95 transition active:scale-95 flex items-center gap-1.5">
                             <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص الاختبار والمراجعة</span>
                         </button>
                         <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2 transition" title="إفراغ المحادثة">
@@ -621,11 +626,11 @@
 
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
 
-                <div class="p-3 border-t border-sky-100 dark:border-theme-darkBorder bg-sky-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
+                <div class="p-3 border-t border-teal-100 dark:border-theme-darkBorder bg-teal-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
                     <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة معقدة من المحاضرة، استفسار علمي، أو كويز..." 
                         onkeydown="if(event.key==='Enter') sendZeroChat()"
-                        class="flex-1 bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
-                    <button onclick="sendZeroChat()" class="bg-theme-sky hover:bg-sky-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-sky hover:opacity-95 transition active:scale-95 shrink-0">
+                        class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white placeholder-slate-400 font-semibold transition">
+                    <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal hover:opacity-95 transition active:scale-95 shrink-0">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </div>
@@ -691,7 +696,7 @@
                 <i class="fa-solid fa-language text-base mb-1"></i>
                 <span>البناء اللغوي</span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
                 <i class="fa-solid fa-graduation-cap text-base mb-1"></i>
                 <span>المساعد</span>
             </button>
@@ -2143,8 +2148,8 @@
             }
 
             feed.insertAdjacentHTML('beforeend', `
-                <div id="${loadingId}" class="flex items-center gap-3 p-4 rounded-3xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs font-bold text-theme-sky animate-pulse">
-                    <i class="fa-solid fa-brain text-base text-theme-sky fa-spin"></i>
+                <div id="${loadingId}" class="flex items-center gap-3 p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder text-xs font-bold text-theme-teal animate-pulse">
+                    <i class="fa-solid fa-brain text-base text-theme-teal fa-spin"></i>
                     <div>
                         <span class="block text-slate-800 dark:text-white">المساعد الأكاديمي يفحص السلايدات ويستوعب المنهج بدقة</span>
                         <span class="thinking-step-text text-[11px] text-slate-400 font-semibold">جاري قراءة وفحص نصوص السلايدات بدقة...</span>
@@ -2297,9 +2302,9 @@ ${sampledContent}
             const feed = document.getElementById('zero-chat-feed');
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-sky dark:text-theme-skyLight flex items-center gap-1.5 border-b border-sky-100 dark:border-theme-darkBorder pb-2">
+                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
                             <i class="fa-solid fa-file-lines"></i> <span>ملخص المنهج المستخلص من السلايدات</span>
                         </div>
                         <div class="whitespace-pre-line text-slate-800 dark:text-slate-100 font-semibold pt-1">${formatRichText(text)}</div>
@@ -2313,17 +2318,17 @@ ${sampledContent}
             const qId = 'short_' + Date.now() + Math.random().toString(36).substring(4);
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] shadow-sm space-y-3">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="text-theme-sky dark:text-theme-skyLight font-bold"><i class="fa-solid fa-pen-to-square ml-1"></i> سؤال مقالي من صلب المحاضرة</span>
+                            <span class="text-theme-teal dark:text-theme-skyLight font-bold"><i class="fa-solid fa-pen-to-square ml-1"></i> سؤال مقالي من صلب المحاضرة</span>
                             <span class="text-slate-400">تقييم المنهج</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(item.q)}</h4>
                         <p class="text-[11px] text-slate-500 dark:text-theme-skyLight font-bold">الترجمة: ${escapeHtml(item.q_ar || '')}</p>
-                        <textarea placeholder="اكتب صياغة إجابتك هنا للمقارنة مع جواب المحاضرة..." class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
+                        <textarea placeholder="اكتب صياغة إجابتك هنا للمقارنة مع جواب المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none text-slate-900 dark:text-white font-semibold resize-none" rows="2"></textarea>
                         <div class="flex items-center gap-2">
-                            <button onclick="revealShortAnswer('${qId}')" class="bg-theme-sky text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
+                            <button onclick="revealShortAnswer('${qId}')" class="bg-theme-teal text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
                                 إظهار الجواب المعتمد في السلايد
                             </button>
                         </div>
@@ -2359,9 +2364,9 @@ ${sampledContent}
 
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-sky dark:text-theme-skyLight flex items-center gap-1.5 border-b border-sky-100 dark:border-theme-darkBorder pb-2">
+                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
                             <i class="fa-solid fa-print"></i> <span>ورقة اختبار نصية كاملة من صلب المنهج</span>
                         </div>
                         <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
@@ -2383,9 +2388,9 @@ ${sampledContent}
 
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-5 max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed space-y-2">
-                        <div class="text-[11px] font-bold text-theme-sky dark:text-theme-skyLight flex items-center gap-1.5 border-b border-sky-100 dark:border-theme-darkBorder pb-2">
+                        <div class="text-[11px] font-bold text-theme-teal dark:text-theme-skyLight flex items-center gap-1.5 border-b border-teal-100 dark:border-theme-darkBorder pb-2">
                             <i class="fa-solid fa-print"></i> <span>ورقة أسئلة مقالية ونموذج الإجابة</span>
                         </div>
                         <div class="font-semibold text-slate-800 dark:text-slate-100 pt-1 leading-loose">${content}</div>
@@ -2427,18 +2432,18 @@ ${sampledContent}
 
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3 mt-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div id="${qId}" class="chat-quiz-card p-5 rounded-3xl w-full max-w-[92%] sm:max-w-[85%] space-y-3 shadow-sm transition-all duration-300">
                         <div class="flex items-center justify-between text-[11px] font-bold">
-                            <span class="question-status-badge text-theme-sky dark:text-theme-skyLight font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
+                            <span class="question-status-badge text-theme-teal dark:text-theme-skyLight font-black"><i class="fa-solid fa-clipboard-question ml-1"></i> سؤال ${qIdx + 1} من ${state.qCount}</span>
                             <span class="text-slate-400">منهج معتمد</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black leading-relaxed" dir="ltr">${escapeHtml(currentItem.q)}</h4>
-                        <div class="p-2.5 rounded-xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
-                            <span class="font-bold text-theme-sky ml-1">ترجمة السؤال:</span> ${escapeHtml(currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق')}
+                        <div class="p-2.5 rounded-xl bg-teal-50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
+                            <span class="font-bold text-theme-teal ml-1">ترجمة السؤال:</span> ${escapeHtml(currentItem.q_ar || 'السؤال مستخلص من نص السلايد المرفق')}
                         </div>
                         <div class="space-y-2 options-container pt-1">${optHtml}</div>
-                        <div class="feedback-container hidden space-y-3 pt-3 border-t border-sky-100 dark:border-theme-darkBorder mt-3"></div>
+                        <div class="feedback-container hidden space-y-3 pt-3 border-t border-teal-100 dark:border-theme-darkBorder mt-3"></div>
                     </div>
                 </div>`);
             feed.scrollTop = feed.scrollHeight;
@@ -2491,16 +2496,16 @@ ${sampledContent}
             const isLastQuestion = (qIdx + 1) >= activeQuizSessionState.qCount;
             if (!isLastQuestion) {
                 fb.insertAdjacentHTML('beforeend', `
-                    <button onclick="advanceToNextQuestion()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-bold text-xs shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2 mt-2">
+                    <button onclick="advanceToNextQuestion()" class="w-full bg-theme-teal hover:bg-teal-700 text-white py-3 rounded-2xl font-bold text-xs shadow-glow-teal transition active:scale-95 flex items-center justify-center gap-2 mt-2">
                         <span>السؤال التالي</span> <i class="fa-solid fa-arrow-left text-xs"></i>
                     </button>
                 `);
             } else {
                 fb.insertAdjacentHTML('beforeend', `
-                    <div class="p-4 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white text-center space-y-2 mt-3">
+                    <div class="p-4 rounded-2xl bg-gradient-to-r from-theme-teal to-theme-green text-white text-center space-y-2 mt-3">
                         <span class="text-xs font-black block">اكتمل الاختبار المنهجي بنجاح</span>
-                        <p class="text-[11px] text-sky-100">نتيجتك الأكاديمية: ${activeQuizSessionState.score} من ${activeQuizSessionState.qCount}</p>
-                        <button onclick="openAiConfigModal()" class="inline-block bg-white text-theme-sky px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm mt-1">
+                        <p class="text-[11px] text-teal-100">نتيجتك الأكاديمية: ${activeQuizSessionState.score} من ${activeQuizSessionState.qCount}</p>
+                        <button onclick="openAiConfigModal()" class="inline-block bg-white text-theme-teal px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm mt-1">
                             اختبار جديد لنطاق آخر
                         </button>
                     </div>
@@ -2536,7 +2541,7 @@ ${sampledContent}
             const loadingId = 'loading_chat_' + Date.now();
             feed.insertAdjacentHTML('beforeend', `
                 <div id="${loadingId}" class="flex items-center gap-2 p-3 text-xs font-bold text-slate-400 animate-pulse">
-                    <i class="fa-solid fa-brain text-theme-sky"></i> 
+                    <i class="fa-solid fa-brain text-theme-teal"></i> 
                     <span class="thinking-step-text">جاري فحص وتدقيق نصوص المحاضرة لصياغة الإجابة...</span>
                 </div>`);
             feed.scrollTop = feed.scrollHeight;
@@ -2566,7 +2571,7 @@ ${scopedContent ? sampleLectureSlides(scopedContent) : 'لم يتم رفع مل�
             chatMemory.push({role:'assistant',content:reply}); chatMemory = chatMemory.slice(-12); safeSetItem('zp_chat_memory', JSON.stringify(chatMemory));
             feed.insertAdjacentHTML('beforeend', `
                 <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-theme-sky to-theme-teal text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-sm" dir="ltr">Z+</div>
                     <div class="chat-bot-bubble p-4 text-xs font-bold max-w-[85%] leading-relaxed">
                         ${formatRichText(reply)}
                     </div>
