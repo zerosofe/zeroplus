@@ -1,14 +1,17 @@
-const CACHE_NAME = 'zeroplus-cache-v27';
+const CACHE_NAME = 'zeroplus-cache-v28';
 
-// الأصول الأساسية المسبقة لضمان عمل الواجهة والأقسام دون إنترنت
+// ============================================================
+// الأصول الأساسية المسبقة
+// ============================================================
+
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html?v=27',
-  '/manifest.json?v=27',
-  '/icon.svg?v=27',
-  '/icon-192.png?v=27',
-  '/icon-512.png?v=27',
-  '/apple-touch-icon.png?v=27',
+  '/index.html?v=28',
+  '/manifest.json?v=28',
+  '/icon.svg?v=28',
+  '/icon-192.png?v=28',
+  '/icon-512.png?v=28',
+  '/apple-touch-icon.png?v=28',
 
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
@@ -26,43 +29,70 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
 
-  // تفعيل النسخة الجديدة مباشرة
+  // تفعيل Service Worker الجديد مباشرة
   self.skipWaiting();
 
   event.waitUntil(
+
     caches.open(CACHE_NAME).then(async (cache) => {
 
       await Promise.allSettled(
+
         PRECACHE_ASSETS.map(async (url) => {
 
           try {
 
             const isExternal =
-              new URL(url, self.location.origin).origin !== self.location.origin;
+              new URL(
+                url,
+                self.location.origin
+              ).origin !== self.location.origin;
+
 
             const request = new Request(
               url,
-              isExternal ? { mode: 'no-cors' } : {}
+              isExternal
+                ? { mode: 'no-cors' }
+                : {}
             );
+
 
             const response = await fetch(request);
 
+
             if (
               response &&
-              (response.ok || response.type === 'opaque')
+              (
+                response.ok ||
+                response.type === 'opaque'
+              )
             ) {
-              await cache.put(url, response);
+
+              await cache.put(
+                url,
+                response
+              );
+
             }
 
           } catch (error) {
-            console.warn('Precache failed:', url, error);
+
+            console.warn(
+              'Precache failed:',
+              url,
+              error
+            );
+
           }
 
         })
+
       );
 
     })
+
   );
+
 });
 
 
@@ -75,15 +105,23 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
 
     caches.keys()
+
       .then((keys) => {
 
         return Promise.all(
 
           keys
-            .filter((key) => key !== CACHE_NAME)
+
+            .filter(
+              (key) => key !== CACHE_NAME
+            )
+
             .map((key) => {
 
-              console.log('Deleting old cache:', key);
+              console.log(
+                'Deleting old cache:',
+                key
+              );
 
               return caches.delete(key);
 
@@ -92,15 +130,20 @@ self.addEventListener('activate', (event) => {
         );
 
       })
+
       .then(() => {
 
-        // السيطرة على جميع الصفحات المفتوحة مباشرة
+        // السيطرة على جميع الصفحات المفتوحة
         return self.clients.claim();
 
       })
+
       .then(() => {
 
-        console.log('ZeroPlus Service Worker activated:', CACHE_NAME);
+        console.log(
+          'ZeroPlus Service Worker activated:',
+          CACHE_NAME
+        );
 
       })
 
@@ -110,7 +153,7 @@ self.addEventListener('activate', (event) => {
 
 
 // ============================================================
-// POMODORO BACKGROUND TIMER
+// مؤقت التركيز POMODORO
 // ============================================================
 
 let activePomoTimer = null;
@@ -120,15 +163,31 @@ self.addEventListener('message', (event) => {
 
   const data = event.data;
 
-  if (!data || !data.type) return;
+  if (
+    !data ||
+    !data.type
+  ) {
+    return;
+  }
 
 
-  // بدء إشعار نهاية جلسة التركيز
-  if (data.type === 'SCHEDULE_POMO_NOTIFICATION') {
+  // ----------------------------------------------------------
+  // جدولة إشعار انتهاء جلسة التركيز
+  // ----------------------------------------------------------
+
+  if (
+    data.type ===
+    'SCHEDULE_POMO_NOTIFICATION'
+  ) {
 
     if (activePomoTimer) {
-      clearTimeout(activePomoTimer);
+
+      clearTimeout(
+        activePomoTimer
+      );
+
     }
+
 
     const delayMs = Math.max(
       0,
@@ -136,57 +195,94 @@ self.addEventListener('message', (event) => {
     );
 
 
-    activePomoTimer = setTimeout(async () => {
+    activePomoTimer = setTimeout(
+      async () => {
 
-      activePomoTimer = null;
+        activePomoTimer = null;
 
-      try {
 
-        await self.registration.showNotification(
-          data.title || 'ZeroPlus | انتهت جلسة التركيز!',
-          {
-            body:
-              data.body ||
-              'عاشت إيدك! اكتملت فترة المذاكرة المحددة بنجاح. حان وقت الاستراحة.',
+        try {
 
-            icon: '/icon-192.png?v=27',
+          await self.registration.showNotification(
 
-            badge: '/icon.svg?v=27',
+            data.title ||
+            'ZeroPlus | انتهت جلسة التركيز!',
 
-            vibrate: [200, 100, 200, 100, 200],
+            {
 
-            tag: 'pomo-finish-alert',
+              body:
+                data.body ||
+                'عاشت إيدك! اكتملت فترة المذاكرة المحددة بنجاح. حان وقت الاستراحة.',
 
-            renotify: true,
 
-            requireInteraction: true,
+              icon:
+                '/icon-192.png?v=28',
 
-            data: {
-              url: '/?tab=pomodoro'
+
+              badge:
+                '/icon.svg?v=28',
+
+
+              vibrate: [
+                200,
+                100,
+                200,
+                100,
+                200
+              ],
+
+
+              tag:
+                'pomo-finish-alert',
+
+
+              renotify:
+                true,
+
+
+              requireInteraction:
+                true,
+
+
+              data: {
+                url:
+                  '/?tab=pomodoro'
+              }
+
             }
-          }
-        );
 
-      } catch (err) {
+          );
 
-        console.warn(
-          'Failed to display background notification:',
-          err
-        );
+        } catch (err) {
 
-      }
+          console.warn(
+            'Failed to display background notification:',
+            err
+          );
 
-    }, delayMs);
+        }
+
+      },
+      delayMs
+    );
 
   }
 
 
-  // إلغاء الإشعار
-  else if (data.type === 'CANCEL_POMO_NOTIFICATION') {
+  // ----------------------------------------------------------
+  // إلغاء إشعار التركيز
+  // ----------------------------------------------------------
+
+  else if (
+    data.type ===
+    'CANCEL_POMO_NOTIFICATION'
+  ) {
 
     if (activePomoTimer) {
 
-      clearTimeout(activePomoTimer);
+      clearTimeout(
+        activePomoTimer
+      );
 
       activePomoTimer = null;
 
@@ -198,316 +294,548 @@ self.addEventListener('message', (event) => {
 
 
 // ============================================================
-// NOTIFICATION CLICK
+// الضغط على الإشعار
 // ============================================================
 
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener(
+  'notificationclick',
+  (event) => {
 
-  event.notification.close();
+    event.notification.close();
 
-  event.waitUntil(
 
-    clients.matchAll({
-      type: 'window',
-      includeUncontrolled: true
-    })
+    event.waitUntil(
 
-    .then((clientList) => {
+      clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true
+      })
 
-      for (const client of clientList) {
+      .then((clientList) => {
 
-        if (
-          client.url &&
-          'focus' in client
+        for (
+          const client of clientList
         ) {
 
-          return client.focus();
+          if (
+            client.url &&
+            'focus' in client
+          ) {
+
+            return client.focus();
+
+          }
 
         }
 
-      }
 
+        if (
+          clients.openWindow
+        ) {
 
-      if (clients.openWindow) {
+          return clients.openWindow(
+            '/'
+          );
 
-        return clients.openWindow('/');
+        }
 
-      }
+      })
 
-    })
+    );
 
-  );
-
-});
+  }
+);
 
 
 // ============================================================
 // FETCH / CACHE STRATEGY
 // ============================================================
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener(
+  'fetch',
+  (event) => {
 
-  const req = event.request;
+    const req =
+      event.request;
 
-  const url = new URL(req.url);
-
-
-  // ----------------------------------------------------------
-  // تجاهل الطلبات غير GET
-  // ----------------------------------------------------------
-
-  if (req.method !== 'GET') {
-    return;
-  }
+    const url =
+      new URL(req.url);
 
 
-  // ----------------------------------------------------------
-  // استثناء API وقواعد البيانات
-  // ----------------------------------------------------------
+    // --------------------------------------------------------
+    // تجاهل الطلبات غير GET
+    // --------------------------------------------------------
 
-  if (
-    url.pathname.startsWith('/api/') ||
-    url.hostname.includes('groq.com') ||
-    url.hostname.includes('supabase.co')
-  ) {
+    if (
+      req.method !== 'GET'
+    ) {
 
-    return;
+      return;
 
-  }
+    }
 
 
-  // ----------------------------------------------------------
-  // الملفات الثابتة الخارجية
-  // ----------------------------------------------------------
+    // --------------------------------------------------------
+    // استثناء API وقواعد البيانات
+    // --------------------------------------------------------
 
-  const isExternalStaticAsset =
-    url.hostname.includes('cdn') ||
-    url.hostname.includes('cdnjs') ||
-    url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('fonts.gstatic.com');
+    if (
 
+      url.pathname.startsWith(
+        '/api/'
+      ) ||
 
-  const isLocalImage =
-    url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.jpg') ||
-    url.pathname.endsWith('.jpeg') ||
-    url.pathname.endsWith('.webp');
+      url.hostname.includes(
+        'groq.com'
+      ) ||
 
-
-  if (
-    isExternalStaticAsset ||
-    isLocalImage
-  ) {
-
-    event.respondWith(
-
-      caches.match(req)
-
-        .then((cachedResponse) => {
-
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-
-
-          return fetch(req)
-
-            .then((networkResponse) => {
-
-              if (
-                networkResponse &&
-                (
-                  networkResponse.status === 200 ||
-                  networkResponse.type === 'opaque'
-                )
-              ) {
-
-                const responseClone =
-                  networkResponse.clone();
-
-                caches.open(CACHE_NAME)
-                  .then((cache) => {
-
-                    cache.put(
-                      req,
-                      responseClone
-                    );
-
-                  });
-
-              }
-
-
-              return networkResponse;
-
-            });
-
-        })
-
-    );
-
-    return;
-
-  }
-
-
-  // ==========================================================
-  // HTML / صفحات الموقع
-  // NETWORK FIRST
-  // ==========================================================
-
-  if (
-    req.mode === 'navigate' ||
-    url.pathname === '/' ||
-    url.pathname.endsWith('.html')
-  ) {
-
-    event.respondWith(
-
-      fetch(
-        new Request(req, {
-          cache: 'no-store'
-        })
+      url.hostname.includes(
+        'supabase.co'
       )
 
-      .then((networkResponse) => {
+    ) {
 
-        if (
-          networkResponse &&
-          networkResponse.status === 200
-        ) {
+      return;
 
-          const responseClone =
-            networkResponse.clone();
+    }
 
 
-          caches.open(CACHE_NAME)
-            .then((cache) => {
+    // ========================================================
+    // الملفات الثابتة
+    // ========================================================
 
-              // نخزن آخر نسخة حقيقية تم جلبها
-              cache.put(
-                req,
-                responseClone
-              );
+    const isExternalStaticAsset =
 
-              // نخزن نسخة index.html أيضًا
+      url.hostname.includes(
+        'cdn'
+      ) ||
+
+      url.hostname.includes(
+        'cdnjs'
+      ) ||
+
+      url.hostname.includes(
+        'fonts.googleapis.com'
+      ) ||
+
+      url.hostname.includes(
+        'fonts.gstatic.com'
+      );
+
+
+    const isLocalImage =
+
+      url.pathname.endsWith(
+        '.svg'
+      ) ||
+
+      url.pathname.endsWith(
+        '.png'
+      ) ||
+
+      url.pathname.endsWith(
+        '.jpg'
+      ) ||
+
+      url.pathname.endsWith(
+        '.jpeg'
+      ) ||
+
+      url.pathname.endsWith(
+        '.webp'
+      );
+
+
+    if (
+      isExternalStaticAsset ||
+      isLocalImage
+    ) {
+
+      event.respondWith(
+
+        caches.match(req)
+
+          .then(
+            (cachedResponse) => {
+
               if (
-                url.pathname === '/' ||
-                url.pathname === '/index.html'
+                cachedResponse
               ) {
 
-                cache.put(
-                  '/index.html?v=27',
-                  responseClone.clone()
-                );
+                return cachedResponse;
 
               }
 
-            });
 
-        }
+              return fetch(req)
 
+                .then(
+                  (networkResponse) => {
 
-        return networkResponse;
+                    if (
 
-      })
+                      networkResponse &&
 
-      .catch(async () => {
+                      (
+                        networkResponse.status ===
+                        200 ||
 
-        console.warn(
-          'Network unavailable. Loading cached ZeroPlus.'
-        );
+                        networkResponse.type ===
+                        'opaque'
+                      )
 
+                    ) {
 
-        // محاولة النسخة المطلوبة
-        const cached =
-          await caches.match(req);
-
-        if (cached) {
-          return cached;
-        }
-
-
-        // النسخة المحدثة
-        const updatedIndex =
-          await caches.match('/index.html?v=27');
-
-        if (updatedIndex) {
-          return updatedIndex;
-        }
+                      const responseClone =
+                        networkResponse.clone();
 
 
-        // الصفحة الرئيسية
-        const root =
-          await caches.match('/');
+                      caches.open(
+                        CACHE_NAME
+                      )
 
-        if (root) {
-          return root;
-        }
+                      .then(
+                        (cache) => {
+
+                          return cache.put(
+                            req,
+                            responseClone
+                          );
+
+                        }
+                      )
+
+                      .catch(
+                        (error) => {
+
+                          console.warn(
+                            'Static cache update failed:',
+                            error
+                          );
+
+                        }
+                      );
+
+                    }
 
 
-        return Response.error();
+                    return networkResponse;
 
-      })
+                  }
+                );
+
+            }
+          )
+
+      );
+
+      return;
+
+    }
+
+
+    // ========================================================
+    // HTML / صفحات الموقع
+    // NETWORK FIRST
+    // ========================================================
+
+    if (
+
+      req.mode ===
+      'navigate' ||
+
+      url.pathname ===
+      '/' ||
+
+      url.pathname.endsWith(
+        '.html'
+      )
+
+    ) {
+
+      event.respondWith(
+
+        fetch(
+
+          new Request(
+            req,
+            {
+              cache:
+                'no-store'
+            }
+          )
+
+        )
+
+        .then(
+          (networkResponse) => {
+
+            if (
+
+              networkResponse &&
+
+              networkResponse.status ===
+              200
+
+            ) {
+
+              // ------------------------------------------------
+              // مهم جدًا:
+              // نأخذ النسخ قبل استخدام cache.put()
+              // حتى لا يحدث خطأ Response body is already used
+              // ------------------------------------------------
+
+              const responseForBrowser =
+                networkResponse.clone();
+
+
+              const responseForCache =
+                networkResponse.clone();
+
+
+              // نسخة منفصلة خاصة بـ index.html
+              const indexCopy =
+                networkResponse.clone();
+
+
+              caches.open(
+                CACHE_NAME
+              )
+
+              .then(
+                (cache) => {
+
+                  // حفظ الطلب الحالي
+                  return cache.put(
+                    req,
+                    responseForCache
+                  );
+
+                }
+              )
+
+              .then(
+                async () => {
+
+                  // إذا كانت الصفحة الرئيسية
+                  // أو index.html
+                  if (
+
+                    url.pathname ===
+                    '/' ||
+
+                    url.pathname ===
+                    '/index.html'
+
+                  ) {
+
+                    try {
+
+                      const cache =
+                        await caches.open(
+                          CACHE_NAME
+                        );
+
+
+                      await cache.put(
+
+                        '/index.html?v=28',
+
+                        indexCopy
+
+                      );
+
+                    } catch (error) {
+
+                      console.warn(
+                        'Index cache update failed:',
+                        error
+                      );
+
+                    }
+
+                  }
+
+                }
+              )
+
+              .catch(
+                (error) => {
+
+                  console.warn(
+                    'HTML cache update failed:',
+                    error
+                  );
+
+                }
+              );
+
+
+              // نرجع النسخة للمتصفح
+              return responseForBrowser;
+
+            }
+
+
+            return networkResponse;
+
+          }
+        )
+
+        .catch(
+          async () => {
+
+            console.warn(
+              'Network unavailable. Loading cached ZeroPlus.'
+            );
+
+
+            // --------------------------------------------------
+            // أولاً: محاولة الطلب نفسه
+            // --------------------------------------------------
+
+            const cached =
+              await caches.match(
+                req
+              );
+
+
+            if (cached) {
+
+              return cached;
+
+            }
+
+
+            // --------------------------------------------------
+            // ثانيًا: index.html المحدث
+            // --------------------------------------------------
+
+            const updatedIndex =
+              await caches.match(
+                '/index.html?v=28'
+              );
+
+
+            if (
+              updatedIndex
+            ) {
+
+              return updatedIndex;
+
+            }
+
+
+            // --------------------------------------------------
+            // ثالثًا: الصفحة الرئيسية
+            // --------------------------------------------------
+
+            const root =
+              await caches.match(
+                '/'
+              );
+
+
+            if (root) {
+
+              return root;
+
+            }
+
+
+            return Response.error();
+
+          }
+        )
+
+      );
+
+      return;
+
+    }
+
+
+    // ========================================================
+    // باقي الملفات
+    // NETWORK FIRST
+    // ========================================================
+
+    event.respondWith(
+
+      fetch(req)
+
+        .then(
+          (networkResponse) => {
+
+            if (
+
+              networkResponse &&
+
+              networkResponse.status ===
+              200
+
+            ) {
+
+              const responseClone =
+                networkResponse.clone();
+
+
+              caches.open(
+                CACHE_NAME
+              )
+
+              .then(
+                (cache) => {
+
+                  return cache.put(
+                    req,
+                    responseClone
+                  );
+
+                }
+              )
+
+              .catch(
+                (error) => {
+
+                  console.warn(
+                    'Cache update failed:',
+                    error
+                  );
+
+                }
+              );
+
+            }
+
+
+            return networkResponse;
+
+          }
+        )
+
+        .catch(
+          async () => {
+
+            const cached =
+              await caches.match(
+                req
+              );
+
+
+            if (cached) {
+
+              return cached;
+
+            }
+
+
+            return Response.error();
+
+          }
+        )
 
     );
 
-    return;
-
   }
-
-
-  // ==========================================================
-  // باقي الملفات
-  // NETWORK FIRST
-  // ==========================================================
-
-  event.respondWith(
-
-    fetch(req)
-
-      .then((networkResponse) => {
-
-        if (
-          networkResponse &&
-          networkResponse.status === 200
-        ) {
-
-          const responseClone =
-            networkResponse.clone();
-
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-
-              cache.put(
-                req,
-                responseClone
-              );
-
-            });
-
-        }
-
-
-        return networkResponse;
-
-      })
-
-      .catch(async () => {
-
-        const cached =
-          await caches.match(req);
-
-        if (cached) {
-          return cached;
-        }
-
-        return Response.error();
-
-      })
-
-  );
-
-});
+);
