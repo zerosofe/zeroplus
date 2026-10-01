@@ -6,12 +6,12 @@
     <title>ZeroPlus | المنصة الأكاديمية التخصصية</title>
     
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=25">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=25">
-    <link rel="shortcut icon" href="/icon.svg?v=25">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=26">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=26">
+    <link rel="shortcut icon" href="/icon.svg?v=26">
 
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json?v=25">
+    <link rel="manifest" href="/manifest.json?v=26">
     <meta name="theme-color" content="#0E2F76">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -148,7 +148,7 @@
             <div>
                 <h3 class="font-black text-xl text-santorini-deepNavy dark:text-santorini-white">منصة ZeroPlus الأكاديمية</h3>
                 <p class="text-xs text-slate-500 dark:text-santorini-softBlue mt-1.5 leading-relaxed">
-                    يرجى إدخال اسمك وتحديد قسمك الأكاديمي لتخصيص مسار البناء اللغوي وحفظ سجلك الدراسي.
+                    يرجى إدخال اسمك وتحديد قسمك الأكاديمي لتخصيص مسار البناء اللغوي وحفظ سجلك الدراسي سحابياً.
                 </p>
             </div>
             <div class="space-y-3 text-right">
@@ -425,9 +425,8 @@
             </div>
         </section>
 
-        <!-- ================= SECTION 3: البناء اللغوي (LEARNING PATH & TREE) ================= -->
+        <!-- ================= SECTION 3: البناء اللغوي ================= -->
         <section id="tab-english" class="hidden space-y-5">
-            <!-- شريط تحكم المسار ونمط التعلم مثل دولينجو -->
             <div class="bg-white dark:bg-santorini-darkCard border border-slate-200 dark:border-santorini-darkBorder p-4 rounded-3xl shadow-santorini flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-1.5 text-xs font-bold text-rose-500">
@@ -440,7 +439,6 @@
                     </div>
                 </div>
 
-                <!-- زر التبديل بين العام والمسار التخصصي الطبي -->
                 <div class="flex items-center gap-2 bg-santorini-lightBg dark:bg-santorini-darkBase p-1 rounded-2xl border border-slate-200 dark:border-santorini-darkBorder">
                     <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-santorini-deepNavy text-white shadow-sm">
                         <i class="fa-solid fa-earth-americas text-xs"></i>
@@ -714,7 +712,7 @@
             if (!ind) return;
             if (status === 'online') {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50';
-                ind.title = 'متصل بالسحابة وتتم المزامنة';
+                ind.title = 'متصل بالسحابة وتتم المزامنة الشاملة';
             } else if (status === 'syncing') {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping';
                 ind.title = 'جاري مزامنة البيانات...';
@@ -746,6 +744,8 @@
                         current_section_id: currentSectionId || 'sec_01',
                         unlocked_stage_max: unlockedNodeMax || 1,
                         streak_count: userStreak || 1,
+                        node_crowns: nodeCrowns,
+                        learning_track: currentLearningTrack,
                         last_active: new Date().toISOString()
                     }, { onConflict: 'device_id' });
 
@@ -777,34 +777,48 @@
             }
         }
 
-        async function recordWordMasteryToCloud(termKey, isMastered) {
+        // مزامنة المهام سحابياً
+        async function syncTasksToCloud() {
             if (!supabaseClient || !navigator.onLine) return;
             try {
-                const { data } = await supabaseClient
-                    .from('user_word_mastery')
-                    .select('mistake_count')
-                    .eq('device_id', getDeviceId())
-                    .eq('term_key', termKey)
-                    .maybeSingle();
+                const deviceId = getDeviceId();
+                // حفظ المهام الحالية دفعة واحدة
+                if (tasks && tasks.length > 0) {
+                    const payload = tasks.map(t => ({
+                        id: t.id,
+                        device_id: deviceId,
+                        title: t.title,
+                        done: !!t.done,
+                        tag: t.tag || '',
+                        prio: t.prio || 'normal'
+                    }));
+                    await supabaseClient.from('user_tasks').upsert(payload, { onConflict: 'id' });
+                }
+            } catch (e) {
+                console.warn('Tasks sync error:', e);
+            }
+        }
 
-                const currentMistakes = data ? data.mistake_count : 0;
-                const newMistakes = isMastered ? currentMistakes : currentMistakes + 1;
+        async function deleteTaskFromCloud(taskId) {
+            if (!supabaseClient || !navigator.onLine) return;
+            try {
+                await supabaseClient.from('user_tasks').delete().eq('id', taskId).eq('device_id', getDeviceId());
+            } catch (e) {}
+        }
 
-                const nextReview = new Date();
-                nextReview.setDate(nextReview.getDate() + (isMastered ? 3 : 1));
-
-                await supabaseClient
-                    .from('user_word_mastery')
-                    .upsert({
-                        device_id: getDeviceId(),
-                        term_key: termKey,
-                        mastered: isMastered,
-                        mistake_count: newMistakes,
-                        next_review_at: nextReview.toISOString(),
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'device_id,term_key' });
-            } catch (err) {
-                console.warn('Failed to record word mastery:', err);
+        // مزامنة جلسات التركيز سحابياً
+        async function syncSessionToCloud(sessionObj) {
+            if (!supabaseClient || !navigator.onLine) return;
+            try {
+                await supabaseClient.from('user_focus_sessions').upsert({
+                    id: sessionObj.id,
+                    device_id: getDeviceId(),
+                    session_name: sessionObj.name,
+                    duration_mins: currentPomoMins,
+                    session_time: sessionObj.time
+                }, { onConflict: 'id' });
+            } catch (e) {
+                console.warn('Focus session sync error:', e);
             }
         }
 
@@ -812,33 +826,43 @@
             if (!supabaseClient || !navigator.onLine) return;
             const deviceId = getDeviceId();
             try {
-                const { data, error } = await supabaseClient
+                // 1. استرجاع الملف الشخصي والتيجان
+                const { data: profile, error } = await supabaseClient
                     .from('profiles')
                     .select('*')
                     .eq('device_id', deviceId)
                     .maybeSingle();
 
-                if (data && !error) {
-                    if (data.user_name) {
-                        currentUserName = data.user_name;
+                if (profile && !error) {
+                    if (profile.user_name) {
+                        currentUserName = profile.user_name;
                         localStorage.setItem('zp_username', currentUserName);
                         localStorage.setItem('zp_user_registered', 'true');
                     }
-                    if (data.department) {
-                        activeDepartmentKey = data.department;
+                    if (profile.department) {
+                        activeDepartmentKey = profile.department;
                         localStorage.setItem('zp_user_department', activeDepartmentKey);
                     }
-                    if (data.xp) {
-                        userXP = data.xp;
+                    if (profile.xp) {
+                        userXP = profile.xp;
                         localStorage.setItem('zp_xp', userXP);
                     }
-                    if (data.unlocked_stage_max) {
-                        unlockedNodeMax = data.unlocked_stage_max;
+                    if (profile.unlocked_stage_max) {
+                        unlockedNodeMax = profile.unlocked_stage_max;
                         localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
                     }
-                    if (data.streak_count) {
-                        userStreak = data.streak_count;
+                    if (profile.streak_count) {
+                        userStreak = profile.streak_count;
                         localStorage.setItem('zp_med_streak', userStreak);
+                    }
+                    if (profile.node_crowns && typeof profile.node_crowns === 'object') {
+                        nodeCrowns = profile.node_crowns;
+                        localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
+                    }
+                    if (profile.learning_track) {
+                        currentLearningTrack = profile.learning_track;
+                        localStorage.setItem('zp_learning_track', currentLearningTrack);
+                        setLearningTrackMode(currentLearningTrack);
                     }
 
                     updateGreetingHeader();
@@ -847,6 +871,43 @@
                     renderPathTree();
                     updateCloudIndicator('online');
                 }
+
+                // 2. استرجاع المهام السحابية
+                const { data: cloudTasks } = await supabaseClient
+                    .from('user_tasks')
+                    .select('*')
+                    .eq('device_id', deviceId)
+                    .order('created_at', { ascending: false });
+
+                if (cloudTasks && cloudTasks.length > 0) {
+                    tasks = cloudTasks.map(t => ({
+                        id: t.id,
+                        title: t.title,
+                        done: t.done,
+                        tag: t.tag,
+                        prio: t.prio
+                    }));
+                    localStorage.setItem('zp_tasks', JSON.stringify(tasks));
+                    renderTasks();
+                }
+
+                // 3. استرجاع جلسات التركيز السحابية
+                const { data: cloudSessions } = await supabaseClient
+                    .from('user_focus_sessions')
+                    .select('*')
+                    .eq('device_id', deviceId)
+                    .order('created_at', { ascending: false });
+
+                if (cloudSessions && cloudSessions.length > 0) {
+                    userForest = cloudSessions.map(s => ({
+                        id: s.id,
+                        name: s.session_name,
+                        time: s.session_time
+                    }));
+                    localStorage.setItem('zp_forest', JSON.stringify(userForest));
+                    renderForest();
+                }
+
             } catch (e) {
                 console.warn('Could not restore profile from cloud:', e);
             }
@@ -854,10 +915,11 @@
 
         window.addEventListener('online', () => {
             syncProfileWithCloud();
+            syncTasksToCloud();
             restoreUserDataFromCloud();
         });
 
-        // ------------------ DUOLINGO CEFR CURRICULUM (GENERAL & MEDICAL) ------------------
+        // ------------------ DUOLINGO CEFR CURRICULUM ------------------
         let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
         let nodeCrowns = safeParse('zp_node_crowns', {});
 
@@ -1030,6 +1092,7 @@
                 btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-santorini-deepNavy text-white shadow-sm';
                 btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
             }
+            syncProfileWithCloud();
             renderPathTree();
         }
 
@@ -1460,7 +1523,7 @@
             });
         }
 
-        // ------------------ TO-DO LOGIC ------------------
+        // ------------------ TO-DO LOGIC WITH CLOUD PERSISTENCE ------------------
         let tasks = safeParse('zp_tasks', []);
         if (!Array.isArray(tasks)) tasks = [];
         function renderTasks() {
@@ -1478,7 +1541,10 @@
                                 <div onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-xl ${t.done ? 'bg-santorini-deepNavy text-white' : 'border-2 border-slate-300 dark:border-slate-600'} flex items-center justify-center text-xs cursor-pointer transition">
                                     ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
                                 </div>
-                                <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${escapeHtml(t.title)}</p>
+                                <div>
+                                    <p class="text-sm font-bold ${t.done ? 'line-through text-slate-400' : 'text-slate-900 dark:text-santorini-white'}">${escapeHtml(t.title)}</p>
+                                    ${t.tag ? `<span class="text-[10px] text-slate-400 font-semibold">${escapeHtml(t.tag)}</span>` : ''}
+                                </div>
                             </div>
                             <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
                         </div>`;
@@ -1491,24 +1557,30 @@
         }
         function addTodo() {
             const inp = document.getElementById('todo-input');
+            const tag = document.getElementById('todo-tag')?.value || 'مقرر تخصصي';
+            const prio = document.getElementById('todo-prio')?.value || 'normal';
             const val = inp.value.trim();
             if (!val) return;
-            tasks.unshift({ id: Date.now(), title: val, done: false });
+            const newTask = { id: Date.now(), title: val, done: false, tag, prio };
+            tasks.unshift(newTask);
             inp.value = '';
             renderTasks();
             awardXP(5);
+            syncTasksToCloud();
         }
         function toggleTask(id) {
             tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
             renderTasks();
+            syncTasksToCloud();
         }
         function deleteTask(id) {
             tasks = tasks.filter(t => t.id !== id);
             renderTasks();
+            deleteTaskFromCloud(id);
         }
         renderTasks();
 
-        // ------------------ POMODORO LOGIC ------------------
+        // ------------------ POMODORO LOGIC WITH CLOUD PERSISTENCE ------------------
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
         let userForest = safeParse('zp_forest', []);
         if (!Array.isArray(userForest)) userForest = [];
@@ -1554,10 +1626,13 @@
             localStorage.setItem('zp_focus_mins', totalFocusMins);
             document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
             const now = new Date();
-            userForest.unshift({ id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` });
+            const sessionObj = { id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` };
+            userForest.unshift(sessionObj);
             safeSetItem('zp_forest', JSON.stringify(userForest));
             renderForest();
             playChime(true); awardXP(30); triggerConfetti();
+            syncSessionToCloud(sessionObj);
+            syncProfileWithCloud();
             if ('Notification' in window && Notification.permission === 'granted') {
                 try { new Notification('ZeroPlus', { body: `اكتملت جلسة ${currentPomoMins} دقيقة. أحسنت!`, icon: '/icon-192.png' }); } catch (e) {}
             }
