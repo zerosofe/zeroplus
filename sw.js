@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'zeroplus-v29';
+const CACHE_NAME = 'zeroplus-v30';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
