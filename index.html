@@ -22,17 +22,17 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v30')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v31')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=30">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=30">
-    <link rel="shortcut icon" href="/icon.svg?v=30">
-    <link rel="manifest" href="/manifest.json?v=30">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=31">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=31">
+    <link rel="shortcut icon" href="/icon.svg?v=31">
+    <link rel="manifest" href="/manifest.json?v=31">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -41,7 +41,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+        // لو فشل تحميل CDN الخاص بـ Tailwind (انقطاع/حجب) لا نكسر باقي السكربتات
+        if (window.tailwind) tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
@@ -96,14 +97,23 @@
 </head>
 <body class="bg-sky-50 dark:bg-theme-darkBase text-slate-800 dark:text-white min-h-screen flex flex-col transition-colors duration-300">
 
-    <div id="notify-reminder-banner" class="hidden bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold shadow-md flex items-center justify-between">
-        <div class="max-w-4xl mx-auto w-full flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bell text-sm animate-bounce"></i>
-                <span>فعّل الإشعارات لتنبيهك فور انتهاء وقت المذاكرة.</span>
+    <!-- تذكير الإشعارات: يظهر فوق كل الشاشات (حتى شاشة الدخول) ويذكّر الطالب بالتفعيل -->
+    <div id="notify-reminder-banner" class="hidden relative z-[45] bg-emerald-500 text-white px-3 py-2.5 text-[11px] font-bold shadow-lg">
+        <div class="max-w-4xl mx-auto w-full flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <i id="notify-banner-icon" class="fa-solid fa-bell text-sm animate-bounce shrink-0"></i>
+                <span id="notify-banner-text" class="leading-snug">فعّل التنبيهات حتى ننبّهك فور انتهاء جلسة التركيز — حتى لو كان التطبيق بالخلفية.</span>
             </div>
-            <button onclick="requestNotificationPermission()" class="bg-theme-darkBase text-white px-3.5 py-1.5 rounded-xl text-[11px] font-black">تفعيل الآن</button>
+            <div class="flex items-center gap-1 shrink-0">
+                <button id="notify-banner-btn" onclick="requestNotificationPermission()" class="bg-theme-darkBase text-white px-3 py-1.5 rounded-xl text-[11px] font-black whitespace-nowrap">تفعيل الآن</button>
+                <button onclick="dismissNotificationBanner()" aria-label="إخفاء التذكير" class="px-1.5 py-1.5 rounded-lg hover:bg-black/20"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
         </div>
+    </div>
+
+    <!-- رسائل سريعة (Toast) — تأكيد مرئي لكل زر -->
+    <div id="toast" class="hidden fixed bottom-24 inset-x-0 z-[80] flex justify-center px-4 pointer-events-none">
+        <div id="toast-inner" class="bg-slate-900/95 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-2xl border border-white/10 max-w-sm text-center"></div>
     </div>
 
     <!-- LANDING VIEW -->
@@ -117,6 +127,14 @@
                 <p class="text-sm sm:text-base text-slate-600 dark:text-theme-skyLight max-w-xl mx-auto leading-relaxed font-semibold">
                     ZeroPlus منصة أكاديمية تجمع تنظيم المهام وجلسات التركيز، وقسما البناء اللغوي والمساعد الأكاديمي قريباً.
                 </p>
+            </div>
+
+            <div id="landing-notify-card" class="hidden bg-emerald-500 text-white p-4 rounded-3xl shadow-glow-green items-center justify-between gap-3 max-w-md mx-auto w-full">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <i id="landing-notify-icon" class="fa-solid fa-bell animate-bounce shrink-0"></i>
+                    <p id="landing-notify-text" class="text-[11px] font-bold leading-snug">فعّل التنبيهات الآن حتى ننبّهك عند انتهاء جلسة التركيز — حتى لو أغلقت التطبيق.</p>
+                </div>
+                <button onclick="requestNotificationPermission()" class="bg-theme-darkBase text-white px-3.5 py-2 rounded-xl text-[11px] font-black whitespace-nowrap shrink-0">تفعيل 🔔</button>
             </div>
 
             <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder p-6 sm:p-8 rounded-4xl shadow-xl max-w-md mx-auto space-y-5 text-right">
@@ -235,6 +253,7 @@
             <div class="space-y-2 pt-2">
                 <button onclick="saveProfileChanges()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs shadow-glow-sky">حفظ التعديلات</button>
                 <button onclick="handleUserLogout()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2.5 rounded-2xl font-bold text-xs">تسجيل الخروج</button>
+                <button onclick="closeProfileModal(); openSupportDrawer();" class="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 py-2.5 rounded-2xl font-bold text-xs">الدعم الفني والمساعدة</button>
             </div>
         </div>
     </div>
@@ -247,18 +266,26 @@
             </div>
             <div>
                 <h3 class="font-black text-base text-slate-900 dark:text-white">تثبيت ZeroPlus</h3>
-                <p class="text-xs text-slate-500 mt-1">تطبيق سريع يعمل حتى دون إنترنت</p>
+                <p id="install-state-text" class="text-xs text-slate-500 mt-1">تطبيق سريع يعمل حتى دون إنترنت</p>
             </div>
             <div id="install-guide-ios" class="text-right bg-sky-50 dark:bg-theme-darkBase p-4 rounded-2xl border border-slate-200 dark:border-theme-darkBorder space-y-2 text-xs">
-                <span class="font-black text-theme-sky block">خطوات iOS:</span>
+                <span class="font-black text-theme-sky block">خطوات iOS (آيفون/آيباد — من Safari):</span>
                 <p class="text-slate-600 dark:text-slate-300">1. اضغط زر المشاركة <i class="fa-solid fa-arrow-up-from-bracket text-theme-sky"></i></p>
                 <p class="text-slate-600 dark:text-slate-300">2. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></p>
                 <p class="text-slate-600 dark:text-slate-300">3. اضغط <strong>إضافة</strong></p>
+                <p class="text-[10px] text-slate-400">ملاحظة: التثبيت من Safari فقط — وبعد التثبيت تظهر التنبيهات على iOS 16.4+.</p>
             </div>
-            <div id="install-guide-android" class="hidden">
+            <div id="install-guide-android" class="hidden text-right space-y-2">
                 <button onclick="triggerAndroidPwaInstall()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3 rounded-2xl font-black text-xs">
                     <i class="fa-solid fa-download"></i> تثبيت بنقرة واحدة
                 </button>
+                <p id="install-manual-hint" class="text-[10px] text-slate-400 leading-relaxed">لو لم يظهر زر التثبيت: اضغط ⋮ أعلى المتصفح ← «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</p>
+            </div>
+            <div id="install-guide-desktop" class="hidden text-right bg-sky-50 dark:bg-theme-darkBase p-4 rounded-2xl border border-slate-200 dark:border-theme-darkBorder space-y-2 text-xs">
+                <span class="font-black text-theme-sky block">خطوات اللابتوب (Chrome / Edge):</span>
+                <p class="text-slate-600 dark:text-slate-300">1. اضغط أيقونة التثبيت <i class="fa-solid fa-download text-theme-sky"></i> في شريط العنوان</p>
+                <p class="text-slate-600 dark:text-slate-300">2. أو اضغط ⋮ ← <strong>«تثبيت ZeroPlus»</strong></p>
+                <p class="text-slate-600 dark:text-slate-300">3. ثم <strong>تثبيت</strong> — سيعمل كتطبيق مستقل بواجهة نظيفة</p>
             </div>
             <button onclick="closeInstallModal()" class="w-full bg-slate-100 dark:bg-theme-darkBase text-slate-600 dark:text-slate-300 py-2.5 rounded-xl font-bold text-xs">إغلاق</button>
         </div>
@@ -289,7 +316,11 @@
                 </button>
                 <button id="notify-btn" onclick="requestNotificationPermission()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">تنبيهات 🔔</span>
+                    <span id="notify-btn-label" class="text-[11px] hidden sm:inline">تنبيهات 🔔</span>
+                </button>
+                <button onclick="openSupportDrawer()" title="الدعم الفني والمساعدة" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 shadow-sm text-xs font-bold">
+                    <i class="fa-solid fa-circle-question text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">الدعم</span>
                 </button>
                 <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-3 py-1.5 rounded-xl text-xs font-bold text-theme-sky flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-emerald-500 text-xs"></i>
@@ -298,13 +329,220 @@
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
                 <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">المظهر ☀️</span>
+                    <span id="theme-label" class="text-[11px] hidden sm:inline">المظهر ☀️</span>
                 </button>
             </div>
         </div>
     </header>
 
     <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+        <!-- HOME / الصفحة الرئيسية -->
+        <section id="tab-home" class="hidden space-y-4">
+            <!-- بطاقة التعريف + الإحصائيات -->
+            <div class="gradient-todo p-6 rounded-4xl text-white shadow-glow-teal space-y-4">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-bold tracking-wider text-theme-skyLight uppercase">ZeroPlus (Z+) | زيرو بلس 🎓</span>
+                        <h2 id="home-hero-title" class="text-xl sm:text-2xl font-black">أهلاً بك في منصتك الأكاديمية</h2>
+                        <p class="text-xs text-sky-100 leading-relaxed max-w-lg">
+                            منصة عراقية للطلبة تجمع <strong>تنظيم المهام الدراسية</strong> و<strong>جلسات التركيز (بومودورو)</strong>
+                            مع <strong>مزامنة سحابية</strong> تعمل حتى بدون إنترنت — وكل تقدّمك محفوظ لحسابك.
+                        </p>
+                    </div>
+                    <div class="w-14 h-14 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-xl shrink-0" dir="ltr">Z+</div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 pt-1">
+                    <div class="bg-white/10 border border-white/20 rounded-2xl p-2.5 text-center">
+                        <span id="home-stat-xp" class="block text-sm sm:text-base font-black text-amber-300">0</span>
+                        <span class="block text-[9px] font-bold text-sky-100">نقطة XP</span>
+                    </div>
+                    <div class="bg-white/10 border border-white/20 rounded-2xl p-2.5 text-center">
+                        <span id="home-stat-mins" class="block text-sm sm:text-base font-black">0</span>
+                        <span class="block text-[9px] font-bold text-sky-100">دقيقة تركيز</span>
+                    </div>
+                    <div class="bg-white/10 border border-white/20 rounded-2xl p-2.5 text-center">
+                        <span id="home-stat-sessions" class="block text-sm sm:text-base font-black">0</span>
+                        <span class="block text-[9px] font-bold text-sky-100">جلسة منجزة</span>
+                    </div>
+                    <div class="bg-white/10 border border-white/20 rounded-2xl p-2.5 text-center">
+                        <span id="home-stat-tasks" class="block text-sm sm:text-base font-black">0</span>
+                        <span class="block text-[9px] font-bold text-sky-100">مهمة مكتملة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المميزات -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-4xl shadow-sm space-y-3.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky flex items-center justify-center text-sm border border-sky-200 dark:border-theme-darkBorder"><i class="fa-solid fa-star"></i></div>
+                    <div>
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white">مميزات التطبيق</h3>
+                        <p class="text-[11px] text-slate-400">كل ما تحتاجه لمتابعة دراستك بمكان واحد</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-theme-teal dark:text-teal-300"><i class="fa-solid fa-list-check ml-1"></i> تنظيم المهام</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">أضف المحاضرات والواجبات مع وسم (مقرر تخصصي / منهج وزاري / مراجعة) وأولوية، وتابع نسبة الإنجاز.</p>
+                    </div>
+                    <div class="bg-emerald-50/50 dark:bg-theme-darkBase border border-emerald-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-theme-mint dark:text-emerald-400"><i class="fa-solid fa-clock ml-1"></i> تركيز يعمل بالخلفية</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">مؤقت 25 / 5 / 15 دقيقة يكمل العدّ حتى لو أغلقت التطبيق أو خرجت منه، ويصلك تنبيه عند الانتهاء.</p>
+                    </div>
+                    <div class="bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-theme-sky dark:text-sky-300"><i class="fa-solid fa-cloud-arrow-up ml-1"></i> مزامنة سحابية</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">حسابك ومهامك وجلساتك تُحفظ بالسحابة وتُرفع تلقائياً عند عودة الإنترنت — بدون فقدان أي بيانات.</p>
+                    </div>
+                    <div class="bg-violet-50/50 dark:bg-theme-darkBase border border-violet-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-violet-600 dark:text-violet-300"><i class="fa-solid fa-bell ml-1"></i> تنبيهات ذكية</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">تنبيه فوري عند انتهاء جلسة التركيز، وتذكير لطيف بتفعيل التنبيهات لو كانت مطفأة.</p>
+                    </div>
+                    <div class="bg-amber-50/50 dark:bg-theme-darkBase border border-amber-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-amber-600 dark:text-amber-300"><i class="fa-solid fa-wifi ml-1"></i> يعمل بدون إنترنت</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">تطبيق ويب تقدّمي (PWA) يُثبَّت على الهاتف ويُفتح بسرعة حتى بوضع الطيران.</p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-theme-darkBase border border-slate-100 dark:border-theme-darkBorder p-3.5 rounded-3xl">
+                        <span class="text-sm font-black text-slate-700 dark:text-slate-200"><i class="fa-solid fa-bolt ml-1"></i> نقاط XP وإنجاز</span>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">+5 XP لكل مهمة جديدة و+30 XP لكل جلسة تركيز مكتملة، مع تقرير إنجاز قابل للمشاركة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- كيف تستخدم التطبيق -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-4xl shadow-sm space-y-3.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-teal-50 dark:bg-theme-darkBase text-theme-teal flex items-center justify-center text-sm border border-teal-200 dark:border-theme-darkBorder"><i class="fa-solid fa-route"></i></div>
+                    <div>
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white">كيف تستخدم التطبيق؟</h3>
+                        <p class="text-[11px] text-slate-400">٥ خطوات فقط — اضغط أي زر لتجربته مباشرة</p>
+                    </div>
+                </div>
+                <ol class="space-y-2.5">
+                    <li class="flex items-start gap-3 bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-3xl">
+                        <span class="w-6 h-6 rounded-xl bg-theme-sky text-white text-[11px] font-black flex items-center justify-center shrink-0">1</span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white">أنشئ حسابك بالاسم وكلمة المرور</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">اختر قسمك/تخصصك — الحساب يحفظ تقدمك ويسمح لك بالمتابعة من أي جهاز.</p>
+                            <button onclick="openProfileModal()" class="mt-2 text-[11px] font-black text-theme-sky hover:underline"><i class="fa-solid fa-user-pen ml-1"></i> إدارة حسابي الآن</button>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-3xl">
+                        <span class="w-6 h-6 rounded-xl bg-theme-sky text-white text-[11px] font-black flex items-center justify-center shrink-0">2</span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white">أضف مهامك ومحاضراتك</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">من تبويب «المهام»: اكتب العنوان، اختر الوسم والأولوية، ثم اضغط إدراج.</p>
+                            <button onclick="showTab('todo')" class="mt-2 text-[11px] font-black text-theme-teal hover:underline"><i class="fa-solid fa-list-check ml-1"></i> الانتقال إلى المهام</button>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-3xl">
+                        <span class="w-6 h-6 rounded-xl bg-theme-sky text-white text-[11px] font-black flex items-center justify-center shrink-0">3</span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white">شغّل جلسة تركيز وادرس</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">اختر 25 دقيقة تركيز أو استراحة، اضغط «بدء المؤقت»، ويمكنك تصغير التطبيق أو الخروج — المؤقت يكمل بالخلفية.</p>
+                            <button onclick="showTab('pomodoro')" class="mt-2 text-[11px] font-black text-theme-mint hover:underline"><i class="fa-solid fa-clock ml-1"></i> الانتقال إلى التركيز</button>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-3xl">
+                        <span class="w-6 h-6 rounded-xl bg-theme-sky text-white text-[11px] font-black flex items-center justify-center shrink-0">4</span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white">فعّل التنبيهات</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">حتى يصلك إشعار فور انتهاء الجلسة حتى لو كان التطبيق بالخلفية.</p>
+                            <button onclick="requestNotificationPermission()" class="mt-2 text-[11px] font-black text-emerald-600 hover:underline"><i class="fa-solid fa-bell ml-1"></i> تفعيل التنبيهات</button>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-3xl">
+                        <span class="w-6 h-6 rounded-xl bg-theme-sky text-white text-[11px] font-black flex items-center justify-center shrink-0">5</span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white">ثبّت التطبيق وشارك إنجازك</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">ثبّته على شاشة الهاتف ليصير مثل تطبيق حقيقي، ثم شارك تقرير إنجازك مع أصدقائك.</p>
+                            <div class="flex flex-wrap gap-3 mt-2">
+                                <button onclick="openInstallModal()" class="text-[11px] font-black text-theme-sky hover:underline"><i class="fa-solid fa-download ml-1"></i> تثبيت التطبيق</button>
+                                <button onclick="openShareModal()" class="text-[11px] font-black text-violet-600 dark:text-violet-300 hover:underline"><i class="fa-solid fa-share-nodes ml-1"></i> مشاركة الإنجاز</button>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- الإعدادات السريعة: التثبيت / التنبيهات / الوضع الليلي / الدعم -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-4xl shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white"><i class="fa-solid fa-mobile-screen-button text-theme-sky ml-1"></i> كيف تنزّل التطبيق؟</h3>
+                        <span id="home-install-state" class="text-[10px] font-black px-2 py-1 rounded-xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky border border-sky-200 dark:border-theme-darkBorder">غير مثبّت</span>
+                    </div>
+                    <p id="home-install-hint" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">على أندرويد: زر ⋮ ثم «تثبيت التطبيق». على آيفون: زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».</p>
+                    <button onclick="openInstallModal()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-2.5 rounded-2xl font-black text-xs shadow-glow-sky"><i class="fa-solid fa-download ml-1"></i> فتح دليل التثبيت</button>
+                </div>
+
+                <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-4xl shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white"><i class="fa-solid fa-bell text-emerald-500 ml-1"></i> التنبيهات</h3>
+                        <span id="home-notify-status" class="text-[10px] font-black px-2 py-1 rounded-xl bg-slate-50 dark:bg-theme-darkBase text-slate-500 border border-slate-200 dark:border-theme-darkBorder">غير مفعّلة</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">التنبيه يصلك عند انتهاء جلسة التركيز، ويعمل والتطبيق بالخلفية. بدونه ستفوتك نهاية الجلسة.</p>
+                    <div class="flex gap-2">
+                        <button onclick="requestNotificationPermission()" class="flex-1 bg-theme-mint hover:bg-emerald-700 text-white py-2.5 rounded-2xl font-black text-xs shadow-glow-green">تفعيل التنبيهات</button>
+                        <button onclick="sendTestNotification()" class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200 dark:border-theme-darkBorder text-theme-mint dark:text-emerald-400 px-3 py-2.5 rounded-2xl font-bold text-xs" title="إرسال إشعار تجريبي"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-theme-darkCard border border-violet-100 dark:border-theme-darkBorder p-4 rounded-4xl shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white"><i class="fa-solid fa-moon text-violet-500 ml-1"></i> الوضع الليلي</h3>
+                        <span id="home-theme-status" class="text-[10px] font-black px-2 py-1 rounded-xl bg-slate-50 dark:bg-theme-darkBase text-slate-500 border border-slate-200 dark:border-theme-darkBorder">نهاري</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">الوضع الليلي مريح للعين أثناء دراسة الليل، ويُحفظ اختيارك تلقائياً في كل مرة تفتح التطبيق.</p>
+                    <button onclick="toggleTheme()" class="w-full bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-2xl font-black text-xs"><i class="fa-solid fa-circle-half-stroke ml-1"></i> تبديل المظهر</button>
+                </div>
+
+                <div class="bg-white dark:bg-theme-darkCard border border-amber-100 dark:border-theme-darkBorder p-4 rounded-4xl shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white"><i class="fa-solid fa-headset text-amber-500 ml-1"></i> الدعم الفني</h3>
+                        <span class="text-[10px] font-black px-2 py-1 rounded-xl bg-amber-50 dark:bg-theme-darkBase text-amber-600 border border-amber-200 dark:border-theme-darkBorder">متاح دائماً</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">حسابك، التنبيهات، المزامنة، التثبيت، الوضع الليلي — أجوبة جاهزة + تواصل مباشر مع المطوّر.</p>
+                    <button onclick="openSupportDrawer()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-2xl font-black text-xs"><i class="fa-solid fa-circle-question ml-1"></i> فتح مركز الدعم</button>
+                </div>
+            </div>
+
+            <!-- أقسام قريباً -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-4xl shadow-sm space-y-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-sky-50 dark:bg-theme-darkBase text-theme-sky flex items-center justify-center text-sm border border-sky-200 dark:border-theme-darkBorder"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div>
+                        <h3 class="font-black text-sm text-slate-900 dark:text-white">قادم قريباً</h3>
+                        <p class="text-[11px] text-slate-400">قسمان جديدان قيد التطوير</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button onclick="showTab('english')" class="text-right bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3.5 rounded-3xl hover:border-theme-sky transition">
+                        <span class="text-xs font-black text-slate-800 dark:text-white"><i class="fa-solid fa-language text-theme-sky ml-1"></i> البناء اللغوي</span>
+                        <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">مسار لغوي متدرج حسب مستويات CEFR — قريباً.</span>
+                    </button>
+                    <button onclick="showTab('zero')" class="text-right bg-teal-50/50 dark:bg-theme-darkBase border border-teal-100 dark:border-theme-darkBorder p-3.5 rounded-3xl hover:border-theme-teal transition">
+                        <span class="text-xs font-black text-slate-800 dark:text-white"><i class="fa-solid fa-graduation-cap text-theme-teal ml-1"></i> المساعد الأكاديمي</span>
+                        <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">متابعة المحاضرات والمراجعة — قريباً.</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- التذييل -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-5 rounded-4xl shadow-sm text-center space-y-2.5">
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                    تم تطوير هذه المنصة بكل فخر بواسطة <strong class="text-theme-sky">مصطفى عبد علي</strong> | بغداد، العراق 🇮🇶
+                </p>
+                <div class="flex items-center justify-center gap-4 text-xs font-bold">
+                    <a href="https://t.me/pritxv" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:underline"><i class="fa-brands fa-telegram"></i> <span>Telegram</span></a>
+                    <span class="text-slate-300">|</span>
+                    <a href="https://instagram.com/txv3" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-rose-500 hover:underline"><i class="fa-brands fa-instagram"></i> <span>Instagram</span></a>
+                    <span class="text-slate-300">|</span>
+                    <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
+                </div>
+                <p id="app-version-text" class="text-[10px] text-slate-400 font-bold">الإصدار v31</p>
+            </div>
+        </section>
+
         <!-- TODO -->
         <section id="tab-todo" class="hidden space-y-4">
             <div class="gradient-todo p-6 rounded-4xl text-white shadow-glow-teal flex items-center justify-between">
@@ -372,6 +610,10 @@
                 <div class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200/60 dark:border-theme-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">جلسة تركيز دراسي (25 دقيقة)</span>
+                </div>
+                <div id="pomo-bg-badge" class="flex items-center justify-center gap-1.5 text-[10px] font-bold text-slate-400">
+                    <i id="pomo-bg-icon" class="fa-solid fa-satellite-dish"></i>
+                    <span id="pomo-bg-text">يعمل بالخلفية: يكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة</span>
                 </div>
                 <div class="flex justify-center gap-3 pt-2">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="bg-theme-mint hover:bg-emerald-700 text-white font-black px-10 py-3.5 rounded-2xl shadow-glow-green flex items-center gap-2">
@@ -467,20 +709,181 @@
         </div>
     </div>
 
+    <!-- SUPPORT DRAWER / مركز الدعم الفني (جانبي) -->
+    <div id="support-overlay" onclick="closeSupportDrawer()" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"></div>
+    <aside id="support-drawer" class="fixed inset-y-0 right-0 z-[65] w-[min(94vw,26rem)] translate-x-full transition-transform duration-300 ease-out bg-white dark:bg-theme-darkBase border-l border-sky-100 dark:border-theme-darkBorder shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-sky-100 dark:border-theme-darkBorder shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-sm shadow-sm"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">مركز الدعم الفني</h3>
+                    <p class="text-[10px] text-slate-400 font-semibold">حسابك • تنبيهاتك • أسئلة شائعة</p>
+                </div>
+            </div>
+            <button onclick="closeSupportDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-theme-darkCard text-slate-500 dark:text-slate-300 flex items-center justify-center" aria-label="إغلاق الدعم"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-3.5">
+            <!-- الحساب (نفس حساب التطبيق) -->
+            <div class="bg-sky-50/60 dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl space-y-3">
+                <h4 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2"><i class="fa-solid fa-user-shield text-theme-sky"></i> حسابك</h4>
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-white dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder flex items-center justify-center font-black text-sm text-theme-sky overflow-hidden shrink-0" id="support-avatar">Z+</div>
+                    <div class="min-w-0">
+                        <p id="support-user-name" class="text-xs font-black text-slate-900 dark:text-white truncate">غير مسجّل الدخول</p>
+                        <p id="support-user-dept" class="text-[10px] text-slate-400 font-semibold truncate">—</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-white dark:bg-theme-darkBase rounded-2xl p-2 border border-sky-100 dark:border-theme-darkBorder">
+                        <span id="support-stat-xp" class="block text-xs font-black text-amber-500">0</span>
+                        <span class="block text-[9px] text-slate-400 font-bold">XP</span>
+                    </div>
+                    <div class="bg-white dark:bg-theme-darkBase rounded-2xl p-2 border border-sky-100 dark:border-theme-darkBorder">
+                        <span id="support-stat-mins" class="block text-xs font-black text-theme-mint dark:text-emerald-400">0</span>
+                        <span class="block text-[9px] text-slate-400 font-bold">دقيقة</span>
+                    </div>
+                    <div class="bg-white dark:bg-theme-darkBase rounded-2xl p-2 border border-sky-100 dark:border-theme-darkBorder">
+                        <span id="support-stat-sessions" class="block text-xs font-black text-theme-sky">0</span>
+                        <span class="block text-[9px] text-slate-400 font-bold">جلسة</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between gap-2 text-[10px] font-bold">
+                    <span class="text-slate-400">معرف الجهاز (للدعم فقط):</span>
+                    <button onclick="copyDeviceId()" class="text-theme-sky hover:underline truncate max-w-[55%]" id="support-device-id">—</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="supportOpenProfile()" class="bg-theme-sky hover:bg-sky-700 text-white py-2.5 rounded-2xl font-black text-[11px]"><i class="fa-solid fa-user-pen ml-1"></i> إدارة الحساب</button>
+                    <button onclick="supportLogout()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2.5 rounded-2xl font-bold text-[11px]"><i class="fa-solid fa-arrow-right-from-bracket ml-1"></i> تسجيل الخروج</button>
+                </div>
+            </div>
+
+            <!-- التنبيهات (نفس أزرار الإشعارات) -->
+            <div class="bg-emerald-50/60 dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-4 rounded-3xl space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                    <h4 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2"><i class="fa-solid fa-bell text-emerald-500"></i> الإشعارات</h4>
+                    <span id="support-notify-status" class="text-[10px] font-black px-2 py-1 rounded-xl bg-white dark:bg-theme-darkBase text-slate-500 border border-emerald-200 dark:border-theme-darkBorder">غير مفعّلة</span>
+                </div>
+                <p id="support-notify-hint" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">بدون التنبيهات لن يصلك إشعار عند انتهاء جلسة التركيز وأنت خارج التطبيق.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="requestNotificationPermission()" class="bg-theme-mint hover:bg-emerald-700 text-white py-2.5 rounded-2xl font-black text-[11px]"><i class="fa-solid fa-bell ml-1"></i> تفعيل التنبيهات</button>
+                    <button onclick="sendTestNotification()" class="bg-white dark:bg-theme-darkBase border border-emerald-200 dark:border-theme-darkBorder text-theme-mint dark:text-emerald-400 py-2.5 rounded-2xl font-bold text-[11px]"><i class="fa-solid fa-paper-plane ml-1"></i> إشعار تجريبي</button>
+                </div>
+                <button onclick="openSupportDrawer('faq-notify')" class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"><i class="fa-solid fa-circle-info ml-1"></i> الإشعارات لا تظهر؟ خطوات التفعيل</button>
+            </div>
+
+            <!-- التركيز بالخلفية -->
+            <div class="bg-violet-50/60 dark:bg-theme-darkCard border border-violet-100 dark:border-theme-darkBorder p-4 rounded-3xl space-y-2.5">
+                <h4 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2"><i class="fa-solid fa-stopwatch text-violet-500"></i> التركيز بالخلفية</h4>
+                <p id="support-bg-hint" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">المؤقت يعتمد على الخدمة الخلفية (Service Worker) فيكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة.</p>
+                <label class="flex items-center justify-between gap-3 bg-white dark:bg-theme-darkBase border border-violet-200 dark:border-theme-darkBorder rounded-2xl p-2.5 cursor-pointer">
+                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">إبقاء الشاشة مضاءة أثناء الجلسة</span>
+                    <input id="keep-awake-toggle" type="checkbox" onchange="toggleKeepAwake(this)" class="w-4 h-4 accent-violet-600">
+                </label>
+                <button onclick="showTab('pomodoro'); closeSupportDrawer();" class="w-full bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-2xl font-black text-[11px]"><i class="fa-solid fa-clock ml-1"></i> ابدأ جلسة تركيز</button>
+            </div>
+
+            <!-- الأسئلة الشائعة -->
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder rounded-3xl overflow-hidden">
+                <h4 class="text-xs font-black text-slate-900 dark:text-white px-4 py-3 border-b border-sky-100 dark:border-theme-darkBorder flex items-center gap-2"><i class="fa-solid fa-circle-question text-theme-sky"></i> الأسئلة الشائعة</h4>
+                <div class="divide-y divide-sky-50 dark:divide-theme-darkBorder text-right">
+                    <details id="faq-install" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-download text-theme-sky ml-1"></i> كيف أنزّل/أثبّت التطبيق؟</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p><strong class="text-slate-700 dark:text-slate-200">أندرويد (Chrome):</strong> اضغط زر ⋮ أعلى المتصفح ← «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»، أو استخدم زر «تثبيت 📲» أعلى الصفحة.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">آيفون (Safari):</strong> اضغط زر المشاركة <i class="fa-solid fa-arrow-up-from-bracket"></i> ← «إضافة إلى الشاشة الرئيسية» ← إضافة. (التثبيت من Safari فقط وليس من Chrome).</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">اللابتوب:</strong> أيقونة التثبيت <i class="fa-solid fa-download"></i> داخل شريط العنوان يميناً، أو ⋮ ← «تثبيت ZeroPlus».</p>
+                            <button onclick="openInstallModal()" class="mt-1 text-[11px] font-black text-theme-sky hover:underline">فتح دليل التثبيت المصوّر ←</button>
+                        </div>
+                    </details>
+                    <details id="faq-notify" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-bell text-emerald-500 ml-1"></i> كيف أفعّل التنبيهات؟</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p>اضغط زر «تنبيهات 🔔» أعلى الصفحة أو زر «تفعيل التنبيهات» هنا، ثم اختر <strong class="text-slate-700 dark:text-slate-200">سماح / Allow</strong>.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">لو ظهرت «محظورة»:</strong> أندرويد: ⋮ ← الإعدادات ← إشعارات المواقع ← ZeroPlus ← سماح. آيفون: ثبّت التطبيق أولاً، ثم الإعدادات ← الإشعارات ← ZeroPlus ← السماح بالإشعارات.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">لا تنسَ:</strong> أطفئ «وضع التركيز/عدم الإزعاج» في الهاتف، واسمح للتطبيق بالعمل بالخلفية من إعدادات البطارية.</p>
+                            <button onclick="requestNotificationPermission()" class="mt-1 text-[11px] font-black text-emerald-600 hover:underline">جرّب التفعيل الآن ←</button>
+                        </div>
+                    </details>
+                    <details id="faq-dark" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-moon text-violet-500 ml-1"></i> كيف أشغّل الوضع الليلي؟</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p>اضغط زر «المظهر ☀️» أعلى الصفحة (أيقونة الشمس/القمر) أو زر «تبديل المظهر» في الصفحة الرئيسية.</p>
+                            <p>الاختيار يُحفظ تلقائياً ويبقى كما هو في كل مرة تفتح التطبيق، حتى بعد الإغلاق.</p>
+                            <button onclick="toggleTheme()" class="mt-1 text-[11px] font-black text-violet-600 dark:text-violet-300 hover:underline">بدّل المظهر الآن ←</button>
+                        </div>
+                    </details>
+                    <details id="faq-account" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-user text-theme-sky ml-1"></i> حسابي: إنشاء، دخول، نسيان كلمة المرور</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p><strong class="text-slate-700 dark:text-slate-200">الإنشاء:</strong> شاشة الترحيب ← الاسم الأكاديمي + كلمة مرور (4 خانات فأكثر) + اختيار القسم.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">الدخول من جهاز آخر:</strong> نفس الاسم ونفس كلمة المرور — تُجلب مهامك وجلساتك ونقاطك من السحابة تلقائياً.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">تغيير كلمة المرور:</strong> صورة الحساب أعلى الصفحة ← «كلمة مرور جديدة» ← حفظ التعديلات.</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">نسيت كلمة المرور:</strong> راسل الدعم عبر تيليجرام مع اسمك الأكاديمي وقسمك لإعادة تعيينها.</p>
+                            <button onclick="supportOpenProfile()" class="mt-1 text-[11px] font-black text-theme-sky hover:underline">فتح إدارة الحساب ←</button>
+                        </div>
+                    </details>
+                    <details id="faq-sync" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-cloud text-theme-sky ml-1"></i> المزامنة وحفظ البيانات</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p>النقطة أعلى الصفحة: 🟢 مزامن | 🟡 تغييرات بانتظار الرفع | 🔴 فشل مزامنة | ⚪ غير متصل.</p>
+                            <p>كل تغيير يُحفظ محلياً أولاً ثم يُرفع تلقائياً عند عودة الإنترنت أو عند فتح التطبيق — لا تفقد شيئاً بوضع الطيران.</p>
+                            <p id="support-cloud-status" class="font-bold">حالة السحابة: —</p>
+                        </div>
+                    </details>
+                    <details id="faq-background" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-stopwatch text-violet-500 ml-1"></i> هل يعمل مؤقت التركيز بالخلفية؟</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p>نعم. عند الضغط على «بدء المؤقت» يُسلَّم الوقت للخدمة الخلفية (Service Worker) التي تُطلق إشعار «انتهى الوقت» حتى لو أغلقت الصفحة أو صغّرتها.</p>
+                            <p>عند رجوعك للتطبيق تُحسب الجلسة وتُسجَّل تلقائياً في سجلك حتى لو انتهت وأنت بالخارج.</p>
+                            <p>لأفضل نتيجة: فعّل التنبيهات، واسمح للتطبيق بالعمل بالخلفية، ولا تُغلقه من قائمة التطبيقات المفتوحة قبل انتهاء الجلسة.</p>
+                        </div>
+                    </details>
+                    <details id="faq-privacy" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-shield-halved text-emerald-500 ml-1"></i> الخصوصية وحذف بياناتي</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <p>لا نطلب بريداً ولا رقماً — الحساب بالاسم والقسم فقط، وبياناتك مربوطة بجهازك/حسابك.</p>
+                            <p>«مسح السجل» في تبويب التركيز يحذف الجلسات من الجهاز ومن السحابة معاً.</p>
+                            <p>لحذف الحساب نهائياً راسل الدعم وسنحذف صفّك من القاعدة.</p>
+                        </div>
+                    </details>
+                    <details id="faq-contact" class="group p-3.5">
+                        <summary class="text-[11px] font-black text-slate-800 dark:text-white cursor-pointer flex items-center justify-between gap-2"><span><i class="fa-solid fa-headset text-amber-500 ml-1"></i> كيف أتواصل مع الدعم؟</span><i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-open:rotate-180 transition"></i></summary>
+                        <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-1.5">
+                            <div class="flex flex-wrap gap-3">
+                                <a href="https://t.me/pritxv" target="_blank" rel="noopener" class="font-black text-sky-600 dark:text-sky-400 hover:underline"><i class="fa-brands fa-telegram ml-1"></i> تيليجرام @pritxv</a>
+                                <a href="https://instagram.com/txv3" target="_blank" rel="noopener" class="font-black text-rose-500 hover:underline"><i class="fa-brands fa-instagram ml-1"></i> إنستغرام @txv3</a>
+                            </div>
+                            <button onclick="copyDiagnostics()" class="mt-1 text-[11px] font-black text-theme-sky hover:underline"><i class="fa-solid fa-copy ml-1"></i> نسخ تقرير المشكلة وأرسله للدعم</button>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 py-3 border-t border-sky-100 dark:border-theme-darkBorder flex items-center justify-between gap-2 shrink-0">
+            <span id="support-version" class="text-[10px] text-slate-400 font-bold">ZeroPlus v31</span>
+            <button onclick="closeSupportDrawer()" class="bg-slate-100 dark:bg-theme-darkCard text-slate-600 dark:text-slate-300 px-4 py-2 rounded-xl text-[11px] font-bold">إغلاق</button>
+        </div>
+    </aside>
+
     <!-- BOTTOM NAV -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-theme-darkBase/95 backdrop-blur-2xl border-t border-sky-100 dark:border-theme-darkBorder pt-2.5 ios-nav-safe z-40 shadow-sm">
-        <div class="max-w-md mx-auto flex justify-around items-center px-4">
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
+        <div class="max-w-lg mx-auto flex justify-around items-center px-1.5">
+            <button onclick="showTab('home')" id="nav-home" class="flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-sky transition">
+                <i class="fa-solid fa-house text-base mb-1"></i> <span>الرئيسية</span>
+            </button>
+            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
                 <i class="fa-solid fa-list-check text-base mb-1"></i> <span>المهام</span>
             </button>
-            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-mint transition">
+            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-mint transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i> <span>التركيز</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition">
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-sky transition">
                 <i class="fa-solid fa-language text-base mb-1"></i>
-                <span class="flex items-center gap-1">البناء اللغوي <span class="soon-pill">قريباً</span></span>
+                <span class="flex items-center gap-1">اللغوي <span class="soon-pill">قريباً</span></span>
             </button>
-            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
+            <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
                 <i class="fa-solid fa-graduation-cap text-base mb-1"></i>
                 <span class="flex items-center gap-1">المساعد <span class="soon-pill">قريباً</span></span>
             </button>
@@ -771,12 +1174,19 @@
         }
 
         async function handleGoogleLogin() {
-            if (!supabaseClient) return;
+            if (!supabaseClient) {
+                alert('تعذّر الاتصال بخدمة الحسابات (Supabase) — تحقق من الإنترنت ثم أعد المحاولة، أو استخدم الاسم وكلمة المرور.');
+                return;
+            }
+            if (!navigator.onLine) {
+                alert('تسجيل الدخول بـ Google يحتاج إنترنت. أعد الاتصال ثم جرّب مرة أخرى.');
+                return;
+            }
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: { redirectTo: window.location.origin }
             });
-            if (error) alert("خطأ في تسجيل دخول Google: " + error.message);
+            if (error) alert("خطأ في تسجيل دخول Google: " + describeCloudError(error));
         }
 
         function saveLocalSession(deviceId, name, dept) {
@@ -805,13 +1215,18 @@
 
         function enterApp() {
             document.getElementById('landing-view').classList.add('hidden');
+            hideToast();
             updateGreetingHeader();
             updateHeaderAvatar();
             updateGamificationBar();
             renderTasks();
             renderForest();
+            refreshSupportPanel();
+            renderInstallGuides();
+            checkNotificationBanner();
             refreshCloudIndicator();
             triggerConfetti();
+            showToast(`أهلاً ${currentUserName || 'بك'} في ZeroPlus 🎓`, 'success');
             if (navigator.onLine) flushSyncQueue();
         }
 
@@ -1269,6 +1684,43 @@
 
             const pomoStatEl = document.getElementById('pomo-count-stat');
             if (pomoStatEl) pomoStatEl.innerText = `${pomoCompletedCount} جلسات`;
+
+            updateHomeStats();
+            updateThemeBadges();
+            updateNotificationBadges();
+        }
+
+        // إحصائيات الصفحة الرئيسية + لوحة الدعم
+        function updateHomeStats() {
+            const doneTasks = tasks.filter(t => t && t.done).length;
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = String(v); };
+            set('home-stat-xp', userXP);
+            set('home-stat-mins', totalFocusMins);
+            set('home-stat-sessions', userForest.length);
+            set('home-stat-tasks', doneTasks);
+            set('support-stat-xp', userXP);
+            set('support-stat-mins', totalFocusMins);
+            set('support-stat-sessions', userForest.length);
+            const title = document.getElementById('home-hero-title');
+            if (title) title.innerText = currentUserName ? `أهلاً ${currentUserName} 👋` : 'أهلاً بك في منصتك الأكاديمية';
+            renderInstallGuides();
+        }
+
+        function isDarkMode() {
+            try { return document.documentElement.classList.contains('dark'); } catch (e) { return false; }
+        }
+        function updateThemeBadges() {
+            const dark = isDarkMode();
+            ['home-theme-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerText = dark ? 'ليلي 🌙' : 'نهاري ☀️';
+                el.className = 'text-[10px] font-black px-2 py-1 rounded-xl border ' +
+                    (dark ? 'bg-violet-50 dark:bg-theme-darkBase text-violet-500 border-violet-200 dark:border-theme-darkBorder'
+                          : 'bg-amber-50 dark:bg-theme-darkBase text-amber-600 border-amber-200 dark:border-theme-darkBorder');
+            });
+            const themeLabel = document.getElementById('theme-label');
+            if (themeLabel) themeLabel.innerText = dark ? 'المظهر 🌙' : 'المظهر ☀️';
         }
 
         function awardXP(amount) {
@@ -1279,16 +1731,33 @@
             syncProfileWithCloud();
         }
 
+        const APP_TABS = ['home', 'todo', 'pomodoro', 'english', 'zero'];
+        let activeTabId = 'home';
         function showTab(tabId) {
-            ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
+            if (!APP_TABS.includes(tabId)) tabId = 'home';
+            APP_TABS.forEach(id => {
                 document.getElementById('tab-' + id)?.classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
-                if (btn) btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition";
+                if (btn) btn.className = "flex flex-col items-center py-1.5 px-2 text-slate-400 font-bold text-xs hover:text-theme-sky transition";
             });
             document.getElementById('tab-' + tabId)?.classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
-            if (activeBtn) activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs transition";
+            if (activeBtn) activeBtn.className = "flex flex-col items-center py-1.5 px-2 text-theme-sky font-black text-xs transition";
+            activeTabId = tabId;
             safeSetItem('zp_active_tab', tabId);
+            if (tabId === 'home') updateHomeStats();
+            if (typeof window !== 'undefined' && window.scrollTo) { try { window.scrollTo(0, 0); } catch (e) {} }
+        }
+
+        // الروابط المختصرة (اختصارات PWA في manifest.json) تعمل عبر #tab-english أو #support
+        function tabFromHash() {
+            let h = '';
+            try { h = String((typeof location !== 'undefined' && location.hash) || ''); } catch (e) { h = ''; }
+            h = h.replace(/^#\/?/, '').trim();
+            if (!h) return null;
+            if (h === 'support' || h === 'tab-support') return 'support';
+            const t = h.replace(/^tab-/, '');
+            return APP_TABS.includes(t) ? t : null;
         }
 
         function triggerConfetti() {
@@ -1337,48 +1806,418 @@
                 html.classList.remove('dark');
                 localStorage.setItem('zp_theme', 'light');
                 icon.className = 'fa-solid fa-moon text-xs';
+                showToast('الوضع النهاري ☀️', 'info');
             } else {
                 html.classList.add('dark');
                 localStorage.setItem('zp_theme', 'dark');
                 icon.className = 'fa-solid fa-sun text-xs';
+                showToast('الوضع الليلي 🌙', 'info');
             }
+            updateThemeBadges();
         }
 
+        // ============ 10. مركز الدعم الفني (درج جانبي) ============
+        const APP_VERSION = 'v31';
+        function openSupportDrawer(topicId) {
+            refreshSupportPanel();
+            const drawer = document.getElementById('support-drawer');
+            const overlay = document.getElementById('support-overlay');
+            if (drawer) drawer.classList.remove('translate-x-full');
+            if (overlay) overlay.classList.remove('hidden');
+            if (document.body && document.body.style) document.body.style.overflow = 'hidden';
+            safeSetItem('zp_support_open', '1');
+            if (topicId) {
+                const topic = document.getElementById(topicId);
+                if (topic) {
+                    if ('open' in topic) topic.open = true;
+                    if (topic.scrollIntoView) { try { topic.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }
+                }
+            }
+            return true;
+        }
+        function closeSupportDrawer() {
+            const drawer = document.getElementById('support-drawer');
+            const overlay = document.getElementById('support-overlay');
+            if (drawer) drawer.classList.add('translate-x-full');
+            if (overlay) overlay.classList.add('hidden');
+            if (document.body && document.body.style) document.body.style.overflow = '';
+            localStorage.removeItem('zp_support_open');
+            return true;
+        }
+        function isSupportDrawerOpen() { return localStorage.getItem('zp_support_open') === '1'; }
+
+        function refreshSupportPanel() {
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = String(v); };
+            set('support-user-name', currentUserName || 'غير مسجّل الدخول');
+            set('support-user-dept', currentUserName ? deptLabel(activeDepartmentKey) : 'سجّل الدخول من الصورة أعلى الصفحة');
+            set('support-stat-xp', userXP);
+            set('support-stat-mins', totalFocusMins);
+            set('support-stat-sessions', userForest.length);
+            set('support-version', 'ZeroPlus ' + APP_VERSION);
+            set('app-version-text', 'الإصدار ' + APP_VERSION);
+            const deviceId = localStorage.getItem('zp_device_id') || 'غير مربوط';
+            set('support-device-id', deviceId);
+            const avatar = document.getElementById('support-avatar');
+            if (avatar) avatar.innerText = currentUserName ? currentUserName.charAt(0).toUpperCase() : 'Z+';
+            const cloud = document.getElementById('support-cloud-status');
+            if (cloud) {
+                const state = !supabaseClient ? 'غير مهيّأة' : (!navigator.onLine ? 'غير متصل — تغييراتك محفوظة محلياً'
+                    : lastSyncError ? 'فشل مزامنة: ' + lastSyncError
+                    : (pendingSyncCount() > 0 ? `${pendingSyncCount()} تغيير بانتظار الرفع` : 'متصل ومزامن ✅'));
+                cloud.innerText = 'حالة السحابة: ' + state;
+            }
+            const keepAwake = document.getElementById('keep-awake-toggle');
+            if (keepAwake) keepAwake.checked = localStorage.getItem('zp_keep_awake') !== 'off';
+            updateNotificationBadges();
+            updateThemeBadges();
+            updateBackgroundStatus();
+        }
+        function supportOpenProfile() { closeSupportDrawer(); openProfileModal(); }
+        function supportLogout() { closeSupportDrawer(); handleUserLogout(); }
+        async function copyDeviceId() {
+            const id = localStorage.getItem('zp_device_id') || '';
+            if (!id) { showToast('لا يوجد حساب مربوط على هذا الجهاز بعد', 'warn'); return false; }
+            const ok = await copyText(id);
+            if (ok) showToast('تم نسخ معرف الجهاز ✅', 'success');
+            else alert('معرف الجهاز: ' + id);
+            return ok;
+        }
+        function buildDiagnostics() {
+            return [
+                'ZeroPlus — تقرير مشكلة ' + APP_VERSION,
+                'الجهاز: ' + (localStorage.getItem('zp_device_id') || 'غير مربوط'),
+                'الحساب: ' + (currentUserName || 'غير مسجّل'),
+                'المتصفح: ' + String((navigator && navigator.userAgent) || 'غير معروف'),
+                'المنصة: ' + detectInstallPlatform() + (isStandalone() ? ' (مثبّت)' : ' (غير مثبّت)'),
+                'الإشعارات: ' + notificationState(),
+                'الخدمة الخلفية: ' + (backgroundTimerSupported() ? 'متاحة' : 'غير متاحة'),
+                'الاتصال: ' + (navigator.onLine ? 'متصل' : 'غير متصل'),
+                'السحابة: ' + (lastSyncError ? 'خطأ: ' + lastSyncError : 'سليمة'),
+                'عمليات بانتظار المزامنة: ' + pendingSyncCount()
+            ].join('\n');
+        }
+        async function copyDiagnostics() {
+            const text = buildDiagnostics();
+            const ok = await copyText(text);
+            if (ok) showToast('تم نسخ التقرير — الصقه في تيليجرام @pritxv', 'success');
+            else alert('انسخ التقرير يدوياً وأرسله للدعم:\n\n' + text);
+            return ok;
+        }
+
+        // ============ 5. ملاحظات سريعة (Toast) — تأكيد مرئي لكل زر ============
+        let toastTimer = null;
+        function showToast(msg, kind) {
+            const box = document.getElementById('toast');
+            const inner = document.getElementById('toast-inner');
+            if (!box || !inner) return;
+            const palette = {
+                success: 'bg-emerald-600/95 text-white border-emerald-300/30',
+                error: 'bg-rose-600/95 text-white border-rose-300/30',
+                warn: 'bg-amber-500/95 text-slate-900 border-amber-200/40',
+                info: 'bg-slate-900/95 text-white border-white/10'
+            };
+            inner.innerText = msg;
+            inner.className = 'text-xs font-bold px-4 py-2.5 rounded-2xl shadow-2xl border max-w-sm text-center ' + (palette[kind] || palette.info);
+            box.classList.remove('hidden');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { box.classList.add('hidden'); toastTimer = null; }, 2800);
+        }
+        function hideToast() {
+            const box = document.getElementById('toast');
+            if (box) box.classList.add('hidden');
+            if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+        }
+
+        // ============ 6. النسخ (Clipboard) مع بديل يدوي ============
+        function legacyCopy(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                if (ta.setAttribute) ta.setAttribute('readonly', '');
+                if (ta.style) { ta.style.position = 'fixed'; ta.style.opacity = '0'; }
+                if (document.body && document.body.appendChild) document.body.appendChild(ta);
+                if (ta.select) ta.select();
+                const ok = (typeof document.execCommand === 'function') ? document.execCommand('copy') : false;
+                if (ta.remove) ta.remove();
+                return !!ok;
+            } catch (e) { return false; }
+        }
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return Promise.resolve(navigator.clipboard.writeText(text))
+                    .then(() => true)
+                    .catch(() => legacyCopy(text));
+            }
+            return Promise.resolve(legacyCopy(text));
+        }
+
+        // ============ 7. الإشعارات والتنبيهات ============
+        const NOTIFY_DISMISS_KEY = 'zp_notify_banner_dismissed_at';
+        const NOTIFY_REMIND_AGAIN_MS = 12 * 60 * 60 * 1000;   // نذكّره مرة كل 12 ساعة
+
+        function notificationsSupported() {
+            return typeof Notification !== 'undefined' && !!Notification;
+        }
+        function notificationState() {
+            if (!notificationsSupported()) return 'unsupported';
+            const p = Notification.permission;
+            if (p === 'granted') return 'granted';
+            if (p === 'denied') return 'denied';
+            return 'default';
+        }
+        function fallbackNotify(title, body) {
+            if (!notificationsSupported()) return false;
+            try { new Notification(title, { body: body, icon: '/icon-192.png', dir: 'rtl', lang: 'ar' }); return true; }
+            catch (e) { return false; }
+        }
+        // الإشعار يُرسل عبر الخدمة الخلفية أولاً (يعمل والتطبيق بالخلفية)، ثم نعود للطريقة المباشرة
+        function sendAppNotification(title, body, tag) {
+            const opts = { body: body, tag: tag || 'zeroplus', icon: '/icon-192.png', badge: '/icon-192.png', dir: 'rtl', lang: 'ar' };
+            if (navigator.serviceWorker && navigator.serviceWorker.ready && navigator.serviceWorker.ready.then) {
+                return navigator.serviceWorker.ready
+                    .then(reg => reg.showNotification(title, opts).then(() => true))
+                    .catch(() => fallbackNotify(title, body));
+            }
+            return Promise.resolve(fallbackNotify(title, body));
+        }
+
+        function swapClasses(el, removeList, addList) {
+            if (!el || !el.classList) return;
+            (removeList || []).forEach(c => el.classList.remove(c));
+            (addList || []).forEach(c => el.classList.add(c));
+        }
+
+        // يحدّث شريط التذكير + أيقونة الجرس + شارات الحالة (الرئيسية والدعم)
         function checkNotificationBanner() {
             const banner = document.getElementById('notify-reminder-banner');
             const icon = document.getElementById('notify-icon');
-            if (!("Notification" in window)) return;
-            if (Notification.permission === 'granted') {
+            const bannerIcon = document.getElementById('notify-banner-icon');
+            const bannerText = document.getElementById('notify-banner-text');
+            const bannerBtn = document.getElementById('notify-banner-btn');
+            const state = notificationState();
+            const dismissedAt = parseInt(localStorage.getItem(NOTIFY_DISMISS_KEY) || '0') || 0;
+            const dismissedRecently = dismissedAt > 0 && (Date.now() - dismissedAt) < NOTIFY_REMIND_AGAIN_MS;
+
+            if (state === 'granted') {
                 if (banner) banner.classList.add('hidden');
                 if (icon) icon.className = 'fa-solid fa-bell text-xs text-emerald-500';
+                setLabel(bannerBtn, 'تم التفعيل ✅');
+            } else if (state === 'unsupported') {
+                if (banner) banner.classList.add('hidden');
+                if (icon) icon.className = 'fa-solid fa-bell-slash text-xs text-slate-400';
+            } else if (state === 'denied') {
+                if (icon) icon.className = 'fa-solid fa-bell-slash text-xs text-rose-500';
+                if (bannerText) bannerText.innerText = 'الإشعارات محجوبة من المتصفح — لن يصلك تنبيه انتهاء الجلسة. اضغط لعرض خطوات التفعيل.';
+                setLabel(bannerBtn, 'خطوات التفعيل');
+                swapClasses(banner, ['bg-emerald-500', 'bg-amber-500'], ['bg-rose-500']);
+                if (bannerIcon) bannerIcon.className = 'fa-solid fa-bell-slash text-sm shrink-0';
+                if (banner) { if (dismissedRecently) banner.classList.add('hidden'); else banner.classList.remove('hidden'); }
             } else {
-                if (banner) banner.classList.remove('hidden');
                 if (icon) icon.className = 'fa-solid fa-bell text-xs text-amber-500';
+                if (bannerText) bannerText.innerText = 'فعّل التنبيهات حتى ننبّهك فور انتهاء جلسة التركيز — حتى لو كان التطبيق بالخلفية.';
+                setLabel(bannerBtn, 'تفعيل الآن');
+                swapClasses(banner, ['bg-rose-500', 'bg-amber-500'], ['bg-emerald-500']);
+                if (bannerIcon) bannerIcon.className = 'fa-solid fa-bell text-sm animate-bounce shrink-0';
+                if (banner) { if (dismissedRecently) banner.classList.add('hidden'); else banner.classList.remove('hidden'); }
+            }
+            // تذكير داخل شاشة الدخول نفسها (أول ما يراه الطالب)
+            const landingCard = document.getElementById('landing-notify-card');
+            if (landingCard) {
+                const showLanding = (state === 'default' || state === 'denied') && !dismissedRecently;
+                swapClasses(landingCard, ['flex'], ['hidden']);
+                if (showLanding) { swapClasses(landingCard, ['hidden'], ['flex']); }
+                const landingText = document.getElementById('landing-notify-text');
+                const landingIcon = document.getElementById('landing-notify-icon');
+                if (state === 'denied') {
+                    if (landingText) landingText.innerText = 'الإشعارات محجوبة من متصفحك — اضغط لعرض خطوات تفعيلها، وبدونها لن يصلك تنبيه انتهاء الجلسة.';
+                    if (landingIcon) landingIcon.className = 'fa-solid fa-bell-slash shrink-0';
+                } else {
+                    if (landingText) landingText.innerText = 'فعّل التنبيهات الآن حتى ننبّهك عند انتهاء جلسة التركيز — حتى لو أغلقت التطبيق.';
+                    if (landingIcon) landingIcon.className = 'fa-solid fa-bell animate-bounce shrink-0';
+                }
+            }
+            updateNotificationBadges(state);
+            return state;
+        }
+        function setLabel(el, text) { if (el) el.innerText = text; }
+
+        function updateNotificationBadges(state) {
+            const s = state || notificationState();
+            const map = {
+                granted: { text: 'مفعّلة ✅', cls: 'bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 border-emerald-200 dark:border-theme-darkBorder', hint: 'التنبيهات مفعّلة — سيصلك إشعار فور انتهاء كل جلسة تركيز، حتى لو كان التطبيق بالخلفية.' },
+                default: { text: 'غير مفعّلة', cls: 'bg-amber-50 dark:bg-theme-darkBase text-amber-600 border-amber-200 dark:border-theme-darkBorder', hint: 'بدون التنبيهات لن يصلك إشعار عند انتهاء جلسة التركيز وأنت خارج التطبيق.' },
+                denied: { text: 'محجوبة ⚠️', cls: 'bg-rose-50 dark:bg-theme-darkBase text-rose-500 border-rose-200 dark:border-theme-darkBorder', hint: 'الإشعارات محجوبة من المتصفح — افتح إعدادات الموقع واسمح بالإشعارات (الخطوات في الأسئلة الشائعة).' },
+                unsupported: { text: 'غير مدعومة', cls: 'bg-slate-50 dark:bg-theme-darkBase text-slate-500 border-slate-200 dark:border-theme-darkBorder', hint: 'متصفحك لا يدعم الإشعارات — جرّب Chrome أو Safari آخر إصدار، أو ثبّت التطبيق أولاً.' }
+            };
+            const info = map[s] || map.default;
+            ['home-notify-status', 'support-notify-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerText = info.text;
+                el.className = 'text-[10px] font-black px-2 py-1 rounded-xl border ' + info.cls;
+            });
+            const hint = document.getElementById('support-notify-hint');
+            if (hint) hint.innerText = info.hint;
+            const navLabel = document.getElementById('notify-btn-label');
+            if (navLabel) navLabel.innerText = s === 'granted' ? 'التنبيهات ✅' : (s === 'denied' ? 'تنبيهات محجوبة' : 'تنبيهات 🔔');
+        }
+
+        function dismissNotificationBanner() {
+            const banner = document.getElementById('notify-reminder-banner');
+            if (banner) banner.classList.add('hidden');
+            safeSetItem(NOTIFY_DISMISS_KEY, String(Date.now()));
+            showToast('اخفينا التذكير — سيعود بعد 12 ساعة', 'info');
+        }
+
+        async function requestNotificationPermission() {
+            if (!notificationsSupported()) {
+                updateNotificationBadges('unsupported');
+                alert('متصفحك لا يدعم الإشعارات.\nجرّب متصفح Chrome أو Safari (آخر إصدار)، أو ثبّت التطبيق على iPhone ثم أعد المحاولة.');
+                return 'unsupported';
+            }
+            const state = notificationState();
+            if (state === 'granted') {
+                checkNotificationBanner();
+                await sendAppNotification('ZeroPlus 🔔 التنبيهات تعمل', 'سننبّهك فور انتهاء جلسة التركيز حتى لو كان التطبيق بالخلفية.', 'zp-test');
+                showToast('التنبيهات مفعّلة ✅ أرسلنا لك إشعاراً تجريبياً', 'success');
+                return 'granted';
+            }
+            if (state === 'denied') {
+                checkNotificationBanner();
+                openSupportDrawer('faq-notify');
+                showToast('الإشعارات محجوبة من المتصفح — فتحنا لك خطوات التفعيل', 'warn');
+                return 'denied';
+            }
+            try {
+                const p = await Notification.requestPermission();
+                checkNotificationBanner();
+                if (p === 'granted') {
+                    playChime(true);
+                    await sendAppNotification('تم تفعيل التنبيهات ✅', 'سننبّهك فور انتهاء جلسة التركيز حتى لو كان التطبيق بالخلفية.', 'zp-welcome');
+                    showToast('تم تفعيل التنبيهات بنجاح', 'success');
+                } else if (p === 'denied') {
+                    openSupportDrawer('faq-notify');
+                    showToast('تم حظر الإشعارات — اتبع الخطوات لتفعيلها يدوياً', 'warn');
+                }
+                return p;
+            } catch (e) {
+                openSupportDrawer('faq-notify');
+                alert('تعذّر طلب إذن الإشعارات: ' + (e && e.message ? e.message : e) + '\nيمكنك تفعيلها يدوياً من إعدادات المتصفح (الخطوات معروضة أمامك).');
+                return 'error';
             }
         }
 
-        function requestNotificationPermission() {
-            if (!("Notification" in window)) { alert("المتصفح لا يدعم الإشعارات."); return; }
-            Notification.requestPermission().then(p => {
-                checkNotificationBanner();
-                if (p === "granted") playChime(true);
-            });
+        async function sendTestNotification() {
+            if (notificationState() !== 'granted') { await requestNotificationPermission(); return; }
+            const ok = await sendAppNotification('ZeroPlus | إشعار تجريبي 🔔', 'هكذا سيصلك التنبيه عند انتهاء جلسة التركيز.', 'zp-test');
+            if (ok) showToast('أُرسل الإشعار التجريبي — تفقّد شريط الإشعارات', 'success');
+            else showToast('تعذّر إرسال الإشعار — تفقّد إعدادات المتصفح', 'error');
+            return ok;
         }
 
+        // تذكير لطيف مرة واحدة عند بدء جلسة تركيز بلا تنبيهات
+        function maybeRemindNotificationsForPomo() {
+            const state = notificationState();
+            if (state !== 'default') return;
+            const count = parseInt(localStorage.getItem('zp_notify_pomo_nudges') || '0') || 0;
+            if (count >= 2) return;
+            safeSetItem('zp_notify_pomo_nudges', String(count + 1));
+            showToast('💡 فعّل التنبيهات لننبّهك عند انتهاء الجلسة وأنت بالخارج', 'warn');
+        }
+
+        // ============ 8. تثبيت التطبيق (PWA) ============
         let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('install-guide-android')?.classList.remove('hidden');
-            document.getElementById('install-guide-ios')?.classList.add('hidden');
+            if (document.getElementById('install-modal') && !document.getElementById('install-modal').classList.contains('hidden')) {
+                renderInstallGuides();
+            }
+        });
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            renderInstallGuides();
+            showToast('تم تثبيت التطبيق بنجاح 🎉', 'success');
         });
 
-        function openInstallModal() { document.getElementById('install-modal').classList.remove('hidden'); }
-        function closeInstallModal() { document.getElementById('install-modal').classList.add('hidden'); }
+        function detectInstallPlatform() {
+            const ua = String((navigator && navigator.userAgent) || '').toLowerCase();
+            if (/iphone|ipad|ipod/.test(ua)) return 'ios';
+            if (/android/.test(ua)) return 'android';
+            return 'desktop';
+        }
+        function isStandalone() {
+            try {
+                if (navigator && navigator.standalone === true) return true;
+                if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+                if (String((typeof document !== 'undefined' && document.referrer) || '').indexOf('android-app://') === 0) return true;
+            } catch (e) {}
+            return false;
+        }
+        function renderInstallGuides() {
+            const platform = detectInstallPlatform();
+            const installed = isStandalone();
+            const ios = document.getElementById('install-guide-ios');
+            const android = document.getElementById('install-guide-android');
+            const desktop = document.getElementById('install-guide-desktop');
+            const stateText = document.getElementById('install-state-text');
+            const homeState = document.getElementById('home-install-state');
+            const homeHint = document.getElementById('home-install-hint');
+
+            const showEl = (el, on) => { if (el) { if (on) el.classList.remove('hidden'); else el.classList.add('hidden'); } };
+            showEl(ios, !installed && platform === 'ios');
+            showEl(android, !installed && platform === 'android');
+            showEl(desktop, !installed && platform === 'desktop');
+
+            let statusText = 'تطبيق سريع يعمل حتى دون إنترنت';
+            let badge = 'غير مثبّت';
+            if (installed) { statusText = 'التطبيق مثبّت على جهازك ✅ يعمل كتطبيق مستقل'; badge = 'مثبّت ✅'; }
+            else if (platform === 'ios') statusText = 'خطوات آيفون (من Safari) بالأسفل';
+            else if (platform === 'android') statusText = deferredPrompt ? 'جاهز للتثبيت بنقرة واحدة 👇' : 'خطوات أندرويد بالأسفل';
+            else statusText = 'خطوات اللابتوب (Chrome / Edge) بالأسفل';
+
+            if (stateText) stateText.innerText = statusText;
+            if (homeState) {
+                homeState.innerText = badge;
+                swapClasses(homeState, ['text-theme-sky', 'bg-sky-50'], [installed ? 'text-emerald-600' : 'text-theme-sky']);
+            }
+            if (homeHint) {
+                homeHint.innerText = installed
+                    ? 'التطبيق مثبّت — افتحه من الشاشة الرئيسية ويعمل بدون إنترنت.'
+                    : (platform === 'ios'
+                        ? 'على آيفون: زر المشاركة ← «إضافة إلى الشاشة الرئيسية». (التثبيت من Safari فقط).'
+                        : (platform === 'android'
+                            ? 'على أندرويد: زر ⋮ ثم «تثبيت التطبيق»، أو زر التثبيت بالأسفل.'
+                            : 'على اللابتوب: أيقونة التثبيت في شريط العنوان، أو ⋮ ← «تثبيت ZeroPlus».'));
+            }
+        }
+        function openInstallModal() {
+            const modal = document.getElementById('install-modal');
+            if (modal) modal.classList.remove('hidden');
+            renderInstallGuides();
+        }
+        function closeInstallModal() { document.getElementById('install-modal')?.classList.add('hidden'); }
         function triggerAndroidPwaInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); });
+                Promise.resolve(deferredPrompt.userChoice).then((choice) => {
+                    deferredPrompt = null;
+                    const accepted = choice && choice.outcome === 'accepted';
+                    showToast(accepted ? 'جارٍ تثبيت التطبيق 📲' : 'تم إلغاء التثبيت', accepted ? 'success' : 'warn');
+                    if (accepted) closeInstallModal();
+                    renderInstallGuides();
+                }).catch(() => { deferredPrompt = null; });
+                return;
+            }
+            // لا يوجد زر تثبيت تلقائي في هذا المتصفح ← نشرح الخطوات بدل الصمت
+            const platform = detectInstallPlatform();
+            if (isStandalone()) { showToast('التطبيق مثبّت مسبقاً ✅', 'success'); return; }
+            if (platform === 'ios') {
+                alert('على iPhone/iPad:\n1) افتح الصفحة في Safari\n2) اضغط زر المشاركة ⬆️\n3) اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة»');
+            } else if (platform === 'android') {
+                alert('على أندرويد:\nاضغط زر ⋮ أعلى Chrome ← «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».\nلو لم يظهر الخيار، تأكد أنك تستخدم Chrome (وليس متصفح داخل تطبيق آخر).');
+            } else {
+                alert('على اللابتوب:\nاضغط أيقونة التثبيت ⬇️ في شريط العنوان، أو ⋮ ← «تثبيت ZeroPlus».\nلو لم تظهر، تأكد أن الموقع مفتوح عبر https ومتصفح Chrome/Edge محدّث.');
             }
         }
 
@@ -1412,6 +2251,7 @@
             if (sumText) sumText.innerText = `${completed} من ${tasks.length} مهام مكتملة`;
             if (pctBadge) pctBadge.innerText = `${pct}%`;
             safeSetItem('zp_tasks', JSON.stringify(tasks));
+            updateHomeStats();
         }
 
         function addTodo() {
@@ -1445,6 +2285,10 @@
             grid.innerHTML = '';
             const treeCount = document.getElementById('stat-tree-count');
             if (treeCount) treeCount.innerText = `${userForest.length} جلسة`;
+            const homeSessions = document.getElementById('home-stat-sessions');
+            if (homeSessions) homeSessions.innerText = `${userForest.length}`;
+            const supportSessions = document.getElementById('support-stat-sessions');
+            if (supportSessions) supportSessions.innerText = `${userForest.length}`;
             if (userForest.length === 0) {
                 grid.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">لا توجد جلسات مسجلة.</div>`;
                 return;
@@ -1467,6 +2311,10 @@
                 const offset = 276 - (pomoDuration ? pomoRemaining / pomoDuration : 0) * 276;
                 circle.style.strokeDashoffset = offset;
             }
+            // العدّاد يظهر في عنوان التبويب حتى والتطبيق بالخلفية/في تبويب آخر
+            if (typeof document !== 'undefined') {
+                document.title = pomoRunning ? `⏳ ${m}:${s} — ZeroPlus` : 'ZeroPlus | المنصة الأكاديمية التخصصية';
+            }
         }
 
         function setPomoMode(mins, msg, btn) {
@@ -1479,9 +2327,92 @@
             updatePomoDisplay();
         }
 
+        // ============ 9. التركيز بالخلفية (Service Worker + Wake Lock) ============
+        let pomoWakeLock = null;
+        let pomoRunning = false;
+        function isPomoRunning() { return pomoRunning; }
+        function backgroundTimerSupported() {
+            return !!(navigator.serviceWorker && navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage);
+        }
+        function armBackgroundTimer(deadlineAt) {
+            if (!backgroundTimerSupported()) return false;
+            try {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'START_POMO_TIMER',
+                    deadlineAt: deadlineAt,
+                    durationMs: Math.max(0, deadlineAt - Date.now()),
+                    title: 'ZeroPlus | انتهى الوقت! ⏰',
+                    body: `انتهت جلسة ${currentPomoMins} دقيقة بنجاح — سجّلناها في إنجازك.`
+                });
+                return true;
+            } catch (e) { return false; }
+        }
+        function disarmBackgroundTimer() {
+            if (!backgroundTimerSupported()) return false;
+            try { navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_POMO_TIMER' }); return true; }
+            catch (e) { return false; }
+        }
+        async function requestPomoWakeLock() {
+            if (!navigator.wakeLock || !navigator.wakeLock.request) return false;
+            if (localStorage.getItem('zp_keep_awake') === 'off') return false;
+            try {
+                pomoWakeLock = await navigator.wakeLock.request('screen');
+                if (pomoWakeLock && pomoWakeLock.addEventListener) {
+                    pomoWakeLock.addEventListener('release', () => { pomoWakeLock = null; });
+                }
+                return true;
+            } catch (e) { pomoWakeLock = null; return false; }
+        }
+        function releasePomoWakeLock() {
+            try { if (pomoWakeLock && pomoWakeLock.release) pomoWakeLock.release(); } catch (e) {}
+            pomoWakeLock = null;
+        }
+        function toggleKeepAwake(el) {
+            const on = !!(el && el.checked);
+            safeSetItem('zp_keep_awake', on ? 'on' : 'off');
+            if (on) {
+                if (pomoRunning) requestPomoWakeLock();
+                showToast('سنُبقي الشاشة مضاءة أثناء جلسات التركيز', 'success');
+            } else {
+                releasePomoWakeLock();
+                showToast('أوقفنا إبقاء الشاشة مضاءة', 'info');
+            }
+            return on;
+        }
+        function updateBackgroundStatus() {
+            const text = document.getElementById('pomo-bg-text');
+            const icon = document.getElementById('pomo-bg-icon');
+            const supported = backgroundTimerSupported();
+            if (pomoRunning) {
+                if (text) text.innerText = supported ? 'الجلسة تعمل الآن — التنبيه يصلك من الخدمة الخلفية ✅' : 'الجلسة تعمل الآن — أبقِ الصفحة مفتوحة (لا توجد خدمة خلفية)';
+                if (icon) icon.className = 'fa-solid fa-circle-notch fa-spin ' + (supported ? 'text-emerald-500' : 'text-amber-500');
+            } else {
+                if (text) text.innerText = supported ? 'يعمل بالخلفية: يكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة' : 'متصفحك لا يدعم الخدمة الخلفية — أبقِ الصفحة مفتوحة أثناء الجلسة';
+                if (icon) icon.className = 'fa-solid fa-satellite-dish ' + (supported ? 'text-slate-400' : 'text-amber-500');
+            }
+            const hint = document.getElementById('support-bg-hint');
+            if (hint) {
+                hint.innerText = pomoRunning
+                    ? 'توجد جلسة تركيز تعمل الآن — ستُسجَّل تلقائياً حتى لو انتهت وأنت خارج التطبيق.'
+                    : (supported ? 'المؤقت يعتمد على الخدمة الخلفية (Service Worker) فيكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة.' : 'متصفحك لا يدعم الخدمة الخلفية — أبقِ الصفحة مفتوحة أثناء الجلسة.');
+            }
+        }
+
+        // يُنهي الجلسة لو انتهى وقتها (حتى لو انتهت والتطبيق بالخلفية أو مغلق)
+        function checkPomoDeadline() {
+            if (!pomoEndTimestamp) return false;
+            if (Date.now() < pomoEndTimestamp) return false;
+            finishPomoSession();   // تُصفّر pomoEndTimestamp فلا يتكرّر الإنهاء
+            return true;
+        }
+
         function finishPomoSession() {
             clearInterval(pomoInterval); pomoInterval = null;
+            pomoRunning = false;
+            pomoEndTimestamp = 0;
             localStorage.removeItem('zp_pomo_end_time');
+            disarmBackgroundTimer();
+            releasePomoWakeLock();
             pomoCompletedCount++;
             const countStat = document.getElementById('pomo-count-stat');
             const totalMinsStat = document.getElementById('stat-total-mins');
@@ -1495,51 +2426,67 @@
             safeSetItem('zp_forest', JSON.stringify(userForest));
             renderForest();
             playChime(true); awardXP(30); triggerConfetti();
+            if (notificationState() === 'granted') {
+                sendAppNotification('أحسنت! انتهت الجلسة 🎉', `أنجزت جلسة ${currentPomoMins} دقيقة — خذ استراحة قصيرة الآن.`, 'zp-done');
+            }
             syncSessionToCloud(sessionObj);
             syncProfileWithCloud();
             resetPomo();
         }
 
         function togglePomo() {
+            if (pomoRunning) pausePomo();
+            else startPomo();
+        }
+
+        function startPomo() {
+            if (pomoRunning) return false;
             const btn = document.getElementById('pomo-play-btn');
-            if (pomoInterval) {
-                clearInterval(pomoInterval); pomoInterval = null;
-                localStorage.removeItem('zp_pomo_end_time');
-                if (navigator.serviceWorker?.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_POMO_TIMER' });
-                }
-                if (btn) btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
-            } else {
-                if (btn) btn.innerHTML = '<span>إيقاف</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
-                pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
-                localStorage.setItem('zp_pomo_end_time', pomoEndTimestamp);
-                if (navigator.serviceWorker?.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'START_POMO_TIMER',
-                        durationMs: pomoRemaining * 1000,
-                        title: 'ZeroPlus | انتهى الوقت!',
-                        body: `انتهت جلسة ${currentPomoMins} دقيقة بنجاح.`
-                    });
-                }
-                pomoInterval = setInterval(() => {
-                    const now = Date.now();
-                    pomoRemaining = Math.max(0, Math.ceil((pomoEndTimestamp - now) / 1000));
-                    updatePomoDisplay();
-                    if (pomoRemaining <= 0) finishPomoSession();
-                }, 500);
-            }
+            if (btn) btn.innerHTML = '<span>إيقاف</span> <i class="fa-solid fa-pause mr-2 text-xs"></i>';
+            pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
+            localStorage.setItem('zp_pomo_end_time', String(pomoEndTimestamp));
+            pomoRunning = true;
+            armBackgroundTimer(pomoEndTimestamp);   // المؤقت + التنبيه يُوكَلان للخدمة الخلفية
+            requestPomoWakeLock();
+            maybeRemindNotificationsForPomo();
+            updateBackgroundStatus();
+            updatePomoDisplay();
+            pomoInterval = setInterval(() => {
+                const now = Date.now();
+                pomoRemaining = Math.max(0, Math.ceil((pomoEndTimestamp - now) / 1000));
+                updatePomoDisplay();
+                if (pomoRemaining <= 0) checkPomoDeadline();
+            }, 500);
+            return true;
+        }
+
+        function pausePomo() {
+            if (!pomoRunning) return false;
+            clearInterval(pomoInterval); pomoInterval = null;
+            pomoRunning = false;
+            pomoEndTimestamp = 0;
+            localStorage.removeItem('zp_pomo_end_time');
+            disarmBackgroundTimer();
+            releasePomoWakeLock();
+            const btn = document.getElementById('pomo-play-btn');
+            if (btn) btn.innerHTML = '<span>استئناف</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            updateBackgroundStatus();
+            updatePomoDisplay();
+            return true;
         }
 
         function resetPomo() {
             clearInterval(pomoInterval); pomoInterval = null;
+            pomoRunning = false;
+            pomoEndTimestamp = 0;
             localStorage.removeItem('zp_pomo_end_time');
-            if (navigator.serviceWorker?.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_POMO_TIMER' });
-            }
+            disarmBackgroundTimer();
+            releasePomoWakeLock();
             pomoRemaining = pomoDuration;
             const btn = document.getElementById('pomo-play-btn');
             if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
+            updateBackgroundStatus();
         }
 
         function clearForestConfirmation() {
@@ -1565,17 +2512,27 @@
             const shareTrees = document.getElementById('share-trees');
             if (shareXp) shareXp.innerText = `${userXP} XP`;
             if (shareTrees) shareTrees.innerText = `${userForest.length}`;
+            updateGreetingHeader();
             document.getElementById('share-modal')?.classList.remove('hidden');
         }
         function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
-        function copyShareText() {
-            const text = `🎓 منصة ZeroPlus الأكاديمية\n👤 الطالب: ${currentUserName}\n⚡ الرصيد: ${userXP} XP\n⏱ وقت التركيز: ${totalFocusMins} دقيقة\n🌳 الجلسات: ${userForest.length}`;
-            navigator.clipboard.writeText(text).then(() => alert("تم نسخ تقرير الإنجاز بنجاح."));
+        function buildShareText() {
+            return `🎓 منصة ZeroPlus الأكاديمية\n👤 الطالب: ${currentUserName || 'طالب ZeroPlus'}\n⚡ الرصيد: ${userXP} XP\n⏱ وقت التركيز: ${totalFocusMins} دقيقة\n🌳 الجلسات: ${userForest.length}`;
         }
-        function executeShare() {
-            const text = `🎓 منصة ZeroPlus الأكاديمية\n👤 ${currentUserName}\n⚡ ${userXP} XP`;
-            if (navigator.share) navigator.share({ title: 'ZeroPlus', text }).catch(() => {});
-            else copyShareText();
+        async function copyShareText() {
+            const text = buildShareText();
+            const ok = await copyText(text);
+            if (ok) showToast('تم نسخ تقرير الإنجاز ✅', 'success');
+            else alert('تعذّر النسخ تلقائياً — انسخ النص يدوياً:\n\n' + text);
+            return ok;
+        }
+        async function executeShare() {
+            const text = `${buildShareText()}\n🔗 ${location.origin || ''}`;
+            if (navigator.share) {
+                try { await navigator.share({ title: 'ZeroPlus | إنجازي الأكاديمي', text: text }); return true; }
+                catch (e) { if (e && e.name === 'AbortError') return false; }
+            }
+            return await copyShareText();
         }
 
         // ============ STARTUP ============
@@ -1602,12 +2559,40 @@
                 window.location.reload();
             });
 
+            // إشعارات الخدمة الخلفية: «انتهى الوقت» ← نُحصّل الجلسة فوراً حتى لو انتهت بالخلفية
+            navigator.serviceWorker?.addEventListener('message', (ev) => {
+                const data = ev && ev.data;
+                if (!data) return;
+                if (data.type === 'POMO_FINISHED') {
+                    if (!checkPomoDeadline()) { renderForest(); updateGamificationBar(); }
+                } else if (data.type === 'POMO_TIMER_ARMED') {
+                    updateBackgroundStatus();
+                }
+            });
+
             // استعادة المزامنة تلقائياً عند عودة الاتصال أو عند رجوع التطبيق للمقدمة
             window.addEventListener('online', () => { refreshCloudIndicator(); flushSyncQueue(); });
             window.addEventListener('offline', () => refreshCloudIndicator());
             document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && navigator.onLine && pendingSyncCount() > 0) flushSyncQueue();
+                if (document.visibilityState !== 'visible') return;
+                checkPomoDeadline();                    // جلسة انتهت ونحن بالخارج ← تُسجَّل الآن
+                checkNotificationBanner();              // الطالب غيّر الإذن من إعدادات المتصفح
+                refreshSupportPanel();
+                if (navigator.onLine && pendingSyncCount() > 0) flushSyncQueue();
             });
+            // زر Escape يغلق أي نافذة/درج مفتوح
+            document.addEventListener('keydown', (e) => {
+                if (e && e.key === 'Escape') {
+                    closeSupportDrawer();
+                    closeShareModal();
+                    closeInstallModal();
+                    closeProfileModal();
+                }
+            });
+            // لو غيّر الطالب إذن الإشعارات من إعدادات المتصفح والتطبيق مفتوح
+            if (notificationsSupported() && Notification.addEventListener) {
+                Notification.addEventListener('permissionchange', () => checkNotificationBanner());
+            }
 
             // ترقية ترقيم قديم: من كان مسجّلاً قبل هذا التحديث لا يملك مفتاح مالك البيانات
             const existingDeviceId = localStorage.getItem('zp_device_id');
@@ -1621,12 +2606,25 @@
             checkExistingAuthSession();
             renderTasks();
             renderForest();
+            refreshSupportPanel();
+            renderInstallGuides();
+            updateBackgroundStatus();
+            const hashTab = tabFromHash();
             const savedTab = localStorage.getItem('zp_active_tab');
-            showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'todo');
+            showTab(hashTab && hashTab !== 'support' ? hashTab : (APP_TABS.includes(savedTab) ? savedTab : 'home'));
+            if (hashTab === 'support') openSupportDrawer();
+            window.addEventListener('hashchange', () => {
+                const t = tabFromHash();
+                if (!t) return;
+                if (t === 'support') openSupportDrawer();
+                else showTab(t);
+            });
 
             if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
                 pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);
-                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) togglePomo();
+                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) startPomo();
+            } else if (pomoEndTimestamp && pomoEndTimestamp <= Date.now()) {
+                checkPomoDeadline();   // انتهت الجلسة والتطبيق مغلق ← تُسجَّل الآن
             }
         });
     </script>
