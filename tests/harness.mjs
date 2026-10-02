@@ -36,6 +36,9 @@ export function createHarness() {
       id, className: '', innerHTML: '', innerText: '', textContent: '', title: '', src: '', value: '',
       files: [], style: {}, checked: false, open: false, disabled: false,
       classList: { _s: new Set(), add(c) { this._s.add(c); }, remove(c) { this._s.delete(c); }, contains(c) { return this._s.has(c); } },
+      attrs: {},
+      setAttribute(k, v) { this.attrs[k] = String(v); },
+      getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; },
       querySelector() { return makeNode(id + ':child'); },
       appendChild() {}, remove() {}, focus() {}, scrollIntoView() {}, select() {},
     };
@@ -102,6 +105,10 @@ export function createHarness() {
     _dump: () => Object.fromEntries(store),
   };
 
+  // محاكاة تفضيل نظام الجهاز (prefers-color-scheme) مع إمكانية تغييره أثناء الاختبار
+  let prefersDark = false;
+  const mqListeners = [];
+
   const supabaseMock = createMockSupabase();
   const sandbox = {
     console: { log() {}, warn() {}, error() {}, info() {} },
@@ -127,6 +134,14 @@ export function createHarness() {
     },
     window: null,
     location: { origin: 'https://test.local', href: 'https://test.local/', reload() { sandbox.__reloaded = (sandbox.__reloaded || 0) + 1; } },
+    matchMedia: (query) => ({
+      media: String(query || ''),
+      get matches() { return prefersDark; },
+      addEventListener: (ev, cb) => { mqListeners.push(cb); },
+      addListener: (cb) => { mqListeners.push(cb); },
+      removeEventListener: () => {},
+      removeListener: () => {},
+    }),
     alert: (msg) => alerts.push(String(msg)),
     confirm: (msg) => { confirmations.push(String(msg)); return confirmAnswer; },
     Notification: NotificationMock,
@@ -149,6 +164,8 @@ export function createHarness() {
     __documentListeners: documentListeners,
     __windowListeners: windowListeners,
     __setConfirm: (v) => { confirmAnswer = v; },
+    __setPrefersDark: (v) => { prefersDark = !!v; mqListeners.forEach((cb) => cb({ matches: prefersDark })); },
+    __mqListeners: mqListeners,
   };
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
@@ -165,6 +182,9 @@ export function createHarness() {
   get pendingCount(){ return pendingSyncCount(); },
   get currentUserName(){ return currentUserName; },
   get pomoRunning(){ return pomoRunning; },
+  get pomoPaused(){ return pomoPaused; },
+  get pomoRemaining(){ return pomoRemaining; }, set pomoRemaining(v){ pomoRemaining = v; },
+  get pomoDuration(){ return pomoDuration; },
   get pomoEndTimestamp(){ return pomoEndTimestamp; }, set pomoEndTimestamp(v){ pomoEndTimestamp = v; },
   get activeTabId(){ return activeTabId; },
   get currentPomoMins(){ return currentPomoMins; }

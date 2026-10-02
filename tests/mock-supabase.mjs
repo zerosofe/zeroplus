@@ -7,6 +7,7 @@ export const TABLE_COLUMNS = {
   user_focus_sessions: ['id', 'device_id', 'session_name', 'duration_mins', 'session_time', 'created_at'],
   user_node_progress: ['id', 'device_id', 'node_id', 'completed', 'score', 'updated_at'],
   user_word_mastery: ['id', 'device_id', 'term_key', 'mastered', 'mistake_count', 'next_review_at', 'updated_at'],
+  support_messages: ['id', 'device_id', 'user_name', 'topic', 'message', 'diagnostics', 'app_version', 'status', 'created_at'],
 };
 
 function defaultsFor(table) {
@@ -14,6 +15,7 @@ function defaultsFor(table) {
   if (table === 'user_tasks') return { done: false, tag: '', prio: 'normal', created_at: now, updated_at: now };
   if (table === 'user_focus_sessions') return { duration_mins: 25, created_at: now };
   if (table === 'profiles') return { department: 'general', xp: 0, total_focus_mins: 0, created_at: now };
+  if (table === 'support_messages') return { status: 'new', created_at: now };
   return { created_at: now };
 }
 
@@ -123,7 +125,7 @@ class Query {
 
 export function createMockSupabase() {
   const state = {
-    tables: { profiles: [], user_tasks: [], user_focus_sessions: [], user_node_progress: [], user_word_mastery: [] },
+    tables: { profiles: [], user_tasks: [], user_focus_sessions: [], user_node_progress: [], user_word_mastery: [], support_messages: [] },
     failures: {},
     calls: [],
     deletedRows: [],
