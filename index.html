@@ -22,17 +22,17 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v29')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v30')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=29">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=29">
-    <link rel="shortcut icon" href="/icon.svg?v=29">
-    <link rel="manifest" href="/manifest.json?v=29">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=30">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=30">
+    <link rel="shortcut icon" href="/icon.svg?v=30">
+    <link rel="manifest" href="/manifest.json?v=30">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -541,6 +541,20 @@
             catch(e) { console.warn("Supabase init error:", e); }
         }
 
+        function describeCloudError(err) {
+            const msg = (err && err.message) ? err.message : String(err || 'خطأ غير معروف');
+            if (/permission denied|42501/i.test(msg)) return msg + '\n\nالحل: شغّل ملف supabase/schema.sql في SQL Editor (مشكلة صلاحيات).';
+            if (/does not exist|42P01/i.test(msg)) return msg + '\n\nالحل: جدول ناقص — شغّل ملف supabase/schema.sql كاملاً.';
+            if (/column|PGRST204/i.test(msg)) return msg + '\n\nالحل: عمود ناقص — شغّل ملف supabase/schema.sql كاملاً.';
+            return msg;
+        }
+
+        let lastSyncError = null;
+        let isSyncing = false;
+        let syncRetryTimer = null;
+        const SYNC_QUEUE_KEY = 'zp_sync_queue';
+        const SYNC_RETRY_MS = 15000;
+
         function updateCloudIndicator(status) {
             const ind = document.getElementById('cloud-indicator');
             if (!ind) return;
@@ -550,10 +564,116 @@
             } else if (status === 'syncing') {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping';
                 ind.title = 'جاري المزامنة...';
+            } else if (status === 'pending') {
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+                ind.title = 'توجد تغييرات بانتظار المزامنة';
+            } else if (status === 'error') {
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                ind.title = 'فشلت المزامنة: ' + (lastSyncError || '');
             } else {
                 ind.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600';
-                ind.title = 'غير متصل';
+                ind.title = 'غير متصل — ستُرفع التغييرات عند عودة الاتصال';
             }
+        }
+
+        // ============ 2.b محرك المزامنة (طابور offline-first) ============
+        // كل تغيير يُسجَّل أولاً في طابور محلي ثم يُرفع للسحابة، فلا تُفقد أي
+        // بيانات عند انقطاع الإنترنت أو انقطاع التطبيق أو فشل مؤقت في القاعدة.
+        function readSyncQueue() {
+            const q = safeParse(SYNC_QUEUE_KEY, {});
+            return (q && typeof q === 'object' && !Array.isArray(q)) ? q : {};
+        }
+        function writeSyncQueue(q) { return safeSetItem(SYNC_QUEUE_KEY, JSON.stringify(q)); }
+        function pendingSyncCount() { return Object.keys(readSyncQueue()).length; }
+
+        function queueSyncOp(kind, key, deviceId, payload) {
+            const q = readSyncQueue();
+            q[kind + ':' + key] = { kind, deviceId, payload, ts: Date.now() };
+            writeSyncQueue(q);
+            refreshCloudIndicator();
+            scheduleSyncRetry();
+        }
+        function deleteSyncKey(fullKey) {
+            const q = readSyncQueue();
+            if (q[fullKey] === undefined) return;
+            delete q[fullKey];
+            writeSyncQueue(q);
+        }
+        function refreshCloudIndicator() {
+            if (!supabaseClient || !navigator.onLine) { updateCloudIndicator('offline'); return; }
+            if (isSyncing) { updateCloudIndicator('syncing'); return; }
+            if (lastSyncError) { updateCloudIndicator('error'); return; }
+            updateCloudIndicator(pendingSyncCount() > 0 ? 'pending' : 'online');
+        }
+
+        function scheduleSyncRetry() {
+            if (syncRetryTimer) return;
+            syncRetryTimer = setTimeout(() => { syncRetryTimer = null; flushSyncQueue(); }, SYNC_RETRY_MS);
+        }
+
+        async function applySyncOp(op) {
+            if (op.kind === 'profile') {
+                return await supabaseClient.from('profiles').upsert(op.payload, { onConflict: 'device_id' });
+            }
+            if (op.kind === 'tasks') {
+                if (!Array.isArray(op.payload) || op.payload.length === 0) return { error: null };
+                return await supabaseClient.from('user_tasks').upsert(op.payload, { onConflict: 'device_id,id' });
+            }
+            if (op.kind === 'task_delete') {
+                return await supabaseClient.from('user_tasks').delete()
+                    .eq('device_id', op.deviceId).eq('id', op.payload.id);
+            }
+            if (op.kind === 'session') {
+                return await supabaseClient.from('user_focus_sessions').upsert(op.payload, { onConflict: 'device_id,id' });
+            }
+            if (op.kind === 'sessions_clear') {
+                return await supabaseClient.from('user_focus_sessions').delete().eq('device_id', op.deviceId);
+            }
+            return { error: { message: 'عملية مزامنة غير معروفة: ' + op.kind } };
+        }
+
+        let syncInFlight = null;
+        async function flushSyncQueue() {
+            if (!supabaseClient || !navigator.onLine) { refreshCloudIndicator(); return; }
+            // لو توجد مزامنة جارية، نعيد نفس الوعد بدل تشغيل مزامنة متوازية
+            if (syncInFlight) return syncInFlight;
+            syncInFlight = (async () => {
+                // قد تُضاف تغييرات جديدة أثناء المزامنة نفسها (مثل رفع الصورة ثم المهمة)
+                // لذلك نكرّر التمرير حتى يفرغ الطابور أو يفشل شيء (نتوقف عند الفشل).
+                for (let pass = 0; pass < 5; pass++) {
+                    const processed = await runSyncQueue();
+                    if (processed.failed > 0) break;
+                    if (pendingSyncCount() === 0) break;
+                }
+            })();
+            try { await syncInFlight; } finally { syncInFlight = null; }
+        }
+
+        async function runSyncQueue() {
+            const ops = Object.entries(readSyncQueue());
+            if (ops.length === 0) { lastSyncError = null; refreshCloudIndicator(); return { processed: 0, failed: 0 }; }
+
+            isSyncing = true;
+            updateCloudIndicator('syncing');
+            let failed = 0;
+            let processed = 0;
+            let firstErr = '';
+            for (const [fullKey, op] of ops) {
+                try {
+                    const res = await applySyncOp(op);
+                    if (res && res.error) { failed++; firstErr = firstErr || res.error.message || String(res.error); }
+                    else { processed++; deleteSyncKey(fullKey); }
+                } catch (e) {
+                    failed++;
+                    firstErr = firstErr || (e && e.message ? e.message : String(e));
+                }
+            }
+            isSyncing = false;
+            lastSyncError = failed > 0 ? (firstErr || 'فشل غير معروف') : null;
+            if (lastSyncError) console.warn('ZeroPlus sync error:', lastSyncError);
+            refreshCloudIndicator();
+            if (failed > 0) scheduleSyncRetry();
+            return { processed, failed };
         }
 
         // ============ 3. AUTHENTICATION & PROFILE ============
@@ -608,6 +728,8 @@
                         alert("كلمة المرور غير صحيحة.");
                         return;
                     }
+                    resetLocalDataIfOwnerChanged(deviceId);
+                    saveLocalSession(deviceId, data.user_name || usernameInput, data.department || deptInput);
                     await loadUserDataFromSupabase(deviceId);
                     enterApp();
                 } else {
@@ -628,7 +750,7 @@
                         total_focus_mins: 0
                     });
                     if (insErr) {
-                        alert("تعذر إنشاء الحساب: " + insErr.message);
+                        alert("تعذر إنشاء الحساب: " + describeCloudError(insErr));
                         return;
                     }
 
@@ -636,6 +758,7 @@
                     activeDepartmentKey = deptInput;
                     userXP = 140;
                     totalFocusMins = 0;
+                    resetLocalDataIfOwnerChanged(deviceId);
                     saveLocalSession(deviceId, usernameInput, deptInput);
                     enterApp();
                 }
@@ -658,9 +781,26 @@
 
         function saveLocalSession(deviceId, name, dept) {
             localStorage.setItem('zp_device_id', deviceId);
+            localStorage.setItem('zp_owner_device_id', deviceId);
             localStorage.setItem('zp_username', name);
             localStorage.setItem('zp_user_department', dept);
             localStorage.setItem('zp_user_registered', 'true');
+        }
+
+        // عند تسجيل الدخول على متصفح سبق أن استخدمه طالب آخر: لا نخلط بياناته
+        // المحلية (مهام/جلسات/طابور مزامنة) مع حساب السحابة الجديد.
+        function resetLocalDataIfOwnerChanged(deviceId) {
+            const owner = localStorage.getItem('zp_owner_device_id') || '';
+            if (owner && owner !== deviceId) {
+                ['zp_tasks', 'zp_forest', 'zp_avatar_url', 'zp_xp', 'zp_focus_mins',
+                 'zp_pomo_end_time', SYNC_QUEUE_KEY, KNOWN_IDS_KEY].forEach(k => localStorage.removeItem(k));
+                tasks = [];
+                userForest = [];
+                userXP = 140;
+                totalFocusMins = 0;
+                lastSyncError = null;
+            }
+            localStorage.setItem('zp_owner_device_id', deviceId);
         }
 
         function enterApp() {
@@ -670,46 +810,150 @@
             updateGamificationBar();
             renderTasks();
             renderForest();
-            updateCloudIndicator('online');
+            refreshCloudIndicator();
             triggerConfetti();
+            if (navigator.onLine) flushSyncQueue();
+        }
+
+        function taskPayloadFor(t, deviceId) {
+            return {
+                id: Number(t.id),
+                device_id: deviceId,
+                title: String(t.title ?? ''),
+                done: !!t.done,
+                tag: t.tag || '',
+                prio: t.prio || 'normal',
+                updated_at: new Date().toISOString()
+            };
+        }
+
+        function sessionPayloadFor(s, deviceId) {
+            return {
+                id: Number(s.id),
+                device_id: deviceId,
+                session_name: s.name || 'جلسة تركيز',
+                duration_mins: Number(s.mins) > 0 ? Number(s.mins) : 25,
+                session_time: s.time || ''
+            };
+        }
+
+        // نتذكّر معرّفات الصفوف التي رأيناها سابقاً في السحابة، حتى نعرف أن غيابها
+        // الآن يعني أنها حُذفت من جهاز آخر (بدل إعادة رفعها وإحيائها بالخطأ).
+        const KNOWN_IDS_KEY = 'zp_known_cloud_ids';
+        function readKnownCloudIds(kind, deviceId) {
+            const all = safeParse(KNOWN_IDS_KEY, {});
+            if (!all || typeof all !== 'object' || Array.isArray(all)) return [];
+            const ids = all[kind + ':' + deviceId];
+            return Array.isArray(ids) ? ids.map(String) : [];
+        }
+        function writeKnownCloudIds(kind, deviceId, ids) {
+            const all = safeParse(KNOWN_IDS_KEY, {});
+            if (!all || typeof all !== 'object' || Array.isArray(all)) return;
+            all[kind + ':' + deviceId] = ids.map(String);
+            safeSetItem(KNOWN_IDS_KEY, JSON.stringify(all));
+        }
+
+        function queueAllTasksForUpload(deviceId) {
+            if (!deviceId || !Array.isArray(tasks) || tasks.length === 0) return;
+            queueSyncOp('tasks', deviceId, deviceId, tasks.map(t => taskPayloadFor(t, deviceId)));
         }
 
         async function loadUserDataFromSupabase(deviceId) {
-            if (!supabaseClient) return;
+            if (!supabaseClient) { refreshCloudIndicator(); return; }
             updateCloudIndicator('syncing');
+            let hasError = false;
+            const queue = readSyncQueue();
 
-            const { data: profile } = await supabaseClient
-                .from('profiles').select('*').eq('device_id', deviceId).maybeSingle();
+            try {
+                const { data: profile, error: profErr } = await supabaseClient
+                    .from('profiles').select('*').eq('device_id', deviceId).maybeSingle();
+                if (profErr) { hasError = true; lastSyncError = profErr.message; }
 
-            if (profile) {
-                currentUserName = profile.user_name || currentUserName;
-                activeDepartmentKey = profile.department || 'general';
-                userXP = profile.xp ?? 140;
-                totalFocusMins = profile.total_focus_mins ?? 0;
-                if (profile.avatar_url) localStorage.setItem('zp_avatar_url', profile.avatar_url);
+                if (profile) {
+                    const localPendingProfile = !!queue['profile:' + deviceId];
+                    if (localPendingProfile) {
+                        // توجد تغييرات محلية لم تُرفع بعد — لا نطمسها ببيانات سحابة أقدم
+                        userXP = Math.max(userXP, profile.xp ?? 0);
+                        totalFocusMins = Math.max(totalFocusMins, profile.total_focus_mins ?? 0);
+                        currentUserName = currentUserName || profile.user_name || '';
+                        activeDepartmentKey = activeDepartmentKey || profile.department || 'general';
+                    } else {
+                        currentUserName = profile.user_name || currentUserName;
+                        activeDepartmentKey = profile.department || 'general';
+                        if (typeof profile.xp === 'number') userXP = profile.xp;
+                        if (typeof profile.total_focus_mins === 'number') totalFocusMins = profile.total_focus_mins;
+                    }
+                    if (profile.avatar_url && !localStorage.getItem('zp_avatar_url')) {
+                        safeSetItem('zp_avatar_url', profile.avatar_url);
+                    }
+                    safeSetItem('zp_username', currentUserName);
+                    safeSetItem('zp_user_department', activeDepartmentKey);
+                    safeSetItem('zp_xp', userXP);
+                    safeSetItem('zp_focus_mins', totalFocusMins);
+                }
 
-                localStorage.setItem('zp_username', currentUserName);
-                localStorage.setItem('zp_user_department', activeDepartmentKey);
-                localStorage.setItem('zp_xp', userXP);
-                localStorage.setItem('zp_focus_mins', totalFocusMins);
+                const { data: cloudTasks, error: tasksErr } = await supabaseClient
+                    .from('user_tasks').select('*').eq('device_id', deviceId);
+                if (tasksErr) { hasError = true; lastSyncError = tasksErr.message; }
+                if (!tasksErr && Array.isArray(cloudTasks)) {
+                    const cloudById = new Map(cloudTasks.map(t => [String(t.id), {
+                        id: Number(t.id), title: t.title ?? '', done: !!t.done,
+                        tag: t.tag || '', prio: t.prio || 'normal'
+                    }]));
+                    const merged = new Map();
+                    const deletedElsewhere = new Set(
+                        readKnownCloudIds('tasks', deviceId).filter(id => !cloudById.has(id))
+                    );
+                    // المهمة المحلية تفوز لو لها عملية مزامنة معلّقة أو غير موجودة بالسحابة
+                    tasks.forEach(t => {
+                        const key = String(t.id);
+                        if (deletedElsewhere.has(key)) return;   // حُذفت من جهاز آخر ← لا نُحييها
+                        if (queue['tasks:' + deviceId] || !cloudById.has(key)) merged.set(key, t);
+                    });
+                    cloudById.forEach((t, key) => merged.set(key, t));
+                    tasks = Array.from(merged.values()).sort((a, b) => Number(b.id) - Number(a.id));
+                    safeSetItem('zp_tasks', JSON.stringify(tasks));
+                    writeKnownCloudIds('tasks', deviceId, Array.from(cloudById.keys()));
+                    if (tasks.some(t => !cloudById.has(String(t.id)))) queueAllTasksForUpload(deviceId);
+                }
+
+                const { data: cloudSessions, error: sessErr } = await supabaseClient
+                    .from('user_focus_sessions').select('*').eq('device_id', deviceId)
+                    .order('created_at', { ascending: false }).limit(50);
+                if (sessErr) { hasError = true; lastSyncError = sessErr.message; }
+                if (!sessErr && Array.isArray(cloudSessions)) {
+                    const cloudById = new Map(cloudSessions.map(s => [String(s.id), {
+                        id: Number(s.id), name: s.session_name || 'جلسة تركيز', time: s.session_time || '',
+                        mins: s.duration_mins || 25
+                    }]));
+                    const merged = new Map();
+                    const deletedElsewhere = new Set(
+                        readKnownCloudIds('sessions', deviceId).filter(id => !cloudById.has(id))
+                    );
+                    userForest.forEach(s => {
+                        const key = String(s.id);
+                        if (deletedElsewhere.has(key)) return;   // حُذفت من جهاز آخر (تهيئة السجل)
+                        if (!cloudById.has(key)) merged.set(key, s);
+                    });
+                    cloudById.forEach((s, key) => merged.set(key, s));
+                    userForest = Array.from(merged.values())
+                        .sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 100);
+                    safeSetItem('zp_forest', JSON.stringify(userForest));
+                    writeKnownCloudIds('sessions', deviceId, Array.from(cloudById.keys()));
+                    userForest
+                        .filter(s => !cloudById.has(String(s.id)))
+                        .forEach(s => queueSyncOp('session', s.id, deviceId, sessionPayloadFor(s, deviceId)));
+                }
+            } catch (e) {
+                hasError = true;
+                lastSyncError = (e && e.message) ? e.message : String(e);
             }
 
-            const { data: cloudTasks } = await supabaseClient
-                .from('user_tasks').select('*').eq('device_id', deviceId);
-            if (cloudTasks && cloudTasks.length > 0) {
-                tasks = cloudTasks.map(t => ({ id: t.id, title: t.title, done: t.done, tag: t.tag, prio: t.prio }));
-                localStorage.setItem('zp_tasks', JSON.stringify(tasks));
-            }
+            if (hasError) console.warn('ZeroPlus load error:', lastSyncError);
+            else lastSyncError = null;
 
-            const { data: cloudSessions } = await supabaseClient
-                .from('user_focus_sessions').select('*').eq('device_id', deviceId)
-                .order('created_at', { ascending: false }).limit(50);
-            if (cloudSessions && cloudSessions.length > 0) {
-                userForest = cloudSessions.map(s => ({ id: s.id, name: s.session_name, time: s.session_time }));
-                localStorage.setItem('zp_forest', JSON.stringify(userForest));
-            }
-
-            updateCloudIndicator('online');
+            refreshCloudIndicator();
+            if (navigator.onLine) flushSyncQueue();
         }
 
         async function checkExistingAuthSession() {
@@ -801,7 +1045,7 @@
             const dept = document.getElementById('google-dept-input').value;
             if (!name || name.length < 2) { alert("يرجى إدخال اسمك الأكاديمي."); return; }
 
-            await supabaseClient.from('profiles').upsert({
+            const { error: upsertErr } = await supabaseClient.from('profiles').upsert({
                 device_id: googleId,
                 user_name: name,
                 department: dept,
@@ -814,9 +1058,16 @@
                 learning_track: 'general'
             }, { onConflict: 'device_id' });
 
+            // سابقاً كان الخطأ يُتجاهل تماماً فيُدخل الطالب للتطبيق بدون حفظ سحابي
+            if (upsertErr) {
+                alert("تعذر حفظ بيانات الحساب في السحابة: " + describeCloudError(upsertErr));
+                return;
+            }
+
             document.getElementById('google-name-modal')?.remove();
             currentUserName = name;
             activeDepartmentKey = dept;
+            resetLocalDataIfOwnerChanged(googleId);
             saveLocalSession(googleId, name, dept);
             await loadUserDataFromSupabase(googleId);
             enterApp();
@@ -851,19 +1102,56 @@
             }
         }
 
+        // تصغير الصورة قبل الحفظ: يمنع امتلاء localStorage (حد 5MB) ويجعل المزامنة خفيفة.
+        // بدون هذا كان حفظ صورة من الكاميرا يملأ التخزين ويفشل الحفظ بصمت.
+        function compressImageFile(file, maxDim = 256, quality = 0.82) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('تعذر قراءة الصورة'));
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('صيغة الصورة غير مدعومة'));
+                    img.onload = () => {
+                        try {
+                            const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+                            const w = Math.max(1, Math.round(img.width * scale));
+                            const h = Math.max(1, Math.round(img.height * scale));
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w;
+                            canvas.height = h;
+                            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                            resolve(canvas.toDataURL('image/jpeg', quality));
+                        } catch (err) { reject(err); }
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         async function uploadProfileAvatar(e) {
-            const file = e.target.files[0];
+            const file = e.target.files && e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                localStorage.setItem('zp_avatar_url', ev.target.result);
-                document.getElementById('profile-avatar-preview').src = ev.target.result;
-                document.getElementById('profile-avatar-preview').classList.remove('hidden');
-                document.getElementById('profile-avatar-placeholder').classList.add('hidden');
-                updateHeaderAvatar();
-                syncProfileWithCloud();
-            };
-            reader.readAsDataURL(file);
+            if (!/^image\//.test(file.type)) { alert("يرجى اختيار ملف صورة صالح."); return; }
+
+            let dataUrl;
+            try {
+                dataUrl = await compressImageFile(file);
+            } catch (err) {
+                alert("تعذر معالجة الصورة: " + err.message);
+                return;
+            }
+
+            if (!safeSetItem('zp_avatar_url', dataUrl)) {
+                alert("مساحة التخزين المحلية ممتلئة — لم تُحفظ الصورة. جرّب صورة أخرى أصغر.");
+                return;
+            }
+
+            const preview = document.getElementById('profile-avatar-preview');
+            if (preview) { preview.src = dataUrl; preview.classList.remove('hidden'); }
+            document.getElementById('profile-avatar-placeholder')?.classList.add('hidden');
+            updateHeaderAvatar();
+            syncProfileWithCloud();
         }
 
         async function saveProfileChanges() {
@@ -882,7 +1170,9 @@
                 const deviceId = localStorage.getItem('zp_device_id');
                 if (deviceId && supabaseClient) {
                     const pwdHash = await hashPassword(newPass);
-                    await supabaseClient.from('profiles').update({ password_hash: pwdHash }).eq('device_id', deviceId);
+                    const { error: pwdErr } = await supabaseClient
+                        .from('profiles').update({ password_hash: pwdHash }).eq('device_id', deviceId);
+                    if (pwdErr) { alert("تعذر تحديث كلمة المرور: " + describeCloudError(pwdErr)); return; }
                     alert("تم تحديث كلمة المرور بنجاح.");
                 }
             }
@@ -894,63 +1184,67 @@
         }
 
         async function handleUserLogout() {
-            if (confirm("هل أنت متأكد من تسجيل الخروج من الحساب؟")) {
-                if (supabaseClient) await supabaseClient.auth.signOut();
-                localStorage.removeItem('zp_user_registered');
-                localStorage.removeItem('zp_device_id');
-                location.reload();
+            if (!confirm("هل أنت متأكد من تسجيل الخروج من الحساب؟")) return;
+
+            if (supabaseClient && navigator.onLine) await flushSyncQueue();
+            if (pendingSyncCount() > 0) {
+                if (!confirm(`تنبيه: ${pendingSyncCount()} تغيير لم تُزامن بعد مع السحابة.\nإن خرجت الآن ستبقى محفوظة على هذا الجهاز وتُرفع عند تسجيل الدخول مرة أخرى. متابعة الخروج؟`)) return;
             }
+
+            // ملاحظة: نُبقي zp_owner_device_id حتى يتعرّف التطبيق على تغيّر المستخدم
+            localStorage.removeItem('zp_user_registered');
+            localStorage.removeItem('zp_device_id');
+            if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch (e) {} }
+            location.reload();
         }
 
         async function syncProfileWithCloud() {
-            if (!supabaseClient || !navigator.onLine) return;
+            if (!supabaseClient) return;
             const deviceId = localStorage.getItem('zp_device_id');
             if (!deviceId) return;
-            updateCloudIndicator('syncing');
-            try {
-                await supabaseClient.from('profiles').upsert({
-                    device_id: deviceId,
-                    user_name: currentUserName,
-                    department: activeDepartmentKey,
-                    avatar_url: localStorage.getItem('zp_avatar_url') || null,
-                    xp: userXP,
-                    total_focus_mins: totalFocusMins,
-                    last_active: new Date().toISOString()
-                }, { onConflict: 'device_id' });
-                updateCloudIndicator('online');
-            } catch (e) { updateCloudIndicator('offline'); }
+            const payload = {
+                device_id: deviceId,
+                user_name: currentUserName,
+                department: activeDepartmentKey,
+                xp: userXP,
+                total_focus_mins: totalFocusMins,
+                last_active: new Date().toISOString()
+            };
+            const avatar = localStorage.getItem('zp_avatar_url');
+            if (avatar) payload.avatar_url = avatar;   // لا نرسل null حتى لا نمسح صورة موجودة بالسحابة
+            queueSyncOp('profile', deviceId, deviceId, payload);
+            if (navigator.onLine) await flushSyncQueue();
         }
 
         async function syncTasksToCloud() {
-            if (!supabaseClient || !navigator.onLine) return;
+            if (!supabaseClient) return;
             const deviceId = localStorage.getItem('zp_device_id');
-            if (!deviceId || !tasks || tasks.length === 0) return;
-            try {
-                const payload = tasks.map(t => ({
-                    id: t.id, device_id: deviceId, title: t.title,
-                    done: !!t.done, tag: t.tag || '', prio: t.prio || 'normal'
-                }));
-                await supabaseClient.from('user_tasks').upsert(payload, { onConflict: 'id' });
-            } catch (e) {}
+            if (!deviceId) return;
+            queueAllTasksForUpload(deviceId);
+            if (navigator.onLine) await flushSyncQueue();
         }
 
         async function deleteTaskFromCloud(taskId) {
-            if (!supabaseClient || !navigator.onLine) return;
-            try { await supabaseClient.from('user_tasks').delete().eq('id', taskId); } catch (e) {}
+            if (!supabaseClient) return;
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (!deviceId) return;
+            // نزيل المهمة من دفعة الرفع المعلّقة ثم نضيف أمر حذف مستقل عن جهاز الطالب
+            const q = readSyncQueue();
+            const batchKey = 'tasks:' + deviceId;
+            if (q[batchKey] && Array.isArray(q[batchKey].payload)) {
+                q[batchKey].payload = q[batchKey].payload.filter(t => Number(t.id) !== Number(taskId));
+                writeSyncQueue(q);
+            }
+            queueSyncOp('task_delete', deviceId + ':' + taskId, deviceId, { id: Number(taskId) });
+            if (navigator.onLine) await flushSyncQueue();
         }
 
         async function syncSessionToCloud(sessionObj) {
-            if (!supabaseClient || !navigator.onLine) return;
+            if (!supabaseClient) return;
             const deviceId = localStorage.getItem('zp_device_id');
             if (!deviceId) return;
-            try {
-                await supabaseClient.from('user_focus_sessions').upsert({
-                    id: sessionObj.id, device_id: deviceId,
-                    session_name: sessionObj.name,
-                    duration_mins: currentPomoMins,
-                    session_time: sessionObj.time
-                }, { onConflict: 'id' });
-            } catch (e) {}
+            queueSyncOp('session', sessionObj.id, deviceId, sessionPayloadFor(sessionObj, deviceId));
+            if (navigator.onLine) await flushSyncQueue();
         }
 
         // ============ 4. UI INITIALIZATION & SYNC ============
@@ -1117,7 +1411,7 @@
             const pctBadge = document.getElementById('todo-percent-badge');
             if (sumText) sumText.innerText = `${completed} من ${tasks.length} مهام مكتملة`;
             if (pctBadge) pctBadge.innerText = `${pct}%`;
-            localStorage.setItem('zp_tasks', JSON.stringify(tasks));
+            safeSetItem('zp_tasks', JSON.stringify(tasks));
         }
 
         function addTodo() {
@@ -1196,7 +1490,7 @@
             localStorage.setItem('zp_focus_mins', totalFocusMins);
             if (totalMinsStat) totalMinsStat.innerText = `${totalFocusMins} دقيقة`;
             const now = new Date();
-            const sessionObj = { id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` };
+            const sessionObj = { id: Date.now(), name: `جلسة ${currentPomoMins} دقيقة`, mins: currentPomoMins, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` };
             userForest.unshift(sessionObj);
             safeSetItem('zp_forest', JSON.stringify(userForest));
             renderForest();
@@ -1249,9 +1543,21 @@
         }
 
         function clearForestConfirmation() {
-            if (confirm("هل ترغب في إعادة تهيئة سجل الجلسات؟")) {
-                userForest = []; localStorage.setItem('zp_forest', JSON.stringify([])); renderForest();
+            if (!confirm("هل ترغب في إعادة تهيئة سجل الجلسات؟\nسيتم حذف السجل من هذا الجهاز ومن السحابة أيضاً.")) return;
+            userForest = [];
+            safeSetItem('zp_forest', JSON.stringify([]));
+            renderForest();
+
+            const deviceId = localStorage.getItem('zp_device_id');
+            if (deviceId && supabaseClient) {
+                // إزالة أوامر رفع الجلسات المعلّقة ثم تسجيل أمر حذف سحابي كامل
+                const q = readSyncQueue();
+                Object.keys(q).forEach(k => { if (q[k].kind === 'session' && q[k].deviceId === deviceId) delete q[k]; });
+                writeSyncQueue(q);
+                queueSyncOp('sessions_clear', deviceId, deviceId, null);
+                if (navigator.onLine) flushSyncQueue();
             }
+            updateGamificationBar();
         }
 
         function openShareModal() {
@@ -1295,6 +1601,21 @@
                 refreshing = true;
                 window.location.reload();
             });
+
+            // استعادة المزامنة تلقائياً عند عودة الاتصال أو عند رجوع التطبيق للمقدمة
+            window.addEventListener('online', () => { refreshCloudIndicator(); flushSyncQueue(); });
+            window.addEventListener('offline', () => refreshCloudIndicator());
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && navigator.onLine && pendingSyncCount() > 0) flushSyncQueue();
+            });
+
+            // ترقية ترقيم قديم: من كان مسجّلاً قبل هذا التحديث لا يملك مفتاح مالك البيانات
+            const existingDeviceId = localStorage.getItem('zp_device_id');
+            if (existingDeviceId && !localStorage.getItem('zp_owner_device_id')) {
+                localStorage.setItem('zp_owner_device_id', existingDeviceId);
+            }
+            refreshCloudIndicator();
+            if (navigator.onLine) flushSyncQueue();
 
             checkNotificationBanner();
             checkExistingAuthSession();
