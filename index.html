@@ -1019,10 +1019,6 @@
             updateGamificationBar();
             renderTasks();
             renderForest();
-            const xpEl = document.getElementById('app-xp');
-            if (xpEl) xpEl.innerText = `${userXP} XP`;
-            const minsEl = document.getElementById('stat-total-mins');
-            if (minsEl) minsEl.innerText = `${totalFocusMins} دقيقة`;
             updateCloudIndicator('online');
             triggerConfetti();
         }
@@ -1105,8 +1101,6 @@
                     updateGamificationBar();
                     renderTasks();
                     renderForest();
-                    const xpEl = document.getElementById('app-xp');
-                    if (xpEl) xpEl.innerText = `${userXP} XP`;
                 });
             } else {
                 document.getElementById('landing-view').classList.remove('hidden');
@@ -1878,6 +1872,27 @@ ${scopedContent}`;
             }
         }
 
+        // الدالة المضافة حديثاً لحل مشكلة updateGamificationBar is not defined
+        function updateGamificationBar() {
+            const xpEl = document.getElementById('app-xp');
+            if (xpEl) xpEl.innerText = `${userXP} XP`;
+
+            const heartsEl = document.getElementById('path-hearts-count');
+            if (heartsEl) heartsEl.innerText = userHearts;
+
+            const streakEl = document.getElementById('path-streak-count');
+            if (streakEl) streakEl.innerText = `${userStreak} يوم`;
+
+            const minsEl = document.getElementById('stat-total-mins');
+            if (minsEl) minsEl.innerText = `${totalFocusMins} دقيقة`;
+
+            const treeEl = document.getElementById('stat-tree-count');
+            if (treeEl) treeEl.innerText = `${userForest.length} جلسة`;
+
+            const pomoStatEl = document.getElementById('pomo-count-stat');
+            if (pomoStatEl) pomoStatEl.innerText = `${pomoCompletedCount} جلسات`;
+        }
+
         function awardXP(amount) {
             userXP += amount;
             localStorage.setItem('zp_xp', userXP);
@@ -2176,9 +2191,8 @@ ${scopedContent}`;
 
         // ============ STARTUP ============
         document.addEventListener('DOMContentLoaded', () => {
-            if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
-            if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
-            if (document.getElementById('pomo-count-stat')) document.getElementById('pomo-count-stat').innerText = `${pomoCompletedCount} جلسات`;
+            updatePomoDisplay();
+            updateGamificationBar();
 
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -2205,8 +2219,6 @@ ${scopedContent}`;
             renderForest();
             const savedTab = localStorage.getItem('zp_active_tab');
             showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
-            updatePomoDisplay();
-            updateGamificationBar();
 
             if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
                 pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);
