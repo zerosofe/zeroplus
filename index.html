@@ -406,7 +406,7 @@
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
                 <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">المظهر ☀️️</span>
+                    <span class="text-[11px] hidden sm:inline">المظهر ☀️</span>
                 </button>
             </div>
         </div>
@@ -698,7 +698,57 @@
     </nav>
 
     <script>
-        // ============ 1. GLOBAL STATE & HELPERS (تعريف كافة المتغيرات في البداية) ============
+        // ============ 1. GLOBAL CURRICULUM DEFINITION (في أعلى السكريبت تماماً) ============
+        const GLOBAL_CURRICULUM = {
+            general: [
+                { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
+                    { unit_title: "الوحدة 1: التعارف والجمل الأساسية", nodes: [
+                        { id: "gen_a1_01", title: "التحيات وتقديم النفس", order: 1 },
+                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر", order: 2 },
+                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة", order: 3 }
+                    ]},
+                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
+                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم", order: 4 },
+                        { id: "gen_a1_05", title: "صفات المقارنة والوصف", order: 5 }
+                    ]}
+                ]},
+                { level: "A2", title_ar: "المستوى A2: المواقف الحياتية", units: [
+                    { unit_title: "الوحدة 3: الماضي والأحداث", nodes: [
+                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة", order: 6 },
+                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق", order: 7 }
+                    ]}
+                ]},
+                { level: "B1", title_ar: "المستوى B1: الطلاقة والسرد", units: [
+                    { unit_title: "الوحدة 4: الخبرات والمناقشة", nodes: [
+                        { id: "gen_b1_01", title: "المضارع التام والخبرات", order: 8 },
+                        { id: "gen_b1_02", title: "إبداء الرأي والمناقشة", order: 9 }
+                    ]}
+                ]}
+            ],
+            medical: [
+                { level: "A1", title_ar: "المستوى A1 (طبي): المصطلحات الأساسية", units: [
+                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
+                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
+                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy)", order: 2 },
+                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
+                    ]}
+                ]},
+                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات", units: [
+                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
+                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
+                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone)", order: 5 }
+                    ]}
+                ]},
+                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والجرعات", units: [
+                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
+                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation)", order: 6 },
+                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية", order: 7 }
+                    ]}
+                ]}
+            ]
+        };
+
+        // ============ 2. GLOBAL STATE & HELPERS ============
         let currentUserName = localStorage.getItem('zp_username') || '';
         let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
         let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
@@ -718,7 +768,6 @@
         let userForest = safeParse('zp_forest', []);
         if (!Array.isArray(userForest)) userForest = [];
 
-        // متغيرات المحاضرة والسلايدات (معرفة مسبقاً لمنع ReferenceError)
         let pdfSlidesData = safeParse('zp_slides_array', []);
         if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
         let lastManualLectureText = '';
@@ -760,7 +809,7 @@
             return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ============ 2. SUPABASE INITIALIZATION ============
+        // ============ 3. SUPABASE INITIALIZATION ============
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -785,9 +834,8 @@
             }
         }
 
-        // ============ 3. ROBUST AI CALL ENGINE ============
+        // ============ 4. AI CALL ENGINE ============
         async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
-            // المسار 1: استدعاء Edge Function المنشورة في Supabase
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
@@ -808,7 +856,6 @@
                 }
             }
 
-            // المسار 2: بديل مباشر وموثوق بنسبة 100%
             const DIRECT_GROQ_KEY = "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";
             for (let attempt = 0; attempt < 2; attempt++) {
                 try {
@@ -852,7 +899,7 @@
             return null;
         }
 
-        // ============ 4. AUTHENTICATION LOGIC ============
+        // ============ 5. AUTHENTICATION & PROFILE ============
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             const title = document.getElementById('auth-modal-title');
@@ -1286,7 +1333,7 @@
             } catch (e) {}
         }
 
-        // ============ 5. LECTURE & SLIDES ENGINE ============
+        // ============ 6. LECTURE & SLIDES ENGINE ============
         function syncManualLectureText() {
             const box = document.getElementById('lecture-text-content');
             const manual = box ? box.value.trim() : '';
@@ -1403,7 +1450,7 @@
             lastManualLectureText = '';
         }
 
-        // ============ 6. ACADEMIC AI PROCESSING & QUIZ GENERATION ============
+        // ============ 7. AI TASKS & ZERO CONSOLE ============
         async function executeAiCustomTask() {
             closeAiConfigModal();
             syncManualLectureText();
@@ -1492,7 +1539,7 @@ ${scopedContent}`;
         function copyQuizText(btn) {
             const container = btn.closest('.chat-bot-bubble');
             navigator.clipboard.writeText(container.innerText).then(() => {
-                btn.innerText = '✅ تم النسخ بنجاح';
+                btn.innerText = '✅ تم النسخ';
                 setTimeout(() => btn.innerText = '📋 نسخ ورقة الاختبار', 1500);
             });
         }
@@ -1614,7 +1661,7 @@ ${scopedContent}`;
             }
         }
 
-        // ============ 7. DUOLINGO LEARNING PATH ============
+        // ============ 8. DUOLINGO INTERACTIVE ENGINE ============
         async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
@@ -1821,7 +1868,7 @@ ${scopedContent}`;
             if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
 
-        // ============ 8. UI CONTROLS & INIT ============
+        // ============ 9. UI INITIALIZATION & SYNC ============
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
@@ -2127,7 +2174,7 @@ ${scopedContent}`;
             else copyShareText();
         }
 
-        // ============ STARTUP INITIALIZATION ============
+        // ============ STARTUP ============
         document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
             if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
