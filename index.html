@@ -126,7 +126,7 @@
         </div>
     </div>
 
-    <!-- ================= LANDING VIEW ================= -->
+    <!-- LANDING VIEW -->
     <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8 hidden">
         <div class="max-w-3xl w-full mx-auto space-y-8 my-auto py-10">
             <div class="text-center space-y-4">
@@ -208,7 +208,7 @@
         </div>
     </div>
 
-    <!-- ================= PROFILE MODAL ================= -->
+    <!-- PROFILE MODAL -->
     <div id="profile-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 space-y-5 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-3">
@@ -259,7 +259,7 @@
         </div>
     </div>
 
-    <!-- ================= INSTALL MODAL ================= -->
+    <!-- INSTALL MODAL -->
     <div id="install-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
             <div class="w-14 h-14 rounded-3xl bg-theme-sky text-white mx-auto flex items-center justify-center text-2xl shadow-glow-sky">
@@ -284,7 +284,7 @@
         </div>
     </div>
 
-    <!-- ================= AI CONFIG MODAL ================= -->
+    <!-- AI CONFIG MODAL -->
     <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-4">
@@ -406,7 +406,7 @@
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
                 <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">المظهر ☀️</span>
+                    <span class="text-[11px] hidden sm:inline">المظهر ☀️️</span>
                 </button>
             </div>
         </div>
@@ -698,7 +698,36 @@
     </nav>
 
     <script>
-        // ============ HELPERS ============
+        // ============ 1. GLOBAL STATE & HELPERS (تعريف كافة المتغيرات في البداية) ============
+        let currentUserName = localStorage.getItem('zp_username') || '';
+        let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
+        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
+        let nodeCrowns = safeParse('zp_node_crowns', {});
+        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
+        let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
+        let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
+        let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
+        let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
+        let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
+        let isLoginMode = false;
+        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
+        let isHintVisible = false;
+        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
+        let tasks = safeParse('zp_tasks', []);
+        if (!Array.isArray(tasks)) tasks = [];
+        let userForest = safeParse('zp_forest', []);
+        if (!Array.isArray(userForest)) userForest = [];
+
+        // متغيرات المحاضرة والسلايدات (معرفة مسبقاً لمنع ReferenceError)
+        let pdfSlidesData = safeParse('zp_slides_array', []);
+        if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
+        let lastManualLectureText = '';
+        let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
+        let selectedAiTaskType = 'mcq';
+
+        let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
+        let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
+
         function escapeHtml(v) {
             return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
@@ -731,7 +760,7 @@
             return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ============ SUPABASE ============
+        // ============ 2. SUPABASE INITIALIZATION ============
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -756,27 +785,74 @@
             }
         }
 
-        // ============ STATE ============
-        let currentUserName = localStorage.getItem('zp_username') || '';
-        let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
-        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
-        let nodeCrowns = safeParse('zp_node_crowns', {});
-        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
-        let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
-        let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
-        let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
-        let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
-        let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
-        let isLoginMode = false;
-        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
-        let isHintVisible = false;
-        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
-        let tasks = safeParse('zp_tasks', []);
-        if (!Array.isArray(tasks)) tasks = [];
-        let userForest = safeParse('zp_forest', []);
-        if (!Array.isArray(userForest)) userForest = [];
+        // ============ 3. ROBUST AI CALL ENGINE ============
+        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
+            // المسار 1: استدعاء Edge Function المنشورة في Supabase
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
+                        body: {
+                            messages: [
+                                { role: 'system', content: systemInstruction },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            jsonMode: !!jsonMode
+                        }
+                    });
+                    if (!error && data) {
+                        const content = data?.choices?.[0]?.message?.content || data?.content || (typeof data === 'string' ? data : null);
+                        if (content) return content;
+                    }
+                } catch (e) {
+                    console.warn("Supabase invoke failed, attempting direct Groq fallback:", e);
+                }
+            }
 
-        // ============ AUTH ============
+            // المسار 2: بديل مباشر وموثوق بنسبة 100%
+            const DIRECT_GROQ_KEY = "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";
+            for (let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${DIRECT_GROQ_KEY.trim()}`
+                        },
+                        body: JSON.stringify({
+                            model: "llama-3.3-70b-versatile",
+                            messages: [
+                                { role: 'system', content: systemInstruction },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            temperature: 0.2,
+                            ...(jsonMode ? { response_format: { type: "json_object" } } : {})
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        const content = data?.choices?.[0]?.message?.content;
+                        if (content) return content;
+                    }
+                } catch (err) {
+                    console.warn("Direct Groq attempt error:", err);
+                }
+            }
+            return null;
+        }
+
+        function parseAIJson(raw) {
+            if (!raw) return null;
+            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
+            try { return JSON.parse(clean); } catch(e) {}
+            const start = clean.indexOf('{');
+            const end = clean.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
+            }
+            return null;
+        }
+
+        // ============ 4. AUTHENTICATION LOGIC ============
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             const title = document.getElementById('auth-modal-title');
@@ -1210,73 +1286,124 @@
             } catch (e) {}
         }
 
-        // ============ AI ENGINE: SUPABASE EDGE FUNCTION WITH GROQ DIRECT FALLBACK ============
-        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
-            // المسار 1: محاولة الاستدعاء عبر Supabase Edge Function
-            if (supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
-                        body: {
-                            messages: [
-                                { role: 'system', content: systemInstruction },
-                                { role: 'user', content: userPrompt }
-                            ],
-                            jsonMode: !!jsonMode
-                        }
-                    });
-                    if (!error && data) {
-                        const content = data?.choices?.[0]?.message?.content || data?.content || (typeof data === 'string' ? data : null);
-                        if (content) return content;
-                    }
-                } catch (e) {
-                    console.warn("Supabase invoke failed, attempting resilient Groq fallback:", e);
-                }
+        // ============ 5. LECTURE & SLIDES ENGINE ============
+        function syncManualLectureText() {
+            const box = document.getElementById('lecture-text-content');
+            const manual = box ? box.value.trim() : '';
+            if (manual.length > 20 && manual !== lastManualLectureText) {
+                lastManualLectureText = manual;
+                currentLectureText = manual;
+                pdfSlidesData = [{ pageNum: 1, text: manual }];
+                safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                safeSetItem('zp_active_lecture_text', manual);
+                showLectureLoadedBadge();
             }
-
-            // المسار 2: بديل مباشر ومضمون بنسبة 100% يمنع توقف المنصة
-            const DIRECT_GROQ_KEY = "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";
-            for (let attempt = 0; attempt < 2; attempt++) {
-                try {
-                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${DIRECT_GROQ_KEY.trim()}`
-                        },
-                        body: JSON.stringify({
-                            model: "llama-3.3-70b-versatile",
-                            messages: [
-                                { role: 'system', content: systemInstruction },
-                                { role: 'user', content: userPrompt }
-                            ],
-                            temperature: 0.2,
-                            ...(jsonMode ? { response_format: { type: "json_object" } } : {})
-                        })
-                    });
-                    if (res.ok) {
-                        const data = await res.json().catch(() => ({}));
-                        const content = data?.choices?.[0]?.message?.content;
-                        if (content) return content;
-                    }
-                } catch (err) {
-                    console.warn("Direct Groq attempt error:", err);
-                }
-            }
-            return null;
         }
 
-        function parseAIJson(raw) {
-            if (!raw) return null;
-            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
-            try { return JSON.parse(clean); } catch(e) {}
-            const start = clean.indexOf('{');
-            const end = clean.lastIndexOf('}');
-            if (start !== -1 && end !== -1 && end > start) {
-                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
-            }
-            return null;
+        function showLectureLoadedBadge() {
+            const badge = document.getElementById('lecture-loaded-badge');
+            const info = document.getElementById('lecture-loaded-info');
+            if (badge) badge.classList.remove('hidden');
+            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
         }
 
+        function openAiConfigModal() {
+            syncManualLectureText();
+            if (!currentLectureText || currentLectureText.trim().length < 20) {
+                alert("يرجى تحميل ملف المحاضرة أولاً."); return;
+            }
+            const total = pdfSlidesData.length || 1;
+            const badge = document.getElementById('modal-slides-total-badge');
+            if (badge) badge.innerText = `الإجمالي: ${total}`;
+            document.getElementById('ai-config-modal').classList.remove('hidden');
+        }
+
+        function closeAiConfigModal() { document.getElementById('ai-config-modal').classList.add('hidden'); }
+
+        function setAiTaskType(type, btn) {
+            selectedAiTaskType = type;
+            document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5');
+            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5';
+            const countWrapper = document.getElementById('ai-question-count-wrapper');
+            if (countWrapper) countWrapper.classList.toggle('hidden', type === 'summary');
+        }
+
+        function toggleModalScopeInputs() {
+            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
+            const singleBox = document.getElementById('modal-single-slide-box');
+            const rangeBox = document.getElementById('modal-range-slide-box');
+            if (singleBox) singleBox.classList.toggle('hidden', scope !== 'single');
+            if (rangeBox) rangeBox.classList.toggle('hidden', scope !== 'range');
+        }
+
+        function getScopedLectureContent() {
+            if (pdfSlidesData.length === 0) return currentLectureText.trim();
+            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
+            if (scope === 'single') {
+                const num = parseInt(document.getElementById('modal-single-slide-num')?.value || '1', 10);
+                const found = pdfSlidesData.find(s => s.pageNum === num);
+                return found ? `[Slide ${num}]: ${found.text}` : `[Slide ${pdfSlidesData[0].pageNum}]: ${pdfSlidesData[0].text}`;
+            } else if (scope === 'range') {
+                const from = parseInt(document.getElementById('modal-range-slide-from')?.value || '1', 10);
+                const to = parseInt(document.getElementById('modal-range-slide-to')?.value || String(pdfSlidesData.length), 10);
+                return pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to).map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
+            }
+            return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
+        }
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const status = document.getElementById('upload-file-status');
+            if (status) status.innerText = `جاري الفحص: ${file.name}...`;
+            try {
+                if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
+                    if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
+                    const buf = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                    let fullText = "";
+                    pdfSlidesData = [];
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const tc = await page.getTextContent();
+                        const pText = tc.items.map(it => it.str).join(" ");
+                        pdfSlidesData.push({ pageNum: i, text: pText });
+                        fullText += `[Slide ${i}]: ${pText}\n\n`;
+                    }
+                    currentLectureText = fullText;
+                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                    safeSetItem('zp_active_lecture_text', fullText);
+                } else {
+                    const text = await file.text();
+                    currentLectureText = text;
+                    pdfSlidesData = [{ pageNum: 1, text: text }];
+                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
+                    safeSetItem('zp_active_lecture_text', text);
+                }
+                showLectureLoadedBadge();
+                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
+                e.target.value = '';
+                setTimeout(() => openAiConfigModal(), 400);
+            } catch(err) {
+                alert("تعذر استخراج المحتوى.");
+                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+            }
+        }
+
+        function togglePasteArea() { document.getElementById('lecture-paste-container')?.classList.toggle('hidden'); }
+
+        function resetLectureContext() {
+            currentLectureText = ""; pdfSlidesData = [];
+            localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
+            document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
+            const status = document.getElementById('upload-file-status');
+            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
+            const ta = document.getElementById('lecture-text-content');
+            if (ta) ta.value = '';
+            lastManualLectureText = '';
+        }
+
+        // ============ 6. ACADEMIC AI PROCESSING & QUIZ GENERATION ============
         async function executeAiCustomTask() {
             closeAiConfigModal();
             syncManualLectureText();
@@ -1460,7 +1587,7 @@ ${scopedContent}`;
                 feed.scrollTop = feed.scrollHeight;
             }
             let context = "";
-            if (currentLectureText && currentLectureText.trim().length > 20) {
+            if (typeof currentLectureText !== 'undefined' && currentLectureText && currentLectureText.trim().length > 20) {
                 const scoped = getScopedLectureContent();
                 context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
             }
@@ -1487,143 +1614,7 @@ ${scopedContent}`;
             }
         }
 
-        // ============ CURRICULUM & DUOLINGO LEARNING PATH ============
-        const GLOBAL_CURRICULUM = {
-            general: [
-                { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
-                    { unit_title: "الوحدة 1: التعارف والجمل الأساسية", nodes: [
-                        { id: "gen_a1_01", title: "التحيات وتقديم النفس", order: 1 },
-                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر", order: 2 },
-                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة", order: 3 }
-                    ]},
-                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
-                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم", order: 4 },
-                        { id: "gen_a1_05", title: "صفات المقارنة والوصف", order: 5 }
-                    ]}
-                ]},
-                { level: "A2", title_ar: "المستوى A2: المواقف الحياتية", units: [
-                    { unit_title: "الوحدة 3: الماضي والأحداث", nodes: [
-                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة", order: 6 },
-                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق", order: 7 }
-                    ]}
-                ]},
-                { level: "B1", title_ar: "المستوى B1: الطلاقة والسرد", units: [
-                    { unit_title: "الوحدة 4: الخبرات والمناقشة", nodes: [
-                        { id: "gen_b1_01", title: "المضارع التام والخبرات", order: 8 },
-                        { id: "gen_b1_02", title: "إبداء الرأي والمناقشة", order: 9 }
-                    ]}
-                ]}
-            ],
-            medical: [
-                { level: "A1", title_ar: "المستوى A1 (طبي): المصطلحات الأساسية", units: [
-                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
-                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
-                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy)", order: 2 },
-                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
-                    ]}
-                ]},
-                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات", units: [
-                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
-                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
-                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone)", order: 5 }
-                    ]}
-                ]},
-                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والجرعات", units: [
-                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
-                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation)", order: 6 },
-                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية", order: 7 }
-                    ]}
-                ]}
-            ]
-        };
-
-        function updateGamificationBar() {
-            const h = document.getElementById('path-hearts-count');
-            const s = document.getElementById('path-streak-count');
-            const sh = document.getElementById('session-hearts-count');
-            if (h) h.innerText = userHearts;
-            if (s) s.innerText = `${userStreak} يوم`;
-            if (sh) sh.innerText = userHearts;
-        }
-
-        function setLearningTrackMode(mode) {
-            currentLearningTrack = mode;
-            localStorage.setItem('zp_learning_track', mode);
-            const btnGen = document.getElementById('mode-btn-general');
-            const btnMed = document.getElementById('mode-btn-medical');
-            if (mode === 'general') {
-                btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-theme-sky text-white shadow-sm';
-                btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
-            } else {
-                btnMed.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-theme-teal text-white shadow-sm';
-                btnGen.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300';
-            }
-            syncProfileWithCloud();
-            renderPathTree();
-        }
-
-        function renderPathTree() {
-            const container = document.getElementById('learning-path-tree');
-            if (!container) return;
-            container.innerHTML = '';
-            const sections = GLOBAL_CURRICULUM[currentLearningTrack] || GLOBAL_CURRICULUM.general;
-            let nodeCounter = 1;
-            let totalCompletedNodes = 0;
-
-            sections.forEach((sec) => {
-                container.innerHTML += `<div class="w-full my-8 text-center">
-                    <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white shadow-sm">
-                        ${sec.title_ar} (${sec.level})
-                    </span>
-                </div>`;
-                sec.units.forEach((unit) => {
-                    container.innerHTML += `<div class="w-full flex items-center justify-center gap-3 my-5">
-                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                        <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
-                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                    </div>`;
-                    unit.nodes.forEach((node) => {
-                        const orderNum = nodeCounter;
-                        const crowns = nodeCrowns[node.id] || 0;
-                        const isUnlocked = orderNum <= unlockedNodeMax;
-                        const isCompleted = crowns >= 3;
-                        if (isCompleted) totalCompletedNodes++;
-                        const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
-                        let btnHtml = '';
-                        if (isCompleted) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
-                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
-                            </button>`;
-                        } else if (isUnlocked && crowns > 0) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
-                                <span class="text-xs font-black">${crowns + 1}/3</span>
-                            </button>`;
-                        } else if (isUnlocked) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-play mr-0.5 text-base"></i>
-                            </button>`;
-                        } else {
-                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50 cursor-not-allowed">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>`;
-                        }
-                        container.innerHTML += `<div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
-                            ${btnHtml}
-                            <div class="mt-2.5 text-center max-w-[240px]">
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
-                                <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
-                            </div>
-                        </div>`;
-                        nodeCounter++;
-                    });
-                });
-            });
-            const shareNodes = document.getElementById('share-nodes');
-            if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
-        }
-
+        // ============ 7. DUOLINGO LEARNING PATH ============
         async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
@@ -1768,6 +1759,69 @@ ${scopedContent}`;
             alert(crowns < 3 ? `أكملت المستوى ${crowns}/3 بنجاح!` : "🎉 تهانينا! حصلت على التاج الكامل (3/3) وفُتحت المحطة التالية.");
         }
 
+        function renderPathTree() {
+            const container = document.getElementById('learning-path-tree');
+            if (!container) return;
+            container.innerHTML = '';
+            const sections = GLOBAL_CURRICULUM[currentLearningTrack] || GLOBAL_CURRICULUM.general;
+            let nodeCounter = 1;
+            let totalCompletedNodes = 0;
+
+            sections.forEach((sec) => {
+                container.innerHTML += `<div class="w-full my-8 text-center">
+                    <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white shadow-sm">
+                        ${sec.title_ar} (${sec.level})
+                    </span>
+                </div>`;
+                sec.units.forEach((unit) => {
+                    container.innerHTML += `<div class="w-full flex items-center justify-center gap-3 my-5">
+                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
+                        <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
+                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
+                    </div>`;
+                    unit.nodes.forEach((node) => {
+                        const orderNum = nodeCounter;
+                        const crowns = nodeCrowns[node.id] || 0;
+                        const isUnlocked = orderNum <= unlockedNodeMax;
+                        const isCompleted = crowns >= 3;
+                        if (isCompleted) totalCompletedNodes++;
+                        const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
+                        let btnHtml = '';
+                        if (isCompleted) {
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
+                                <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
+                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
+                            </button>`;
+                        } else if (isUnlocked && crowns > 0) {
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
+                                <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
+                                <span class="text-xs font-black">${crowns + 1}/3</span>
+                            </button>`;
+                        } else if (isUnlocked) {
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
+                                <i class="fa-solid fa-play mr-0.5 text-base"></i>
+                            </button>`;
+                        } else {
+                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50 cursor-not-allowed">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>`;
+                        }
+                        container.innerHTML += `<div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
+                            ${btnHtml}
+                            <div class="mt-2.5 text-center max-w-[240px]">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
+                                <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
+                            </div>
+                        </div>`;
+                        nodeCounter++;
+                    });
+                });
+            });
+            const shareNodes = document.getElementById('share-nodes');
+            if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
+        }
+
+        // ============ 8. UI CONTROLS & INIT ============
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
@@ -1888,7 +1942,6 @@ ${scopedContent}`;
             }
         }
 
-        // ============ TODO ============
         function renderTasks() {
             const list = document.getElementById('todo-list');
             if (!list) return;
@@ -1945,10 +1998,6 @@ ${scopedContent}`;
             renderTasks();
             deleteTaskFromCloud(id);
         }
-
-        // ============ POMODORO ============
-        let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
-        let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
 
         function renderForest() {
             const grid = document.getElementById('forest-grid');
@@ -2059,122 +2108,6 @@ ${scopedContent}`;
             }
         }
 
-        function syncManualLectureText() {
-            const box = document.getElementById('lecture-text-content');
-            const manual = box ? box.value.trim() : '';
-            if (manual.length > 20 && manual !== lastManualLectureText) {
-                lastManualLectureText = manual;
-                currentLectureText = manual;
-                pdfSlidesData = [{ pageNum: 1, text: manual }];
-                safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                safeSetItem('zp_active_lecture_text', manual);
-                showLectureLoadedBadge();
-            }
-        }
-
-        function showLectureLoadedBadge() {
-            const badge = document.getElementById('lecture-loaded-badge');
-            const info = document.getElementById('lecture-loaded-info');
-            if (badge) badge.classList.remove('hidden');
-            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
-        }
-
-        function openAiConfigModal() {
-            syncManualLectureText();
-            if (!currentLectureText || currentLectureText.trim().length < 20) {
-                alert("يرجى تحميل ملف المحاضرة أولاً."); return;
-            }
-            const total = pdfSlidesData.length || 1;
-            const badge = document.getElementById('modal-slides-total-badge');
-            if (badge) badge.innerText = `الإجمالي: ${total}`;
-            document.getElementById('ai-config-modal').classList.remove('hidden');
-        }
-
-        function closeAiConfigModal() { document.getElementById('ai-config-modal').classList.add('hidden'); }
-
-        function setAiTaskType(type, btn) {
-            selectedAiTaskType = type;
-            document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5');
-            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5';
-            const countWrapper = document.getElementById('ai-question-count-wrapper');
-            if (countWrapper) countWrapper.classList.toggle('hidden', type === 'summary');
-        }
-
-        function toggleModalScopeInputs() {
-            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
-            const singleBox = document.getElementById('modal-single-slide-box');
-            const rangeBox = document.getElementById('modal-range-slide-box');
-            if (singleBox) singleBox.classList.toggle('hidden', scope !== 'single');
-            if (rangeBox) rangeBox.classList.toggle('hidden', scope !== 'range');
-        }
-
-        function getScopedLectureContent() {
-            if (pdfSlidesData.length === 0) return currentLectureText.trim();
-            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
-            if (scope === 'single') {
-                const num = parseInt(document.getElementById('modal-single-slide-num')?.value || '1', 10);
-                const found = pdfSlidesData.find(s => s.pageNum === num);
-                return found ? `[Slide ${num}]: ${found.text}` : `[Slide ${pdfSlidesData[0].pageNum}]: ${pdfSlidesData[0].text}`;
-            } else if (scope === 'range') {
-                const from = parseInt(document.getElementById('modal-range-slide-from')?.value || '1', 10);
-                const to = parseInt(document.getElementById('modal-range-slide-to')?.value || String(pdfSlidesData.length), 10);
-                return pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to).map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
-            }
-            return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
-        }
-
-        async function handleFileUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = `جاري الفحص: ${file.name}...`;
-            try {
-                if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
-                    if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
-                    const buf = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-                    let fullText = "";
-                    pdfSlidesData = [];
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const tc = await page.getTextContent();
-                        const pText = tc.items.map(it => it.str).join(" ");
-                        pdfSlidesData.push({ pageNum: i, text: pText });
-                        fullText += `[Slide ${i}]: ${pText}\n\n`;
-                    }
-                    currentLectureText = fullText;
-                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    safeSetItem('zp_active_lecture_text', fullText);
-                } else {
-                    const text = await file.text();
-                    currentLectureText = text;
-                    pdfSlidesData = [{ pageNum: 1, text: text }];
-                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    safeSetItem('zp_active_lecture_text', text);
-                }
-                showLectureLoadedBadge();
-                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
-                e.target.value = '';
-                setTimeout(() => openAiConfigModal(), 400);
-            } catch(err) {
-                alert("تعذر استخراج المحتوى.");
-                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
-            }
-        }
-
-        function togglePasteArea() { document.getElementById('lecture-paste-container')?.classList.toggle('hidden'); }
-
-        function resetLectureContext() {
-            currentLectureText = ""; pdfSlidesData = [];
-            localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
-            document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
-            const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
-            const ta = document.getElementById('lecture-text-content');
-            if (ta) ta.value = '';
-            lastManualLectureText = '';
-        }
-
         function openShareModal() {
             const shareXp = document.getElementById('share-xp');
             const shareTrees = document.getElementById('share-trees');
@@ -2194,7 +2127,7 @@ ${scopedContent}`;
             else copyShareText();
         }
 
-        // ============ STARTUP ============
+        // ============ STARTUP INITIALIZATION ============
         document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('app-xp')) document.getElementById('app-xp').innerText = `${userXP} XP`;
             if (document.getElementById('stat-total-mins')) document.getElementById('stat-total-mins').innerText = `${totalFocusMins} دقيقة`;
