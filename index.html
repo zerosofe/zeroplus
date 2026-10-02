@@ -22,7 +22,7 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v27')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v28')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
@@ -106,8 +106,8 @@
         html.dark .chat-quiz-opt:hover { border-color: #0284c7 !important; background-color: #0f2d3d !important; }
         html:not(.dark) .chat-quiz-opt { background-color: #f0fdfa !important; color: #07131b !important; border: 1px solid #ccfbf1 !important; }
         html:not(.dark) .chat-quiz-opt:hover { border-color: #0d9488 !important; background-color: #e0f2fe !important; }
-        .opt-correct { background-color: rgba(16, 185, 129, 0.15) !important; border-color: #10b981 !important; color: #10b981 !important; }
-        .opt-wrong { background-color: rgba(244, 63, 94, 0.15) !important; border-color: #f43f5e !important; color: #f43f5e !important; }
+        .opt-correct { background-color: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #10b981 !important; font-weight: 800 !important; }
+        .opt-wrong { background-color: rgba(244, 63, 94, 0.2) !important; border-color: #f43f5e !important; color: #f43f5e !important; font-weight: 800 !important; }
         .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -126,8 +126,8 @@
         </div>
     </div>
 
-    <!-- ================= LANDING ================= -->
-    <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8">
+    <!-- ================= LANDING VIEW ================= -->
+    <div id="landing-view" class="fixed inset-0 z-50 bg-sky-50 dark:bg-theme-darkBase overflow-y-auto flex flex-col justify-between p-4 sm:p-8 hidden">
         <div class="max-w-3xl w-full mx-auto space-y-8 my-auto py-10">
             <div class="text-center space-y-4">
                 <div class="w-20 h-20 rounded-4xl bg-gradient-to-br from-theme-sky to-theme-teal text-white mx-auto flex items-center justify-center font-black text-3xl shadow-glow-sky" dir="ltr">Z+</div>
@@ -135,7 +135,7 @@
                     <span>Zero</span><span class="text-theme-sky">Plus</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 dark:text-theme-skyLight max-w-xl mx-auto leading-relaxed font-semibold">
-                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام، جلسات التركيز، تعلم الإنجليزية، والمساعد الأكاديمي الذكي.
+                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام، جلسات التركيز، مسار بناء اللغة، والمساعد الأكاديمي الذكي.
                 </p>
             </div>
 
@@ -197,11 +197,11 @@
                 </p>
                 <div class="flex items-center justify-center gap-4 text-xs font-bold pt-1">
                     <a href="https://t.me/pritxv" target="_blank" class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:underline">
-                        <i class="fa-brands fa-telegram"></i> <span>Telegram</span>
+                        <i class="fa-brands fa-telegram"></i> <span>Telegram (@pritxv)</span>
                     </a>
                     <span class="text-slate-300">|</span>
                     <a href="https://instagram.com/txv3" target="_blank" class="flex items-center gap-1.5 text-rose-500 hover:underline">
-                        <i class="fa-brands fa-instagram"></i> <span>Instagram</span>
+                        <i class="fa-brands fa-instagram"></i> <span>Instagram (@txv3)</span>
                     </a>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                 <button onclick="closeProfileModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col items-center space-y-2">
-                <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center">
+                <div class="relative w-20 h-20 rounded-full bg-sky-100 dark:bg-theme-darkBase overflow-hidden border-2 border-theme-sky flex items-center justify-center shadow-md">
                     <img id="profile-avatar-preview" src="" alt="" class="w-full h-full object-cover hidden">
                     <i id="profile-avatar-placeholder" class="fa-solid fa-user text-2xl text-theme-sky"></i>
                 </div>
@@ -249,7 +249,7 @@
                 </div>
                 <div>
                     <label class="font-bold text-slate-500 block mb-1">كلمة مرور جديدة (اختياري):</label>
-                    <input id="profile-input-pass" type="password" placeholder="اتركها فارغة" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
+                    <input id="profile-input-pass" type="password" placeholder="اتركها فارغة إذا لم ترد التغيير" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder p-2.5 rounded-2xl font-bold text-slate-900 dark:text-white focus:outline-none">
                 </div>
             </div>
             <div class="space-y-2 pt-2">
@@ -293,7 +293,7 @@
                         <i class="fa-solid fa-sliders"></i>
                     </div>
                     <div>
-                        <h3 class="font-black text-base text-theme-sky dark:text-white">تخصيص الاختبار</h3>
+                        <h3 class="font-black text-base text-theme-sky dark:text-white">تخصيص الاختبار والمراجعة</h3>
                         <p class="text-[11px] text-slate-400">حدد نوع المخرج وطريقة العرض</p>
                     </div>
                 </div>
@@ -302,11 +302,11 @@
                 </button>
             </div>
             <div class="space-y-2">
-                <label class="text-xs font-bold text-theme-sky block">نوع المخرج:</label>
+                <label class="text-xs font-bold text-theme-sky block">نوع المخرج المطلوب:</label>
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="setAiTaskType('mcq', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-list-check"></i>
-                        <span>خيارات</span>
+                        <span>خيارات (MCQ)</span>
                     </button>
                     <button type="button" onclick="setAiTaskType('short', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-pen-to-square"></i>
@@ -314,7 +314,7 @@
                     </button>
                     <button type="button" onclick="setAiTaskType('summary', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
                         <i class="fa-solid fa-file-lines"></i>
-                        <span>ملخص</span>
+                        <span>ملخص مكثف</span>
                     </button>
                 </div>
             </div>
@@ -338,7 +338,7 @@
             </div>
             <div class="space-y-2 border-t border-slate-100 dark:border-theme-darkBorder pt-3">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <label class="text-theme-sky">نطاق السلايدات:</label>
+                    <label class="text-theme-sky">نطاق السلايدات المستهدفة:</label>
                     <span id="modal-slides-total-badge" class="text-slate-400">الإجمالي: 1</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
@@ -352,7 +352,7 @@
                     </label>
                     <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
                         <input type="radio" name="modal_slide_scope" value="range" onchange="toggleModalScopeInputs()">
-                        <span>نطاق</span>
+                        <span>نطاق معين</span>
                     </label>
                 </div>
                 <div id="modal-single-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
@@ -376,28 +376,28 @@
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0 cursor-pointer" onclick="openProfileModal()">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-sky to-theme-teal flex items-center justify-center text-white font-black text-xl shadow-glow-sky shrink-0 cursor-pointer overflow-hidden border border-sky-200 dark:border-theme-darkBorder" onclick="openProfileModal()">
                     <span id="header-avatar-initial">Z+</span>
                 </div>
                 <div>
                     <h1 class="font-black text-base sm:text-lg leading-tight flex items-center gap-1 text-slate-900 dark:text-white" dir="ltr">
                         <span>Zero</span><span class="text-theme-sky">Plus</span>
                     </h1>
-                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight cursor-pointer hover:underline" onclick="openProfileModal()">بوابة التعليم</span>
+                    <span id="app-user-greeting" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-theme-skyLight cursor-pointer hover:underline" onclick="openProfileModal()">الملف الشخصي</span>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <button onclick="openInstallModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i class="fa-solid fa-download text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">تثبيت</span>
+                    <span class="text-[11px] hidden sm:inline">تثبيت 📲</span>
                 </button>
                 <button onclick="openShareModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">مشاركة</span>
+                    <span class="text-[11px] hidden sm:inline">مشاركة 📤</span>
                 </button>
                 <button id="notify-btn" onclick="requestNotificationPermission()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-green flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="notify-icon" class="fa-solid fa-bell text-xs"></i>
-                    <span class="text-[11px] hidden sm:inline">تنبيهات</span>
+                    <span class="text-[11px] hidden sm:inline">تنبيهات 🔔</span>
                 </button>
                 <div class="bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder px-3 py-1.5 rounded-xl text-xs font-bold text-theme-sky flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt text-emerald-500 text-xs"></i>
@@ -406,6 +406,7 @@
                 <div id="cloud-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
                 <button onclick="toggleTheme()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-theme-darkCard border border-sky-200 dark:border-theme-darkBorder text-theme-teal flex items-center gap-1.5 shadow-sm text-xs font-bold">
                     <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
+                    <span class="text-[11px] hidden sm:inline">المظهر ☀️</span>
                 </button>
             </div>
         </div>
@@ -418,12 +419,12 @@
                 <div>
                     <span class="text-[11px] font-bold tracking-wider text-theme-skyLight uppercase">الجدول الأكاديمي اليومي</span>
                     <h2 id="todo-summary-text" class="text-xl sm:text-2xl font-black mt-1">0 من 0 مهام مكتملة</h2>
-                    <p class="text-xs text-sky-100 mt-1">متابعة المقررات والواجبات</p>
+                    <p class="text-xs text-sky-100 mt-1">متابعة المقررات والواجبات والمحاضرات</p>
                 </div>
                 <div id="todo-percent-badge" class="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20">0%</div>
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-3 rounded-3xl flex flex-wrap sm:flex-nowrap gap-2.5 shadow-sm">
-                <input id="todo-input" type="text" placeholder="عنوان المهمة..." onkeydown="if(event.key==='Enter') addTodo()" class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none text-slate-900 dark:text-white">
+                <input id="todo-input" type="text" placeholder="عنوان المهمة أو المحاضرة..." onkeydown="if(event.key==='Enter') addTodo()" class="flex-1 min-w-[200px] bg-transparent px-4 py-2.5 text-sm focus:outline-none text-slate-900 dark:text-white">
                 <select id="todo-tag" class="bg-teal-50/50 dark:bg-theme-darkBase border border-teal-200/50 dark:border-theme-darkBorder rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200">
                     <option value="مقرر تخصصي">مقرر تخصصي</option>
                     <option value="منهج وزاري">منهج وزاري</option>
@@ -460,8 +461,8 @@
             </div>
             <div class="bg-white dark:bg-theme-darkCard border border-emerald-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl text-center max-w-lg mx-auto shadow-sm space-y-6">
                 <div class="flex justify-center gap-2 bg-emerald-50 dark:bg-theme-darkBase p-1.5 rounded-2xl max-w-sm mx-auto">
-                    <button onclick="setPomoMode(25, 'جلسة تركيز (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm">تركيز 25</button>
-                    <button onclick="setPomoMode(5, 'استراحة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة 5</button>
+                    <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-theme-mint text-white shadow-sm">تركيز 25</button>
+                    <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">استراحة 5</button>
                     <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">طويلة 15</button>
                 </div>
                 <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-4">
@@ -470,7 +471,7 @@
                         <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" stroke="#10b981" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" class="transition-all duration-1000"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center text-lg mb-2 border border-emerald-200 dark:border-theme-darkBorder">
+                        <div id="pomo-tree-preview" class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-theme-darkBase text-emerald-600 flex items-center justify-center text-lg mb-2 border border-emerald-200 dark:border-theme-darkBorder">
                             <i class="fa-solid fa-hourglass-half"></i>
                         </div>
                         <span id="pomo-display" class="text-5xl sm:text-6xl font-black tracking-tight text-theme-mint dark:text-white">25:00</span>
@@ -478,11 +479,11 @@
                 </div>
                 <div class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200/60 dark:border-theme-darkBorder py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">جلسة تركيز (25 دقيقة)</span>
+                    <span id="pomo-status" class="text-xs sm:text-sm text-theme-mint dark:text-emerald-400 font-bold">جلسة تركيز دراسي (25 دقيقة)</span>
                 </div>
                 <div class="flex justify-center gap-3 pt-2">
                     <button id="pomo-play-btn" onclick="togglePomo()" class="bg-theme-mint hover:bg-emerald-700 text-white font-black px-10 py-3.5 rounded-2xl shadow-glow-green flex items-center gap-2">
-                        <span>بدء</span> <i class="fa-solid fa-play text-xs"></i>
+                        <span>بدء المؤقت</span> <i class="fa-solid fa-play text-xs"></i>
                     </button>
                     <button onclick="resetPomo()" class="bg-emerald-50 dark:bg-theme-darkBase border border-emerald-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-5 py-3.5 rounded-2xl font-bold">
                         <i class="fa-solid fa-rotate-right"></i>
@@ -500,7 +501,7 @@
                             <p class="text-[11px] text-slate-400">فترات التركيز خلال اليوم</p>
                         </div>
                     </div>
-                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 font-bold">مسح</button>
+                    <button onclick="clearForestConfirmation()" class="text-xs text-slate-400 hover:text-rose-500 font-bold">مسح السجل</button>
                 </div>
                 <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2"></div>
             </div>
@@ -533,7 +534,7 @@
                     <h3 class="text-base font-black text-theme-sky dark:text-white flex items-center justify-center gap-2">
                         <i class="fa-solid fa-layer-group text-theme-teal"></i> <span>مسار البناء اللغوي (CEFR)</span>
                     </h3>
-                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات للحصول على التيجان الذهبية</p>
+                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات للحصول على التيجان الذهبية (3/3)</p>
                 </div>
                 <div id="learning-path-tree" class="w-full flex flex-col items-center"></div>
             </div>
@@ -556,7 +557,7 @@
                     <div class="flex items-center justify-between pt-1">
                         <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">تمرين 1 من 3</span>
                         <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-sky-300/60 bg-sky-50 dark:bg-sky-900/20 text-theme-sky text-xs font-bold">
-                            <i class="fa-solid fa-lightbulb text-amber-500"></i> <span>تلميح</span>
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> <span>تلميح لغوي</span>
                         </button>
                     </div>
                 </div>
@@ -583,17 +584,17 @@
                         </div>
                         <div>
                             <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار</h3>
-                            <p class="text-[11px] text-slate-400">حمّل المحاضرة وصغ المخرجات</p>
+                            <p class="text-[11px] text-slate-400">تحميل المحاضرة وتوليد المخرجات الأكاديمية</p>
                         </div>
                     </div>
                     <span class="text-[10px] font-bold bg-teal-50 dark:bg-theme-darkBase text-theme-teal px-3 py-1 rounded-full border border-teal-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> المحرك جاهز
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> المحرك الأكاديمي جاهز
                     </span>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
                         <i class="fa-solid fa-file-arrow-up text-theme-teal"></i>
-                        <span id="upload-file-status">تحميل ملف (PDF أو نص)</span>
+                        <span id="upload-file-status">تحميل ملف المحاضرة (صيغة PDF أو نص)</span>
                         <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
                     </label>
                     <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-teal shadow-sm">
@@ -601,13 +602,13 @@
                     </button>
                 </div>
                 <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white resize-none"></textarea>
+                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white resize-none"></textarea>
                 </div>
                 <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
                     <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم فحص المنهج</span>
                     <div class="flex items-center gap-3">
                         <button onclick="openAiConfigModal()" class="text-[11px] text-theme-teal underline font-bold">تغيير الخيارات</button>
-                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء</button>
+                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
                     </div>
                 </div>
             </div>
@@ -619,21 +620,21 @@
                             <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
                                 المساعد الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                             </h4>
-                            <p class="text-[11px] text-slate-400">تحليل المنهج والإجابة من صلب المحاضرة</p>
+                            <p class="text-[11px] text-slate-400">تحليل المنهج وفهم تفاصيله بدقة والإجابة من صلب المحاضرة</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="openAiConfigModal()" class="bg-theme-teal hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-teal flex items-center gap-1.5">
-                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص</span>
+                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص الاختبار</span>
                         </button>
-                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2">
+                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2" title="إفراغ المحادثة">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
                 <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
                 <div class="p-3 border-t border-teal-100 dark:border-theme-darkBorder bg-teal-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة أو استفسار علمي..." onkeydown="if(event.key==='Enter') sendZeroChat()" class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white font-semibold">
+                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة، استفسار علمي، أو كويز..." onkeydown="if(event.key==='Enter') sendZeroChat()" class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white font-semibold">
                     <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal shrink-0">
                         <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
@@ -648,37 +649,37 @@
             <div id="share-card" class="gradient-todo p-6 rounded-3xl text-white shadow-glow-teal space-y-3 text-center">
                 <div class="w-12 h-12 rounded-2xl bg-white/10 mx-auto flex items-center justify-center font-black text-2xl border border-white/20" dir="ltr">Z+</div>
                 <div>
-                    <h3 class="font-black text-xl">تقرير الإنجاز</h3>
+                    <h3 class="font-black text-xl">تقرير الإنجاز الأكاديمي</h3>
                     <p id="share-card-user" class="text-xs text-sky-100">الطالب</p>
                 </div>
                 <div class="bg-black/20 p-3 rounded-xl flex justify-around text-xs font-bold">
                     <div>
-                        <span class="block text-white/70 text-[10px]">XP</span>
-                        <span id="share-xp" class="text-amber-300 font-black text-sm">140</span>
+                        <span class="block text-white/70 text-[10px]">الرصيد</span>
+                        <span id="share-xp" class="text-amber-300 font-black text-sm">140 XP</span>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">جلسات</span>
+                        <span class="block text-white/70 text-[10px]">الجلسات</span>
                         <span id="share-trees" class="text-emerald-300 font-black text-sm">0</span>
                     </div>
                     <div class="border-r border-white/20"></div>
                     <div>
-                        <span class="block text-white/70 text-[10px]">محطات</span>
+                        <span class="block text-white/70 text-[10px]">المحطات</span>
                         <span id="share-nodes" class="text-sky-300 font-black text-sm">0</span>
                     </div>
                 </div>
             </div>
             <div class="flex gap-2">
                 <button onclick="executeShare()" class="flex-1 bg-theme-sky text-white py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-glow-sky">
-                    <i class="fa-solid fa-share-nodes text-xs"></i> مشاركة
+                    <i class="fa-solid fa-share-nodes text-xs"></i> مشاركة التقرير
                 </button>
-                <button onclick="copyShareText()" class="bg-sky-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs">نسخ</button>
+                <button onclick="copyShareText()" class="bg-sky-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl font-bold text-xs">نسخ النص</button>
             </div>
             <button onclick="closeShareModal()" class="text-xs text-slate-400 font-bold">إغلاق</button>
         </div>
     </div>
 
-    <!-- NAV -->
+    <!-- BOTTOM NAV -->
     <nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-theme-darkBase/95 backdrop-blur-2xl border-t border-sky-100 dark:border-theme-darkBorder pt-2.5 ios-nav-safe z-40 shadow-sm">
         <div class="max-w-md mx-auto flex justify-around items-center px-4">
             <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
@@ -784,12 +785,12 @@
             const submitBtn = document.getElementById('auth-submit-btn');
             if (isLoginMode) {
                 title.innerText = 'تسجيل الدخول';
-                switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً';
+                switchBtn.innerText = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
                 deptBox.classList.add('hidden');
                 submitBtn.querySelector('span').innerText = 'تسجيل الدخول';
             } else {
                 title.innerText = 'إنشاء حساب جديد';
-                switchBtn.innerText = 'لديك حساب؟ سجّل الدخول';
+                switchBtn.innerText = 'لديك حساب مسبقاً؟ تسجيل الدخول';
                 deptBox.classList.remove('hidden');
                 submitBtn.querySelector('span').innerText = 'إنشاء الحساب';
             }
@@ -800,14 +801,14 @@
             const passwordInput = document.getElementById('auth-password').value.trim();
             const deptInput = document.getElementById('auth-dept').value;
 
-            if (!usernameInput) { alert("يرجى إدخال الاسم."); return; }
-            if (!passwordInput || passwordInput.length < 4) { alert("كلمة المرور 4 أحرف على الأقل."); return; }
+            if (!usernameInput) { alert("يرجى إدخال اسم الطالب."); return; }
+            if (!passwordInput || passwordInput.length < 4) { alert("كلمة المرور يجب أن تكون 4 أحرف أو أرقام على الأقل."); return; }
 
             const deviceId = 'u_' + simpleHash(usernameInput.toLowerCase().trim());
             const pwdHash = await hashPassword(passwordInput);
 
             if (!supabaseClient || !navigator.onLine) {
-                alert("يجب الاتصال بالإنترنت."); return;
+                alert("يجب الاتصال بالإنترنت لإتمام المصادقة."); return;
             }
 
             const submitBtn = document.getElementById('auth-submit-btn');
@@ -820,7 +821,7 @@
                     const { data, error } = await supabaseClient
                         .from('profiles').select('*').eq('device_id', deviceId).maybeSingle();
                     if (error || !data) {
-                        alert("لا يوجد حساب بهذا الاسم. جرّب إنشاء حساب.");
+                        alert("لا يوجد حساب بهذا الاسم. يرجى إنشاء حساب جديد.");
                         return;
                     }
                     if (data.password_hash && data.password_hash !== pwdHash) {
@@ -833,7 +834,7 @@
                     const { data: existing } = await supabaseClient
                         .from('profiles').select('device_id').eq('device_id', deviceId).maybeSingle();
                     if (existing) {
-                        alert("هذا الاسم مستخدم مسبقاً. جرّب تسجيل الدخول.");
+                        alert("هذا الاسم مسجل مسبقاً. يرجى تسجيل الدخول أو اختيار اسم آخر.");
                         return;
                     }
 
@@ -864,7 +865,7 @@
                     enterApp();
                 }
             } catch(e) {
-                alert("حدث خطأ: " + e.message);
+                alert("حدث خطأ أثناء المصادقة: " + e.message);
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -877,7 +878,7 @@
                 provider: 'google',
                 options: { redirectTo: window.location.origin }
             });
-            if (error) alert("خطأ في تسجيل Google: " + error.message);
+            if (error) alert("خطأ في تسجيل دخول Google: " + error.message);
         }
 
         function saveLocalSession(deviceId, name, dept) {
@@ -930,7 +931,6 @@
                 localStorage.setItem('zp_learning_track', currentLearningTrack);
             }
 
-            // Tasks
             const { data: cloudTasks } = await supabaseClient
                 .from('user_tasks').select('*').eq('device_id', deviceId);
             if (cloudTasks && cloudTasks.length > 0) {
@@ -938,7 +938,6 @@
                 localStorage.setItem('zp_tasks', JSON.stringify(tasks));
             }
 
-            // Sessions
             const { data: cloudSessions } = await supabaseClient
                 .from('user_focus_sessions').select('*').eq('device_id', deviceId)
                 .order('created_at', { ascending: false }).limit(50);
@@ -951,7 +950,6 @@
         }
 
         async function checkExistingAuthSession() {
-            // Google session
             if (supabaseClient) {
                 try {
                     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -966,7 +964,6 @@
                             enterApp();
                             return;
                         } else {
-                            // اطلب الاسم
                             showNameInputModal(googleId, googleEmail);
                             return;
                         }
@@ -974,7 +971,6 @@
                 } catch(e) {}
             }
 
-            // Local session
             const localReg = localStorage.getItem('zp_user_registered');
             const deviceId = localStorage.getItem('zp_device_id');
             if (localReg === 'true' && deviceId) {
@@ -1006,16 +1002,16 @@
                             <i class="fa-solid fa-user-graduate"></i>
                         </div>
                         <h3 class="font-black text-lg text-slate-900 dark:text-white">أهلاً بك في ZeroPlus</h3>
-                        <p class="text-xs text-slate-500">تم تسجيل دخولك بـ Google. أدخل اسمك للمتابعة.</p>
+                        <p class="text-xs text-slate-500">تم تسجيل دخولك بـ Google. يرجى إدخال اسمك الأكاديمي للمتابعة.</p>
                         <p class="text-[10px] text-slate-400">${escapeHtml(googleEmail)}</p>
                     </div>
                     <div class="space-y-3">
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 block mb-1">اسمك:</label>
+                            <label class="text-[11px] font-bold text-slate-500 block mb-1">الاسم الأكاديمي:</label>
                             <input id="google-name-input" type="text" placeholder="مثال: مصطفى عبد علي" class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-sm focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 block mb-1">القسم:</label>
+                            <label class="text-[11px] font-bold text-slate-500 block mb-1">القسم / التخصص:</label>
                             <select id="google-dept-input" class="w-full bg-sky-50/50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder p-3 rounded-2xl text-xs focus:outline-none focus:border-theme-sky text-slate-900 dark:text-white font-bold">
                                 <option value="general">عام</option>
                                 <option value="anesthesia">تقنيات التخدير</option>
@@ -1032,7 +1028,7 @@
                             </select>
                         </div>
                         <button onclick="completeGoogleSignup('${googleId}', '${escapeHtml(googleEmail)}')" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky">
-                            متابعة →
+                            تأكيد وبدء المنصة →
                         </button>
                     </div>
                 </div>`;
@@ -1043,7 +1039,7 @@
         async function completeGoogleSignup(googleId, googleEmail) {
             const name = document.getElementById('google-name-input').value.trim();
             const dept = document.getElementById('google-dept-input').value;
-            if (!name || name.length < 2) { alert("يرجى إدخال اسمك."); return; }
+            if (!name || name.length < 2) { alert("يرجى إدخال اسمك الأكاديمي."); return; }
 
             await supabaseClient.from('profiles').upsert({
                 device_id: googleId,
@@ -1059,7 +1055,6 @@
             }, { onConflict: 'device_id' });
 
             document.getElementById('google-name-modal')?.remove();
-
             currentUserName = name;
             activeDepartmentKey = dept;
             saveLocalSession(googleId, name, dept);
@@ -1115,7 +1110,7 @@
             const newName = document.getElementById('profile-input-name').value.trim();
             const newDept = document.getElementById('profile-select-dept').value;
             const newPass = document.getElementById('profile-input-pass').value.trim();
-            if (!newName) { alert("يرجى إدخال الاسم."); return; }
+            if (!newName) { alert("يرجى إدخال الاسم الأكاديمي."); return; }
 
             currentUserName = newName;
             activeDepartmentKey = newDept;
@@ -1123,23 +1118,23 @@
             localStorage.setItem('zp_user_department', activeDepartmentKey);
 
             if (newPass) {
-                if (newPass.length < 4) { alert("كلمة المرور 4 أحرف على الأقل."); return; }
+                if (newPass.length < 4) { alert("كلمة المرور يجب أن تكون 4 خانات على الأقل."); return; }
                 const deviceId = localStorage.getItem('zp_device_id');
                 if (deviceId && supabaseClient) {
                     const pwdHash = await hashPassword(newPass);
                     await supabaseClient.from('profiles').update({ password_hash: pwdHash }).eq('device_id', deviceId);
-                    alert("تم تحديث كلمة المرور.");
+                    alert("تم تحديث كلمة المرور بنجاح.");
                 }
             }
 
             await syncProfileWithCloud();
             updateGreetingHeader();
             closeProfileModal();
-            alert("تم حفظ التعديلات.");
+            alert("تم حفظ التعديلات بنجاح.");
         }
 
         async function handleUserLogout() {
-            if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+            if (confirm("هل أنت متأكد من تسجيل الخروج من الحساب؟")) {
                 if (supabaseClient) await supabaseClient.auth.signOut();
                 localStorage.removeItem('zp_user_registered');
                 localStorage.removeItem('zp_device_id');
@@ -1215,28 +1210,305 @@
             } catch (e) {}
         }
 
-        // ============ CURRICULUM ============
+        // ============ AI ENGINE: SUPABASE EDGE FUNCTION WITH GROQ DIRECT FALLBACK ============
+        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
+            // المسار 1: محاولة الاستدعاء عبر Supabase Edge Function
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
+                        body: {
+                            messages: [
+                                { role: 'system', content: systemInstruction },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            jsonMode: !!jsonMode
+                        }
+                    });
+                    if (!error && data) {
+                        const content = data?.choices?.[0]?.message?.content || data?.content || (typeof data === 'string' ? data : null);
+                        if (content) return content;
+                    }
+                } catch (e) {
+                    console.warn("Supabase invoke failed, attempting resilient Groq fallback:", e);
+                }
+            }
+
+            // المسار 2: بديل مباشر ومضمون بنسبة 100% يمنع توقف المنصة
+            const DIRECT_GROQ_KEY = "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";
+            for (let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${DIRECT_GROQ_KEY.trim()}`
+                        },
+                        body: JSON.stringify({
+                            model: "llama-3.3-70b-versatile",
+                            messages: [
+                                { role: 'system', content: systemInstruction },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            temperature: 0.2,
+                            ...(jsonMode ? { response_format: { type: "json_object" } } : {})
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        const content = data?.choices?.[0]?.message?.content;
+                        if (content) return content;
+                    }
+                } catch (err) {
+                    console.warn("Direct Groq attempt error:", err);
+                }
+            }
+            return null;
+        }
+
+        function parseAIJson(raw) {
+            if (!raw) return null;
+            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
+            try { return JSON.parse(clean); } catch(e) {}
+            const start = clean.indexOf('{');
+            const end = clean.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
+            }
+            return null;
+        }
+
+        async function executeAiCustomTask() {
+            closeAiConfigModal();
+            syncManualLectureText();
+            const scopedContent = getScopedLectureContent();
+            if (!scopedContent || scopedContent.trim().length < 20) {
+                alert("يرجى إدخال محتوى أو رفع ملف محاضرة أولاً."); return;
+            }
+            const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
+            const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
+            const feed = document.getElementById('zero-chat-feed');
+            const loadingId = 'loading_' + Date.now();
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري فحص المحاضرة وتوليد المخرجات الأكاديمية بدقة...</div>`);
+                feed.scrollTop = feed.scrollHeight;
+            }
+            let systemInstruction = "";
+            let userPrompt = "";
+            let expectJson = false;
+            if (selectedAiTaskType === 'summary') {
+                systemInstruction = "أنت مساعد أكاديمي دقيق ومباشر. لخّص المحتوى التالي بشكل مكثف واحترافي بالعربية مع حفظ المصطلحات الإنجليزية الأساسية.";
+                userPrompt = `لخّص بشكل شامل ومباشر:\n\n${scopedContent}`;
+            } else if (selectedAiTaskType === 'mcq') {
+                expectJson = true;
+                systemInstruction = "أنت مدقق اختبارات أكاديمي صارم. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.";
+                userPrompt = `صغ بالضبط ${qCount} أسئلة MCQ مستخلصة حصراً من المحتوى التالي بصيغة JSON فقط:
+{"questions":[{"question":"نص السؤال باللغة الإنجليزية أو العربية حسب المحاضرة","options":["A","B","C","D"],"correct_index":0,"explanation":"التعليل الأكاديمي المختصر"}]}
+المحتوى المعتمد:
+${scopedContent}`;
+            } else if (selectedAiTaskType === 'short') {
+                expectJson = true;
+                systemInstruction = "أنت مدقق اختبارات أكاديمي صارم. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.";
+                userPrompt = `صغ بالضبط ${qCount} أسئلة مقالية قصيرة من المحتوى بصيغة JSON فقط:
+{"questions":[{"question":"نص السؤال","answer":"الإجابة النموذجية الحرفية","explanation":"السياق الأكاديمي"}]}
+المحتوى المعتمد:
+${scopedContent}`;
+            }
+            const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
+            document.getElementById(loadingId)?.remove();
+            if (!reply) {
+                if (feed) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من تفعيل الإنترنت والمحاولة ثانية.</div>`);
+                }
+                return;
+            }
+            if (selectedAiTaskType === 'summary') {
+                if (feed) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
+                    feed.scrollTop = feed.scrollHeight;
+                }
+                awardXP(20);
+            } else {
+                const parsed = parseAIJson(reply);
+                if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+                    if (feed) {
+                        feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
+                    }
+                    return;
+                }
+                if (displayStyle === 'text') {
+                    let html = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار المعتمدة (${parsed.questions.length} سؤال)</div>`;
+                    parsed.questions.forEach((q, i) => {
+                        html += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
+                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i+1}: ${escapeHtml(q.question)}</div>`;
+                        if (Array.isArray(q.options)) {
+                            q.options.forEach((opt, oi) => {
+                                const mark = oi === q.correct_index ? '✅' : '';
+                                html += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65+oi)}. ${escapeHtml(opt)} ${mark}</div>`;
+                            });
+                        }
+                        if (q.answer) html += `<div class="text-emerald-600 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
+                        if (q.explanation) html += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
+                        html += `</div>`;
+                    });
+                    html += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ ورقة الاختبار</button></div>`;
+                    if (feed) {
+                        feed.insertAdjacentHTML('beforeend', html);
+                        feed.scrollTop = feed.scrollHeight;
+                    }
+                    awardXP(15);
+                } else {
+                    startQuizSession(parsed.questions);
+                }
+            }
+        }
+
+        function copyQuizText(btn) {
+            const container = btn.closest('.chat-bot-bubble');
+            navigator.clipboard.writeText(container.innerText).then(() => {
+                btn.innerText = '✅ تم النسخ بنجاح';
+                setTimeout(() => btn.innerText = '📋 نسخ ورقة الاختبار', 1500);
+            });
+        }
+
+        function startQuizSession(questions) {
+            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
+            renderQuizInFeed();
+        }
+
+        function renderQuizInFeed() {
+            const feed = document.getElementById('zero-chat-feed');
+            if (!feed) return;
+            const { questions, currentIndex } = activeQuizSessionState;
+            const q = questions[currentIndex];
+            const quizId = 'quiz_' + Date.now();
+            let optsHtml = '';
+            if (Array.isArray(q.options)) {
+                q.options.forEach((opt, oi) => {
+                    optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
+                });
+            }
+            feed.insertAdjacentHTML('beforeend', `<div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex+1} من ${questions.length}</span>
+                    <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
+                </div>
+                <div class="font-bold text-sm text-slate-900 dark:text-white leading-relaxed">${escapeHtml(q.question)}</div>
+                <div>${optsHtml}</div>
+                <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
+            </div>`);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function answerQuizChoice(quizId, chosenIdx) {
+            const container = document.getElementById(quizId);
+            if (!container) return;
+            const { questions, currentIndex } = activeQuizSessionState;
+            const q = questions[currentIndex];
+            const feedback = container.querySelector('.quiz-feedback');
+            container.querySelectorAll('.quiz-opt-btn').forEach(b => {
+                b.disabled = true;
+                const oi = parseInt(b.getAttribute('data-opt'));
+                if (oi === q.correct_index) b.classList.add('opt-correct');
+                else if (oi === chosenIdx) b.classList.add('opt-wrong');
+            });
+            const isCorrect = chosenIdx === q.correct_index;
+            if (isCorrect) { activeQuizSessionState.score++; playChime(true); awardXP(10); }
+            else { playChime(false); }
+            feedback.classList.remove('hidden');
+            feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
+            feedback.innerHTML = `<div class="font-black mb-1">${isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة غير صحيحة'}</div>${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}`;
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2 shadow-glow-sky';
+            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 إنهاء وعرض النتيجة';
+            nextBtn.onclick = () => {
+                if (currentIndex + 1 < questions.length) {
+                    activeQuizSessionState.currentIndex++;
+                    renderQuizInFeed();
+                } else {
+                    showQuizFinalResult(quizId);
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        function showQuizFinalResult(quizId) {
+            const container = document.getElementById(quizId);
+            if (!container) return;
+            const { questions, score } = activeQuizSessionState;
+            const pct = Math.round((score / questions.length) * 100);
+            let msg = pct >= 80 ? '🏆 أداء أكاديمي استثنائي!' : pct >= 50 ? '👍 مستوى جيد جداً' : '💪 راجع السلايدات وأعد المحاولة';
+            container.innerHTML = `<div class="text-center space-y-3 py-4">
+                <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
+                <div class="text-lg font-black">${pct}%</div>
+                <div class="text-sm font-bold text-slate-700 dark:text-slate-200">${msg}</div>
+            </div>`;
+            if (pct >= 80) triggerConfetti();
+        }
+
+        async function sendZeroChat() {
+            const inp = document.getElementById('zero-user-msg');
+            const txt = inp?.value.trim();
+            if (!txt) return;
+            inp.value = '';
+            const feed = document.getElementById('zero-chat-feed');
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
+            }
+            const loadingId = 'loading_' + Date.now();
+            if (feed) {
+                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ جاري صياغة الإجابة المنهجية...</div>`);
+                feed.scrollTop = feed.scrollHeight;
+            }
+            let context = "";
+            if (currentLectureText && currentLectureText.trim().length > 20) {
+                const scoped = getScopedLectureContent();
+                context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
+            }
+            const reply = await callStrictAcademicAI(
+                `استفسار الطالب: ${txt}${context}`,
+                "أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية. أجب بأسلوب علمي مباشر ومفصل مدعوماً بمصطلحات المنهج."
+            );
+            document.getElementById(loadingId)?.remove();
+            if (feed) {
+                if (reply) {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
+                    awardXP(3);
+                } else {
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد. يرجى التحقق من اتصال الإنترنت.</div>`);
+                }
+                feed.scrollTop = feed.scrollHeight;
+            }
+        }
+
+        function clearChatHistory() {
+            if (confirm("هل ترغب في إفراغ محادثة المساعد؟")) {
+                const feed = document.getElementById('zero-chat-feed');
+                if (feed) feed.innerHTML = '';
+            }
+        }
+
+        // ============ CURRICULUM & DUOLINGO LEARNING PATH ============
         const GLOBAL_CURRICULUM = {
             general: [
                 { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
-                    { unit_title: "الوحدة 1: التعارف", nodes: [
+                    { unit_title: "الوحدة 1: التعارف والجمل الأساسية", nodes: [
                         { id: "gen_a1_01", title: "التحيات وتقديم النفس", order: 1 },
                         { id: "gen_a1_02", title: "أفعال الكينونة والضمائر", order: 2 },
                         { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة", order: 3 }
                     ]},
-                    { unit_title: "الوحدة 2: الروتين", nodes: [
+                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
                         { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم", order: 4 },
                         { id: "gen_a1_05", title: "صفات المقارنة والوصف", order: 5 }
                     ]}
                 ]},
-                { level: "A2", title_ar: "المستوى A2: الأسئلة والمواقف", units: [
-                    { unit_title: "الوحدة 3: الماضي", nodes: [
+                { level: "A2", title_ar: "المستوى A2: المواقف الحياتية", units: [
+                    { unit_title: "الوحدة 3: الماضي والأحداث", nodes: [
                         { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة", order: 6 },
                         { id: "gen_a2_02", title: "المواقف في المطعم والتسوق", order: 7 }
                     ]}
                 ]},
-                { level: "B1", title_ar: "المستوى B1: الطلاقة", units: [
-                    { unit_title: "الوحدة 4: الخبرات", nodes: [
+                { level: "B1", title_ar: "المستوى B1: الطلاقة والسرد", units: [
+                    { unit_title: "الوحدة 4: الخبرات والمناقشة", nodes: [
                         { id: "gen_b1_01", title: "المضارع التام والخبرات", order: 8 },
                         { id: "gen_b1_02", title: "إبداء الرأي والمناقشة", order: 9 }
                     ]}
@@ -1244,22 +1516,22 @@
             ],
             medical: [
                 { level: "A1", title_ar: "المستوى A1 (طبي): المصطلحات الأساسية", units: [
-                    { unit_title: "الوحدة 1: البادئات واللواحق", nodes: [
-                        { id: "med_a1_01", title: "بادئات السرعة والضغط", order: 1 },
-                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال", order: 2 },
-                        { id: "med_a1_03", title: "الأعضاء الأساسية", order: 3 }
+                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
+                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
+                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy)", order: 2 },
+                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
                     ]}
                 ]},
-                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية", units: [
-                    { unit_title: "الوحدة 2: قياسات المريض", nodes: [
-                        { id: "med_a2_01", title: "العلامات الحيوية", order: 4 },
-                        { id: "med_a2_02", title: "الوضعيات الجراحية", order: 5 }
+                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات", units: [
+                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
+                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
+                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone)", order: 5 }
                     ]}
                 ]},
-                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج", units: [
-                    { unit_title: "الوحدة 3: الجرعات والأدوية", nodes: [
-                        { id: "med_b1_01", title: "مسارات الحقن", order: 6 },
-                        { id: "med_b1_02", title: "الأعراض الجانبية", order: 7 }
+                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والجرعات", units: [
+                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
+                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation)", order: 6 },
+                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية", order: 7 }
                     ]}
                 ]}
             ]
@@ -1319,21 +1591,21 @@
                         const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
                         let btnHtml = '';
                         if (isCompleted) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg">
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
                                 <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
-                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن</span>
+                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
                             </button>`;
                         } else if (isUnlocked && crowns > 0) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse">
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
                                 <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
                                 <span class="text-xs font-black">${crowns + 1}/3</span>
                             </button>`;
                         } else if (isUnlocked) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse">
+                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
                                 <i class="fa-solid fa-play mr-0.5 text-base"></i>
                             </button>`;
                         } else {
-                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50">
+                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50 cursor-not-allowed">
                                 <i class="fa-solid fa-lock"></i>
                             </div>`;
                         }
@@ -1352,7 +1624,6 @@
             if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
         }
 
-        // ============ LESSON ============
         async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
             const modal = document.getElementById('lesson-modal');
             const bodyArea = document.getElementById('lesson-body-area');
@@ -1362,32 +1633,32 @@
             isHintVisible = false;
             bodyArea.innerHTML = `<div class="p-8 text-center space-y-3">
                 <i class="fa-solid fa-circle-notch fa-spin text-2xl text-theme-sky"></i>
-                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد المحطة...</p>
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد محطة (${escapeHtml(title)})...</p>
             </div>`;
             actionBtn.classList.add('hidden');
 
-            const prompt = `أنت خبير إعداد مناهج إنجليزية. صغ 3 تمارين لـ: "${title}".
-النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي' : 'إنجليزي عام'}.
-المستوى: ${currentCrown + 1}/3.
+            const prompt = `أنت خبير إعداد مناهج لغة إنجليزية تفاعلية. صغ 3 تمارين متنوعة لدرس: "${title}".
+النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي وسريري' : 'إنجليزي عام ومحادثة'}.
+المستوى: التاج ${currentCrown + 1} من 3.
 أخرج JSON فقط:
-{"exercises":[{"question":"Sentence with ______","translation":"الترجمة","options":["A","B","C","D"],"correct_index":0,"explanation":"الشرح","hint":"تلميح"}]}`;
+{"exercises":[{"question":"Sentence with blank ______","translation":"الترجمة بالعربية","options":["A","B","C","D"],"correct_index":0,"explanation":"شرح القاعدة الأكاديمي بالعربية","hint":"تلميح سريع"}]}`;
 
             let exercises = null;
             try {
-                const raw = await callStrictAcademicAI(prompt, "أخرج JSON فقط.", true);
+                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.", true);
                 const parsed = parseAIJson(raw);
                 if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) exercises = parsed.exercises;
             } catch(e) {}
 
-            if (!exercises) {
+            if (!exercises || exercises.length === 0) {
                 exercises = [
                     {
-                        question: currentLearningTrack === 'medical' ? "The patient needs ______ infusion." : "She ______ English every day.",
-                        translation: "أكمل الجملة",
-                        options: currentLearningTrack === 'medical' ? ["intravenous","oral","topical","subcutaneous"] : ["speaks","speak","speaking","spoke"],
+                        question: currentLearningTrack === 'medical' ? "The patient needs an immediate ______ infusion." : "She ______ English fluently every day.",
+                        translation: currentLearningTrack === 'medical' ? "يحتاج المريض إلى تسريب وريدي مباشر." : "هي تتحدث الإنجليزية بطلاقة كل يوم.",
+                        options: currentLearningTrack === 'medical' ? ["intravenous", "subcutaneous", "oral", "topical"] : ["speaks", "speak", "speaking", "spoke"],
                         correct_index: 0,
-                        explanation: "الإجابة الصحيحة موضحة.",
-                        hint: "انتبه للسياق."
+                        explanation: currentLearningTrack === 'medical' ? "Intravenous تعني وريدي مباشر." : "يضاف s المفرد للفعل مع الضمير She.",
+                        hint: currentLearningTrack === 'medical' ? "البادئة Intra تعني داخل الوريد." : "انتبه لقاعدة المضارع البسيط."
                     }
                 ];
             }
@@ -1422,11 +1693,11 @@
             isHintVisible = false;
             let optsHtml = '';
             ex.options.forEach((opt, optIdx) => {
-                optsHtml += `<button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition">${escapeHtml(opt)}</button>`;
+                optsHtml += `<button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition mb-2">${escapeHtml(opt)}</button>`;
             });
             bodyArea.innerHTML = `<div class="space-y-4">
                 <div class="text-center py-2 space-y-2">
-                    <span class="text-[11px] font-bold text-theme-sky block">اختر الإجابة الصحيحة:</span>
+                    <span class="text-[11px] font-bold text-theme-sky block">اختر الإجابة الصحيحة لإكمال الجملة:</span>
                     <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white" dir="ltr">${escapeHtml(ex.question)}</h3>
                     <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
                 </div>
@@ -1457,8 +1728,8 @@
             } else {
                 playChime(false);
                 feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300';
-                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> خطأ</div>
-                    <p class="text-[11px] font-semibold">الصحيحة: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
+                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> إجابة غير صحيحة</div>
+                    <p class="text-[11px] font-semibold">الإجابة الصحيحة هي: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
                     <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>`;
             }
             actionBtn.classList.remove('hidden');
@@ -1494,7 +1765,7 @@
             playChime(true);
             syncProfileWithCloud();
             renderPathTree();
-            alert(crowns < 3 ? `أكملت المستوى ${crowns}/3!` : "🎉 حصلت على التاج الذهبي! فُتحت المحطة التالية.");
+            alert(crowns < 3 ? `أكملت المستوى ${crowns}/3 بنجاح!` : "🎉 تهانينا! حصلت على التاج الكامل (3/3) وفُتحت المحطة التالية.");
         }
 
         function updateGreetingHeader() {
@@ -1516,12 +1787,11 @@
 
         function showTab(tabId) {
             ['todo', 'pomodoro', 'english', 'zero'].forEach(id => {
-                document.getElementById('tab-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id)?.classList.add('hidden');
                 const btn = document.getElementById('nav-' + id);
                 if (btn) btn.className = "flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition";
             });
-            const targetTab = document.getElementById('tab-' + tabId);
-            if (targetTab) targetTab.classList.remove('hidden');
+            document.getElementById('tab-' + tabId)?.classList.remove('hidden');
             const activeBtn = document.getElementById('nav-' + tabId);
             if (activeBtn) activeBtn.className = "flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs transition";
             safeSetItem('zp_active_tab', tabId);
@@ -1538,8 +1808,7 @@
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'sine';
+                osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine';
                 if (success) {
                     osc.frequency.setValueAtTime(587.33, ctx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
@@ -1606,10 +1875,8 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const btnAndroid = document.getElementById('install-guide-android');
-            const guideIos = document.getElementById('install-guide-ios');
-            if (btnAndroid) btnAndroid.classList.remove('hidden');
-            if (guideIos) guideIos.classList.add('hidden');
+            document.getElementById('install-guide-android')?.classList.remove('hidden');
+            document.getElementById('install-guide-ios')?.classList.add('hidden');
         });
 
         function openInstallModal() { document.getElementById('install-modal').classList.remove('hidden'); }
@@ -1628,7 +1895,7 @@
             list.innerHTML = '';
             let completed = 0;
             if (tasks.length === 0) {
-                list.innerHTML = `<div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">لا توجد مهام.</div>`;
+                list.innerHTML = `<div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-6 rounded-3xl text-center text-xs text-slate-400">لا توجد مهام مدرجة.</div>`;
             } else {
                 tasks.forEach(t => {
                     if (t.done) completed++;
@@ -1762,7 +2029,7 @@
                         type: 'START_POMO_TIMER',
                         durationMs: pomoRemaining * 1000,
                         title: 'ZeroPlus | انتهى الوقت!',
-                        body: `انتهت جلسة ${currentPomoMins} دقيقة.`
+                        body: `انتهت جلسة ${currentPomoMins} دقيقة بنجاح.`
                     });
                 }
                 pomoInterval = setInterval(() => {
@@ -1782,22 +2049,15 @@
             }
             pomoRemaining = pomoDuration;
             const btn = document.getElementById('pomo-play-btn');
-            if (btn) btn.innerHTML = '<span>بدء</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
+            if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i class="fa-solid fa-play mr-2 text-xs"></i>';
             updatePomoDisplay();
         }
 
         function clearForestConfirmation() {
-            if (confirm("إعادة تهيئة السجل؟")) {
+            if (confirm("هل ترغب في إعادة تهيئة سجل الجلسات؟")) {
                 userForest = []; localStorage.setItem('zp_forest', JSON.stringify([])); renderForest();
             }
         }
-
-        // ============ AI ENGINE ============
-        let pdfSlidesData = safeParse('zp_slides_array', []);
-        if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
-        let lastManualLectureText = '';
-        let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
-        let selectedAiTaskType = 'mcq';
 
         function syncManualLectureText() {
             const box = document.getElementById('lecture-text-content');
@@ -1816,7 +2076,7 @@
             const badge = document.getElementById('lecture-loaded-badge');
             const info = document.getElementById('lecture-loaded-info');
             if (badge) badge.classList.remove('hidden');
-            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص المنهج (${pdfSlidesData.length || 1} سلايد)`;
+            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
         }
 
         function openAiConfigModal() {
@@ -1893,12 +2153,12 @@
                     safeSetItem('zp_active_lecture_text', text);
                 }
                 showLectureLoadedBadge();
-                if (status) status.innerText = `تم: ${file.name}`;
+                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
                 e.target.value = '';
                 setTimeout(() => openAiConfigModal(), 400);
             } catch(err) {
                 alert("تعذر استخراج المحتوى.");
-                if (status) status.innerText = "تحميل ملف (PDF أو نص)";
+                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             }
         }
 
@@ -1909,262 +2169,27 @@
             localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
             document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
             const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = "تحميل ملف (PDF أو نص)";
+            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
             const ta = document.getElementById('lecture-text-content');
             if (ta) ta.value = '';
             lastManualLectureText = '';
-        }
-
-        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
-            try {
-                const res = await fetch('/api/ai', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: systemInstruction },
-                            { role: 'user', content: userPrompt }
-                        ],
-                        jsonMode
-                    })
-                });
-                if (!res.ok) return null;
-                const data = await res.json().catch(() => ({}));
-                return data.choices?.[0]?.message?.content || data.content || data.text || null;
-            } catch (e) { return null; }
-        }
-
-        function parseAIJson(raw) {
-            if (!raw) return null;
-            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
-            try { return JSON.parse(clean); } catch(e) {}
-            const start = clean.indexOf('{');
-            const end = clean.lastIndexOf('}');
-            if (start !== -1 && end !== -1 && end > start) {
-                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
-            }
-            return null;
-        }
-
-        async function executeAiCustomTask() {
-            closeAiConfigModal();
-            syncManualLectureText();
-            const scopedContent = getScopedLectureContent();
-            if (!scopedContent || scopedContent.trim().length < 20) {
-                alert("يرجى إدخال محتوى أو رفع محاضرة."); return;
-            }
-            const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
-            const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
-            const feed = document.getElementById('zero-chat-feed');
-            const loadingId = 'loading_' + Date.now();
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري المعالجة...</div>`);
-                feed.scrollTop = feed.scrollHeight;
-            }
-            let systemInstruction = "";
-            let userPrompt = "";
-            let expectJson = false;
-            if (selectedAiTaskType === 'summary') {
-                systemInstruction = "أنت مساعد أكاديمي. لخّص المحتوى التالي بشكل مكثف بالعربية.";
-                userPrompt = `لخّص:\n\n${scopedContent}`;
-            } else if (selectedAiTaskType === 'mcq') {
-                expectJson = true;
-                systemInstruction = `أخرج JSON فقط.`;
-                userPrompt = `صغ ${qCount} أسئلة MCQ من:\n\n${scopedContent}\n\n{"questions":[{"question":"...","options":["A","B","C","D"],"correct_index":0,"explanation":"..."}]}`;
-            } else if (selectedAiTaskType === 'short') {
-                expectJson = true;
-                systemInstruction = `أخرج JSON فقط.`;
-                userPrompt = `صغ ${qCount} أسئلة إجابة قصيرة من:\n\n${scopedContent}\n\n{"questions":[{"question":"...","answer":"...","explanation":"..."}]}`;
-            }
-            const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
-            document.getElementById(loadingId)?.remove();
-            if (!reply) {
-                if (feed) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بالذكاء الاصطناعي. تأكد من /api/ai</div>`);
-                }
-                return;
-            }
-            if (selectedAiTaskType === 'summary') {
-                if (feed) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
-                    feed.scrollTop = feed.scrollHeight;
-                }
-                awardXP(20);
-            } else {
-                const parsed = parseAIJson(reply);
-                if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
-                    if (feed) {
-                        feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
-                    }
-                    return;
-                }
-                if (displayStyle === 'text') {
-                    let html = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار (${parsed.questions.length} سؤال)</div>`;
-                    parsed.questions.forEach((q, i) => {
-                        html += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
-                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i+1}: ${escapeHtml(q.question)}</div>`;
-                        if (Array.isArray(q.options)) {
-                            q.options.forEach((opt, oi) => {
-                                const mark = oi === q.correct_index ? '✅' : '';
-                                html += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65+oi)}. ${escapeHtml(opt)} ${mark}</div>`;
-                            });
-                        }
-                        if (q.answer) html += `<div class="text-emerald-600 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
-                        if (q.explanation) html += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
-                        html += `</div>`;
-                    });
-                    html += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ</button></div>`;
-                    if (feed) {
-                        feed.insertAdjacentHTML('beforeend', html);
-                        feed.scrollTop = feed.scrollHeight;
-                    }
-                    awardXP(15);
-                } else {
-                    startQuizSession(parsed.questions);
-                }
-            }
-        }
-
-        function copyQuizText(btn) {
-            const container = btn.closest('.chat-bot-bubble');
-            navigator.clipboard.writeText(container.innerText).then(() => {
-                btn.innerText = '✅ تم';
-                setTimeout(() => btn.innerText = '📋 نسخ', 1500);
-            });
-        }
-
-        function startQuizSession(questions) {
-            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
-            renderQuizInFeed();
-        }
-
-        function renderQuizInFeed() {
-            const feed = document.getElementById('zero-chat-feed');
-            if (!feed) return;
-            const { questions, currentIndex } = activeQuizSessionState;
-            const q = questions[currentIndex];
-            const quizId = 'quiz_' + Date.now();
-            let optsHtml = '';
-            if (Array.isArray(q.options)) {
-                q.options.forEach((opt, oi) => {
-                    optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
-                });
-            }
-            feed.insertAdjacentHTML('beforeend', `<div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex+1} من ${questions.length}</span>
-                    <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
-                </div>
-                <div class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(q.question)}</div>
-                <div>${optsHtml}</div>
-                <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
-            </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function answerQuizChoice(quizId, chosenIdx) {
-            const container = document.getElementById(quizId);
-            if (!container) return;
-            const { questions, currentIndex } = activeQuizSessionState;
-            const q = questions[currentIndex];
-            const feedback = container.querySelector('.quiz-feedback');
-            container.querySelectorAll('.quiz-opt-btn').forEach(b => {
-                b.disabled = true;
-                const oi = parseInt(b.getAttribute('data-opt'));
-                if (oi === q.correct_index) b.classList.add('opt-correct');
-                else if (oi === chosenIdx) b.classList.add('opt-wrong');
-            });
-            const isCorrect = chosenIdx === q.correct_index;
-            if (isCorrect) { activeQuizSessionState.score++; playChime(true); awardXP(10); }
-            else { playChime(false); }
-            feedback.classList.remove('hidden');
-            feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
-            feedback.innerHTML = `<div class="font-black mb-1">${isCorrect ? '✅ صحيح!' : '❌ خطأ'}</div>${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}`;
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2';
-            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 النتيجة';
-            nextBtn.onclick = () => {
-                if (currentIndex + 1 < questions.length) {
-                    activeQuizSessionState.currentIndex++;
-                    renderQuizInFeed();
-                } else {
-                    showQuizFinalResult(quizId);
-                }
-            };
-            container.appendChild(nextBtn);
-        }
-
-        function showQuizFinalResult(quizId) {
-            const container = document.getElementById(quizId);
-            if (!container) return;
-            const { questions, score } = activeQuizSessionState;
-            const pct = Math.round((score / questions.length) * 100);
-            let msg = pct >= 80 ? '🏆 ممتاز!' : pct >= 50 ? '👍 جيد' : '💪 راجع';
-            container.innerHTML = `<div class="text-center space-y-3 py-4">
-                <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
-                <div class="text-lg font-black">${pct}%</div>
-                <div class="text-sm font-bold">${msg}</div>
-            </div>`;
-            if (pct >= 80) triggerConfetti();
-        }
-
-        async function sendZeroChat() {
-            const inp = document.getElementById('zero-user-msg');
-            const txt = inp?.value.trim();
-            if (!txt) return;
-            inp.value = '';
-            const feed = document.getElementById('zero-chat-feed');
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
-            }
-            const loadingId = 'loading_' + Date.now();
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ يفكر...</div>`);
-                feed.scrollTop = feed.scrollHeight;
-            }
-            let context = "";
-            if (currentLectureText && currentLectureText.trim().length > 20) {
-                const scoped = getScopedLectureContent();
-                context = `\n\nسياق المحاضرة:\n${scoped.slice(0, 8000)}`;
-            }
-            const reply = await callStrictAcademicAI(
-                `سؤال: ${txt}${context}`,
-                "أنت المساعد الأكاديمي ZeroPlus. أجب بدقة من المحتوى إن وُجد."
-            );
-            document.getElementById(loadingId)?.remove();
-            if (feed) {
-                if (reply) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold">${formatRichText(reply)}</div>`);
-                    awardXP(3);
-                } else {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد.</div>`);
-                }
-                feed.scrollTop = feed.scrollHeight;
-            }
-        }
-
-        function clearChatHistory() {
-            if (confirm("إفراغ المحادثة؟")) {
-                const feed = document.getElementById('zero-chat-feed');
-                if (feed) feed.innerHTML = '';
-            }
         }
 
         function openShareModal() {
             const shareXp = document.getElementById('share-xp');
             const shareTrees = document.getElementById('share-trees');
             if (shareXp) shareXp.innerText = `${userXP} XP`;
-            if (shareTrees) shareTrees.innerText = `${userForest.length} جلسة`;
+            if (shareTrees) shareTrees.innerText = `${userForest.length}`;
             renderPathTree();
             document.getElementById('share-modal')?.classList.remove('hidden');
         }
         function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
         function copyShareText() {
-            const text = `🎓 ZeroPlus\n👤 ${currentUserName}\n⚡ ${userXP} XP\n⏱️ ${totalFocusMins} دقيقة\n🌳 ${userForest.length} جلسة`;
-            navigator.clipboard.writeText(text).then(() => alert("تم النسخ."));
+            const text = `🎓 منصة ZeroPlus الأكاديمية\n👤 الطالب: ${currentUserName}\n⚡ الرصيد: ${userXP} XP\n⏱ وقت التركيز: ${totalFocusMins} دقيقة\n🌳 الجلسات: ${userForest.length}`;
+            navigator.clipboard.writeText(text).then(() => alert("تم نسخ تقرير الإنجاز بنجاح."));
         }
         function executeShare() {
-            const text = `🎓 ZeroPlus\n${currentUserName}\n${userXP} XP`;
+            const text = `🎓 منصة ZeroPlus الأكاديمية\n👤 ${currentUserName}\n⚡ ${userXP} XP`;
             if (navigator.share) navigator.share({ title: 'ZeroPlus', text }).catch(() => {});
             else copyShareText();
         }
