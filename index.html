@@ -22,17 +22,17 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v28')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v29')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=28">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=28">
-    <link rel="shortcut icon" href="/icon.svg?v=28">
-    <link rel="manifest" href="/manifest.json?v=28">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=29">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=29">
+    <link rel="shortcut icon" href="/icon.svg?v=29">
+    <link rel="manifest" href="/manifest.json?v=29">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -65,10 +65,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -79,35 +75,19 @@
             padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
         }
         .gradient-todo { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%) !important; }
-        .chat-user-bubble {
-            background: linear-gradient(135deg, #0d9488, #10b981) !important;
-            color: #ffffff !important;
-            border-radius: 1.5rem 1.5rem 0.35rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-            padding: 0.9rem 1.25rem !important;
+        .soon-tag {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            font-size: 11px; font-weight: 800; color: #0284c7;
+            background: rgba(2, 132, 199, 0.08);
+            border: 1px solid rgba(2, 132, 199, 0.22);
+            padding: 0.3rem 0.9rem; border-radius: 999px;
         }
-        html.dark .chat-bot-bubble {
-            background-color: #0c222e !important; color: #ffffff !important;
-            border: 1px solid #163d52 !important;
-            border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-            padding: 1rem 1.25rem !important;
+        .soon-pill {
+            font-size: 8px; font-weight: 800; color: #0284c7;
+            background: rgba(2, 132, 199, 0.10);
+            border: 1px solid rgba(2, 132, 199, 0.25);
+            padding: 0.5px 5px; border-radius: 999px; white-space: nowrap;
         }
-        html:not(.dark) .chat-bot-bubble {
-            background-color: #ffffff !important; color: #07131b !important;
-            border: 1px solid #ccfbf1 !important;
-            border-radius: 1.5rem 1.5rem 1.5rem 0.35rem;
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.05);
-            padding: 1rem 1.25rem !important;
-        }
-        html.dark .chat-quiz-card { background-color: #0c222e !important; color: #ffffff !important; border: 1px solid #163d52 !important; }
-        html:not(.dark) .chat-quiz-card { background-color: #ffffff !important; color: #07131b !important; border: 1px solid #e0f2fe !important; }
-        html.dark .chat-quiz-opt { background-color: #07131b !important; color: #ffffff !important; border: 1px solid #163d52 !important; }
-        html.dark .chat-quiz-opt:hover { border-color: #0284c7 !important; background-color: #0f2d3d !important; }
-        html:not(.dark) .chat-quiz-opt { background-color: #f0fdfa !important; color: #07131b !important; border: 1px solid #ccfbf1 !important; }
-        html:not(.dark) .chat-quiz-opt:hover { border-color: #0d9488 !important; background-color: #e0f2fe !important; }
-        .opt-correct { background-color: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #10b981 !important; font-weight: 800 !important; }
-        .opt-wrong { background-color: rgba(244, 63, 94, 0.2) !important; border-color: #f43f5e !important; color: #f43f5e !important; font-weight: 800 !important; }
         .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -135,7 +115,7 @@
                     <span>Zero</span><span class="text-theme-sky">Plus</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 dark:text-theme-skyLight max-w-xl mx-auto leading-relaxed font-semibold">
-                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام، جلسات التركيز، مسار بناء اللغة، والمساعد الأكاديمي الذكي.
+                    ZeroPlus منصة أكاديمية تجمع تنظيم المهام وجلسات التركيز، وقسما البناء اللغوي والمساعد الأكاديمي قريباً.
                 </p>
             </div>
 
@@ -284,94 +264,6 @@
         </div>
     </div>
 
-    <!-- AI CONFIG MODAL -->
-    <div id="ai-config-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-theme-darkBorder pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-theme-sky text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
-                        <i class="fa-solid fa-sliders"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-black text-base text-theme-sky dark:text-white">تخصيص الاختبار والمراجعة</h3>
-                        <p class="text-[11px] text-slate-400">حدد نوع المخرج وطريقة العرض</p>
-                    </div>
-                </div>
-                <button onclick="closeAiConfigModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-theme-darkBase text-slate-400 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-sm"></i>
-                </button>
-            </div>
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-theme-sky block">نوع المخرج المطلوب:</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="setAiTaskType('mcq', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5">
-                        <i class="fa-solid fa-list-check"></i>
-                        <span>خيارات (MCQ)</span>
-                    </button>
-                    <button type="button" onclick="setAiTaskType('short', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        <span>إجابة قصيرة</span>
-                    </button>
-                    <button type="button" onclick="setAiTaskType('summary', this)" class="ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5">
-                        <i class="fa-solid fa-file-lines"></i>
-                        <span>ملخص مكثف</span>
-                    </button>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-theme-sky block">طريقة العرض:</label>
-                    <select id="ai-display-style" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200">
-                        <option value="interactive">تفاعلي</option>
-                        <option value="text">نصي كامل</option>
-                    </select>
-                </div>
-                <div class="space-y-1.5" id="ai-question-count-wrapper">
-                    <label class="text-xs font-bold text-theme-sky block">عدد الأسئلة:</label>
-                    <select id="ai-questions-count" class="w-full bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder rounded-2xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200">
-                        <option value="1">1</option>
-                        <option value="3" selected>3</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-            </div>
-            <div class="space-y-2 border-t border-slate-100 dark:border-theme-darkBorder pt-3">
-                <div class="flex items-center justify-between text-xs font-bold">
-                    <label class="text-theme-sky">نطاق السلايدات المستهدفة:</label>
-                    <span id="modal-slides-total-badge" class="text-slate-400">الإجمالي: 1</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                        <input type="radio" name="modal_slide_scope" value="all" checked onchange="toggleModalScopeInputs()">
-                        <span>كامل</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                        <input type="radio" name="modal_slide_scope" value="single" onchange="toggleModalScopeInputs()">
-                        <span>سلايد محدد</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-xs font-semibold cursor-pointer text-slate-800 dark:text-slate-200">
-                        <input type="radio" name="modal_slide_scope" value="range" onchange="toggleModalScopeInputs()">
-                        <span>نطاق معين</span>
-                    </label>
-                </div>
-                <div id="modal-single-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
-                    <span class="font-bold text-slate-500">رقم السلايد:</span>
-                    <input id="modal-single-slide-num" type="number" min="1" value="1" class="w-20 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                </div>
-                <div id="modal-range-slide-box" class="hidden pt-2 flex items-center justify-center gap-2 text-xs">
-                    <span class="font-bold text-slate-500">من:</span>
-                    <input id="modal-range-slide-from" type="number" min="1" value="1" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                    <span class="font-bold text-slate-500">إلى:</span>
-                    <input id="modal-range-slide-to" type="number" min="1" value="5" class="w-16 p-2 rounded-xl bg-slate-50 dark:bg-theme-darkBase border border-slate-200 dark:border-theme-darkBorder text-center font-bold text-slate-900 dark:text-white">
-                </div>
-            </div>
-            <button onclick="executeAiCustomTask()" class="w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm shadow-glow-sky transition active:scale-95 flex items-center justify-center gap-2">
-                <span>تأكيد وبدء المعالجة</span> <i class="fa-solid fa-arrow-left text-xs"></i>
-            </button>
-        </div>
-    </div>
-
     <!-- HEADER -->
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-theme-darkBase/90 backdrop-blur-2xl border-b border-sky-100 dark:border-theme-darkBorder px-3 sm:px-4 py-3 shrink-0">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
@@ -507,137 +399,38 @@
             </div>
         </section>
 
-        <!-- ENGLISH -->
+        <!-- ENGLISH (قريباً) -->
         <section id="tab-english" class="hidden space-y-5">
-            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-4 rounded-3xl shadow-sm flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-rose-500">
-                        <i class="fa-solid fa-heart text-sm animate-pulse"></i>
-                        <span id="path-hearts-count">5</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-amber-500">
-                        <i class="fa-solid fa-fire text-sm"></i>
-                        <span id="path-streak-count">1 يوم</span>
-                    </div>
+            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-8 sm:p-12 rounded-4xl shadow-sm flex flex-col items-center text-center space-y-4">
+                <div class="w-20 h-20 rounded-4xl bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-theme-sky flex items-center justify-center text-3xl">
+                    <i class="fa-solid fa-language"></i>
                 </div>
-                <div class="flex items-center gap-2 bg-sky-50 dark:bg-theme-darkBase p-1 rounded-2xl border border-sky-200/50 dark:border-theme-darkBorder">
-                    <button id="mode-btn-general" onclick="setLearningTrackMode('general')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-theme-sky text-white shadow-sm">
-                        <i class="fa-solid fa-earth-americas text-xs"></i> <span>عام</span>
-                    </button>
-                    <button id="mode-btn-medical" onclick="setLearningTrackMode('medical')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">
-                        <i class="fa-solid fa-user-doctor text-xs"></i> <span>طبي</span>
-                    </button>
+                <span class="soon-tag"><i class="fa-solid fa-hourglass-half text-[10px]"></i> قريباً</span>
+                <h3 class="font-black text-lg sm:text-xl text-slate-900 dark:text-white">قسم البناء اللغوي</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold max-w-md leading-relaxed">
+                    هذا القسم قيد التطوير، وسيُطلق قريباً بمسار لغوي متدرج حسب مستويات (CEFR).
+                </p>
+                <div class="pt-1 flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                    <i class="fa-solid fa-lock text-[10px]"></i>
+                    <span>جميع وظائف القسم معطّلة مؤقتاً</span>
                 </div>
-            </div>
-            <div class="bg-white dark:bg-theme-darkCard border border-sky-100 dark:border-theme-darkBorder p-6 sm:p-10 rounded-4xl shadow-sm flex flex-col items-center">
-                <div class="mb-4 text-center">
-                    <h3 class="text-base font-black text-theme-sky dark:text-white flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-layer-group text-theme-teal"></i> <span>مسار البناء اللغوي (CEFR)</span>
-                    </h3>
-                    <p class="text-[11px] text-slate-400 mt-1">تدرج عبر المستويات للحصول على التيجان الذهبية (3/3)</p>
-                </div>
-                <div id="learning-path-tree" class="w-full flex flex-col items-center"></div>
             </div>
         </section>
 
-        <!-- LESSON MODAL -->
-        <div id="lesson-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder rounded-4xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl">
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <button onclick="closeLessonModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-sm"></i></button>
-                        <div class="flex-1 mx-4 bg-slate-100 dark:bg-theme-darkBase h-2.5 rounded-full overflow-hidden">
-                            <div id="lesson-progress-bar" class="h-full bg-theme-teal rounded-full transition-all duration-300" style="width: 25%;"></div>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs font-bold text-rose-500">
-                            <i class="fa-solid fa-heart text-xs"></i>
-                            <span id="session-hearts-count">5</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <span id="lesson-step-badge" class="text-xs font-bold text-slate-400">تمرين 1 من 3</span>
-                        <button onclick="toggleSmartHint()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-sky-300/60 bg-sky-50 dark:bg-sky-900/20 text-theme-sky text-xs font-bold">
-                            <i class="fa-solid fa-lightbulb text-amber-500"></i> <span>تلميح لغوي</span>
-                        </button>
-                    </div>
+        <!-- ZERO ASSISTANT (قريباً) -->
+        <section id="tab-zero" class="hidden flex-1 flex flex-col gap-3.5">
+            <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-8 sm:p-12 rounded-4xl shadow-sm flex flex-col items-center text-center space-y-4 flex-1 justify-center">
+                <div class="w-20 h-20 rounded-4xl bg-teal-50 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder text-theme-teal flex items-center justify-center text-3xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <div id="lesson-hint-box" class="hidden p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-200 dark:border-theme-darkBorder text-xs font-semibold text-theme-sky dark:text-white">
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-info text-theme-sky mt-0.5"></i>
-                        <p id="lesson-hint-text" class="leading-relaxed"></p>
-                    </div>
-                </div>
-                <div id="lesson-body-area" class="space-y-4 pt-1"></div>
-                <div class="pt-2 flex gap-3">
-                    <button id="lesson-action-btn" class="hidden w-full bg-theme-sky hover:bg-sky-700 text-white py-3.5 rounded-2xl font-black text-sm">التالي</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ZERO ASSISTANT -->
-        <section id="tab-zero" class="flex-1 flex flex-col gap-3.5">
-            <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder p-4 sm:p-5 rounded-4xl shadow-sm space-y-3 shrink-0">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center text-sm shadow-sm" dir="ltr">
-                            <i class="fa-solid fa-book-bookmark"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-black text-sm text-slate-900 dark:text-white">المصدر المعتمد للاختبار</h3>
-                            <p class="text-[11px] text-slate-400">تحميل المحاضرة وتوليد المخرجات الأكاديمية</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] font-bold bg-teal-50 dark:bg-theme-darkBase text-theme-teal px-3 py-1 rounded-full border border-teal-200/50 dark:border-theme-darkBorder flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> المحرك الأكاديمي جاهز
-                    </span>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <label class="cursor-pointer flex-1 bg-teal-50/40 dark:bg-theme-darkBase border border-dashed border-teal-200 dark:border-theme-darkBorder hover:border-theme-teal rounded-2xl p-3 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-                        <i class="fa-solid fa-file-arrow-up text-theme-teal"></i>
-                        <span id="upload-file-status">تحميل ملف المحاضرة (صيغة PDF أو نص)</span>
-                        <input id="lecture-file-input" type="file" accept=".pdf,.txt" onchange="handleFileUpload(event)" class="hidden">
-                    </label>
-                    <button onclick="togglePasteArea()" class="bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-theme-teal shadow-sm">
-                        إدخال نصي
-                    </button>
-                </div>
-                <div id="lecture-paste-container" class="hidden">
-                    <textarea id="lecture-text-content" rows="3" placeholder="أدخل محتوى أو ملخص المحاضرة..." class="w-full bg-teal-50/40 dark:bg-theme-darkBase border border-teal-200 dark:border-theme-darkBorder p-3.5 rounded-2xl text-xs focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white resize-none"></textarea>
-                </div>
-                <div id="lecture-loaded-badge" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
-                    <span id="lecture-loaded-info"><i class="fa-solid fa-circle-check ml-1"></i> تم فحص المنهج</span>
-                    <div class="flex items-center gap-3">
-                        <button onclick="openAiConfigModal()" class="text-[11px] text-theme-teal underline font-bold">تغيير الخيارات</button>
-                        <button onclick="resetLectureContext()" class="text-[11px] text-rose-500 underline font-bold">إلغاء الملف</button>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-theme-darkCard border border-teal-100 dark:border-theme-darkBorder rounded-4xl shadow-sm flex-1 flex flex-col overflow-hidden min-h-[55vh]">
-                <div class="p-4 border-b border-teal-100 dark:border-theme-darkBorder flex items-center justify-between shrink-0 bg-teal-50/30 dark:bg-theme-darkBase/40">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-theme-teal to-theme-green text-white flex items-center justify-center font-bold text-base shadow-sm" dir="ltr">Z+</div>
-                        <div>
-                            <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                                المساعد الأكاديمي <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            </h4>
-                            <p class="text-[11px] text-slate-400">تحليل المنهج وفهم تفاصيله بدقة والإجابة من صلب المحاضرة</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="openAiConfigModal()" class="bg-theme-teal hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-glow-teal flex items-center gap-1.5">
-                            <i class="fa-solid fa-gear text-xs"></i> <span>تخصيص الاختبار</span>
-                        </button>
-                        <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 p-2" title="إفراغ المحادثة">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="zero-chat-feed" class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]"></div>
-                <div class="p-3 border-t border-teal-100 dark:border-theme-darkBorder bg-teal-50/50 dark:bg-theme-darkBase/60 flex gap-2 items-center shrink-0">
-                    <input id="zero-user-msg" type="text" placeholder="اطلب شرح نقطة، استفسار علمي، أو كويز..." onkeydown="if(event.key==='Enter') sendZeroChat()" class="flex-1 bg-white dark:bg-theme-darkCard border border-teal-200 dark:border-theme-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-theme-teal text-slate-900 dark:text-white font-semibold">
-                    <button onclick="sendZeroChat()" class="bg-theme-teal hover:bg-teal-700 text-white w-11 h-11 rounded-2xl font-bold flex items-center justify-center shadow-glow-teal shrink-0">
-                        <i class="fa-solid fa-paper-plane text-xs"></i>
-                    </button>
+                <span class="soon-tag"><i class="fa-solid fa-hourglass-half text-[10px]"></i> قريباً</span>
+                <h3 class="font-black text-lg sm:text-xl text-slate-900 dark:text-white">قسم المساعد الأكاديمي</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold max-w-md leading-relaxed">
+                    هذا القسم قيد التطوير، وسيُطلق قريباً لخدمة الطلبة في متابعة المحاضرات والمراجعة.
+                </p>
+                <div class="pt-1 flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                    <i class="fa-solid fa-lock text-[10px]"></i>
+                    <span>جميع وظائف القسم معطّلة مؤقتاً</span>
                 </div>
             </div>
         </section>
@@ -662,11 +455,6 @@
                         <span class="block text-white/70 text-[10px]">الجلسات</span>
                         <span id="share-trees" class="text-emerald-300 font-black text-sm">0</span>
                     </div>
-                    <div class="border-r border-white/20"></div>
-                    <div>
-                        <span class="block text-white/70 text-[10px]">المحطات</span>
-                        <span id="share-nodes" class="text-sky-300 font-black text-sm">0</span>
-                    </div>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -688,100 +476,34 @@
             <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-mint transition">
                 <i class="fa-solid fa-clock text-base mb-1"></i> <span>التركيز</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-theme-sky font-black text-xs">
-                <i class="fa-solid fa-language text-base mb-1"></i> <span>البناء اللغوي</span>
+            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-sky transition">
+                <i class="fa-solid fa-language text-base mb-1"></i>
+                <span class="flex items-center gap-1">البناء اللغوي <span class="soon-pill">قريباً</span></span>
             </button>
             <button onclick="showTab('zero')" id="nav-zero" class="flex flex-col items-center py-1.5 px-3 text-slate-400 font-bold text-xs hover:text-theme-teal transition">
-                <i class="fa-solid fa-graduation-cap text-base mb-1"></i> <span>المساعد</span>
+                <i class="fa-solid fa-graduation-cap text-base mb-1"></i>
+                <span class="flex items-center gap-1">المساعد <span class="soon-pill">قريباً</span></span>
             </button>
         </div>
     </nav>
 
     <script>
-        // ============ 1. GLOBAL CURRICULUM DEFINITION ============
-        const GLOBAL_CURRICULUM = {
-            general: [
-                { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
-                    { unit_title: "الوحدة 1: التعارف والجمل الأساسية", nodes: [
-                        { id: "gen_a1_01", title: "التحيات وتقديم النفس", order: 1 },
-                        { id: "gen_a1_02", title: "أفعال الكينونة والضمائر", order: 2 },
-                        { id: "gen_a1_03", title: "الأرقام والأشياء المحيطة", order: 3 }
-                    ]},
-                    { unit_title: "الوحدة 2: الروتين والوصف", nodes: [
-                        { id: "gen_a1_04", title: "المضارع البسيط وروتين اليوم", order: 4 },
-                        { id: "gen_a1_05", title: "صفات المقارنة والوصف", order: 5 }
-                    ]}
-                ]},
-                { level: "A2", title_ar: "المستوى A2: المواقف الحياتية", units: [
-                    { unit_title: "الوحدة 3: الماضي والأحداث", nodes: [
-                        { id: "gen_a2_01", title: "الماضي البسيط للأفعال الشائعة", order: 6 },
-                        { id: "gen_a2_02", title: "المواقف في المطعم والتسوق", order: 7 }
-                    ]}
-                ]},
-                { level: "B1", title_ar: "المستوى B1: الطلاقة والسرد", units: [
-                    { unit_title: "الوحدة 4: الخبرات والمناقشة", nodes: [
-                        { id: "gen_b1_01", title: "المضارع التام والخبرات", order: 8 },
-                        { id: "gen_b1_02", title: "إبداء الرأي والمناقشة", order: 9 }
-                    ]}
-                ]}
-            ],
-            medical: [
-                { level: "A1", title_ar: "المستوى A1 (طبي): المصطلحات الأساسية", units: [
-                    { unit_title: "الوحدة 1: البادئات واللواحق والكميات", nodes: [
-                        { id: "med_a1_01", title: "بادئات السرعة والضغط (Tachy, Brady, Hyper, Hypo)", order: 1 },
-                        { id: "med_a1_02", title: "لواحق الالتهاب والاستئصال (-itis, -ectomy)", order: 2 },
-                        { id: "med_a1_03", title: "الأعضاء الأساسية (Cardio, Pulmo, Neuro, Gastro)", order: 3 }
-                    ]}
-                ]},
-                { level: "A2", title_ar: "المستوى A2 (طبي): العلامات الحيوية والوضعيات", units: [
-                    { unit_title: "الوحدة 2: قياسات المريض والاتجاهات التشريحية", nodes: [
-                        { id: "med_a2_01", title: "العلامات الحيوية (BP, SpO2, Heart Rate, Temp)", order: 4 },
-                        { id: "med_a2_02", title: "الوضعيات الجراحية والسريرية (Supine, Prone)", order: 5 }
-                    ]}
-                ]},
-                { level: "B1", title_ar: "المستوى B1 (طبي): مسارات العلاج والجرعات", units: [
-                    { unit_title: "الوحدة 3: الجرعات وإعطاء الأدوية", nodes: [
-                        { id: "med_b1_01", title: "مسارات الحقن (IV, IM, SC, Inhalation)", order: 6 },
-                        { id: "med_b1_02", title: "الأعراض الجانبية والتفاعلات الدوائية", order: 7 }
-                    ]}
-                ]}
-            ]
-        };
-
-        // ============ 2. GLOBAL STATE & HELPERS ============
+        // ============ 1. GLOBAL STATE & HELPERS ============
         let currentUserName = localStorage.getItem('zp_username') || '';
         let activeDepartmentKey = localStorage.getItem('zp_user_department') || 'general';
-        let currentLearningTrack = localStorage.getItem('zp_learning_track') || 'general';
-        let nodeCrowns = safeParse('zp_node_crowns', {});
-        if (typeof nodeCrowns !== 'object' || nodeCrowns === null || Array.isArray(nodeCrowns)) nodeCrowns = {};
-        let unlockedNodeMax = parseInt(localStorage.getItem('zp_unlocked_node_max') || '1');
-        let userHearts = parseInt(localStorage.getItem('zp_med_hearts') || '5');
-        let userStreak = parseInt(localStorage.getItem('zp_med_streak') || '1');
         let userXP = parseInt(localStorage.getItem('zp_xp') || '140');
         let totalFocusMins = parseInt(localStorage.getItem('zp_focus_mins') || '0');
         let isLoginMode = false;
-        let dynamicSessionState = { exercises: [], index: 0, nodeId: '', orderNum: 1, currentCrown: 0, title: '' };
-        let isHintVisible = false;
-        let activeQuizSessionState = { questions: [], currentIndex: 0, score: 0, qCount: 0 };
         let tasks = safeParse('zp_tasks', []);
         if (!Array.isArray(tasks)) tasks = [];
         let userForest = safeParse('zp_forest', []);
         if (!Array.isArray(userForest)) userForest = [];
-
-        let pdfSlidesData = safeParse('zp_slides_array', []);
-        if (!Array.isArray(pdfSlidesData)) pdfSlidesData = [];
-        let lastManualLectureText = '';
-        let currentLectureText = localStorage.getItem('zp_active_lecture_text') || "";
-        let selectedAiTaskType = 'mcq';
 
         let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
 
         function escapeHtml(v) {
             return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        }
-        function formatRichText(v) {
-            return escapeHtml(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
         }
         function safeParse(key, fallback) {
             try { const v = JSON.parse(localStorage.getItem(key)); return v === null || v === undefined ? fallback : v; }
@@ -809,7 +531,7 @@
             return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ============ 3. SUPABASE INITIALIZATION ============
+        // ============ 2. SUPABASE INITIALIZATION ============
         const SUPABASE_URL = "https://lfygprhvyudatgwikwfy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmeWdwcmh2eXVkYXRnd2lrd2Z5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTc0NjksImV4cCI6MjEwNjAzMzQ2OX0.D3EUTdaZUc_D-1KIWt0ukfRhEIU5CP0OiLPTZDZYQCw";
 
@@ -834,83 +556,7 @@
             }
         }
 
-        // ============ 4. AI CALL ENGINE (UPDATED & FIXED) ============
-        async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
-            // المحاولة 1: عبر Supabase Edge Function
-            if (supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
-                        body: {
-                            messages: [
-                                { role: 'system', content: systemInstruction },
-                                { role: 'user', content: userPrompt }
-                            ],
-                            jsonMode: !!jsonMode
-                        }
-                    });
-                    if (!error && data) {
-                        const content = data?.choices?.[0]?.message?.content || data?.content || (typeof data === 'string' ? data : null);
-                        if (content) return content;
-                    }
-                } catch (e) {
-                    console.warn("Supabase Edge Function failed, falling back to Groq...", e);
-                }
-            }
-
-            // المحاولة 2: الاتصال المباشر بـ Groq مع تجربة عدة نماذج
-            const DIRECT_GROQ_KEY = "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";
-            const modelsToTry = ["llama-3.3-70b-versatile", "llama3-70b-8192", "mixtral-8x7b-32768"];
-            
-            for (let model of modelsToTry) {
-                try {
-                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${DIRECT_GROQ_KEY.trim()}`
-                        },
-                        body: JSON.stringify({
-                            model: model,
-                            messages: [
-                                { role: 'system', content: systemInstruction },
-                                { role: 'user', content: userPrompt }
-                            ],
-                            temperature: 0.2,
-                            ...(jsonMode ? { response_format: { type: "json_object" } } : {})
-                        })
-                    });
-                    
-                    if (res.ok) {
-                        const data = await res.json().catch(() => ({}));
-                        const content = data?.choices?.[0]?.message?.content;
-                        if (content) return content;
-                    } else {
-                        console.warn(`Groq API failed with model ${model}: Status ${res.status}`);
-                        // إذا كان الخطأ 401 (مفتاح غير صالح) نوقف المحاولات فوراً
-                        if (res.status === 401 || res.status === 403) {
-                            return `ERROR_API_KEY_INVALID`;
-                        }
-                    }
-                } catch (err) {
-                    console.warn(`Network error with model ${model}:`, err);
-                }
-            }
-            return null;
-        }
-
-        function parseAIJson(raw) {
-            if (!raw) return null;
-            let clean = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
-            try { return JSON.parse(clean); } catch(e) {}
-            const start = clean.indexOf('{');
-            const end = clean.lastIndexOf('}');
-            if (start !== -1 && end !== -1 && end > start) {
-                try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
-            }
-            return null;
-        }
-
-        // ============ 5. AUTHENTICATION & PROFILE ============
+        // ============ 3. AUTHENTICATION & PROFILE ============
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             const title = document.getElementById('auth-modal-title');
@@ -979,10 +625,7 @@
                         password_hash: pwdHash,
                         auth_provider: 'local',
                         xp: 140,
-                        unlocked_stage_max: 1,
-                        node_crowns: {},
-                        total_focus_mins: 0,
-                        learning_track: 'general'
+                        total_focus_mins: 0
                     });
                     if (insErr) {
                         alert("تعذر إنشاء الحساب: " + insErr.message);
@@ -992,8 +635,6 @@
                     currentUserName = usernameInput;
                     activeDepartmentKey = deptInput;
                     userXP = 140;
-                    unlockedNodeMax = 1;
-                    nodeCrowns = {};
                     totalFocusMins = 0;
                     saveLocalSession(deviceId, usernameInput, deptInput);
                     enterApp();
@@ -1026,7 +667,6 @@
             document.getElementById('landing-view').classList.add('hidden');
             updateGreetingHeader();
             updateHeaderAvatar();
-            renderPathTree();
             updateGamificationBar();
             renderTasks();
             renderForest();
@@ -1045,20 +685,13 @@
                 currentUserName = profile.user_name || currentUserName;
                 activeDepartmentKey = profile.department || 'general';
                 userXP = profile.xp ?? 140;
-                unlockedNodeMax = profile.unlocked_stage_max ?? 1;
-                nodeCrowns = profile.node_crowns || {};
                 totalFocusMins = profile.total_focus_mins ?? 0;
-                userStreak = profile.streak_count ?? 1;
-                currentLearningTrack = profile.learning_track || 'general';
                 if (profile.avatar_url) localStorage.setItem('zp_avatar_url', profile.avatar_url);
 
                 localStorage.setItem('zp_username', currentUserName);
                 localStorage.setItem('zp_user_department', activeDepartmentKey);
                 localStorage.setItem('zp_xp', userXP);
-                localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-                localStorage.setItem('zp_node_crowns', JSON.stringify(nodeCrowns));
                 localStorage.setItem('zp_focus_mins', totalFocusMins);
-                localStorage.setItem('zp_learning_track', currentLearningTrack);
             }
 
             const { data: cloudTasks } = await supabaseClient
@@ -1108,7 +741,6 @@
                 updateGreetingHeader();
                 updateHeaderAvatar();
                 loadUserDataFromSupabase(deviceId).then(() => {
-                    renderPathTree();
                     updateGamificationBar();
                     renderTasks();
                     renderForest();
@@ -1283,10 +915,6 @@
                     avatar_url: localStorage.getItem('zp_avatar_url') || null,
                     xp: userXP,
                     total_focus_mins: totalFocusMins,
-                    unlocked_stage_max: unlockedNodeMax,
-                    streak_count: userStreak,
-                    node_crowns: nodeCrowns,
-                    learning_track: currentLearningTrack,
                     last_active: new Date().toISOString()
                 }, { onConflict: 'device_id' });
                 updateCloudIndicator('online');
@@ -1311,19 +939,6 @@
             try { await supabaseClient.from('user_tasks').delete().eq('id', taskId); } catch (e) {}
         }
 
-        async function syncNodeProgressToCloud(nodeId, isCompleted, score = 100) {
-            if (!supabaseClient || !navigator.onLine) return;
-            const deviceId = localStorage.getItem('zp_device_id');
-            if (!deviceId) return;
-            try {
-                await supabaseClient.from('user_node_progress').upsert({
-                    device_id: deviceId, node_id: nodeId,
-                    completed: isCompleted, score: score,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'device_id,node_id' });
-            } catch (err) {}
-        }
-
         async function syncSessionToCloud(sessionObj) {
             if (!supabaseClient || !navigator.onLine) return;
             const deviceId = localStorage.getItem('zp_device_id');
@@ -1338,551 +953,7 @@
             } catch (e) {}
         }
 
-        // ============ 6. LECTURE & SLIDES ENGINE ============
-        function syncManualLectureText() {
-            const box = document.getElementById('lecture-text-content');
-            const manual = box ? box.value.trim() : '';
-            if (manual.length > 20 && manual !== lastManualLectureText) {
-                lastManualLectureText = manual;
-                currentLectureText = manual;
-                pdfSlidesData = [{ pageNum: 1, text: manual }];
-                safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                safeSetItem('zp_active_lecture_text', manual);
-                showLectureLoadedBadge();
-            }
-        }
-
-        function showLectureLoadedBadge() {
-            const badge = document.getElementById('lecture-loaded-badge');
-            const info = document.getElementById('lecture-loaded-info');
-            if (badge) badge.classList.remove('hidden');
-            if (info) info.innerHTML = `<i class="fa-solid fa-circle-check ml-1"></i> تم فحص واستيعاب المنهج (${pdfSlidesData.length || 1} سلايد)`;
-        }
-
-        function openAiConfigModal() {
-            syncManualLectureText();
-            if (!currentLectureText || currentLectureText.trim().length < 20) {
-                alert("يرجى تحميل ملف المحاضرة أولاً."); return;
-            }
-            const total = pdfSlidesData.length || 1;
-            const badge = document.getElementById('modal-slides-total-badge');
-            if (badge) badge.innerText = `الإجمالي: ${total}`;
-            document.getElementById('ai-config-modal').classList.remove('hidden');
-        }
-
-        function closeAiConfigModal() { document.getElementById('ai-config-modal').classList.add('hidden'); }
-
-        function setAiTaskType(type, btn) {
-            selectedAiTaskType = type;
-            document.querySelectorAll('.ai-task-btn').forEach(b => b.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-slate-200 dark:border-theme-darkBorder bg-slate-50 dark:bg-theme-darkBase text-slate-700 dark:text-slate-200 flex flex-col items-center gap-1.5');
-            if (btn) btn.className = 'ai-task-btn p-3 rounded-2xl text-xs font-bold border border-theme-sky bg-theme-sky text-white shadow-sm flex flex-col items-center gap-1.5';
-            const countWrapper = document.getElementById('ai-question-count-wrapper');
-            if (countWrapper) countWrapper.classList.toggle('hidden', type === 'summary');
-        }
-
-        function toggleModalScopeInputs() {
-            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
-            const singleBox = document.getElementById('modal-single-slide-box');
-            const rangeBox = document.getElementById('modal-range-slide-box');
-            if (singleBox) singleBox.classList.toggle('hidden', scope !== 'single');
-            if (rangeBox) rangeBox.classList.toggle('hidden', scope !== 'range');
-        }
-
-        function getScopedLectureContent() {
-            if (pdfSlidesData.length === 0) return currentLectureText.trim();
-            const scope = document.querySelector('input[name="modal_slide_scope"]:checked')?.value || 'all';
-            if (scope === 'single') {
-                const num = parseInt(document.getElementById('modal-single-slide-num')?.value || '1', 10);
-                const found = pdfSlidesData.find(s => s.pageNum === num);
-                return found ? `[Slide ${num}]: ${found.text}` : `[Slide ${pdfSlidesData[0].pageNum}]: ${pdfSlidesData[0].text}`;
-            } else if (scope === 'range') {
-                const from = parseInt(document.getElementById('modal-range-slide-from')?.value || '1', 10);
-                const to = parseInt(document.getElementById('modal-range-slide-to')?.value || String(pdfSlidesData.length), 10);
-                return pdfSlidesData.filter(s => s.pageNum >= from && s.pageNum <= to).map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
-            }
-            return pdfSlidesData.map(s => `[Slide ${s.pageNum}]: ${s.text}`).join("\n\n");
-        }
-
-        async function handleFileUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = `جاري الفحص: ${file.name}...`;
-            try {
-                if (file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf')) {
-                    if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
-                    const buf = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-                    let fullText = "";
-                    pdfSlidesData = [];
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const tc = await page.getTextContent();
-                        const pText = tc.items.map(it => it.str).join(" ");
-                        pdfSlidesData.push({ pageNum: i, text: pText });
-                        fullText += `[Slide ${i}]: ${pText}\n\n`;
-                    }
-                    currentLectureText = fullText;
-                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    safeSetItem('zp_active_lecture_text', fullText);
-                } else {
-                    const text = await file.text();
-                    currentLectureText = text;
-                    pdfSlidesData = [{ pageNum: 1, text: text }];
-                    safeSetItem('zp_slides_array', JSON.stringify(pdfSlidesData));
-                    safeSetItem('zp_active_lecture_text', text);
-                }
-                showLectureLoadedBadge();
-                if (status) status.innerText = `المصدر المعتمد: ${file.name}`;
-                e.target.value = '';
-                setTimeout(() => openAiConfigModal(), 400);
-            } catch(err) {
-                alert("تعذر استخراج المحتوى.");
-                if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
-            }
-        }
-
-        function togglePasteArea() { document.getElementById('lecture-paste-container')?.classList.toggle('hidden'); }
-
-        function resetLectureContext() {
-            currentLectureText = ""; pdfSlidesData = [];
-            localStorage.removeItem('zp_active_lecture_text'); localStorage.removeItem('zp_slides_array');
-            document.getElementById('lecture-loaded-badge')?.classList.add('hidden');
-            const status = document.getElementById('upload-file-status');
-            if (status) status.innerText = "تحميل ملف المحاضرة (صيغة PDF أو نص)";
-            const ta = document.getElementById('lecture-text-content');
-            if (ta) ta.value = '';
-            lastManualLectureText = '';
-        }
-
-        // ============ 7. AI TASKS & ZERO CONSOLE ============
-        async function executeAiCustomTask() {
-            closeAiConfigModal();
-            syncManualLectureText();
-            const scopedContent = getScopedLectureContent();
-            if (!scopedContent || scopedContent.trim().length < 20) {
-                alert("يرجى إدخال محتوى أو رفع ملف محاضرة أولاً."); return;
-            }
-            const displayStyle = document.getElementById('ai-display-style')?.value || 'interactive';
-            const qCount = parseInt(document.getElementById('ai-questions-count')?.value || '3', 10);
-            const feed = document.getElementById('zero-chat-feed');
-            const loadingId = 'loading_' + Date.now();
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="p-4 rounded-3xl bg-teal-50 dark:bg-theme-darkBase text-xs font-bold text-theme-teal animate-pulse">⏳ جاري فحص المحاضرة وتوليد المخرجات الأكاديمية بدقة...</div>`);
-                feed.scrollTop = feed.scrollHeight;
-            }
-            let systemInstruction = "";
-            let userPrompt = "";
-            let expectJson = false;
-            if (selectedAiTaskType === 'summary') {
-                systemInstruction = "أنت مساعد أكاديمي دقيق ومباشر. لخّص المحتوى التالي بشكل مكثف واحترافي بالعربية مع حفظ المصطلحات الإنجليزية الأساسية.";
-                userPrompt = `لخّص بشكل شامل ومباشر:\n\n${scopedContent}`;
-            } else if (selectedAiTaskType === 'mcq') {
-                expectJson = true;
-                systemInstruction = "أنت مدقق اختبارات أكاديمي صارم. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.";
-                userPrompt = `صغ بالضبط ${qCount} أسئلة MCQ مستخلصة حصراً من المحتوى التالي بصيغة JSON فقط:
-{"questions":[{"question":"نص السؤال باللغة الإنجليزية أو العربية حسب المحاضرة","options":["A","B","C","D"],"correct_index":0,"explanation":"التعليل الأكاديمي المختصر"}]}
-المحتوى المعتمد:
-${scopedContent}`;
-            } else if (selectedAiTaskType === 'short') {
-                expectJson = true;
-                systemInstruction = "أنت مدقق اختبارات أكاديمي صارم. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.";
-                userPrompt = `صغ بالضبط ${qCount} أسئلة مقالية قصيرة من المحتوى بصيغة JSON فقط:
-{"questions":[{"question":"نص السؤال","answer":"الإجابة النموذجية الحرفية","explanation":"السياق الأكاديمي"}]}
-المحتوى المعتمد:
-${scopedContent}`;
-            }
-            const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
-            document.getElementById(loadingId)?.remove();
-            
-            if (!reply || reply === "ERROR_API_KEY_INVALID") {
-                if (feed) {
-                    let errMsg = "⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من تفعيل الإنترنت والمحاولة ثانية.";
-                    if (reply === "ERROR_API_KEY_INVALID") {
-                        errMsg = "⚠️ مفتاح API الخاص بـ Groq غير صالح أو انتهت صلاحيته. يرجى تحديث المفتاح في الكود.";
-                    }
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">${errMsg}</div>`);
-                }
-                return;
-            }
-            if (selectedAiTaskType === 'summary') {
-                if (feed) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
-                    feed.scrollTop = feed.scrollHeight;
-                }
-                awardXP(20);
-            } else {
-                const parsed = parseAIJson(reply);
-                if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
-                    if (feed) {
-                        feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
-                    }
-                    return;
-                }
-                if (displayStyle === 'text') {
-                    let html = `<div class="chat-bot-bubble p-4 text-xs space-y-3"><div class="font-black text-theme-teal mb-2">📋 ورقة الاختبار المعتمدة (${parsed.questions.length} سؤال)</div>`;
-                    parsed.questions.forEach((q, i) => {
-                        html += `<div class="border-b border-slate-200 dark:border-theme-darkBorder pb-2 mb-2">
-                            <div class="font-bold text-slate-900 dark:text-white mb-1">س${i+1}: ${escapeHtml(q.question)}</div>`;
-                        if (Array.isArray(q.options)) {
-                            q.options.forEach((opt, oi) => {
-                                const mark = oi === q.correct_index ? '✅' : '';
-                                html += `<div class="text-slate-600 dark:text-slate-300">${String.fromCharCode(65+oi)}. ${escapeHtml(opt)} ${mark}</div>`;
-                            });
-                        }
-                        if (q.answer) html += `<div class="text-emerald-600 mt-1">الإجابة: ${escapeHtml(q.answer)}</div>`;
-                        if (q.explanation) html += `<div class="text-[11px] text-slate-400 mt-1">💡 ${escapeHtml(q.explanation)}</div>`;
-                        html += `</div>`;
-                    });
-                    html += `<button onclick="copyQuizText(this)" class="w-full bg-theme-sky text-white py-2 rounded-xl font-bold text-xs">📋 نسخ ورقة الاختبار</button></div>`;
-                    if (feed) {
-                        feed.insertAdjacentHTML('beforeend', html);
-                        feed.scrollTop = feed.scrollHeight;
-                    }
-                    awardXP(15);
-                } else {
-                    startQuizSession(parsed.questions);
-                }
-            }
-        }
-
-        function copyQuizText(btn) {
-            const container = btn.closest('.chat-bot-bubble');
-            navigator.clipboard.writeText(container.innerText).then(() => {
-                btn.innerText = '✅ تم النسخ';
-                setTimeout(() => btn.innerText = '📋 نسخ ورقة الاختبار', 1500);
-            });
-        }
-
-        function startQuizSession(questions) {
-            activeQuizSessionState = { questions, currentIndex: 0, score: 0, qCount: questions.length };
-            renderQuizInFeed();
-        }
-
-        function renderQuizInFeed() {
-            const feed = document.getElementById('zero-chat-feed');
-            if (!feed) return;
-            const { questions, currentIndex } = activeQuizSessionState;
-            const q = questions[currentIndex];
-            const quizId = 'quiz_' + Date.now();
-            let optsHtml = '';
-            if (Array.isArray(q.options)) {
-                q.options.forEach((opt, oi) => {
-                    optsHtml += `<button onclick="answerQuizChoice('${quizId}', ${oi})" data-opt="${oi}" class="quiz-opt-btn chat-quiz-opt w-full text-right p-3 rounded-2xl border text-xs font-bold transition mb-1.5">${escapeHtml(opt)}</button>`;
-                });
-            }
-            feed.insertAdjacentHTML('beforeend', `<div id="${quizId}" class="chat-quiz-card rounded-3xl p-5 space-y-3 shadow-md">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-black text-theme-teal">سؤال ${currentIndex+1} من ${questions.length}</span>
-                    <span class="text-[11px] font-bold text-emerald-500">النقاط: ${activeQuizSessionState.score}</span>
-                </div>
-                <div class="font-bold text-sm text-slate-900 dark:text-white leading-relaxed">${escapeHtml(q.question)}</div>
-                <div>${optsHtml}</div>
-                <div class="quiz-feedback hidden text-xs p-3 rounded-2xl"></div>
-            </div>`);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        function answerQuizChoice(quizId, chosenIdx) {
-            const container = document.getElementById(quizId);
-            if (!container) return;
-            const { questions, currentIndex } = activeQuizSessionState;
-            const q = questions[currentIndex];
-            const feedback = container.querySelector('.quiz-feedback');
-            container.querySelectorAll('.quiz-opt-btn').forEach(b => {
-                b.disabled = true;
-                const oi = parseInt(b.getAttribute('data-opt'));
-                if (oi === q.correct_index) b.classList.add('opt-correct');
-                else if (oi === chosenIdx) b.classList.add('opt-wrong');
-            });
-            const isCorrect = chosenIdx === q.correct_index;
-            if (isCorrect) { activeQuizSessionState.score++; playChime(true); awardXP(10); }
-            else { playChime(false); }
-            feedback.classList.remove('hidden');
-            feedback.className = 'quiz-feedback text-xs p-3 rounded-2xl ' + (isCorrect ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-600 border border-rose-500/30');
-            feedback.innerHTML = `<div class="font-black mb-1">${isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة غير صحيحة'}</div>${q.explanation ? `<div class="text-[11px] font-semibold">${escapeHtml(q.explanation)}</div>` : ''}`;
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'w-full bg-theme-sky text-white py-2.5 rounded-2xl font-bold text-xs mt-2 shadow-glow-sky';
-            nextBtn.innerText = (currentIndex + 1 < questions.length) ? 'السؤال التالي →' : '🏁 إنهاء وعرض النتيجة';
-            nextBtn.onclick = () => {
-                if (currentIndex + 1 < questions.length) {
-                    activeQuizSessionState.currentIndex++;
-                    renderQuizInFeed();
-                } else {
-                    showQuizFinalResult(quizId);
-                }
-            };
-            container.appendChild(nextBtn);
-        }
-
-        function showQuizFinalResult(quizId) {
-            const container = document.getElementById(quizId);
-            if (!container) return;
-            const { questions, score } = activeQuizSessionState;
-            const pct = Math.round((score / questions.length) * 100);
-            let msg = pct >= 80 ? '🏆 أداء أكاديمي استثنائي!' : pct >= 50 ? '👍 مستوى جيد جداً' : '💪 راجع السلايدات وأعد المحاولة';
-            container.innerHTML = `<div class="text-center space-y-3 py-4">
-                <div class="text-3xl font-black text-theme-teal">${score} / ${questions.length}</div>
-                <div class="text-lg font-black">${pct}%</div>
-                <div class="text-sm font-bold text-slate-700 dark:text-slate-200">${msg}</div>
-            </div>`;
-            if (pct >= 80) triggerConfetti();
-        }
-
-        async function sendZeroChat() {
-            const inp = document.getElementById('zero-user-msg');
-            const txt = inp?.value.trim();
-            if (!txt) return;
-            inp.value = '';
-            const feed = document.getElementById('zero-chat-feed');
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="chat-user-bubble text-xs font-bold">${escapeHtml(txt)}</div></div>`);
-            }
-            const loadingId = 'loading_' + Date.now();
-            if (feed) {
-                feed.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="chat-bot-bubble p-3 text-xs font-bold animate-pulse">✍️ جاري صياغة الإجابة المنهجية...</div>`);
-                feed.scrollTop = feed.scrollHeight;
-            }
-            let context = "";
-            if (typeof currentLectureText !== 'undefined' && currentLectureText && currentLectureText.trim().length > 20) {
-                const scoped = getScopedLectureContent();
-                context = `\n\nسياق المحاضرة المعتمدة:\n${scoped.slice(0, 8000)}`;
-            }
-            const reply = await callStrictAcademicAI(
-                `استفسار الطالب: ${txt}${context}`,
-                "أنت المساعد الأكاديمي لمنصة ZeroPlus الجامعية. أجب بأسلوب علمي مباشر ومفصل مدعوماً بمصطلحات المنهج."
-            );
-            document.getElementById(loadingId)?.remove();
-            if (feed) {
-                if (reply && reply !== "ERROR_API_KEY_INVALID") {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
-                    awardXP(3);
-                } else {
-                    let errMsg = "⚠️ تعذر الحصول على رد. يرجى التحقق من اتصال الإنترنت.";
-                    if (reply === "ERROR_API_KEY_INVALID") {
-                        errMsg = "⚠️ مفتاح API الخاص بـ Groq غير صالح أو انتهت صلاحيته.";
-                    }
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">${errMsg}</div>`);
-                }
-                feed.scrollTop = feed.scrollHeight;
-            }
-        }
-
-        function clearChatHistory() {
-            if (confirm("هل ترغب في إفراغ محادثة المساعد؟")) {
-                const feed = document.getElementById('zero-chat-feed');
-                if (feed) feed.innerHTML = '';
-            }
-        }
-
-        // ============ 8. DUOLINGO INTERACTIVE ENGINE ============
-        async function startInteractiveLesson(nodeId, title, currentCrown, orderNum) {
-            const modal = document.getElementById('lesson-modal');
-            const bodyArea = document.getElementById('lesson-body-area');
-            const actionBtn = document.getElementById('lesson-action-btn');
-            modal.classList.remove('hidden');
-            document.getElementById('lesson-hint-box').classList.add('hidden');
-            isHintVisible = false;
-            bodyArea.innerHTML = `<div class="p-8 text-center space-y-3">
-                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-theme-sky"></i>
-                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">جاري إعداد محطة (${escapeHtml(title)})...</p>
-            </div>`;
-            actionBtn.classList.add('hidden');
-
-            const prompt = `أنت خبير إعداد مناهج لغة إنجليزية تفاعلية. صغ 3 تمارين متنوعة لدرس: "${title}".
-النمط: ${currentLearningTrack === 'medical' ? 'إنجليزي طبي وسريري' : 'إنجليزي عام ومحادثة'}.
-المستوى: التاج ${currentCrown + 1} من 3.
-أخرج JSON فقط:
-{"exercises":[{"question":"Sentence with blank ______","translation":"الترجمة بالعربية","options":["A","B","C","D"],"correct_index":0,"explanation":"شرح القاعدة الأكاديمي بالعربية","hint":"تلميح سريع"}]}`;
-
-            let exercises = null;
-            try {
-                const raw = await callStrictAcademicAI(prompt, "أنت خبير لغات. أخرج كود JSON فقط بدون أي نصوص قبلها أو بعدها.", true);
-                const parsed = parseAIJson(raw);
-                if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) exercises = parsed.exercises;
-            } catch(e) {}
-
-            if (!exercises || exercises.length === 0) {
-                exercises = [
-                    {
-                        question: currentLearningTrack === 'medical' ? "The patient needs an immediate ______ infusion." : "She ______ English fluently every day.",
-                        translation: currentLearningTrack === 'medical' ? "يحتاج المريض إلى تسريب وريدي مباشر." : "هي تتحدث الإنجليزية بطلاقة كل يوم.",
-                        options: currentLearningTrack === 'medical' ? ["intravenous", "subcutaneous", "oral", "topical"] : ["speaks", "speak", "speaking", "spoke"],
-                        correct_index: 0,
-                        explanation: currentLearningTrack === 'medical' ? "Intravenous تعني وريدي مباشر." : "يضاف s المفرد للفعل مع الضمير She.",
-                        hint: currentLearningTrack === 'medical' ? "البادئة Intra تعني داخل الوريد." : "انتبه لقاعدة المضارع البسيط."
-                    }
-                ];
-            }
-            dynamicSessionState = { exercises, index: 0, nodeId, orderNum, currentCrown, title };
-            renderDynamicExerciseStep();
-        }
-
-        function closeLessonModal() { document.getElementById('lesson-modal').classList.add('hidden'); }
-
-        function toggleSmartHint() {
-            const ex = dynamicSessionState.exercises[dynamicSessionState.index];
-            const hintBox = document.getElementById('lesson-hint-box');
-            const hintText = document.getElementById('lesson-hint-text');
-            isHintVisible = !isHintVisible;
-            if (isHintVisible) {
-                hintText.innerText = ex?.hint || ex?.explanation || "تأمل في السياق.";
-                hintBox.classList.remove('hidden');
-            } else {
-                hintBox.classList.add('hidden');
-            }
-        }
-
-        function renderDynamicExerciseStep() {
-            const { exercises, index } = dynamicSessionState;
-            const ex = exercises[index];
-            const bodyArea = document.getElementById('lesson-body-area');
-            const actionBtn = document.getElementById('lesson-action-btn');
-            document.getElementById('lesson-step-badge').innerText = `تمرين ${index + 1} من ${exercises.length}`;
-            const pct = Math.round(((index + 1) / exercises.length) * 100);
-            document.getElementById('lesson-progress-bar').style.width = `${pct}%`;
-            document.getElementById('lesson-hint-box').classList.add('hidden');
-            isHintVisible = false;
-            let optsHtml = '';
-            ex.options.forEach((opt, optIdx) => {
-                optsHtml += `<button onclick="handleExerciseChoice(${optIdx})" data-optidx="${optIdx}" class="ex-opt-btn w-full text-right p-3.5 rounded-2xl bg-sky-50 dark:bg-theme-darkBase border border-sky-100 dark:border-theme-darkBorder text-xs sm:text-sm font-bold hover:border-theme-sky transition mb-2">${escapeHtml(opt)}</button>`;
-            });
-            bodyArea.innerHTML = `<div class="space-y-4">
-                <div class="text-center py-2 space-y-2">
-                    <span class="text-[11px] font-bold text-theme-sky block">اختر الإجابة الصحيحة لإكمال الجملة:</span>
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white" dir="ltr">${escapeHtml(ex.question)}</h3>
-                    <p class="text-xs text-slate-400 font-semibold">${escapeHtml(ex.translation)}</p>
-                </div>
-                <div class="space-y-2 pt-1">${optsHtml}</div>
-                <div id="exercise-feedback" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
-            </div>`;
-            actionBtn.classList.add('hidden');
-        }
-
-        function handleExerciseChoice(chosenIdx) {
-            const { exercises, index } = dynamicSessionState;
-            const ex = exercises[index];
-            const feedback = document.getElementById('exercise-feedback');
-            const actionBtn = document.getElementById('lesson-action-btn');
-            document.querySelectorAll('.ex-opt-btn').forEach(b => {
-                b.disabled = true;
-                const idx = parseInt(b.getAttribute('data-optidx'));
-                if (idx === ex.correct_index) b.classList.add('opt-correct');
-                else if (idx === chosenIdx) b.classList.add('opt-wrong');
-            });
-            feedback.classList.remove('hidden');
-            const isCorrect = (chosenIdx === ex.correct_index);
-            if (isCorrect) {
-                playChime(true); awardXP(15); triggerConfetti();
-                feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300';
-                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> صحيح! (+15 XP)</div>
-                    <p class="text-[11px] font-semibold">${escapeHtml(ex.explanation)}</p>`;
-            } else {
-                playChime(false);
-                feedback.className = 'p-3.5 rounded-2xl text-xs space-y-1 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300';
-                feedback.innerHTML = `<div class="font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> إجابة غير صحيحة</div>
-                    <p class="text-[11px] font-semibold">الإجابة الصحيحة هي: <strong>${escapeHtml(ex.options[ex.correct_index])}</strong></p>
-                    <p class="text-[11px]">${escapeHtml(ex.explanation)}</p>`;
-            }
-            actionBtn.classList.remove('hidden');
-            actionBtn.onclick = advanceExerciseOrFinish;
-            actionBtn.innerText = (index + 1 < exercises.length) ? "التمرين التالي" : "إنهاء واحتساب التاج 👑";
-        }
-
-        function advanceExerciseOrFinish() {
-            if (dynamicSessionState.index + 1 < dynamicSessionState.exercises.length) {
-                dynamicSessionState.index++;
-                renderDynamicExerciseStep();
-            } else {
-                advanceNodeCrownLevel(dynamicSessionState.nodeId, dynamicSessionState.orderNum);
-            }
-        }
-
-        function advanceNodeCrownLevel(nodeId, nodeOrder) {
-            let crowns = nodeCrowns[nodeId] || 0;
-            crowns = Math.min(3, crowns + 1);
-            nodeCrowns[nodeId] = crowns;
-            safeSetItem('zp_node_crowns', JSON.stringify(nodeCrowns));
-            if (crowns >= 3) {
-                if (nodeOrder === unlockedNodeMax) {
-                    unlockedNodeMax++;
-                    localStorage.setItem('zp_unlocked_node_max', unlockedNodeMax);
-                }
-                syncNodeProgressToCloud(nodeId, true, 100);
-            } else {
-                syncNodeProgressToCloud(nodeId, false, crowns * 33);
-            }
-            closeLessonModal();
-            triggerConfetti();
-            playChime(true);
-            syncProfileWithCloud();
-            renderPathTree();
-            alert(crowns < 3 ? `أكملت المستوى ${crowns}/3 بنجاح!` : "🎉 تهانينا! حصلت على التاج الكامل (3/3) وفُتحت المحطة التالية.");
-        }
-
-        function renderPathTree() {
-            const container = document.getElementById('learning-path-tree');
-            if (!container) return;
-            container.innerHTML = '';
-            const sections = GLOBAL_CURRICULUM[currentLearningTrack] || GLOBAL_CURRICULUM.general;
-            let nodeCounter = 1;
-            let totalCompletedNodes = 0;
-
-            sections.forEach((sec) => {
-                container.innerHTML += `<div class="w-full my-8 text-center">
-                    <span class="text-xs font-black uppercase tracking-wider px-5 py-2 rounded-2xl bg-gradient-to-r from-theme-sky to-theme-teal text-white shadow-sm">
-                        ${sec.title_ar} (${sec.level})
-                    </span>
-                </div>`;
-                sec.units.forEach((unit) => {
-                    container.innerHTML += `<div class="w-full flex items-center justify-center gap-3 my-5">
-                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                        <span class="text-xs font-bold text-slate-500 dark:text-theme-skyLight px-2">${unit.unit_title}</span>
-                        <div class="h-[1px] flex-1 bg-sky-200 dark:bg-theme-darkBorder"></div>
-                    </div>`;
-                    unit.nodes.forEach((node) => {
-                        const orderNum = nodeCounter;
-                        const crowns = nodeCrowns[node.id] || 0;
-                        const isUnlocked = orderNum <= unlockedNodeMax;
-                        const isCompleted = crowns >= 3;
-                        if (isCompleted) totalCompletedNodes++;
-                        const offsetClass = orderNum % 2 === 0 ? 'sm:translate-x-10' : 'sm:-translate-x-10';
-                        let btnHtml = '';
-                        if (isCompleted) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-amber-500/15 border-2 border-amber-500 text-amber-500 flex flex-col items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-crown text-amber-500 text-xl mb-0.5 animate-bounce"></i>
-                                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400">متقن (3/3)</span>
-                            </button>`;
-                        } else if (isUnlocked && crowns > 0) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex flex-col items-center justify-center font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-star text-amber-300 text-sm mb-0.5"></i>
-                                <span class="text-xs font-black">${crowns + 1}/3</span>
-                            </button>`;
-                        } else if (isUnlocked) {
-                            btnHtml = `<button onclick="startInteractiveLesson('${node.id}', '${node.title.replace(/'/g, "\\'")}', ${crowns}, ${orderNum})" class="relative w-20 h-20 rounded-4xl bg-gradient-to-tr from-theme-sky to-theme-teal text-white flex items-center justify-center text-2xl font-black shadow-glow-sky ring-4 ring-sky-300/30 animate-pulse hover:scale-105 active:scale-95 transition">
-                                <i class="fa-solid fa-play mr-0.5 text-base"></i>
-                            </button>`;
-                        } else {
-                            btnHtml = `<div class="w-18 h-18 rounded-4xl bg-slate-100 dark:bg-theme-darkCard border border-slate-200 dark:border-theme-darkBorder text-slate-400 flex items-center justify-center text-base opacity-50 cursor-not-allowed">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>`;
-                        }
-                        container.innerHTML += `<div class="flex flex-col items-center justify-center my-4 transition-transform ${offsetClass}">
-                            ${btnHtml}
-                            <div class="mt-2.5 text-center max-w-[240px]">
-                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(node.title)}</h4>
-                                <span class="text-[10px] text-slate-400 font-semibold">محطة ${orderNum}</span>
-                            </div>
-                        </div>`;
-                        nodeCounter++;
-                    });
-                });
-            });
-            const shareNodes = document.getElementById('share-nodes');
-            if (shareNodes) shareNodes.innerText = `${totalCompletedNodes}`;
-        }
-
-        // ============ 9. UI INITIALIZATION & SYNC ============
+        // ============ 4. UI INITIALIZATION & SYNC ============
         function updateGreetingHeader() {
             if (currentUserName) {
                 const greeting = document.getElementById('app-user-greeting');
@@ -1895,12 +966,6 @@ ${scopedContent}`;
         function updateGamificationBar() {
             const xpEl = document.getElementById('app-xp');
             if (xpEl) xpEl.innerText = `${userXP} XP`;
-
-            const heartsEl = document.getElementById('path-hearts-count');
-            if (heartsEl) heartsEl.innerText = userHearts;
-
-            const streakEl = document.getElementById('path-streak-count');
-            if (streakEl) streakEl.innerText = `${userStreak} يوم`;
 
             const minsEl = document.getElementById('stat-total-mins');
             if (minsEl) minsEl.innerText = `${totalFocusMins} دقيقة`;
@@ -2194,7 +1259,6 @@ ${scopedContent}`;
             const shareTrees = document.getElementById('share-trees');
             if (shareXp) shareXp.innerText = `${userXP} XP`;
             if (shareTrees) shareTrees.innerText = `${userForest.length}`;
-            renderPathTree();
             document.getElementById('share-modal')?.classList.remove('hidden');
         }
         function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); }
@@ -2237,7 +1301,7 @@ ${scopedContent}`;
             renderTasks();
             renderForest();
             const savedTab = localStorage.getItem('zp_active_tab');
-            showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'english');
+            showTab(['todo', 'pomodoro', 'english', 'zero'].includes(savedTab) ? savedTab : 'todo');
 
             if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
                 pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);

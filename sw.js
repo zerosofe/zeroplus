@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'zeroplus-v28';
+const CACHE_NAME = 'zeroplus-v29';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -31,7 +31,6 @@ self.addEventListener('fetch', (event) => {
   // تجاهل طلبات الـ API والملفات الخارجية تماماً لكي لا يتسبب في انهيار التطبيق
   if (
     event.request.url.includes('supabase.co') ||
-    event.request.url.includes('api.groq.com') ||
     event.request.url.includes('cdn.jsdelivr.net') ||
     event.request.url.includes('cdnjs.cloudflare.com') ||
     event.request.url.includes('fonts.googleapis.com') ||
