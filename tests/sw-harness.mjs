@@ -20,11 +20,24 @@ export function createSwHarness() {
 
   const respond = (body) => ({ _body: String(body), text: () => Promise.resolve(String(body)) });
 
+  const openNotifications = [];   // الإشعارات المعروضة حالياً (يُغلقها الكود أو الضغط)
   const sw = {
     addEventListener: (ev, cb) => { (listeners[ev] ||= []).push(cb); },
     skipWaiting() {},
     registration: {
-      showNotification: (title, opts) => { notifications.push({ title, opts: opts || {} }); return Promise.resolve(); },
+      showNotification: (title, opts) => {
+        const o = opts || {};
+        notifications.push({ title, opts: o });
+        // إشعار بنفس الـ tag يستبدل السابق (سلوك المتصفح الحقيقي)
+        const idx = openNotifications.findIndex((n) => n.tag && o.tag && n.tag === o.tag);
+        const entry = { title, tag: o.tag, data: o.data || {}, actions: o.actions || [], close() { const i = openNotifications.indexOf(entry); if (i >= 0) openNotifications.splice(i, 1); } };
+        if (idx >= 0) openNotifications.splice(idx, 1, entry);
+        else openNotifications.push(entry);
+        return Promise.resolve();
+      },
+      getNotifications: (filter) => Promise.resolve(
+        openNotifications.filter((n) => !filter || !filter.tag || n.tag === filter.tag)
+      ),
     },
     clients: {
       matchAll: () => Promise.resolve([{ postMessage: (m) => clientMessages.push(m), focus() {}, navigate() {} }]),
@@ -56,6 +69,18 @@ export function createSwHarness() {
     __cache: cacheStore,
     __timers: timers,
     __fire: (ev, evt) => { (listeners[ev] || []).forEach((cb) => cb(evt || {})); },
+    __openNotifications: openNotifications,
+    // محاكاة ضغط زر داخل الإشعار (إيقاف مؤقت / استئناف / إنهاء)
+    __clickNotification: (action, tag) => {
+      const n = openNotifications.find((x) => !tag || x.tag === tag) || { data: {}, close() {} };
+      const waits = [];
+      (listeners['notificationclick'] || []).forEach((cb) => cb({
+        action: action || '',
+        notification: n,
+        waitUntil: (p) => waits.push(p),
+      }));
+      return Promise.all(waits);
+    },
     __message: (data, source) => {
       (listeners['message'] || []).forEach((cb) => cb({
         data,

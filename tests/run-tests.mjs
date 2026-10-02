@@ -370,11 +370,15 @@ test('19) بدء المؤقت يسلّم وقت النهاية للخدمة ال
   assert.match(sandbox.document.getElementById('pomo-bg-text').innerText, /الخلفية/, 'شارة الخلفية لا توضح أن التنبيه من الخدمة الخلفية');
 
   assert.equal(sandbox.pausePomo(), true);
-  assert.ok(sandbox.__swMessages.some((m) => m.type === 'CANCEL_POMO_TIMER'), 'لم تُلغَ الجلسة في الخدمة الخلفية');
+  // الإيقاف المؤقت يُبقي الجلسة في الخدمة الخلفية «موقوفة» (مع زر استئناف في الإشعار) ولا يطلق تنبيه النهاية
+  assert.ok(sandbox.__swMessages.some((m) => m.type === 'PAUSE_POMO_TIMER'), 'لم تُوقَف الجلسة في الخدمة الخلفية');
   assert.equal(sandbox.__api.pomoRunning, false);
+  assert.equal(sandbox.__api.pomoPaused, true, 'لم تُسجَّل الجلسة كموقوفة مؤقتاً');
   assert.equal(sandbox.__api.pomoEndTimestamp, 0, 'بقي وقت نهاية قديم ← سيُحسب جلسة وهمية');
   assert.equal(sandbox.startPomo(), true, 'لا يمكن بدء جلسة جديدة بعد الإيقاف');
   sandbox.pausePomo();
+  sandbox.resetPomo();
+  assert.ok(sandbox.__swMessages.some((m) => m.type === 'CANCEL_POMO_TIMER'), 'إعادة التهيئة لم تُلغِ مؤقّت الخلفية');
 });
 
 test('20) جلسة انتهت والتطبيق بالخلفية تُحسب مرة واحدة فقط', async () => {
@@ -551,6 +555,379 @@ test('30) تذكير لطيف بتفعيل التنبيهات عند بدء جل
   sandbox.pausePomo();
   assert.equal(sandbox.localStorage.getItem('zp_notify_pomo_nudges'), '2', 'التذكير تكرر أكثر من الحد');
 });
+
+// ============================================================================
+// v32 — الأزرار والتنبيهات المخصّصة والمظهر الثلاثي والدعم والتركيز بالخلفية
+// ============================================================================
+test('31) أنماط المظهر الثلاثة: فاتح / داكن / تلقائي يتبع نظام الجهاز', () => {
+  const { sandbox, nodes } = createHarness();
+  const isDark = () => sandbox.document.documentElement.classList.contains('dark');
+
+  sandbox.__setPrefersDark(false);
+  sandbox.setThemeMode('system');
+  assert.equal(sandbox.localStorage.getItem('zp_theme'), 'system', 'وضع «تلقائي» لم يُحفظ');
+  assert.equal(sandbox.resolvedTheme(), 'light');
+  assert.equal(isDark(), false, 'الوضع التلقائي لم يتبع جهازاً فاتحاً');
+
+  sandbox.__setPrefersDark(true);        // الطالب فعّل الوضع الليلي في هاتفه
+  assert.equal(isDark(), true, 'الوضع التلقائي لم يتبع تحوّل الجهاز للوضع الليلي');
+  assert.match(nodes.get('home-theme-status').innerText, /تلقائي/, 'شارة المظهر لا تُظهر الوضع التلقائي');
+  assert.match(nodes.get('home-theme-hint').innerText, /تلقائي/);
+
+  sandbox.setThemeMode('light');          // اختيار صريح يتجاهل الجهاز
+  assert.equal(isDark(), false);
+  sandbox.__setPrefersDark(false);
+  sandbox.__setPrefersDark(true);
+  assert.equal(isDark(), false, 'الوضع الصريح (فاتح) تأثر بإعداد الجهاز');
+
+  sandbox.setThemeMode('dark');
+  assert.equal(isDark(), true);
+  assert.equal(sandbox.toggleTheme(), 'light', 'زر الترويسة لا يقلب المظهر');
+  assert.equal(isDark(), false);
+  assert.equal(sandbox.toggleTheme(), 'dark');
+  assert.equal(isDark(), true);
+});
+
+test('32) التذكير اليومي: الموعد التالي يُحسب صحيحاً ويُسلَّم للخدمة الخلفية', () => {
+  const { sandbox } = createHarness();
+  const base = new Date(); base.setHours(10, 0, 0, 0);
+  const todayAt20 = new Date(base); todayAt20.setHours(20, 0, 0, 0);
+
+  assert.equal(sandbox.nextDailyReminderAt('20:00', base.getTime()), todayAt20.getTime(), 'موعد اليوم غير صحيح');
+  const late = new Date(base); late.setHours(21, 30, 0, 0);
+  assert.equal(sandbox.nextDailyReminderAt('20:00', late.getTime()), todayAt20.getTime() + 86400000, 'بعد مرور الوقت يجب أن يكون غداً');
+  assert.equal(sandbox.nextDailyReminderAt('بلا وقت', base.getTime()), 0, 'وقت غير صالح يجب أن يُرفض');
+
+  sandbox.setNotifyPref('dailyTime', '21:15');
+  sandbox.setNotifyPref('daily', true);
+  assert.equal(sandbox.getNotifyPrefs().daily, true);
+  assert.equal(JSON.parse(sandbox.localStorage.getItem('zp_notify_prefs')).dailyTime, '21:15', 'وقت التذكير لم يُحفظ');
+
+  const sync = sandbox.__swMessages.filter(m => m.type === 'SYNC_ALERTS').pop();
+  assert.ok(sync, 'لم تُسلَّم التذكيرات للخدمة الخلفية');
+  const daily = sync.alerts.find(a => a.id === 'daily');
+  assert.ok(daily, 'التذكير اليومي غير مجدول');
+  assert.equal(daily.repeatMs, 86400000, 'التذكير اليومي لا يتكرر كل يوم');
+  assert.ok(daily.at > Date.now(), 'موعد التذكير في الماضي');
+  assert.match(sandbox.document.getElementById('pref-schedule-hint').innerText, /تذكير يومي/);
+
+  sandbox.setNotifyPref('daily', false);
+  const after = sandbox.__swMessages.filter(m => m.type === 'SYNC_ALERTS').pop();
+  assert.equal(after.alerts.filter(a => a.id === 'daily').length, 0, 'التذكير اليومي بقي بعد إيقافه');
+});
+
+test('33) الفاصل المخصّص أثناء الجلسة يُجدوَل عند البدء ويُلغى عند الإيقاف', () => {
+  const { sandbox } = createHarness();
+  sandbox.setNotifyPref('checkInMins', 10);
+  assert.equal(sandbox.getNotifyPrefs().checkInMins, 10, 'الفاصل المخصّص لم يُحفظ');
+  let sync = sandbox.__swMessages.filter(m => m.type === 'SYNC_ALERTS').pop();
+  assert.equal(sync.alerts.filter(a => a.id === 'checkin').length, 0, 'جُدول تنبيه أثناء الجلسة بلا جلسة');
+
+  sandbox.startPomo();
+  sync = sandbox.__swMessages.filter(m => m.type === 'SYNC_ALERTS').pop();
+  const ci = sync.alerts.find(a => a.id === 'checkin');
+  assert.ok(ci, 'لم يُجدول التنبيه المتكرر مع بدء الجلسة');
+  assert.equal(ci.repeatMs, 10 * 60000);
+  assert.ok(Math.abs(ci.at - (Date.now() + 10 * 60000)) < 4000, 'موعد التنبيه المتكرر غير صحيح');
+
+  sandbox.pausePomo();
+  assert.ok(sandbox.__swMessages.some(m => m.type === 'CANCEL_ALERT' && m.id === 'checkin'), 'لم يُلغَ التنبيه المتكرر عند الإيقاف');
+  sync = sandbox.__swMessages.filter(m => m.type === 'SYNC_ALERTS').pop();
+  assert.equal(sync.alerts.filter(a => a.id === 'checkin').length, 0);
+
+  sandbox.setNotifyPref('checkInMins', 999);
+  assert.equal(sandbox.getNotifyPrefs().checkInMins, 180, 'لم تُحدّ القيمة القصوى للفاصل');
+  sandbox.resetPomo();
+});
+
+test('34) تفضيلات التنبيهات تُحفظ وتُحترم فعلياً (نهاية الجلسة + الإشعار المستمر)', async () => {
+  const { sandbox } = createHarness();
+  sandbox.Notification.permission = 'granted';
+
+  sandbox.setNotifyPref('sessionEnd', false);
+  sandbox.__notifications.length = 0;
+  sandbox.__api.pomoEndTimestamp = Date.now() - 1000;
+  sandbox.checkPomoDeadline();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(sandbox.__notifications.filter(n => /انتهت الجلسة/.test(n.title)).length, 0, 'وصل تنبيه نهاية الجلسة رغم إيقافه من التفضيلات');
+
+  sandbox.setNotifyPref('sessionEnd', true);
+  sandbox.__notifications.length = 0;
+  sandbox.__api.pomoEndTimestamp = Date.now() - 1000;
+  sandbox.checkPomoDeadline();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(sandbox.__notifications.filter(n => /انتهت الجلسة/.test(n.title)).length, 1, 'لم يصل تنبيه نهاية الجلسة بعد تفعيله');
+
+  // الإشعار المستمر يُطلب من الخدمة الخلفية حسب التفضيل فقط
+  sandbox.setNotifyPref('ongoing', true);
+  sandbox.startPomo();
+  let start = sandbox.__swMessages.filter(m => m.type === 'START_POMO_TIMER').pop();
+  assert.equal(start.ongoing, true, 'لم يُطلب الإشعار المستمر رغم تفعيله');
+  sandbox.resetPomo();
+
+  sandbox.setNotifyPref('ongoing', false);
+  sandbox.startPomo();
+  start = sandbox.__swMessages.filter(m => m.type === 'START_POMO_TIMER').pop();
+  assert.equal(start.ongoing, false, 'طُلب الإشعار المستمر رغم إيقافه');
+  sandbox.resetPomo();
+
+  sandbox.resetNotifyPrefs();
+  assert.equal(JSON.stringify(JSON.parse(sandbox.localStorage.getItem('zp_notify_prefs'))),
+    JSON.stringify({ sessionEnd: true, ongoing: true, breakNudge: true, sound: true, daily: false, dailyTime: '20:00', checkInMins: 0 }),
+    'استعادة الافتراضي لا تعيد كل القيم');
+});
+
+test('35) موثوقية التسليم: تذكير فات والخدمة نائمة يصل عند عودة التطبيق (والقديم جداً لا يزعج)', async () => {
+  const { sandbox, localStorage } = createHarness();
+  sandbox.Notification.permission = 'granted';
+  const mk = (at) => JSON.stringify([{ id: 'daily', at, repeatMs: 86400000, tag: 'zp-daily', title: 'ZeroPlus | موعد الدراسة 📚', body: 'ابدأ جلستك' }]);
+
+  localStorage.setItem('zp_scheduled_alerts', mk(Date.now() - 10 * 60000));   // فات قبل ١٠ دقائق
+  sandbox.__notifications.length = 0;
+  assert.equal(sandbox.catchUpScheduledAlerts(), 1, 'لم يُسلَّم التذكير الفائت');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.match(sandbox.__notifications[0].title, /موعد الدراسة/);
+  let stored = JSON.parse(localStorage.getItem('zp_scheduled_alerts'));
+  assert.ok(stored[0].at > Date.now(), 'لم يُعَد جدولة التذكير اليومي التالي');
+
+  localStorage.setItem('zp_scheduled_alerts', mk(Date.now() - 6 * 60 * 60 * 1000));   // فات قبل ٦ ساعات
+  sandbox.__notifications.length = 0;
+  assert.equal(sandbox.catchUpScheduledAlerts(), 0, 'أزعج الطالب بتذكير قديم جداً');
+  stored = JSON.parse(localStorage.getItem('zp_scheduled_alerts'));
+  assert.ok(stored[0].at > Date.now(), 'التذكير القديم لم يُعَد جدولته للموعد القادم');
+});
+
+test('36) الشريط المصغّر للجلسة: وقت متبقٍ + إيقاف مؤقت/استئناف في كل الشاشات', () => {
+  const { sandbox, nodes } = createHarness();
+  const widget = () => sandbox.document.getElementById('focus-mini');
+  sandbox.showTab('todo');
+  sandbox.updateFocusWidget();
+  assert.equal(widget().classList.contains('hidden'), true, 'الشريط ظاهر بلا جلسة');
+
+  sandbox.startPomo();
+  assert.equal(widget().classList.contains('hidden'), false, 'الشريط لم يظهر مع بدء الجلسة');
+  assert.match(nodes.get('focus-mini-time').innerText, /^\d\d:\d\d$/, 'الوقت المتبقي غير معروض');
+  assert.match(nodes.get('focus-mini-label').innerText, /تعمل بالخلفية/);
+  assert.match(nodes.get('focus-mini-toggle-icon').className, /fa-pause/);
+
+  sandbox.pausePomo();
+  assert.equal(widget().classList.contains('hidden'), false, 'الشريط اختفى والجلسة موقوفة مؤقتاً');
+  assert.match(nodes.get('focus-mini-label').innerText, /موقوفة مؤقتاً/);
+  assert.match(nodes.get('focus-mini-toggle-icon').className, /fa-play/, 'زر الشريط لا يتحول إلى «استئناف»');
+
+  assert.equal(sandbox.togglePomo(), true, 'الاستئناف من الشريط المصغّر لا يعمل');
+  assert.equal(sandbox.__api.pomoRunning, true);
+  sandbox.resetPomo();
+  assert.equal(widget().classList.contains('hidden'), true, 'الشريط بقي بعد إنهاء الجلسة');
+});
+
+test('37) جلسة موقوفة مؤقتاً تعود كما تركها الطالب بعد إغلاق التطبيق', () => {
+  const { sandbox, nodes } = createHarness();
+  sandbox.localStorage.setItem('zp_pomo_paused_remaining', '600');   // ١٠ دقائق متبقية
+  (sandbox.__documentListeners['DOMContentLoaded'] || []).forEach((cb) => cb());
+
+  assert.equal(sandbox.__api.pomoPaused, true, 'الجلسة الموقوفة لم تُستعد');
+  assert.equal(sandbox.__api.pomoRemaining, 600);
+  assert.equal(nodes.get('pomo-display').innerText, '10:00', 'العدّاد لا يعرض المتبقي المحفوظ');
+  assert.equal(nodes.get('focus-mini').classList.contains('hidden'), false, 'الشريط المصغّر لا يظهر للجلسة المستعادة');
+  assert.ok(sandbox.__swMessages.some((m) => m.type === 'POMO_STATUS'), 'لم تُستفسر الخدمة الخلفية عن حالة الجلسة');
+
+  // والخدمة الخلفية هي المرجع: لو كانت الجلسة ما زالت تعمل هناك، تُستأنف الصفحة
+  sandbox.applyBackgroundPomoState({ paused: false, deadlineAt: Date.now() + 300000, remainingMs: 300000 });
+  assert.equal(sandbox.__api.pomoRunning, true, 'الصفحة لم تتزامن مع جلسة تعمل في الخلفية');
+  sandbox.resetPomo();
+});
+
+test('38) الإشعار المستمر: الوقت المتبقي + أزرار إيقاف/استئناف داخل الإشعار', async () => {
+  const sw = createSwHarness();
+  sw.__message({
+    type: 'START_POMO_TIMER', deadlineAt: Date.now() + 25 * 60000, durationMs: 25 * 60000,
+    mins: 25, label: 'جلسة 25 دقيقة', ongoing: true, title: 'انتهى الوقت', body: 'تمت'
+  });
+  const ongoing = sw.__notifications.filter(n => n.opts.tag === 'zp-pomo-ongoing').pop();
+  assert.ok(ongoing, 'لم يظهر الإشعار المستمر أثناء الجلسة');
+  assert.match(ongoing.opts.body, /متبقٍ 25 دقيقة/, 'الإشعار لا يعرض الوقت المتبقي');
+  assert.equal(ongoing.opts.silent, true, 'الإشعار المستمر يجب أن يكون صامتاً');
+  assert.equal(ongoing.opts.requireInteraction, true);
+  assert.equal(Array.from(ongoing.opts.actions || []).map(a => a.action).join(','), 'pause,stop', 'أزرار الإشعار ناقصة');
+
+  // بلا طلب صريح (الإصدارات القديمة/تفضيل مغلق) لا يظهر إشعار مستمر
+  const sw2 = createSwHarness();
+  sw2.__message({ type: 'START_POMO_TIMER', deadlineAt: Date.now() + 60000, durationMs: 60000 });
+  assert.equal(sw2.__notifications.filter(n => n.opts.tag === 'zp-pomo-ongoing').length, 0, 'ظهر إشعار مستمر لم يُطلب');
+});
+
+test('39) أزرار الإشعار المستمر تُبدّل حالة الجلسة في الخلفية وتخبر الصفحة', async () => {
+  const sw = createSwHarness();
+  sw.__message({
+    type: 'START_POMO_TIMER', deadlineAt: Date.now() + 25 * 60000, durationMs: 25 * 60000,
+    mins: 25, ongoing: true, title: 'انتهى الوقت', body: 'تمت'
+  });
+
+  await sw.__clickNotification('pause', 'zp-pomo-ongoing');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.ok(sw.__clientMessages.some(m => m.type === 'POMO_PAUSED'), 'زر الإيقاف لم يُخبر الصفحة');
+  const paused = sw.__notifications.filter(n => n.opts.tag === 'zp-pomo-ongoing').pop();
+  assert.match(paused.opts.body, /موقوفة مؤقتاً/, 'الإشعار لا يعكس حالة الإيقاف');
+  assert.equal(Array.from(paused.opts.actions || []).map(a => a.action).join(','), 'resume,stop', 'زر الاستئناف غير معروض');
+
+  sw.__runTimers(); sw.__runWatchdog();
+  assert.equal(sw.__notifications.filter(n => n.opts.tag === 'zp-pomo').length, 0, 'أُطلق تنبيه النهاية لجلسة موقوفة مؤقتاً');
+
+  await sw.__clickNotification('resume', 'zp-pomo-ongoing');
+  await new Promise((r) => setTimeout(r, 0));
+  const resumedMsg = sw.__clientMessages.filter(m => m.type === 'POMO_RESUMED').pop();
+  assert.ok(resumedMsg && resumedMsg.deadlineAt > Date.now(), 'الاستئناف لم يُعد ضبط وقت النهاية');
+  assert.match(sw.__notifications.filter(n => n.opts.tag === 'zp-pomo-ongoing').pop().opts.body, /متبقٍ/);
+
+  await sw.__clickNotification('stop', 'zp-pomo-ongoing');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.ok(sw.__clientMessages.some(m => m.type === 'POMO_CANCELLED'), 'زر الإنهاء لم يُخبر الصفحة');
+  assert.equal(sw.__openNotifications.filter(n => n.tag === 'zp-pomo-ongoing').length, 0, 'الإشعار المستمر لم يُغلق بعد الإنهاء');
+
+  sw.__message({ type: 'POMO_STATUS' });
+  const status = sw.__pageMessages.pop();
+  assert.equal(status.running, false, 'الخدمة الخلفية ما زالت تظن أن الجلسة تعمل');
+});
+
+test('40) التذكيرات المجدولة في الخدمة الخلفية: تُطلق وتتكرر وتنجو من إعادة التشغيل', async () => {
+  const sw = createSwHarness();
+  sw.__message({
+    type: 'SYNC_ALERTS',
+    alerts: [{ id: 'daily', at: Date.now() - 1000, repeatMs: 86400000, tag: 'zp-daily', title: 'ZeroPlus | موعد الدراسة 📚', body: 'ابدأ جلستك' }]
+  });
+  sw.__runWatchdog();
+  assert.equal(sw.__notifications.filter(n => n.opts.tag === 'zp-daily').length, 1, 'لم يُطلق التذكير المستحق');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.ok(sw.__clientMessages.some(m => m.type === 'ALERT_FIRED' && m.id === 'daily'), 'لم تُخبر الصفحة بإطلاق التذكير');
+
+  sw.__runWatchdog();
+  assert.equal(sw.__notifications.filter(n => n.opts.tag === 'zp-daily').length, 1, 'تكرّر التذكير قبل موعده التالي');
+
+  // إعادة تشغيل الخدمة الخلفية لا تفقد الجدول
+  const sw2 = createSwHarness();
+  sw2.__cache.set('/__zp_pomo_timer', sw.__cache.get('/__zp_pomo_timer'));
+  sw2.__fire('activate', { waitUntil: (p) => p });
+  await new Promise((r) => setTimeout(r, 0));
+  sw2.__message({ type: 'ALERTS_STATUS' });
+  const reply = sw2.__pageMessages.pop();
+  assert.equal(reply.alerts.length, 1, 'ضاعت التذكيرات بعد إعادة تشغيل الخدمة الخلفية');
+  assert.ok(reply.alerts[0].at > Date.now(), 'موعد التذكير المسترجع في الماضي');
+
+  sw2.__message({ type: 'CANCEL_ALERT', id: 'daily' });
+  sw2.__message({ type: 'ALERTS_STATUS' });
+  assert.equal(sw2.__pageMessages.pop().alerts.length, 0, 'لم يُلغَ التذكير');
+});
+
+test('41) نموذج الدعم: يرفض الرسالة القصيرة ويحفظ ويرفع ويجهّز رابط تيليجرام', async () => {
+  const { sandbox, nodes, supabaseMock, localStorage } = createHarness();
+  await signup(sandbox, 'طالب نموذج الدعم');
+
+  sandbox.document.getElementById('support-message').value = 'قصير';
+  assert.equal(sandbox.submitSupportTicket(), false, 'قُبلت رسالة قصيرة');
+  assert.match(nodes.get('toast-inner').innerText, /١٠ أحرف/, 'لم يُشرح سبب الرفض');
+  assert.equal(readJson(localStorage, 'zp_support_tickets', []).length, 0);
+
+  sandbox.document.getElementById('support-topic').value = 'مشكلة في التنبيهات';
+  sandbox.document.getElementById('support-attach-diag').checked = true;
+  sandbox.document.getElementById('support-message').value = 'الإشعارات لا تصلني بعد انتهاء الجلسة على جهاز أندرويد';
+  const ticket = sandbox.submitSupportTicket();
+  assert.ok(ticket && ticket.id, 'لم تُنشأ رسالة الدعم');
+  assert.equal(ticket.status, 'queued');
+  assert.equal(nodes.get('support-message').value, '', 'لم تُفرَّغ خانة الرسالة بعد الإرسال');
+
+  await sandbox.flushSyncQueue();
+  const row = supabaseMock._state.tables.support_messages[0];
+  assert.ok(row, 'رسالة الدعم لم تُرفع للسحابة');
+  assert.equal(row.topic, 'مشكلة في التنبيهات');
+  assert.equal(row.device_id, localStorage.getItem('zp_device_id'));
+  assert.match(row.diagnostics, /ZeroPlus/, 'التقرير التقني لم يُرفق');
+  assert.equal(readJson(localStorage, 'zp_support_tickets', [])[0].status, 'sent', 'حالة الرسالة لم تتحدث بعد الرفع');
+
+  const href = nodes.get('support-telegram-link').getAttribute('href');
+  assert.match(href, /t\.me\/share/, 'رابط تيليجرام غير معبّأ بالرسالة');
+  assert.ok(sandbox.__clipboard.lastText && /رسالة دعم/.test(sandbox.__clipboard.lastText), 'الرسالة لم تُنسخ للطالب');
+  assert.equal(await sandbox.copyLastTicket(), true);
+});
+
+test('42) غياب جدول support_messages لا يُعطّل المزامنة ولا يُضيع الرسالة', async () => {
+  const { sandbox, supabaseMock, localStorage } = createHarness();
+  await signup(sandbox, 'طالب بلا جدول دعم');
+  supabaseMock._state.failures.support_messages = 'relation "public.support_messages" does not exist';
+
+  sandbox.document.getElementById('support-message').value = 'عندي مشكلة في مزامنة المهام بين جهازين';
+  sandbox.submitSupportTicket();
+  await sandbox.flushSyncQueue();
+
+  assert.equal(sandbox.__api.pendingCount, 0, 'بقيت رسالة الدعم عالقة في طابور المزامنة للأبد');
+  assert.equal(sandbox.__api.lastSyncError, null, 'صار مؤشر السحابة أحمر بسبب جدول اختياري');
+  assert.equal(readJson(localStorage, 'zp_support_tickets', [])[0].status, 'local', 'لم تُحفظ الرسالة محلياً عند غياب الجدول');
+});
+
+test('43) درج الدعم يعرض حالة الاشتراك والجلسة والمزامنة', async () => {
+  const { sandbox, nodes } = createHarness();
+  sandbox.refreshSessionStatus();
+  assert.match(nodes.get('support-session-state').innerText, /زائر/, 'حالة الزائر غير معروضة');
+
+  await signup(sandbox, 'طالب حالة الجلسة');
+  sandbox.openSupportDrawer();
+  assert.match(nodes.get('support-session-state').innerText, /نشطة/, 'الجلسة لا تظهر كنشطة بعد الدخول');
+  assert.match(nodes.get('support-plan-badge').innerText, /مجاني/, 'حالة الاشتراك غير معروضة');
+  assert.match(nodes.get('support-session-since').innerText, /الآن|منذ/, 'بداية الجلسة غير معروضة');
+  assert.match(nodes.get('support-last-sync').innerText, /الآن|منذ/, 'آخر مزامنة غير معروضة');
+  const drawerHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.match(drawerHtml, /id="support-plan-expiry"[^>]*>مدى الحياة/, 'صلاحية الاشتراك غير معروضة في الدرج');
+
+  sandbox.navigator.onLine = false;
+  sandbox.refreshSessionStatus();
+  assert.match(nodes.get('support-session-state').innerText, /بدون إنترنت/, 'لا تظهر حالة العمل دون إنترنت');
+});
+
+test('44) أي خطأ غير متوقع يُسجَّل ويظهر للطالب وفي تقرير المشكلة', () => {
+  const { sandbox, nodes } = createHarness();
+  sandbox.recordRuntimeIssue(new Error('فشل تجريبي في زر'), 'زر الاختبار');
+  assert.match(nodes.get('toast-inner').innerText, /تعذّر تنفيذ العملية/, 'لم يُبلَّغ الطالب بالخطأ');
+
+  const log = JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors'));
+  assert.equal(log[0].source, 'زر الاختبار');
+  assert.match(sandbox.buildDiagnostics(), /فشل تجريبي/, 'الخطأ لا يصل لتقرير المشكلة');
+
+  for (let i = 0; i < 8; i++) sandbox.recordRuntimeIssue(new Error('خطأ ' + i), 'تكرار', { silent: true });
+  assert.equal(JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors')).length, 5, 'سجل الأخطاء ينمو بلا حد');
+
+  assert.ok((sandbox.__windowListeners['error'] || []).length > 0, 'لا يوجد مستمع للأخطاء العامة');
+  assert.ok((sandbox.__windowListeners['unhandledrejection'] || []).length > 0, 'لا يوجد مستمع للوعود المرفوضة');
+
+  // الحماية تلتقط الخطأ بدل أن ينكسر الزر
+  sandbox.window.__boom = () => { throw new Error('انفجار زر'); };
+  const before = JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors')).length;
+  try { sandbox.recordRuntimeIssue(new Error('انفجار زر'), '__boom', { silent: true }); } catch (e) { assert.fail('الخطأ لم يُلتقط'); }
+  assert.ok(JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors')).length >= before);
+});
+
+test('45) مدة جلسة مخصّصة: تُقبل الصحيحة وتُرفض الخاطئة وتُسلَّم للخلفية', () => {
+  const { sandbox, nodes } = createHarness();
+  sandbox.document.getElementById('pomo-custom-mins').value = '45';
+  assert.equal(sandbox.applyCustomPomoMode(), 45, 'لم تُقبل المدة المخصّصة');
+  assert.equal(sandbox.__api.currentPomoMins, 45);
+  assert.equal(nodes.get('pomo-display').innerText, '45:00', 'العدّاد لم يتحدث للمدة المخصّصة');
+  assert.equal(sandbox.localStorage.getItem('zp_custom_pomo_mins'), '45');
+
+  sandbox.document.getElementById('pomo-custom-mins').value = '999';
+  assert.equal(sandbox.applyCustomPomoMode(), false, 'قُبلت مدة خارج الحدود');
+  assert.match(nodes.get('toast-inner').innerText, /بين ١ و١٨٠/);
+  assert.equal(sandbox.__api.currentPomoMins, 45, 'تغيّرت المدة رغم رفض القيمة');
+
+  sandbox.startPomo();
+  const start = sandbox.__swMessages.filter(m => m.type === 'START_POMO_TIMER').pop();
+  assert.equal(start.mins, 45, 'المدة المخصّصة لم تصل للخدمة الخلفية');
+  assert.match(start.body, /45 دقيقة/);
+  sandbox.resetPomo();
+});
+
+function readJson(storage, key, fallback) {
+  try { return JSON.parse(storage.getItem(key) || '') ?? fallback; } catch (e) { return fallback; }
+}
 
 // مساعد: إنشاء حساب جاهز عبر المسار الحقيقي
 async function signup(sandbox, name) {

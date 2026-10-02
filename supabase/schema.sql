@@ -329,6 +329,34 @@ END $$;
 
 
 -- ----------------------------------------------------------------------------
+-- 5.b) جدول رسائل الدعم الفني (support_messages)
+--      يستقبل رسائل نموذج «أرسل رسالة للدعم» داخل درج الدعم في التطبيق.
+--      ملاحظة: التطبيق يتحمّل غياب هذا الجدول (تبقى الرسالة محفوظة على الجهاز
+--      ويُعرض للطالب إرسالها عبر تيليجرام) — لكن إنشاؤه يجعل الرسائل تصلك مباشرة.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.support_messages (
+    id           bigint PRIMARY KEY,
+    device_id    text NOT NULL,
+    user_name    text,
+    topic        text,
+    message      text,
+    diagnostics  text,
+    app_version  text,
+    status       text DEFAULT 'new',
+    created_at   timestamptz DEFAULT now()
+);
+
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS device_id   text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS user_name   text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS topic       text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS message     text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS diagnostics text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS app_version text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS status      text;
+ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS created_at  timestamptz;
+
+
+-- ----------------------------------------------------------------------------
 -- 6) الفهارس (تسريع كل استعلامات المزامنة التي تفلتر بـ device_id)
 -- ----------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_profiles_device_id            ON public.profiles (device_id);
@@ -336,6 +364,7 @@ CREATE INDEX IF NOT EXISTS idx_user_tasks_device_id          ON public.user_task
 CREATE INDEX IF NOT EXISTS idx_focus_sessions_device_created ON public.user_focus_sessions (device_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_node_progress_device          ON public.user_node_progress (device_id);
 CREATE INDEX IF NOT EXISTS idx_word_mastery_review           ON public.user_word_mastery (device_id, next_review_at);
+CREATE INDEX IF NOT EXISTS idx_support_messages_created       ON public.support_messages (created_at DESC);
 
 
 -- ----------------------------------------------------------------------------
@@ -349,6 +378,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_tasks           TO ano
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_focus_sessions  TO anon, authenticated, service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_node_progress   TO anon, authenticated, service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_word_mastery    TO anon, authenticated, service_role;
+GRANT INSERT                          ON TABLE public.support_messages    TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE  ON TABLE public.support_messages    TO service_role;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
@@ -365,6 +396,7 @@ ALTER TABLE public.user_tasks         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_focus_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_node_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_word_mastery  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.support_messages   ENABLE ROW LEVEL SECURITY;
 
 -- profiles
 DROP POLICY IF EXISTS "zp_anon_all_profiles" ON public.profiles;
@@ -411,6 +443,15 @@ DROP POLICY IF EXISTS "zp_auth_all_word_mastery" ON public.user_word_mastery;
 CREATE POLICY "zp_auth_all_word_mastery" ON public.user_word_mastery
     FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+-- support_messages: الطالب يرسل فقط (INSERT) ولا يقرأ رسائل غيره — القراءة للمطوّر عبر لوحة Supabase
+DROP POLICY IF EXISTS "zp_anon_insert_support" ON public.support_messages;
+CREATE POLICY "zp_anon_insert_support" ON public.support_messages
+    FOR INSERT TO anon WITH CHECK (true);
+
+DROP POLICY IF EXISTS "zp_auth_insert_support" ON public.support_messages;
+CREATE POLICY "zp_auth_insert_support" ON public.support_messages
+    FOR INSERT TO authenticated WITH CHECK (true);
+
 
 -- ============================================================================
 -- 9) التحقق بعد التشغيل
@@ -418,7 +459,8 @@ CREATE POLICY "zp_auth_all_word_mastery" ON public.user_word_mastery
 --  أ) من نفس SQL Editor نفّذ:
 --        SELECT table_name FROM information_schema.tables
 --        WHERE table_schema = 'public' ORDER BY table_name;
---     ✔ المتوقع: profiles, user_focus_sessions, user_node_progress, user_tasks, user_word_mastery
+--     ✔ المتوقع: profiles, support_messages, user_focus_sessions, user_node_progress,
+--                user_tasks, user_word_mastery
 --
 --  ب) تحقق من الصلاحيات (لا يجب أن يظهر أي خطأ):
 --        SELECT count(*) FROM public.profiles;

@@ -149,16 +149,60 @@ check('بدء المؤقت يسلّم الوقت للخلفية', !!startMsg, st
 check('شارة الخلفية تتحدّث', /الخلفية/.test(txt('pomo-bg-text')),
   txt('pomo-bg-text'));
 check('العنوان يعرض العدّاد', /^⏳ \d\d:\d\d/.test(document.title), document.title);
-// محاكاة انتهاء الجلسة والصفحة بالخلفية
-window.__api_set_deadline_past ? window.__api_set_deadline_past() : null;
-document.getElementById('pomo-play-btn').click();   // إيقاف
-check('الإيقاف يلغي مؤقّت الخلفية', window.__swMessages.some((m) => m.type === 'CANCEL_POMO_TIMER'));
+check('الشريط المصغّر يظهر مع الجلسة', !document.getElementById('focus-mini').classList.contains('hidden'));
+check('الشريط المصغّر يعرض الوقت المتبقي', /^\d\d:\d\d$/.test(txt('focus-mini-time')), txt('focus-mini-time'));
 
-// الوضع الليلي
+// إيقاف مؤقت: الجلسة تبقى محفوظة في الخدمة الخلفية مع إمكانية الاستئناف
+window.__swMessages.length = 0;
+document.getElementById('pomo-play-btn').click();   // إيقاف مؤقت
+check('الإيقاف المؤقت يُبقي الجلسة في الخلفية', window.__swMessages.some((m) => m.type === 'PAUSE_POMO_TIMER'));
+check('الشريط المصغّر يعرض «موقوفة مؤقتاً»', /موقوفة/.test(txt('focus-mini-label')), txt('focus-mini-label'));
+window.__swMessages.length = 0;
+document.getElementById('focus-mini-toggle').click();   // استئناف من الشريط المصغّر
+check('الاستئناف من الشريط المصغّر يعيد تسليم الجلسة', window.__swMessages.some((m) => m.type === 'START_POMO_TIMER'));
+window.__swMessages.length = 0;
+document.querySelector('#focus-mini button[onclick="resetPomo()"]').click();
+check('الإنهاء يلغي مؤقّت الخلفية', window.__swMessages.some((m) => m.type === 'CANCEL_POMO_TIMER'));
+check('الشريط المصغّر يختفي بعد الإنهاء', document.getElementById('focus-mini').classList.contains('hidden'));
+
+// مدة مخصّصة للجلسة
+document.getElementById('pomo-custom-mins').value = '50';
+document.querySelector('button[onclick="applyCustomPomoMode()"]').click();
+check('مدة مخصّصة تُطبَّق', txt('pomo-display') === '50:00', txt('pomo-display'));
+
+// تفضيلات التنبيهات
+const dailyToggle = document.getElementById('pref-daily');
+dailyToggle.checked = true;
+dailyToggle.dispatchEvent(new window.Event('change'));
+check('التذكير اليومي يُفعَّل ويُجدوَل', /تذكير يومي/.test(txt('pref-schedule-hint')), txt('pref-schedule-hint'));
+const checkinSel = document.getElementById('pref-checkin');
+checkinSel.value = '10';
+checkinSel.dispatchEvent(new window.Event('change'));
+check('فاصل تنبيه مخصّص يُحفظ', JSON.parse(window.localStorage.getItem("zp_notify_prefs")).checkInMins === 10);
+document.querySelector('button[onclick="resetNotifyPrefs()"]').click();
+check('استعادة التفضيلات الافتراضية', JSON.parse(window.localStorage.getItem("zp_notify_prefs")).checkInMins === 0);
+
+// نموذج الدعم
+document.getElementById('support-message').value = 'الإشعارات لا تصلني بعد انتهاء الجلسة، جربت إعادة التثبيت';
+document.getElementById('support-send-btn').click();
+check('رسالة الدعم تُحفظ وتُعرض حالتها', /وصلت|بانتظار|محفوظة/.test(txt('support-tickets-list')), txt('support-tickets-list'));
+check('رابط تيليجرام يُعبَّأ بالرسالة',
+  /t\.me\/share/.test(document.getElementById('support-telegram-link').getAttribute('href')));
+check('خانة الرسالة تُفرَّغ بعد الإرسال', document.getElementById('support-message').value === '');
+check('حالة الجلسة معروضة في الدرج', /نشطة|زائر/.test(txt('support-session-state')), txt('support-session-state'));
+
+// الوضع الليلي + المظهر الثلاثي
 const themeBefore = document.documentElement.classList.contains('dark');
 document.querySelector('header button[onclick="toggleTheme()"]').click();
 check('الوضع الليلي يُبدَّل', document.documentElement.classList.contains('dark') !== themeBefore);
-check('شارة المظهر تتحدّث', /ليلي|نهاري/.test(txt('home-theme-status')),
+check('شارة المظهر تتحدّث', /ليلي|نهاري|تلقائي/.test(txt('home-theme-status')),
+  txt('home-theme-status'));
+document.querySelector('button[onclick="setThemeMode(\'dark\')"]').click();
+check('اختيار «داكن» صريح', document.documentElement.classList.contains('dark') && window.localStorage.getItem("zp_theme") === 'dark');
+document.querySelector('button[onclick="setThemeMode(\'light\')"]').click();
+check('اختيار «فاتح» صريح', !document.documentElement.classList.contains('dark') && window.localStorage.getItem("zp_theme") === 'light');
+document.querySelector('button[onclick="setThemeMode(\'system\')"]').click();
+check('اختيار «تلقائي» يتبع النظام', window.localStorage.getItem("zp_theme") === 'system' && /تلقائي/.test(txt('home-theme-status')),
   txt('home-theme-status'));
 
 // التثبيت + المشاركة
