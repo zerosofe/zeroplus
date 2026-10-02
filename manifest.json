@@ -1,7 +1,7 @@
 {
   "name": "ZeroPlus | المنصة الأكاديمية التخصصية",
   "short_name": "ZeroPlus",
-  "description": "منصة أكاديمية لتنظيم المهام وجلسات التركيز — أقسام البناء اللغوي والمساعد قريباً",
+  "description": "منصة أكاديمية: تنظيم المهام وجلسات تركيز تعمل بالخلفية مع تنبيهات ومزامنة سحابية — أقسام البناء اللغوي والمساعد قريباً",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,7 +10,10 @@
   "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
-  "categories": ["education", "medical"],
+  "categories": [
+    "education",
+    "medical"
+  ],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -25,13 +28,52 @@
       "purpose": "any"
     },
     {
-      "src": "/icon.svg?v=25",
+      "src": "/icon.svg?v=31",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     }
   ],
   "shortcuts": [
+    {
+      "name": "الصفحة الرئيسية",
+      "short_name": "الرئيسية",
+      "description": "شرح التطبيق ومميزاته والإعدادات السريعة",
+      "url": "/#tab-home",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "جلسة تركيز",
+      "short_name": "التركيز",
+      "description": "مؤقت تركيز يعمل بالخلفية مع تنبيه",
+      "url": "/#tab-pomodoro",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "الدعم الفني",
+      "short_name": "الدعم",
+      "description": "مركز المساعدة: الحساب، التنبيهات، الأسئلة الشائعة",
+      "url": "/#support",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
     {
       "name": "البناء اللغوي (قريباً)",
       "short_name": "اللغة",
