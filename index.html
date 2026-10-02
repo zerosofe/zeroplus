@@ -698,7 +698,7 @@
     </nav>
 
     <script>
-        // ============ 1. GLOBAL CURRICULUM DEFINITION (في أعلى السكريبت تماماً) ============
+        // ============ 1. GLOBAL CURRICULUM DEFINITION ============
         const GLOBAL_CURRICULUM = {
             general: [
                 { level: "A1", title_ar: "المستوى A1: التأسيس", units: [
@@ -834,8 +834,9 @@
             }
         }
 
-        // ============ 4. AI CALL ENGINE ============
+        // ============ 4. AI CALL ENGINE (UPDATED & FIXED) ============
         async function callStrictAcademicAI(userPrompt, systemInstruction, jsonMode = false) {
+            // المحاولة 1: عبر Supabase Edge Function
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('academic-ai', {
@@ -852,12 +853,15 @@
                         if (content) return content;
                     }
                 } catch (e) {
-                    console.warn("Supabase invoke failed, attempting direct Groq fallback:", e);
+                    console.warn("Supabase Edge Function failed, falling back to Groq...", e);
                 }
             }
 
+            // المحاولة 2: الاتصال المباشر بـ Groq مع تجربة عدة نماذج
             const DIRECT_GROQ_KEY = "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";
-            for (let attempt = 0; attempt < 2; attempt++) {
+            const modelsToTry = ["llama-3.3-70b-versatile", "llama3-70b-8192", "mixtral-8x7b-32768"];
+            
+            for (let model of modelsToTry) {
                 try {
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: 'POST',
@@ -866,7 +870,7 @@
                             'Authorization': `Bearer ${DIRECT_GROQ_KEY.trim()}`
                         },
                         body: JSON.stringify({
-                            model: "llama-3.3-70b-versatile",
+                            model: model,
                             messages: [
                                 { role: 'system', content: systemInstruction },
                                 { role: 'user', content: userPrompt }
@@ -875,13 +879,20 @@
                             ...(jsonMode ? { response_format: { type: "json_object" } } : {})
                         })
                     });
+                    
                     if (res.ok) {
                         const data = await res.json().catch(() => ({}));
                         const content = data?.choices?.[0]?.message?.content;
                         if (content) return content;
+                    } else {
+                        console.warn(`Groq API failed with model ${model}: Status ${res.status}`);
+                        // إذا كان الخطأ 401 (مفتاح غير صالح) نوقف المحاولات فوراً
+                        if (res.status === 401 || res.status === 403) {
+                            return `ERROR_API_KEY_INVALID`;
+                        }
                     }
                 } catch (err) {
-                    console.warn("Direct Groq attempt error:", err);
+                    console.warn(`Network error with model ${model}:`, err);
                 }
             }
             return null;
@@ -1483,9 +1494,14 @@ ${scopedContent}`;
             }
             const reply = await callStrictAcademicAI(userPrompt, systemInstruction, expectJson);
             document.getElementById(loadingId)?.remove();
-            if (!reply) {
+            
+            if (!reply || reply === "ERROR_API_KEY_INVALID") {
                 if (feed) {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من تفعيل الإنترنت والمحاولة ثانية.</div>`);
+                    let errMsg = "⚠️ تعذر الاتصال بمحرك الذكاء الاصطناعي. تأكد من تفعيل الإنترنت والمحاولة ثانية.";
+                    if (reply === "ERROR_API_KEY_INVALID") {
+                        errMsg = "⚠️ مفتاح API الخاص بـ Groq غير صالح أو انتهت صلاحيته. يرجى تحديث المفتاح في الكود.";
+                    }
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">${errMsg}</div>`);
                 }
                 return;
             }
@@ -1638,11 +1654,15 @@ ${scopedContent}`;
             );
             document.getElementById(loadingId)?.remove();
             if (feed) {
-                if (reply) {
+                if (reply && reply !== "ERROR_API_KEY_INVALID") {
                     feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold leading-relaxed">${formatRichText(reply)}</div>`);
                     awardXP(3);
                 } else {
-                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">⚠️ تعذر الحصول على رد. يرجى التحقق من اتصال الإنترنت.</div>`);
+                    let errMsg = "⚠️ تعذر الحصول على رد. يرجى التحقق من اتصال الإنترنت.";
+                    if (reply === "ERROR_API_KEY_INVALID") {
+                        errMsg = "⚠️ مفتاح API الخاص بـ Groq غير صالح أو انتهت صلاحيته.";
+                    }
+                    feed.insertAdjacentHTML('beforeend', `<div class="chat-bot-bubble p-4 text-xs font-bold text-rose-500">${errMsg}</div>`);
                 }
                 feed.scrollTop = feed.scrollHeight;
             }
@@ -1872,7 +1892,6 @@ ${scopedContent}`;
             }
         }
 
-        // الدالة المضافة حديثاً لحل مشكلة updateGamificationBar is not defined
         function updateGamificationBar() {
             const xpEl = document.getElementById('app-xp');
             if (xpEl) xpEl.innerText = `${userXP} XP`;
