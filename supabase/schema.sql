@@ -357,6 +357,50 @@ ALTER TABLE public.support_messages ADD COLUMN IF NOT EXISTS created_at  timesta
 
 
 -- ----------------------------------------------------------------------------
+-- 5.c) جدول الأشجار (trees) ← غابة الإنجاز في قسم التركيز
+--      كل جلسة تركيز مكتملة تزرع شجرة، والتطبيق يكتبها فوراً هنا.
+--      يستخدمه التطبيق مع onConflict: 'user_id,id'
+--      الحقول: id, user_id, tree_type, duration, planted_at, created_at
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.trees (
+    id          bigint NOT NULL,
+    user_id     text   NOT NULL,
+    tree_type   text   NOT NULL DEFAULT 'oak',
+    duration    integer NOT NULL DEFAULT 25,
+    planted_at  timestamptz NOT NULL DEFAULT now(),
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, id)
+);
+
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS id         bigint;
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS user_id    text;
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS tree_type  text;
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS duration   integer;
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS planted_at timestamptz;
+ALTER TABLE public.trees ADD COLUMN IF NOT EXISTS created_at timestamptz;
+
+-- ضمان المفتاح الأساسي المركّب (user_id, id) لأن التطبيق يستخدم onConflict: 'user_id,id'
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'public.trees'::regclass AND contype = 'p'
+    ) THEN
+        BEGIN
+            DELETE FROM public.trees p
+            USING public.trees q
+            WHERE p.user_id = q.user_id AND p.id = q.id AND p.ctid > q.ctid;
+
+            ALTER TABLE public.trees
+                ADD CONSTRAINT trees_pkey PRIMARY KEY (user_id, id);
+        EXCEPTION WHEN others THEN
+            RAISE NOTICE 'trees: تخطي إضافة المفتاح الأساسي: %', SQLERRM;
+        END;
+    END IF;
+END $$;
+
+
+-- ----------------------------------------------------------------------------
 -- 6) الفهارس (تسريع كل استعلامات المزامنة التي تفلتر بـ device_id)
 -- ----------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_profiles_device_id            ON public.profiles (device_id);
@@ -365,6 +409,7 @@ CREATE INDEX IF NOT EXISTS idx_focus_sessions_device_created ON public.user_focu
 CREATE INDEX IF NOT EXISTS idx_node_progress_device          ON public.user_node_progress (device_id);
 CREATE INDEX IF NOT EXISTS idx_word_mastery_review           ON public.user_word_mastery (device_id, next_review_at);
 CREATE INDEX IF NOT EXISTS idx_support_messages_created       ON public.support_messages (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_trees_user_planted             ON public.trees (user_id, planted_at DESC);
 
 
 -- ----------------------------------------------------------------------------
@@ -380,6 +425,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_node_progress   TO ano
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.user_word_mastery    TO anon, authenticated, service_role;
 GRANT INSERT                          ON TABLE public.support_messages    TO anon, authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE  ON TABLE public.support_messages    TO service_role;
+
+GRANT SELECT, INSERT, UPDATE, DELETE  ON TABLE public.trees             TO anon, authenticated, service_role;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
@@ -397,6 +444,7 @@ ALTER TABLE public.user_focus_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_node_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_word_mastery  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_messages   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.trees              ENABLE ROW LEVEL SECURITY;
 
 -- profiles
 DROP POLICY IF EXISTS "zp_anon_all_profiles" ON public.profiles;
@@ -444,6 +492,15 @@ CREATE POLICY "zp_auth_all_word_mastery" ON public.user_word_mastery
     FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- support_messages: الطالب يرسل فقط (INSERT) ولا يقرأ رسائل غيره — القراءة للمطوّر عبر لوحة Supabase
+DROP POLICY IF EXISTS "zp_anon_all_trees" ON public.trees;
+CREATE POLICY "zp_anon_all_trees" ON public.trees
+    FOR ALL TO anon USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "zp_auth_all_trees" ON public.trees;
+CREATE POLICY "zp_auth_all_trees" ON public.trees
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+
 DROP POLICY IF EXISTS "zp_anon_insert_support" ON public.support_messages;
 CREATE POLICY "zp_anon_insert_support" ON public.support_messages
     FOR INSERT TO anon WITH CHECK (true);
@@ -459,13 +516,14 @@ CREATE POLICY "zp_auth_insert_support" ON public.support_messages
 --  أ) من نفس SQL Editor نفّذ:
 --        SELECT table_name FROM information_schema.tables
 --        WHERE table_schema = 'public' ORDER BY table_name;
---     ✔ المتوقع: profiles, support_messages, user_focus_sessions, user_node_progress,
---                user_tasks, user_word_mastery
+--     ✔ المتوقع: profiles, support_messages, trees, user_focus_sessions,
+--                user_node_progress, user_tasks, user_word_mastery
 --
 --  ب) تحقق من الصلاحيات (لا يجب أن يظهر أي خطأ):
 --        SELECT count(*) FROM public.profiles;
 --        SELECT count(*) FROM public.user_tasks;
 --        SELECT count(*) FROM public.user_focus_sessions;
+--        SELECT count(*) FROM public.trees;          -- غابة الإنجاز (أشجار التركيز)
 --
 --  ج) للتحقق من خارج التطبيق، افتح في المتصفح (استبدل YOUR_ANON_KEY):
 --     https://lfygprhvyudatgwikwfy.supabase.co/rest/v1/user_tasks?select=*&limit=1&apikey=YOUR_ANON_KEY

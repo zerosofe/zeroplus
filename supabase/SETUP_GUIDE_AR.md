@@ -41,12 +41,13 @@
   SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public' ORDER BY table_name;
   ```
-  ✔ المتوقع 5 جداول: `profiles`, `user_focus_sessions`, `user_node_progress`, `user_tasks`, `user_word_mastery`
+  ✔ المتوقع 7 جداول: `profiles`, `trees`, `user_focus_sessions`, `user_node_progress`, `user_tasks`, `user_word_mastery`, `support_messages`
 
   ```sql
   SELECT count(*) FROM public.profiles;
   SELECT count(*) FROM public.user_tasks;
   SELECT count(*) FROM public.user_focus_sessions;
+  SELECT count(*) FROM public.trees;          -- 🌳 غابة الإنجاز (جديد v34)
   ```
   ✔ المتوقع: أصفار بدون أي خطأ `permission denied`.
 
@@ -58,7 +59,8 @@
      - 🟡 كهرماني = توجد عمليات بانتظار الرفع (تزول خلال ثوانٍ)
      - 🔴 أحمر = فشل مزامنة ← افتح Console وشف الرسالة (غالباً السكربت لم يُنفَّذ كاملاً)
      - ⚪ رمادي = لا إنترنت
-  4. تأكد من **Table Editor**: بعد تسجيل الاسم يظهر صف في `profiles`، وبعد إضافة مهمة أو إنهاء جلسة تركيز تظهر صفوف في `user_tasks` و`user_focus_sessions`.
+  4. تأكد من **Table Editor**: بعد تسجيل الاسم يظهر صف في `profiles`، وبعد إضافة مهمة تظهر صفوف في `user_tasks`، وبعد إنهاء جلسة تركيز يظهر صف في `user_focus_sessions` **وصف في `trees`** (نوع الشجرة + المدة + وقت الزراعة).
+  5. للتحقق السريع من الحفظ الفعلي للأشجار من داخل التطبيق: تبويب **التركيز → «تهيئة الجدول» → «تشغيل الاختبار»** — يكتب صفاً تجريبياً في `trees` ثم يقرأه ويحذفه ويعرض النتيجة.
 
 - **من خارج التطبيق (REST API):** استبدل `YOUR_ANON_KEY` بالمفتاح العام:
   ```
@@ -126,6 +128,8 @@ Supabase أوقفت إصدار المفاتيح القديمة على المشا
 - [ ] ظهور صف جديد في جدول `profiles` من Table Editor
 - [ ] إضافة مهمة ← صف جديد في `user_tasks` (واختبار الحذف يزيله)
 - [ ] إكمال جلسة تركيز ← صف جديد في `user_focus_sessions` مع `duration_mins` صحيح
+- [ ] إكمال جلسة تركيز ← صف جديد في `trees` مع `tree_type` و`duration` و`planted_at` (غابة الإنجاز)
+- [ ] ظهور الشجرة في مشهد الغابة + شارة «سحابي» في سجل الأشجار
 - [ ] تجربة وضع الطيران: إضافة مهمة ثم عودة الاتصال ← تُرفع تلقائياً (🟡 ثم 🟢)
 - [ ] استبدال مفتاح anon بمفتاح `sb_publishable_` الجديد
 - [ ] حذف مفتاح Groq القديم من console.groq.com

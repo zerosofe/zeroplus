@@ -35,7 +35,17 @@ export function createHarness() {
     const node = {
       id, className: '', innerHTML: '', innerText: '', textContent: '', title: '', src: '', value: '',
       files: [], style: {}, checked: false, open: false, disabled: false,
-      classList: { _s: new Set(), add(c) { this._s.add(c); }, remove(c) { this._s.delete(c); }, contains(c) { return this._s.has(c); } },
+      classList: {
+        _s: new Set(),
+        add(c) { this._s.add(c); },
+        remove(c) { this._s.delete(c); },
+        contains(c) { return this._s.has(c); },
+        toggle(c, force) {
+          const on = force === undefined ? !this.contains(c) : !!force;
+          if (on) this.add(c); else this.remove(c);
+          return on;
+        },
+      },
       attrs: {},
       setAttribute(k, v) { this.attrs[k] = String(v); },
       getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; },
@@ -178,6 +188,10 @@ export function createHarness() {
   get totalFocusMins(){ return totalFocusMins; }, set totalFocusMins(v){ totalFocusMins = v; },
   get tasks(){ return tasks; }, set tasks(v){ tasks = v; },
   get userForest(){ return userForest; }, set userForest(v){ userForest = v; },
+  get userTrees(){ return userTrees; }, set userTrees(v){ userTrees = v; },
+  get forestState(){ return forestState; },
+  get treesTableMissing(){ return treesTableMissing; },
+  get lastPlantedTree(){ return lastPlantedTree; },
   get lastSyncError(){ return lastSyncError; },
   get pendingCount(){ return pendingSyncCount(); },
   get currentUserName(){ return currentUserName; },

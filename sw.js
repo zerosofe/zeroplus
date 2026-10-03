@@ -1,7 +1,7 @@
-// sw.js — ZeroPlus (Z+) v33
+// sw.js — ZeroPlus (Z+) v34
 // الخدمة الخلفية: كاش التطبيق + مؤقّت التركيز الذي يعمل حتى لو أُغلقت الصفحة
 // + إشعار مستمر بالوقت المتبقي وأزرار إيقاف/استئناف + تذكيرات مجدولة (يومية ودورية)
-const CACHE_NAME = 'zeroplus-v33';
+const CACHE_NAME = 'zeroplus-v34';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

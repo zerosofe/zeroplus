@@ -90,7 +90,7 @@ const check = (name, cond, extra = '') => checks.push([cond ? 'PASS' : 'FAIL', n
 const txt = (id) => String(document.getElementById(id)?.innerText ?? document.getElementById(id)?.textContent ?? '');
 
 // درج الدعم يفتح من زر الترويسة
-document.querySelector('header button[title*="الدعم"]').click();
+document.querySelector('header button[aria-label*="الدعم"]').click();
 check('درج الدعم يفتح', !document.getElementById('support-drawer').classList.contains('translate-x-full'));
 check('طبقة الدعم تظهر', !document.getElementById('support-overlay').classList.contains('hidden'));
 check('اسم الطالب في الدعم', txt('support-user-name').length > 0,

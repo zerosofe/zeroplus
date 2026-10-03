@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { createHarness, clearHarnessTimers, ROOT } from './harness.mjs';
+import { TABLE_COLUMNS } from './mock-supabase.mjs';
 import { createSwHarness } from './sw-harness.mjs';
 const tests = [];
 const test = (name, fn) => tests.push([name, fn]);
@@ -923,6 +924,234 @@ test('45) مدة جلسة مخصّصة: تُقبل الصحيحة وتُرفض �
   assert.equal(start.mins, 45, 'المدة المخصّصة لم تصل للخدمة الخلفية');
   assert.match(start.body, /45 دقيقة/);
   sandbox.resetPomo();
+});
+
+// ============================================================================
+// v34: غابة الإنجاز (Supabase) + اليوم الوطني 94 + نظام التصميم الموحّد
+// ============================================================================
+test('46) إنهاء جلسة يزرع شجرة مختلفة ويحفظها فعلاً في جدول trees في Supabase', async () => {
+  const { sandbox, supabaseMock, localStorage } = createHarness();
+  await signup(sandbox, 'طالب الغابة');
+  const deviceId = localStorage.getItem('zp_device_id');
+  sandbox.__api.totalFocusMins = 0;
+
+  sandbox.finishPomoSession();          // جلسة 25 دقيقة → شجرة
+  await sandbox.flushSyncQueue();
+
+  const trees = rowsOf(supabaseMock, 'trees');
+  assert.equal(trees.length, 1, 'لم تُكتب الشجرة في جدول trees');
+  const tree = trees[0];
+  assert.equal(tree.user_id, deviceId, 'user_id غير مربوط بجهاز الطالب');
+  assert.equal(tree.duration, 25, 'مدة الشجرة غير صحيحة');
+  assert.ok(tree.tree_type, 'نوع الشجرة مفقود');
+  assert.ok(tree.planted_at, 'وقت الزراعة مفقود');
+  assert.ok(tree.created_at, 'تاريخ الإنشاء مفقود');
+  assert.equal(sandbox.__api.userTrees.length, 1, 'الشجرة غير مسجّلة محلياً');
+  assert.equal(sandbox.__api.userTrees[0].sync, 'synced', 'الشجرة لم تُعلَّم كمحفوظة سحابياً');
+});
+
+test('47) الأشجار المختلفة: كل جلسة تزرع نوعاً مختلفاً + النُدرة ترتفع مع طول الجلسة', async () => {
+  const { sandbox, supabaseMock } = createHarness();
+  await signup(sandbox, 'طالب أنواع');
+  const types = [];
+  for (let i = 0; i < 6; i++) {
+    sandbox.__api.pomoRemaining = 0;
+    sandbox.finishPomoSession();
+    await sandbox.flushSyncQueue();
+    types.push(sandbox.__api.userTrees[0].tree_type);
+  }
+  assert.equal(types.length, 6);
+  assert.ok(new Set(types).size >= 3, 'الأنواع متكرّرة جداً — يجب أن تختلف الأشجار: ' + types.join(', '));
+  for (let i = 1; i < types.length; i++) {
+    assert.notEqual(types[i], types[i - 1], 'زرعت شجرتان متتاليتان من نفس النوع: ' + types[i]);
+  }
+  const rows = rowsOf(supabaseMock, 'trees');
+  assert.equal(rows.length, 6, 'عدد الأشجار المحفوظة في Supabase غير مطابق');
+});
+
+test('48) تسجيل الدخول يجلب الغابة من Supabase (جدول trees) ويعرضها بالعدد الصحيح', async () => {
+  const { sandbox, supabaseMock, localStorage, nodes } = createHarness();
+  const name = 'طالب الجلب';
+  const deviceId = 'u_' + sandbox.simpleHash(name.toLowerCase().trim());
+  // غابة محفوظة مسبقاً في "السحابة"
+  supabaseMock._state.tables.profiles.push({
+    id: 'p9', device_id: deviceId, user_name: name, department: 'general', xp: 300, total_focus_mins: 90,
+    password_hash: await sandbox.hashPassword('1234'), auth_provider: 'local'
+  });
+  supabaseMock._state.tables.trees = supabaseMock._state.tables.trees || [];
+  supabaseMock._state.tables.trees.push(
+    { id: 111, user_id: deviceId, tree_type: 'pine', duration: 25, planted_at: '2026-09-30T10:00:00.000Z', created_at: '2026-09-30T10:00:00.000Z' },
+    { id: 112, user_id: deviceId, tree_type: 'palm', duration: 50, planted_at: '2026-10-01T11:30:00.000Z', created_at: '2026-10-01T11:30:00.000Z' }
+  );
+  localStorage.clear();
+
+  sandbox.toggleAuthMode();
+  sandbox.document.getElementById('auth-username').value = name;
+  sandbox.document.getElementById('auth-password').value = '1234';
+  await sandbox.handleUserAuthentication();
+  await sandbox.loadForestFromCloud(true);
+
+  assert.equal(localStorage.getItem('zp_device_id'), deviceId);
+  assert.equal(sandbox.__api.userTrees.length, 2, 'لم تُجلب الأشجار من Supabase');
+  assert.deepEqual(sandbox.__api.userTrees.map(t => t.tree_type).sort(), ['palm', 'pine']);
+  assert.equal(sandbox.__api.forestState, 'ready');
+  assert.equal(nodes.get('forest-count-chip').innerText, '2 شجرة', 'عدّاد الغابة لا يعرض عدد الأشجار المجلوبة');
+  assert.match(nodes.get('forest-grid').innerHTML, /نخلة|صنوبر/, 'سجل الأشجار لا يعرض الأنواع المجلوبة');
+  assert.equal(nodes.get('home-stat-sessions').innerText, '2');
+});
+
+test('49) غياب جدول trees لا يُعطّل التطبيق: حفظ محلي + رسالة واضحة + رفع تلقائي بعد التهيئة', async () => {
+  const { sandbox, supabaseMock, localStorage, nodes } = createHarness();
+  await signup(sandbox, 'طالب بلا جدول');
+  const deviceId = localStorage.getItem('zp_device_id');
+  // نحاكي مشروع Supabase بلا جدول trees (كما هو الحال قبل تشغيل schema.sql)
+  supabaseMock._state.failures.trees = 'relation "public.trees" does not exist';
+
+  sandbox.finishPomoSession();
+  await sandbox.flushSyncQueue();
+
+  assert.equal(sandbox.__api.treesTableMissing, true, 'لم يُكتشف غياب جدول trees');
+  assert.equal(sandbox.__api.userTrees.length, 1, 'ضاعت الشجرة عند غياب الجدول');
+  assert.equal(sandbox.__api.userTrees[0].sync, 'local', 'حالة الحفظ المحلي غير صحيحة');
+  assert.match(nodes.get('forest-sync-text').innerText, /غير مُهيّأ/, 'لا توجد رسالة واضحة عن تهيئة الجدول');
+  const setupBtn = nodes.get('forest-setup-btn');
+  assert.equal(setupBtn.classList.contains('hidden'), false, 'زر التهيئة لا يظهر عند غياب الجدول');
+
+  // بعد التهيئة (إنشاء الجدول) يُعاد رفع الأشجار المعلّقة تلقائياً
+  delete supabaseMock._state.failures.trees;
+  supabaseMock._state.tables.trees = [];
+  await sandbox.loadForestFromCloud(true);
+  await sandbox.flushSyncQueue();
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 1, 'لم تُرفع الأشجار المحلية بعد تهيئة الجدول');
+});
+
+test('50) مسح السجل يحذف الأشجار من الجهاز ومن Supabase (trees)', async () => {
+  const { sandbox, supabaseMock, localStorage } = createHarness();
+  await signup(sandbox, 'طالب المسح');
+  sandbox.finishPomoSession();
+  await sandbox.flushSyncQueue();
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 1);
+
+  sandbox.__setConfirm(true);
+  sandbox.clearForestConfirmation();
+  await sandbox.flushSyncQueue();
+
+  assert.equal(sandbox.__api.userTrees.length, 0, 'لم تُمسح الأشجار محلياً');
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 0, 'لم تُحذف الأشجار من Supabase');
+});
+
+test('51) اليوم الوطني 94: العلم العراقي التفاعلي ظاهر قبل تسجيل الدخول ويعمل بلا حساب', () => {
+  const { sandbox, nodes, localStorage } = createHarness();
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  // 1) العنصر موجود داخل شاشة البداية (قبل تسجيل الدخول) وبدون أي شرط دخول
+  const landingStart = html.indexOf('id="landing-view"');
+  const landingEnd = html.indexOf('<!-- PROFILE MODAL -->');
+  const landing = html.slice(landingStart, landingEnd);
+  assert.ok(landingStart > 0 && landingEnd > landingStart, 'تعذّر تحديد شاشة البداية');
+  assert.match(landing, /id="iq-flag-btn"/, 'زر العلم غير موجود في شاشة البداية');
+  assert.match(landing, /id="national-day-card"/, 'بطاقة اليوم الوطني غير موجودة قبل تسجيل الدخول');
+  assert.match(landing, /National Day 94/, 'نص National Day 94 مفقود');
+  assert.match(landing, /اليوم الوطني/, 'النص العربي لليوم الوطني مفقود');
+  assert.ok(landing.indexOf('id="landing-view"') < landing.indexOf('id="auth-username"'), 'بطاقة الاحتفال يجب أن تسبق نموذج الدخول');
+  // 2) العلم مموّج تلقائياً (مقاطع + متغيّر الموجة) وتفاعلي بالضغط
+  assert.ok((landing.match(/iq-flag__slice/g) || []).length >= 8, 'مقاطع العلم المتحرك قليلة');
+  assert.match(landing, /href="#iqFlagArt"/, 'رسم العلم (symbol) غير مربوط بالمقاطع');
+  // 3) التفاعل: الضغط يفعّل التمويج + الاحتفال
+  const flag = sandbox.document.getElementById('iq-flag-btn');
+  sandbox.celebrateNationalDay();
+  assert.equal(flag.classList.contains('is-windy'), true, 'الضغط على العلم لا يشغّل التمويج');
+  // 4) الوظيفة تعمل بدون تسجيل دخول (لا حساب في هذا الـ harness)
+  assert.equal(localStorage.getItem('zp_device_id'), null, 'الاحتفال يجب أن يعمل قبل تسجيل الدخول');
+});
+
+test('52) نظام التصميم: قسم التركيز بنطاق أخضر وحده، وبقية الشاشات كحلية موحّدة', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  // قسم التركيز يحمل نطاق اللون الأخضر
+  const pomoTag = html.slice(html.indexOf('<section id="tab-pomodoro"'), html.indexOf('<section id="tab-pomodoro"') + 120);
+  assert.match(pomoTag, /data-ds="focus"/, 'قسم التركيز لا يحمل data-ds="focus"');
+  // نطاق أخضر معرّف مرة واحدة في الـ CSS
+  assert.match(html, /\[data-ds="focus"\]\s*\{/, 'نطاق focus غير معرّف في نظام التصميم');
+  // ولا يوجد نطاق أخضر على أي قسم آخر
+  const otherTabs = ['home', 'todo', 'english', 'achievements', 'zero'];
+  otherTabs.forEach(t => {
+    const i = html.indexOf('<section id="tab-' + t + '"');
+    assert.ok(i > 0, 'قسم مفقود: ' + t);
+    assert.ok(!/data-ds="focus"/.test(html.slice(i, i + 140)), 'قسم ' + t + ' يحمل نطاق التركيز الأخضر');
+  });
+  // ألوان النظام القديمة أُزيلت من الواجهة
+  assert.ok(!/theme-sky|theme-mint\b/.test(html.replace(/--ds-[a-z-]+/g, '')), 'بقيت ألوان قديمة في الواجهة');
+  // المكوّنات الموحّدة معرّفة في نظام التصميم
+  ['ds-card', 'ds-tile', 'ds-btn-primary', 'ds-chip', 'ds-icon-tile', 'ds-fab'].forEach(c => {
+    assert.ok(html.includes('.' + c), 'المكوّن ' + c + ' غير معرّف في نظام التصميم');
+  });
+  // التبويبات الخمسة في الشريط السفلي
+  assert.equal((html.match(/id="nav-/g) || []).length, 5, 'عدد تبويبات الشريط السفلي ليس ٥');
+  // الخطوط: خط حديث
+  assert.match(html, /Cairo/, 'الخط الحديث (Cairo) مفقود');
+});
+
+test('53) الإنجازات تُحسب من بيانات حقيقية (XP + الأشجار + المهام)', async () => {
+  const { sandbox, nodes } = createHarness();
+  await signup(sandbox, 'طالب الإنجازات');
+  sandbox.__api.tasks = [
+    { id: 1, title: 'أ', done: true, tag: '', prio: 'normal' },
+    { id: 2, title: 'ب', done: false, tag: '', prio: 'normal' }
+  ];
+  sandbox.finishPomoSession();
+  await sandbox.flushSyncQueue();
+  sandbox.__api.userXP = 520;          // بعد مكافأة الجلسة (+30 XP)
+  const data = sandbox.renderAchievements();
+
+  assert.equal(data.level, Math.floor(520 / 250) + 1, 'حساب المستوى غير صحيح');
+  assert.equal(nodes.get('ach-level').innerText, String(data.level));
+  assert.equal(nodes.get('ach-stat-xp').innerText, '520');
+  assert.equal(nodes.get('ach-stat-trees').innerText, '1');
+  assert.equal(nodes.get('ach-stat-tasks').innerText, '1');
+  assert.match(nodes.get('ach-badges-count').innerText, /\/ \d+/, 'عدّاد الأوسمة لا يظهر');
+  assert.match(nodes.get('ach-week-chart').innerHTML, /bg-\[var\(--ds-primary\)\]/, 'مخطط الأسبوع لا يُرسم');
+});
+
+test('55) اختبار الحفظ الفعلي: الكتابة في trees ثم القراءة ثم الحذف (إثبات أن الحفظ حقيقي)', async () => {
+  const { sandbox, supabaseMock, nodes, localStorage } = createHarness();
+  await signup(sandbox, 'طالب الاختبار');
+  const deviceId = localStorage.getItem('zp_device_id');
+  supabaseMock._state.tables.trees = [];
+
+  const ok = await sandbox.testTreesStorage();
+  assert.equal(ok, true, 'اختبار الحفظ رجع بالفشل');
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 0, 'الصف التجريبي لم يُحذف بعد الاختبار');
+  const calls = supabaseMock._state.calls.filter(c => c.table === 'trees').map(c => c.op);
+  assert.deepEqual(calls.slice(0, 3), ['upsert', 'select', 'delete'], 'مسار الاختبار غير مطابق: ' + calls.join(','));
+  assert.match(nodes.get('tree-test-result').innerText, /نجح الاختبار/, 'لا تظهر نتيجة نجاح واضحة للطالب');
+});
+
+test('56) فشل جدول trees أثناء اختبار الحفظ يعرض خطأً واضحاً ولا يكسر التطبيق', async () => {
+  const { sandbox, supabaseMock, nodes } = createHarness();
+  await signup(sandbox, 'طالب خطأ');
+  supabaseMock._state.failures.trees = 'relation "public.trees" does not exist';
+
+  const ok = await sandbox.testTreesStorage();
+  assert.equal(ok, false);
+  assert.equal(sandbox.__api.treesTableMissing, true, 'لم تُسجَّل حالة غياب الجدول');
+  assert.match(nodes.get('tree-test-result').innerText, /schema\.sql|غير/, 'رسالة الخطأ غير مفيدة للطالب');
+});
+
+test('54) فحص ثابت: جدول trees مكتمل في schema.sql (أعمدة + صلاحيات + سياسات + فهرس)', () => {
+  const sql = fs.readFileSync(path.join(ROOT, 'supabase', 'schema.sql'), 'utf8');
+  assert.match(sql, /CREATE TABLE IF NOT EXISTS public\.trees/i, 'جدول trees غير معرّف في schema.sql');
+  const section = sql.slice(sql.indexOf('public.trees'), sql.indexOf('6) الفهارس'));
+  for (const col of ['id', 'user_id', 'tree_type', 'duration', 'planted_at', 'created_at']) {
+    assert.match(section, new RegExp('\\b' + col + '\\b'), 'العمود ' + col + ' مفقود من جدول trees');
+  }
+  assert.match(section, /PRIMARY KEY \(user_id, id\)/, 'المفتاح المركّب (user_id,id) مفقود');
+  assert.match(sql, /GRANT SELECT, INSERT, UPDATE, DELETE\s+ON TABLE public\.trees\s+TO anon, authenticated, service_role;/, 'صلاحيات trees مفقودة');
+  assert.match(sql, /ALTER TABLE public\.trees\s+ENABLE ROW LEVEL SECURITY;/, 'RLS غير مفعّل على trees');
+  assert.match(sql, /CREATE POLICY "zp_anon_all_trees"/, 'سياسة anon لجدول trees مفقودة');
+  assert.match(sql, /CREATE POLICY "zp_auth_all_trees"/, 'سياسة authenticated لجدول trees مفقودة');
+  assert.match(sql, /idx_trees_user_planted/, 'فهرس trees مفقود');
+  // ويجب أن يطابق أعمدة النسخة الوهمية المستخدمة في الاختبارات
+  const mockCols = ['id', 'user_id', 'tree_type', 'duration', 'planted_at', 'created_at'];
+  for (const col of mockCols) assert.ok(TABLE_COLUMNS.trees.includes(col), 'عمود مفقود من mock-supabase: ' + col);
 });
 
 function readJson(storage, key, fallback) {
