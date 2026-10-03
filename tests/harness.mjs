@@ -29,7 +29,7 @@ export function clearHarnessTimers() {
   allPendingTimers.clear();
 }
 
-export function createHarness() {
+export function createHarness(options = {}) {
   const nodes = new Map();
   const makeNode = (id) => {
     const node = {
@@ -140,7 +140,13 @@ export function createHarness() {
         return makeNode(tag);
       },
       addEventListener: (ev, cb) => { (documentListeners[ev] ||= []).push(cb); },
-      body: { appendChild() {}, style: {} },
+      body: {
+        appendChild() {}, style: {}, dataset: {},
+        attrs: {},
+        setAttribute(k, v) { this.attrs[k] = String(v); },
+        getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; },
+        removeAttribute(k) { delete this.attrs[k]; },
+      },
     },
     window: null,
     location: { origin: 'https://test.local', href: 'https://test.local/', reload() { sandbox.__reloaded = (sandbox.__reloaded || 0) + 1; } },
@@ -177,6 +183,32 @@ export function createHarness() {
     __setPrefersDark: (v) => { prefersDark = !!v; mqListeners.forEach((cb) => cb({ matches: prefersDark })); },
     __mqListeners: mqListeners,
   };
+  // سجل متصفح وهمي اختياري: يسمح باختبار زر الرجوع الأصلي (popstate) داخل نفس DOM الوهمي
+  const historyEntries = [];
+  let historyCursor = -1;
+  const queuePopState = (state) => {
+    trackedSetTimeout(() => {
+      (windowListeners.popstate || []).forEach((cb) => cb({ state }));
+    }, 0);
+  };
+  const historyMock = {
+    get length() { return historyEntries.length; },
+    get state() { return historyCursor >= 0 ? historyEntries[historyCursor] : null; },
+    pushState(state) {
+      historyEntries.splice(historyCursor + 1);
+      historyEntries.push(state);
+      historyCursor = historyEntries.length - 1;
+    },
+    replaceState(state) {
+      if (historyCursor < 0) { historyEntries.push(state); historyCursor = 0; }
+      else historyEntries[historyCursor] = state;
+    },
+    back() { if (historyCursor > 0) { historyCursor--; queuePopState(historyEntries[historyCursor]); } },
+    forward() { if (historyCursor < historyEntries.length - 1) { historyCursor++; queuePopState(historyEntries[historyCursor]); } },
+    go(delta) { if (delta === -1) historyMock.back(); else if (delta === 1) historyMock.forward(); },
+  };
+  if (options.withHistory) sandbox.history = historyMock;
+
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
   sandbox.self = sandbox;
@@ -205,6 +237,10 @@ export function createHarness() {
 };`;
   vm.createContext(sandbox);
   vm.runInContext(code + epilogue, sandbox, { filename: 'index-inline.js' });
-  return { sandbox, supabaseMock, localStorage, nodes, getNode, alerts, confirmations };
+  // إقلاع التطبيق: تشغيل مستمعي DOMContentLoaded (مثل المتصفح تماماً) عند الطلب
+  if (options.boot) {
+    (documentListeners.DOMContentLoaded || []).forEach((cb) => { try { cb({}); } catch (e) { sandbox.__bootError = e; } });
+  }
+  return { sandbox, supabaseMock, localStorage, nodes, getNode, alerts, confirmations, historyMock, windowListeners };
 }
 
