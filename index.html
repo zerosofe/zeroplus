@@ -337,9 +337,10 @@
         }
         .iq-flag:hover { transform: translateY(-2px); box-shadow: 0 16px 32px -16px rgba(11, 30, 60, 0.6); }
         .iq-flag.is-windy { --amp: 5.6px; --speed: 2.1s; }
-        .iq-flag__cloth { display: flex; flex-direction: row-reverse; width: 100%; height: 100%; }
+        .iq-flag__cloth { display: flex; flex-direction: row; direction: ltr; width: 100%; height: 100%; }
         .iq-flag__slice {
             flex: 1 1 0; height: 100%; overflow: hidden; position: relative;
+            margin-inline: -0.5px;
             transform-origin: 100% 50%;
             animation: iqWave var(--speed) ease-in-out infinite;
             animation-delay: calc(var(--a) * -0.62s);
@@ -414,7 +415,7 @@
     </div>
 
     <!-- ===== اليوم الوطني العراقي 94: رسم العلم (يُستخدم في المقاطع المتحركة) ===== -->
-    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
+    <svg width="0" height="0" aria-hidden="true" focusable="false" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;pointer-events:none">
         <defs>
             <g id="iqFlagArt">
                 <rect x="0" y="0" width="1400" height="311" fill="#ce1126"/>
@@ -460,20 +461,20 @@
                             onclick="celebrateNationalDay()"
                             aria-label="علم العراق — اضغط لتحريكه احتفاءً باليوم الوطني 94">
                             <span class="iq-flag__cloth" id="iq-flag-cloth">
-                            <span class="iq-flag__slice" style="--a: 0.26"><svg viewBox="0 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.32"><svg viewBox="100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.37"><svg viewBox="200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.43"><svg viewBox="300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.49"><svg viewBox="400 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.55"><svg viewBox="500 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.60"><svg viewBox="600 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.66"><svg viewBox="700 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.72"><svg viewBox="800 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.77"><svg viewBox="900 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.83"><svg viewBox="1000 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.89"><svg viewBox="1100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.94"><svg viewBox="1200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 1.00"><svg viewBox="1300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 1.00"><svg viewBox="0 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.94"><svg viewBox="100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.89"><svg viewBox="200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.83"><svg viewBox="300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.77"><svg viewBox="400 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.71"><svg viewBox="500 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.66"><svg viewBox="600 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.60"><svg viewBox="700 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.54"><svg viewBox="800 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.49"><svg viewBox="900 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.43"><svg viewBox="1000 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.37"><svg viewBox="1100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.32"><svg viewBox="1200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
+                            <span class="iq-flag__slice" style="--a: 0.26"><svg viewBox="1300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
                             </span>
                         </button>
                     </div>
