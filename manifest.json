@@ -5,9 +5,9 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#081426",
-  "theme_color": "#0E2F76",
-  "orientation": "portrait",
+  "background_color": "#070d18",
+  "theme_color": "#16305c",
+  "orientation": "any",
   "lang": "ar",
   "dir": "rtl",
   "categories": [
@@ -28,7 +28,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icon.svg?v=32",
+      "src": "/icon.svg?v=35",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

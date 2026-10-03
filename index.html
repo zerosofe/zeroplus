@@ -22,18 +22,18 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v34')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v35')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=34">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=34">
-    <link rel="shortcut icon" href="/icon.svg?v=34">
-    <link rel="manifest" href="/manifest.json?v=34">
-    <meta name="theme-color" content="#0284c7">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=35">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=35">
+    <link rel="shortcut icon" href="/icon.svg?v=35">
+    <link rel="manifest" href="/manifest.json?v=35">
+    <meta name="theme-color" content="#16305c">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -85,7 +85,11 @@
            قسم التركيز فقط يستبدل النظام بالكامل إلى الأخضر عبر [data-ds="focus"].
            نفس المكوّنات والأحجام والاستدارة والمسافات — يتغيّر اللون فقط.
            ===================================================================== */
-        :root {
+        /* نطاق اللون الافتراضي (Primary الكحلي + الأبيض).
+           [data-ds="default"] يعيد تعريف اللوحة كاملة على أي عنصر — فنعزل
+           النوافذ والأدراج العامة (الملف الشخصي، الدعم، التثبيت، المشاركة)
+           عن نطاق التركيز الأخضر حتى لو فُتحت من داخله. */
+        :root, [data-ds="default"] {
             --ds-bg: #f4f6fa;
             --ds-bg-elevated: #ffffff;
             --ds-card: #ffffff;
@@ -99,9 +103,19 @@
             --ds-accent-soft: #e6ecf7;
             --ds-success: #0f766e;
             --ds-success-soft: #d7f0ee;
+            --ds-success-border: #cfeae7;
             --ds-warn: #b45309;
+            --ds-warn-soft: #fdf3e4;
             --ds-warn-border: #f3e2c7;
             --ds-danger: #be123c;
+            --ds-danger-soft: #fdeaee;
+            --ds-danger-border: #f7cdd6;
+            --ds-info: #16305c;
+            --ds-info-soft: #e6ecf7;
+            --ds-overlay: rgba(2, 6, 23, 0.7);
+            --ds-tree-trunk: #8a6a4b;
+            --ds-code-bg: #0b1830;
+            --ds-code-text: #d8e4f6;
             --ds-border: #e8edf5;
             --ds-border-strong: #dce4ef;
             --ds-text: #101c33;
@@ -117,7 +131,7 @@
             --ds-dark-border: #1e2c45;
             --ds-gradient: linear-gradient(135deg, #16305c 0%, #24457c 100%);
         }
-        .dark {
+        .dark, .dark [data-ds="default"] {
             --ds-bg: #070d18;
             --ds-bg-elevated: #0d1626;
             --ds-card: #111c30;
@@ -130,8 +144,19 @@
             --ds-accent-soft: #16273f;
             --ds-success: #2bb39a;
             --ds-success-soft: #102a26;
+            --ds-success-border: #1c4a40;
             --ds-warn: #f0b464;
+            --ds-warn-soft: #2b2013;
             --ds-warn-border: #3a2c17;
+            --ds-danger: #fb7185;
+            --ds-danger-soft: #331622;
+            --ds-danger-border: #52202f;
+            --ds-info: #6f92c8;
+            --ds-info-soft: #16273f;
+            --ds-overlay: rgba(2, 6, 23, 0.78);
+            --ds-tree-trunk: #8a6a4b;
+            --ds-code-bg: #060f1d;
+            --ds-code-text: #d8e4f6;
             --ds-border: #1e2c45;
             --ds-border-strong: #27395a;
             --ds-text: #f1f5fb;
@@ -146,25 +171,40 @@
         }
         /* ====== نطاق التركيز: نفس المكوّنات + نظام لوني أخضر فقط ====== */
         [data-ds="focus"] {
-            --ds-bg: #f3faf6;
+            /* لوحة محصورة بالأخضر والأبيض فقط: كل الخلفيات والحدود والنصوص
+               والأيقونات والأزرار داخل هذا النطاق — بلا أي لون من الأساسي الافتراضي. */
+            --ds-bg: #f2faf6;
             --ds-bg-elevated: #ffffff;
             --ds-card: #ffffff;
-            --ds-sunken: #f2faf6;
-            --ds-tint: #ecf8f1;
+            --ds-sunken: #eef9f3;
+            --ds-tint: #e7f6ee;
             --ds-primary: #0f6b4a;
             --ds-primary-hover: #0b5439;
-            --ds-primary-soft: #d8f0e3;
+            --ds-primary-soft: #d6f1e2;
             --ds-on-primary: #ffffff;
             --ds-accent: #17835c;
             --ds-accent-soft: #e0f5ea;
             --ds-success: #0f6b4a;
-            --ds-success-soft: #d8f0e3;
-            --ds-border: #ddf0e6;
-            --ds-border-strong: #c9e8d8;
-            --ds-text: #0c2018;
-            --ds-text-soft: #2c4438;
-            --ds-muted: #5f7c6e;
-            --ds-ring-track: #e2f3e9;
+            --ds-success-soft: #d6f1e2;
+            --ds-success-border: #bfe6d3;
+            --ds-warn: #14654a;
+            --ds-warn-soft: #e4f5ec;
+            --ds-warn-border: #c3e7d5;
+            --ds-danger: #0b5439;
+            --ds-danger-soft: #dff3e8;
+            --ds-danger-border: #bfe3d1;
+            --ds-info: #17835c;
+            --ds-info-soft: #e0f5ea;
+            --ds-overlay: rgba(4, 32, 22, 0.7);
+            --ds-tree-trunk: #5f7d63;
+            --ds-code-bg: #0b1d15;
+            --ds-code-text: #dff3e8;
+            --ds-border: #d6ecdf;
+            --ds-border-strong: #bfe3d1;
+            --ds-text: #06251a;
+            --ds-text-soft: #14513a;
+            --ds-muted: #3f6f59;
+            --ds-ring-track: #ddf1e7;
             --ds-ring: #0f6b4a;
             --ds-shadow: 0 1px 2px rgba(10, 60, 40, 0.05), 0 12px 30px -16px rgba(10, 80, 50, 0.22);
             --ds-shadow-lg: 0 2px 4px rgba(10, 60, 40, 0.06), 0 24px 50px -24px rgba(10, 80, 50, 0.3);
@@ -184,6 +224,21 @@
             --ds-primary-soft: #123326;
             --ds-accent: #46c795;
             --ds-accent-soft: #123326;
+            --ds-success: #2fbf8b;
+            --ds-success-soft: #123326;
+            --ds-success-border: #1f5c45;
+            --ds-warn: #46c795;
+            --ds-warn-soft: #123326;
+            --ds-warn-border: #1f5c45;
+            --ds-danger: #7fd9b3;
+            --ds-danger-soft: #102b21;
+            --ds-danger-border: #1f5c45;
+            --ds-info: #46c795;
+            --ds-info-soft: #123326;
+            --ds-overlay: rgba(2, 20, 13, 0.78);
+            --ds-tree-trunk: #4c6f54;
+            --ds-code-bg: #081711;
+            --ds-code-text: #dff3e8;
             --ds-border: #1d3a2c;
             --ds-border-strong: #264b39;
             --ds-text: #eefaf3;
@@ -193,14 +248,120 @@
             --ds-ring: #2fbf8b;
         }
 
-        html { -webkit-text-size-adjust: 100%; }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            /* منع سحب الصفحة المطّاطي فوق/تحت (يبدو كتطبيق أصلي على iOS) */
+            overscroll-behavior-y: none;
+            background-color: var(--ds-bg);
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Cairo", "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            padding-bottom: 6rem;                                        /* بديل للمتصفحات القديمة */
             padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom)));
             background-color: var(--ds-bg);
             color: var(--ds-text);
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* =====================================================================
+           سلوك لمسي أصلي: بلا تأخير نقر مزدوج، وبلا تحديد نص غير مقصود،
+           وأهداف لمس لا تقل عن 44×44 بكسل (إرشادات Apple/Google).
+           ===================================================================== */
+        button, a, [role="button"], summary, label[for], input[type="checkbox"], input[type="radio"] {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        input, textarea, select { -webkit-user-select: text; user-select: text; }
+        /* أهداف اللمس: 44×44 للأزرار الأساسية (رجوع/حساب/تنقّل المهام)،
+           40px للأزرار الثانوية في الشريط السريع حتى لا تلتهم الترويسة الشاشة */
+        #app-header button, #app-bottom-nav button, .ds-back-btn, .ds-tap { min-height: 44px; }
+        #app-quick-actions button { min-height: 40px; }
+        #app-bottom-nav button { min-width: 56px; }
+        .ds-fab { min-height: 52px; }
+        /* منع تكبير iOS/iPadOS التلقائي عند الكتابة: أي حقل إدخال ≥ 16px على
+           أي جهاز لمسي (هاتف أو لوحي) — بدونه يقفز الـ viewport عند كل تركيز. */
+        @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+            input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+            select, textarea { font-size: 16px; }
+        }
+        /* =====================================================================
+           أدوات حالة دلالية (Semantic tones)
+           كل حالة تلبس لوحة القسم النشط: أخضر/أبيض داخل التركيز، والأساسي
+           الافتراضي في بقية الأقسام. تُستعمل في الحالات التي يضبطها JavaScript
+           (مؤشر السحابة، جرس التنبيهات، شريط التذكير، الرسائل السريعة) حتى لا
+           يبقى أي لون ثابت خارج اللوحة.
+           ===================================================================== */
+        .ds-tone-success { color: var(--ds-success); }
+        .ds-tone-warn { color: var(--ds-warn); }
+        .ds-tone-danger { color: var(--ds-danger); }
+        .ds-tone-muted { color: var(--ds-muted); }
+        .ds-fill-success { background-color: var(--ds-success); }
+        .ds-fill-warn { background-color: var(--ds-warn); }
+        .ds-fill-danger { background-color: var(--ds-danger); }
+        .ds-fill-muted { background-color: var(--ds-muted); }
+        .ds-fill-soft { background-color: var(--ds-border-strong); }
+        /* خلفيات الحالة تُعرَّف بعد الأساس لتتغلّب عليها عند اجتماعهما */
+        .ds-banner { background-color: var(--ds-primary); }
+        .ds-state-success { background-color: var(--ds-success); color: #ffffff; border-color: var(--ds-success-border); }
+        .ds-state-warn { background-color: var(--ds-warn); color: #ffffff; border-color: var(--ds-warn-border); }
+        .ds-state-danger { background-color: var(--ds-danger); color: #ffffff; border-color: var(--ds-danger-border); }
+        .ds-state-info { background-color: var(--ds-dark-base); color: #ffffff; border-color: var(--ds-dark-border); }
+
+        /* =====================================================================
+           الحواف الآمنة (Notch / Dynamic Island / شريط الإيماءات / زوايا iPad)
+           ===================================================================== */
+        .ds-safe-x { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+        .ds-safe-t { padding-top: env(safe-area-inset-top); }
+        .ds-safe-b { padding-bottom: env(safe-area-inset-bottom); }
+        #app-header {
+            padding-top: env(safe-area-inset-top);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        #app-bottom-nav {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        #support-drawer {
+            height: 100vh;
+            height: 100dvh;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-overflow-scrolling: touch;
+        }
+        #landing-view {
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-right: max(1rem, env(safe-area-inset-right));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            padding-left: max(1rem, env(safe-area-inset-left));
+        }
+        @media (min-width: 640px) {
+            #landing-view {
+                padding-top: max(2rem, env(safe-area-inset-top));
+                padding-right: max(2rem, env(safe-area-inset-right));
+                padding-bottom: max(2rem, env(safe-area-inset-bottom));
+                padding-left: max(2rem, env(safe-area-inset-left));
+            }
+        }
+        #notify-reminder-banner { padding-top: env(safe-area-inset-top); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+        #toast { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        /* نوافذ الحوار: لا تلمس الحواف الآمنة ولا تتجاوز ارتفاع الشاشة المرئي */
+        .ds-dialog-panel { max-height: calc(100dvh - 2rem); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        /* =====================================================================
+           حاويات استجابة: تمنع تمدّد السطور على الآيباد والأجهزة اللوحية
+           (نفس العرض على الهاتف، وعرض مقيّد ومتوسّط على الشاشات الكبيرة)
+           ===================================================================== */
+        :root { --app-max-w: 56rem; }                                  /* هاتف: عرض كامل بحد مريح للنص */
+        @media (min-width: 1024px) { :root { --app-max-w: 60rem; } }   /* iPad أفقي / أندرويد لوحي */
+        @media (min-width: 1440px) { :root { --app-max-w: 64rem; } }   /* شاشات كبيرة: نمو مقيّد */
+        .ds-shell { width: 100%; max-width: var(--app-max-w); margin-left: auto; margin-right: auto; }
+        /* هواتف بالعرض الأفقي (شاشة قصيرة): ترويسة أنحف حتى لا تأكل المحتوى */
+        @media (orientation: landscape) and (max-height: 520px) {
+            #app-header .ds-shell { padding-top: 0.35rem; padding-bottom: 0.35rem; }
+            #app-header .ds-shell:last-child { padding-bottom: 0.5rem; }
+            .ds-fab { bottom: max(4.8rem, calc(4.3rem + env(safe-area-inset-bottom))); }
         }
         /* خطوط حديثة + تدرّج هرمي واضح */
         h1, h2, h3, h4 { letter-spacing: -0.01em; }
@@ -253,6 +414,23 @@
         }
         .ds-btn-ghost:hover { border-color: var(--ds-primary); color: var(--ds-primary); }
         .ds-btn-ghost:active { transform: scale(0.97); }
+        /* ====== زر الرجوع الموحّد ======
+           يرث ألوان النطاق النشط تلقائياً: أخضر/أبيض داخل قسم التركيز،
+           والأساسي الافتراضي/أبيض في كل الأقسام والنوافذ الأخرى.
+           هدف اللمس 44×44 بكسل كحد أدنى دائماً. */
+        .ds-back-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            min-width: 44px; min-height: 44px; padding: 0 10px;
+            background: var(--ds-sunken); color: var(--ds-text-soft);
+            border: 1px solid var(--ds-border-strong); border-radius: 14px;
+            font-size: 11px; font-weight: 900; line-height: 1;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+            flex-shrink: 0;
+        }
+        .ds-back-btn:hover { background: var(--ds-primary-soft); border-color: var(--ds-primary); color: var(--ds-primary); }
+        .ds-back-btn:active { transform: scale(0.96); }
+        .ds-back-btn > svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .ds-back-btn[hidden], .ds-back-btn.hidden { display: none; }
         .ds-field {
             background: var(--ds-sunken); border: 1px solid var(--ds-border);
             border-radius: 12px; color: var(--ds-text); font-weight: 700;
@@ -275,7 +453,9 @@
         /* زر عائم (FAB) */
         .ds-fab {
             position: fixed; z-index: 45;
+            bottom: 5.6rem;                                            /* بديل للمتصفحات القديمة */
             bottom: max(5.6rem, calc(4.9rem + env(safe-area-inset-bottom)));
+            left: 1rem;                                                 /* بديل للمتصفحات القديمة */
             left: max(1rem, env(safe-area-inset-left));
             height: 52px; min-width: 52px; padding: 0 16px;
             display: inline-flex; align-items: center; gap: 8px;
@@ -300,7 +480,8 @@
         .ds-scroll-x { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
         /* أكواد SQL للعرض داخل نافذة التهيئة */
         .ds-code {
-            direction: ltr; text-align: left; background: #0b1830; color: #d8e4f6;
+            direction: ltr; text-align: left; background: var(--ds-code-bg); color: var(--ds-code-text);
+            border: 1px solid var(--ds-dark-border);
             border-radius: 14px; padding: 12px; font-size: 10.5px; line-height: 1.7;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             max-height: 220px; overflow: auto; white-space: pre;
@@ -373,7 +554,10 @@
             border-radius: 999px; padding: 5px 12px; font-size: 10px; font-weight: 800; color: #fff;
         }
 
-        .ios-nav-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+        .ios-nav-safe {
+            padding-bottom: 0.75rem;                                    /* بديل للمتصفحات القديمة */
+            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--ds-primary); border-radius: 10px; }
@@ -401,7 +585,7 @@
     <a href="#main-content" class="skip-link">تخطَّ إلى المحتوى</a>
 
     <!-- تذكير الإشعارات: يظهر فوق كل الشاشات (حتى شاشة الدخول) ويذكّر الطالب بالتفعيل -->
-    <div id="notify-reminder-banner" class="hidden relative z-[45] bg-[var(--ds-primary)] text-white px-3 py-2.5 text-[11px] font-bold shadow-[var(--ds-shadow-primary)]">
+    <div id="notify-reminder-banner" class="hidden relative z-[45] ds-banner text-white px-3 py-2.5 text-[11px] font-bold shadow-[var(--ds-shadow-primary)]">
         <div class="max-w-4xl mx-auto w-full flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
                 <i id="notify-banner-icon" class="fa-solid fa-bell text-sm animate-bounce shrink-0"></i>
@@ -438,11 +622,11 @@
 
     <!-- رسائل سريعة (Toast) — تأكيد مرئي لكل زر -->
     <div id="toast" class="hidden fixed bottom-24 inset-x-0 z-[80] flex justify-center px-4 pointer-events-none" role="status" aria-live="polite">
-        <div id="toast-inner" class="bg-slate-900/95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-[var(--ds-shadow-lg)] border border-white/10 max-w-sm text-center"></div>
+        <div id="toast-inner" class="ds-state-info text-xs font-bold px-4 py-2.5 rounded-xl shadow-[var(--ds-shadow-lg)] border max-w-sm text-center"></div>
     </div>
 
     <!-- LANDING VIEW (تظهر قبل تسجيل الدخول — وتحمل احتفاء اليوم الوطني 94) -->
-    <div id="landing-view" class="fixed inset-0 z-50 bg-[var(--ds-bg)] overflow-y-auto flex flex-col justify-between p-4 sm:p-8 hidden">
+    <div id="landing-view" data-ds="default" class="fixed inset-0 z-50 bg-[var(--ds-bg)] overflow-y-auto flex flex-col justify-between p-4 sm:p-8 hidden">
         <div class="max-w-3xl w-full mx-auto space-y-6 my-auto py-8">
 
             <!-- 🇮🇶 اليوم الوطني 94 — يظهر قبل تسجيل الدخول ولا يحتاج حساباً -->
@@ -587,11 +771,17 @@
     </div>
 
     <!-- PROFILE MODAL -->
-    <div id="profile-modal" role="dialog" aria-modal="true" aria-label="إدارة الملف الشخصي" class="fixed inset-0 z-50 bg-slate-950/70 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-6 space-y-5 shadow-[var(--ds-shadow-lg)]">
-            <div class="flex items-center justify-between border-b border-[var(--ds-border)] pb-3">
-                <h3 class="font-black text-base text-[var(--ds-text)]">إدارة الملف الشخصي</h3>
-                <button onclick="closeProfileModal()" aria-label="إغلاق إدارة الملف الشخصي" class="text-[var(--ds-muted)]"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
+    <div id="profile-modal" data-ds="default" role="dialog" aria-modal="true" aria-label="إدارة الملف الشخصي" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-5 sm:p-6 space-y-5 shadow-[var(--ds-shadow-lg)]">
+            <div class="flex items-center justify-between gap-2 border-b border-[var(--ds-border)] pb-3">
+                <div class="flex items-center gap-2 min-w-0">
+                    <button type="button" onclick="navigateBack()" aria-label="رجوع" class="ds-back-btn">
+                        <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h3 class="font-black text-sm sm:text-base text-[var(--ds-text)] truncate">إدارة الملف الشخصي</h3>
+                </div>
+                <button onclick="closeProfileModal()" aria-label="إغلاق إدارة الملف الشخصي" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col items-center space-y-2">
                 <div class="relative w-20 h-20 rounded-full bg-[var(--ds-sunken)] overflow-hidden border-2 border-[var(--ds-primary)] flex items-center justify-center shadow-md">
@@ -660,8 +850,15 @@
     </div>
 
     <!-- INSTALL MODAL -->
-    <div id="install-modal" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق" class="fixed inset-0 z-50 bg-slate-950/70 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-[var(--ds-shadow-lg)]">
+    <div id="install-modal" data-ds="default" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-[var(--ds-shadow-lg)]">
+            <div class="flex items-center justify-between gap-2 pb-1">
+                <button type="button" onclick="navigateBack()" aria-label="رجوع" class="ds-back-btn">
+                    <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                    <span>رجوع</span>
+                </button>
+                <button onclick="closeInstallModal()" aria-label="إغلاق نافذة التثبيت" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
+            </div>
             <div class="w-14 h-14 rounded-2xl bg-[var(--ds-primary)] text-white mx-auto flex items-center justify-center text-2xl shadow-[var(--ds-shadow-primary)]">
                 <i aria-hidden="true" class="fa-solid fa-mobile-screen-button"></i>
             </div>
@@ -692,12 +889,18 @@
         </div>
     </div>
 
-    <!-- HEADER: ترويسة نظيفة بمستويين (هوية + إجراءات سريعة) -->
-    <header class="sticky top-0 z-40 bg-[var(--ds-card)] border-b border-[var(--ds-border)] shrink-0">
-        <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5 min-w-0">
+    <!-- HEADER: ترويسة نظيفة بمستويين (رجوع + هوية + إجراءات سريعة) -->
+    <header id="app-header" class="sticky top-0 z-40 bg-[var(--ds-card)] border-b border-[var(--ds-border)] shrink-0">
+        <div class="ds-shell px-3 sm:px-4 py-2 flex items-center justify-between gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                <!-- زر الرجوع العام: يظهر في كل الأقسام عدا الرئيسية، ويلوّن نفسه بلون القسم النشط -->
+                <button type="button" id="app-back-btn" onclick="navigateBack()" aria-label="رجوع إلى الصفحة السابقة"
+                    class="ds-back-btn hidden">
+                    <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                    <span class="hidden sm:inline" id="app-back-label">رجوع</span>
+                </button>
                 <button onclick="openProfileModal()" aria-label="فتح الملف الشخصي والإعدادات"
-                    class="w-10 h-10 rounded-[14px] bg-[var(--ds-primary)] text-white font-black text-lg flex items-center justify-center shrink-0 overflow-hidden border border-[var(--ds-border-strong)] shadow-[var(--ds-shadow-primary)] transition active:scale-95">
+                    class="w-11 h-11 rounded-[14px] bg-[var(--ds-primary)] text-white font-black text-lg flex items-center justify-center shrink-0 overflow-hidden border border-[var(--ds-border-strong)] shadow-[var(--ds-shadow-primary)] transition active:scale-95">
                     <span id="header-avatar-initial">Z+</span>
                 </button>
                 <div class="min-w-0">
@@ -712,10 +915,10 @@
                     <svg class="ds-icon text-[var(--ds-primary)] text-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z"/></svg>
                     <span id="app-xp" class="text-[11px] font-black text-[var(--ds-text)]">140 XP</span>
                 </div>
-                <div id="cloud-indicator" role="status" aria-live="polite" aria-label="حالة المزامنة" class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                <div id="cloud-indicator" role="status" aria-live="polite" aria-label="حالة المزامنة" class="w-2.5 h-2.5 rounded-full ds-fill-soft"></div>
             </div>
         </div>
-        <div class="max-w-4xl mx-auto px-3 sm:px-4 pb-2.5 flex items-center gap-2 overflow-x-auto">
+        <div id="app-quick-actions" class="ds-shell px-3 sm:px-4 pb-2 flex items-center gap-2 overflow-x-auto">
             <button onclick="openInstallModal()" aria-label="تثبيت التطبيق" class="ds-btn-ghost px-2.5 py-1.5 text-[11px] flex items-center gap-1.5 shrink-0">
                 <svg class="ds-icon text-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
                 <span>تثبيت</span>
@@ -739,7 +942,7 @@
         </div>
     </header>
 
-    <main id="main-content" tabindex="-1" class="max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
+    <main id="main-content" tabindex="-1" class="ds-shell p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
         <!-- HOME / الصفحة الرئيسية -->
         <section id="tab-home" class="hidden space-y-4">
             <!-- بطاقة التعريف + الإحصائيات -->
@@ -1087,7 +1290,7 @@
                     <span class="text-[var(--ds-muted)]">|</span>
                     <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i aria-hidden="true" class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
                 </div>
-                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v34</p>
+                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v35</p>
             </div>
         </section>
 
@@ -1227,7 +1430,7 @@
                 <!-- شريط حالة الحفظ السحابي -->
                 <div id="forest-sync-bar" class="mx-5 mb-3 flex items-center justify-between gap-2 bg-[var(--ds-sunken)] border border-[var(--ds-border)] rounded-2xl px-3 py-2">
                     <span class="flex items-center gap-2 min-w-0">
-                        <span id="forest-sync-dot" class="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>
+                        <span id="forest-sync-dot" class="w-2 h-2 rounded-full ds-fill-muted shrink-0"></span>
                         <span id="forest-sync-text" class="text-[10.5px] font-bold text-[var(--ds-muted)] truncate">جارٍ تجهيز الغابة...</span>
                     </span>
                     <button id="forest-retry-btn" onclick="loadForestFromCloud(true)" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">إعادة المحاولة</button>
@@ -1249,7 +1452,7 @@
                 <div class="px-5 pb-5 space-y-3">
                     <div class="flex items-center justify-between gap-2">
                         <span class="ds-eyebrow">سجل الأشجار</span>
-                        <button onclick="clearForestConfirmation()" class="text-[11px] font-bold text-[var(--ds-muted)] hover:text-rose-500 transition">مسح السجل</button>
+                        <button onclick="clearForestConfirmation()" class="text-[11px] font-bold text-[var(--ds-muted)] hover:text-[var(--ds-danger)] transition">مسح السجل</button>
                     </div>
                     <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
                 </div>
@@ -1480,8 +1683,8 @@
     </main>
 
     <!-- TREE SETUP MODAL: يظهر فقط إذا كان جدول trees غير مُهيّأ في Supabase -->
-    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="تهيئة جدول الأشجار في Supabase" class="fixed inset-0 z-50 bg-slate-950/70 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-6 space-y-4 shadow-[var(--ds-shadow-lg)] max-h-[90vh] overflow-y-auto">
+    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="تهيئة جدول الأشجار في Supabase" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-[var(--ds-shadow-lg)]">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-2.5">
                     <div class="ds-icon-tile">
@@ -1492,9 +1695,15 @@
                         <p class="text-[11px] text-[var(--ds-muted)] font-semibold">خطوة واحدة لمرة واحدة — يفعّل الحفظ السحابي الكامل للغابة</p>
                     </div>
                 </div>
-                <button onclick="closeTreeSetupModal()" aria-label="إغلاق نافذة تهيئة الجدول" class="w-8 h-8 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
-                    <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="navigateBack()" aria-label="رجوع" class="ds-back-btn">
+                        <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                        <span class="hidden sm:inline">رجوع</span>
+                    </button>
+                    <button onclick="closeTreeSetupModal()" aria-label="إغلاق نافذة تهيئة الجدول" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
+                        <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                </div>
             </div>
             <ol class="text-[11.5px] text-[var(--ds-text-soft)] font-semibold space-y-1.5 leading-relaxed list-decimal pr-5">
                 <li>افتح مشروعك في Supabase ← <strong>SQL Editor</strong> ← <strong>New query</strong>.</li>
@@ -1546,8 +1755,15 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
     </div>
 
     <!-- SHARE MODAL -->
-    <div id="share-modal" role="dialog" aria-modal="true" aria-label="مشاركة الإنجاز" class="fixed inset-0 z-50 bg-slate-950/70 hidden flex items-center justify-center p-4">
-        <div class="bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-[var(--ds-shadow-lg)]">
+    <div id="share-modal" data-ds="default" role="dialog" aria-modal="true" aria-label="مشاركة الإنجاز" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-[var(--ds-shadow-lg)]">
+            <div class="flex items-center justify-between gap-2">
+                <button type="button" onclick="navigateBack()" aria-label="رجوع" class="ds-back-btn">
+                    <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                    <span>رجوع</span>
+                </button>
+                <button onclick="closeShareModal()" aria-label="إغلاق نافذة المشاركة" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
+            </div>
             <div id="share-card" class="ds-hero p-6 rounded-2xl text-white shadow-[var(--ds-shadow-primary)] space-y-3 text-center">
                 <div class="w-12 h-12 rounded-xl bg-white/10 mx-auto flex items-center justify-center font-black text-2xl border border-white/20" dir="ltr">Z+</div>
                 <div>
@@ -1577,17 +1793,20 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
     </div>
 
     <!-- SUPPORT DRAWER / مركز الدعم الفني (جانبي) -->
-    <div id="support-overlay" onclick="closeSupportDrawer()" class="hidden fixed inset-0 z-[60] bg-slate-950/60"></div>
-    <aside id="support-drawer" role="dialog" aria-modal="true" aria-label="مركز الدعم الفني" class="fixed inset-y-0 right-0 z-[65] w-[min(94vw,26rem)] translate-x-full transition-transform duration-300 ease-out bg-[var(--ds-card)] border-l border-[var(--ds-border)] shadow-[var(--ds-shadow-lg)] flex flex-col">
-        <div class="flex items-center justify-between px-4 py-3.5 border-b border-[var(--ds-border)] shrink-0">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shadow-sm"><i aria-hidden="true" class="fa-solid fa-headset"></i></div>
-                <div>
-                    <h3 class="font-black text-sm text-[var(--ds-text)]">مركز الدعم الفني</h3>
-                    <p class="text-[10px] text-[var(--ds-muted)] font-semibold">حسابك • تنبيهاتك • أسئلة شائعة</p>
+    <div id="support-overlay" onclick="closeSupportDrawer()" class="hidden fixed inset-0 z-[60] bg-[var(--ds-overlay)]"></div>
+    <aside id="support-drawer" data-ds="default" role="dialog" aria-modal="true" aria-label="مركز الدعم الفني" class="fixed inset-y-0 right-0 z-[65] w-[min(94vw,26rem)] translate-x-full transition-transform duration-300 ease-out bg-[var(--ds-card)] border-l border-[var(--ds-border)] shadow-[var(--ds-shadow-lg)] flex flex-col">
+        <div class="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-[var(--ds-border)] shrink-0">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <button type="button" onclick="navigateBack()" aria-label="رجوع" class="ds-back-btn">
+                    <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+                </button>
+                <div class="w-9 h-9 rounded-xl bg-[var(--ds-primary)] text-white flex items-center justify-center text-sm shadow-sm shrink-0"><i aria-hidden="true" class="fa-solid fa-headset"></i></div>
+                <div class="min-w-0">
+                    <h3 class="font-black text-sm text-[var(--ds-text)] truncate">مركز الدعم الفني</h3>
+                    <p class="text-[10px] text-[var(--ds-muted)] font-semibold truncate">حسابك • تنبيهاتك • أسئلة شائعة</p>
                 </div>
             </div>
-            <button onclick="closeSupportDrawer()" class="w-8 h-8 rounded-lg bg-[var(--ds-sunken)] text-[var(--ds-muted)] flex items-center justify-center" aria-label="إغلاق الدعم"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
+            <button onclick="closeSupportDrawer()" class="w-11 h-11 rounded-lg bg-[var(--ds-sunken)] text-[var(--ds-muted)] flex items-center justify-center shrink-0" aria-label="إغلاق الدعم"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 space-y-3.5">
@@ -1856,51 +2075,51 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         </div>
 
         <div class="px-4 py-3 border-t border-[var(--ds-border)] flex items-center justify-between gap-2 shrink-0">
-            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v34</span>
+            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v35</span>
             <button onclick="closeSupportDrawer()" class="bg-[var(--ds-sunken)] text-[var(--ds-text-soft)] px-4 py-2 rounded-lg text-[11px] font-bold">إغلاق</button>
         </div>
     </aside>
 
     <!-- شريط الجلسة المصغّر: يظهر في كل الشاشات ما دامت جلسة التركيز تعمل أو موقوفة مؤقتاً -->
-    <div id="focus-mini" class="hidden fixed inset-x-0 z-[55] px-3 pointer-events-none" style="bottom: max(5.2rem, calc(4.4rem + env(safe-area-inset-bottom)));">
-        <div class="max-w-md mx-auto pointer-events-auto bg-slate-900/95 bg-[var(--ds-card)] text-white border border-white/10 border-[var(--ds-border)] rounded-2xl shadow-[var(--ds-shadow-lg)] px-3 py-2.5 flex items-center gap-2">
+    <div id="focus-mini" class="hidden fixed inset-x-0 z-[55] px-3 pointer-events-none" style="bottom: 5.2rem; bottom: max(5.2rem, calc(4.4rem + env(safe-area-inset-bottom)));">
+        <div class="max-w-md mx-auto pointer-events-auto bg-[var(--ds-card)] text-[var(--ds-text)] border border-[var(--ds-border-strong)] rounded-2xl shadow-[var(--ds-shadow-lg)] px-3 py-2.5 flex items-center gap-2">
             <button onclick="showTab('pomodoro')" title="فتح شاشة التركيز" aria-label="فتح شاشة التركيز" class="flex items-center gap-2 min-w-0 flex-1 text-right">
-                <span id="focus-mini-icon" class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0"><i aria-hidden="true" class="fa-solid fa-circle-notch fa-spin text-xs"></i></span>
+                <span id="focus-mini-icon" class="w-8 h-8 rounded-xl bg-[var(--ds-success-soft)] text-[var(--ds-success)] flex items-center justify-center shrink-0"><i aria-hidden="true" class="fa-solid fa-circle-notch fa-spin text-xs"></i></span>
                 <span class="min-w-0">
                     <span id="focus-mini-time" dir="ltr" class="block text-sm font-black tracking-tight leading-none">25:00</span>
                     <span id="focus-mini-label" class="block text-[10px] text-[var(--ds-muted)] font-bold truncate mt-0.5">جلسة تركيز تعمل بالخلفية</span>
                 </span>
             </button>
-            <div class="h-8 w-px bg-white/10 shrink-0"></div>
-            <button id="focus-mini-toggle" onclick="togglePomo()" title="إيقاف مؤقت / استئناف" aria-label="إيقاف مؤقت أو استئناف الجلسة" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0 transition">
+            <div class="h-8 w-px bg-[var(--ds-border)] shrink-0"></div>
+            <button id="focus-mini-toggle" onclick="togglePomo()" title="إيقاف مؤقت / استئناف" aria-label="إيقاف مؤقت أو استئناف الجلسة" class="w-11 h-11 rounded-xl bg-[var(--ds-primary-soft)] hover:bg-[var(--ds-border-strong)] text-[var(--ds-primary)] flex items-center justify-center shrink-0 transition">
                 <i id="focus-mini-toggle-icon" class="fa-solid fa-pause text-xs"></i>
             </button>
-            <button onclick="resetPomo()" title="إنهاء الجلسة" aria-label="إنهاء الجلسة" class="w-9 h-9 rounded-xl bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 flex items-center justify-center shrink-0 transition">
+            <button onclick="resetPomo()" title="إنهاء الجلسة" aria-label="إنهاء الجلسة" class="w-11 h-11 rounded-xl bg-[var(--ds-danger-soft)] hover:bg-[var(--ds-danger-border)] text-[var(--ds-danger)] flex items-center justify-center shrink-0 transition">
                 <i aria-hidden="true" class="fa-solid fa-stop text-xs"></i>
             </button>
         </div>
     </div>
 
     <!-- BOTTOM NAV: خمسة تبويبات موحّدة -->
-    <nav aria-label="التنقل الرئيسي" class="fixed bottom-0 inset-x-0 bg-[var(--ds-card)] border-t border-[var(--ds-border)] pt-2 ios-nav-safe z-40">
-        <div class="max-w-4xl mx-auto flex items-center justify-around px-1">
-            <button onclick="showTab('home')" id="nav-home" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
+    <nav id="app-bottom-nav" aria-label="التنقل الرئيسي" class="fixed bottom-0 inset-x-0 bg-[var(--ds-card)] border-t border-[var(--ds-border)] pt-2 ios-nav-safe z-40">
+        <div class="ds-shell flex items-center justify-around px-1">
+            <button onclick="navigateToTab('home')" id="nav-home" class="flex flex-col items-center justify-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8.5Z"/><path d="M9.5 20.5V13h5v7.5"/></svg>
                 <span>الرئيسية</span>
             </button>
-            <button onclick="showTab('todo')" id="nav-todo" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
+            <button onclick="navigateToTab('todo')" id="nav-todo" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10M9 12h10M9 19h10"/><path d="M4 5l1.6 1.6L8 4.2M4 12l1.6 1.6L8 11.2M4 19l1.6 1.6L8 18.2"/></svg>
                 <span>المهام</span>
             </button>
-            <button onclick="showTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
+            <button onclick="navigateToTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 8v4.5l3 2M9 2.5h6"/></svg>
                 <span>التركيز</span>
             </button>
-            <button onclick="showTab('english')" id="nav-english" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
+            <button onclick="navigateToTab('english')" id="nav-english" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-11Z"/><path d="M4 9.5h16M10.5 9.5V19"/></svg>
                 <span>البناء اللغوي</span>
             </button>
-            <button onclick="showTab('achievements')" id="nav-achievements" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
+            <button onclick="navigateToTab('achievements')" id="nav-achievements" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5.5H5.5V7A3.5 3.5 0 0 0 9 10.5M16 5.5h2.5V7A3.5 3.5 0 0 1 15 10.5"/><path d="M12 13v3m-3 4h6l-.7-3.2a1 1 0 0 0-1-.8h-2.6a1 1 0 0 0-1 .8L9 20Z"/></svg>
                 <span>إنجازاتي</span>
             </button>
@@ -1949,8 +2168,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             { id: 'maple',    name: 'قيقب',        en: 'Maple',     rarity: 'uncommon', minMins: 20, accent: '#2b7f60' },
             { id: 'euca',     name: 'كافور',       en: 'Eucalyptus',rarity: 'uncommon', minMins: 25, accent: '#5a9b78' },
             { id: 'cedar',    name: 'أرز',         en: 'Cedar',     rarity: 'rare',     minMins: 30, accent: '#175f47' },
-            { id: 'blossom',  name: 'لوز مزهر',    en: 'Blossom',   rarity: 'rare',     minMins: 35, accent: '#d18ea8' },
-            { id: 'ginkgo',   name: 'جِنكة',       en: 'Ginkgo',    rarity: 'rare',     minMins: 45, accent: '#c2a24a' },
+            { id: 'blossom',  name: 'لوز مزهر',    en: 'Blossom',   rarity: 'rare',     minMins: 35, accent: '#7fc7a2' },
+            { id: 'ginkgo',   name: 'جِنكة',       en: 'Ginkgo',    rarity: 'rare',     minMins: 45, accent: '#5fa982' },
             { id: 'baobab',   name: 'باوباب',      en: 'Baobab',    rarity: 'legendary',minMins: 60, accent: '#2e6f4f' }
         ];
         const TREE_RARITY_LABEL = { common: 'شائعة', uncommon: 'غير شائعة', rare: 'نادرة', legendary: 'أسطورية' };
@@ -1965,36 +2184,36 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const cls = opts.className || 'w-full h-full';
             const label = opts.title ? '<title>' + escapeHtml(opts.title) + '</title>' : '';
             const art = {
-                oak: '<path d="M50 138V84" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
-                     '<path d="M50 104 38 92M50 96 62 84" stroke="#8a6a4b" stroke-width="3" stroke-linecap="round"/>' +
+                oak: '<path d="M50 138V84" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
+                     '<path d="M50 104 38 92M50 96 62 84" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
                      '<circle cx="50" cy="58" r="26" fill="VAR" opacity="0.9"/><circle cx="30" cy="72" r="17" fill="VAR" opacity="0.75"/><circle cx="70" cy="72" r="17" fill="VAR" opacity="0.75"/>',
-                pine: '<path d="M50 138V108" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
+                pine: '<path d="M50 138V108" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
                       '<path d="M50 14 74 58H26L50 14Z" fill="VAR"/><path d="M50 40 80 84H20L50 40Z" fill="VAR" opacity="0.9"/><path d="M50 66 86 112H14L50 66Z" fill="VAR" opacity="0.85"/>',
-                palm: '<path d="M50 138c-2-30-1-56 6-78" stroke="#9a7c56" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
+                palm: '<path d="M50 138c-2-30-1-56 6-78" stroke="var(--ds-tree-trunk)" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
                       '<path d="M56 60C40 44 24 42 12 50" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c16-16 34-16 44-6" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C46 40 30 32 16 32" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c10-20 26-28 40-26" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C50 42 40 30 28 24" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M56 60c8-18 20-28 34-30" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/>' +
                       '<circle cx="58" cy="62" r="5" fill="VAR" opacity="0.85"/>',
-                cypress: '<path d="M50 138V110" stroke="#8a6a4b" stroke-width="4" stroke-linecap="round"/>' +
+                cypress: '<path d="M50 138V110" stroke="var(--ds-tree-trunk)" stroke-width="4" stroke-linecap="round"/>' +
                          '<path d="M50 8c16 22 22 46 22 66 0 24-10 40-22 40S28 98 28 74C28 54 34 30 50 8Z" fill="VAR"/>',
-                olive: '<path d="M50 138V104m0 12c-8-6-12-12-12-18m12 8c8-6 12-12 12-18" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round" fill="none"/>' +
+                olive: '<path d="M50 138V104m0 12c-8-6-12-12-12-18m12 8c8-6 12-12 12-18" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round" fill="none"/>' +
                        '<ellipse cx="50" cy="66" rx="30" ry="22" fill="VAR" opacity="0.85"/><ellipse cx="34" cy="80" rx="15" ry="12" fill="VAR" opacity="0.7"/><ellipse cx="66" cy="78" rx="15" ry="12" fill="VAR" opacity="0.7"/>',
-                willow: '<path d="M50 138V86" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
+                willow: '<path d="M50 138V86" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
                         '<path d="M50 60c22 0 30 14 26 30-3 12-14 18-26 18s-23-6-26-18c-4-16 4-30 26-30Z" fill="VAR" opacity="0.9"/>' +
                         '<path d="M34 92c-4 14-6 24-4 34M44 96c-2 16-3 26-2 36M56 96c2 16 3 26 2 36M66 92c4 14 6 24 4 34" stroke="VAR" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
-                maple: '<path d="M50 138V92" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
+                maple: '<path d="M50 138V92" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
                        '<path d="M50 20 62 44h-6l14 22h-8l10 20H60l2 12H38l2-12H28l10-20h-8l14-22h-6L50 20Z" fill="VAR"/>',
-                euca: '<path d="M50 138V44" stroke="#a08a6a" stroke-width="4.5" stroke-linecap="round"/>' +
+                euca: '<path d="M50 138V44" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
                       '<path d="M50 44c-14-6-22-16-24-26 12 2 20 10 24 22" fill="VAR" opacity="0.85"/><path d="M50 60c14-8 24-6 32 2-10 6-22 6-32 4" fill="VAR" opacity="0.85"/><path d="M50 82c-14-6-24-4-30 4 12 6 22 4 30-2" fill="VAR" opacity="0.85"/><path d="M50 104c12-6 22-4 28 4-10 6-20 4-28-2" fill="VAR" opacity="0.8"/>',
-                cedar: '<path d="M50 138V96" stroke="#8a6a4b" stroke-width="5" stroke-linecap="round"/>' +
+                cedar: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="5" stroke-linecap="round"/>' +
                        '<path d="M50 34c12 0 20 6 20 12s-8 12-20 12-20-6-20-12 8-12 20-12Z" fill="VAR"/>' +
                        '<path d="M50 56c22 0 34 8 34 16s-14 16-34 16-34-8-34-16 12-16 34-16Z" fill="VAR" opacity="0.9"/>',
-                blossom: '<path d="M50 138V96" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
-                         '<path d="M50 96 36 84m14 6 14-12" stroke="#8a6a4b" stroke-width="3" stroke-linecap="round"/>' +
+                blossom: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
+                         '<path d="M50 96 36 84m14 6 14-12" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
                          '<circle cx="50" cy="60" r="24" fill="VAR" opacity="0.9"/><circle cx="32" cy="74" r="14" fill="VAR" opacity="0.8"/><circle cx="68" cy="74" r="14" fill="VAR" opacity="0.8"/>' +
                          '<circle cx="40" cy="52" r="4" fill="#ffffff" opacity="0.8"/><circle cx="60" cy="66" r="3.4" fill="#ffffff" opacity="0.75"/><circle cx="52" cy="80" r="3" fill="#ffffff" opacity="0.7"/>',
-                ginkgo: '<path d="M50 138V78" stroke="#8a6a4b" stroke-width="4.5" stroke-linecap="round"/>' +
+                ginkgo: '<path d="M50 138V78" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
                         '<path d="M50 78C28 76 12 58 10 34c26 0 40 20 40 44Z" fill="VAR" opacity="0.9"/><path d="M50 78c22-2 38-20 40-44-26 0-40 20-40 44Z" fill="VAR" opacity="0.8"/>',
-                baobab: '<path d="M50 138c-3-20-4-38-4-58 0-10 2-16 4-18 2 2 4 8 4 18 0 20-1 38-4 58Z" fill="#8a6a4b"/>' +
-                        '<path d="M46 80 26 66m26 22 22-18" stroke="#8a6a4b" stroke-width="3.4" stroke-linecap="round"/>' +
+                baobab: '<path d="M50 138c-3-20-4-38-4-58 0-10 2-16 4-18 2 2 4 8 4 18 0 20-1 38-4 58Z" fill="var(--ds-tree-trunk)"/>' +
+                        '<path d="M46 80 26 66m26 22 22-18" stroke="var(--ds-tree-trunk)" stroke-width="3.4" stroke-linecap="round"/>' +
                         '<ellipse cx="50" cy="52" rx="42" ry="16" fill="VAR" opacity="0.9"/><ellipse cx="50" cy="42" rx="30" ry="12" fill="VAR" opacity="0.85"/>'
             }[speciesId] || '';
             const color = treeSpeciesById(speciesId).accent;
@@ -2338,19 +2557,19 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const ind = document.getElementById('cloud-indicator');
             if (!ind) return;
             if (status === 'online') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+                ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-success';
                 ind.title = 'متصل ومزامن';
             } else if (status === 'syncing') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-[var(--ds-primary)] animate-ping';
+                ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-muted animate-ping';
                 ind.title = 'جاري المزامنة...';
             } else if (status === 'pending') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+                ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-warn';
                 ind.title = 'توجد تغييرات بانتظار المزامنة';
             } else if (status === 'error') {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-danger';
                 ind.title = 'فشلت المزامنة: ' + (lastSyncError || '');
             } else {
-                ind.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600';
+                ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-soft';
                 ind.title = 'غير متصل — ستُرفع التغييرات عند عودة الاتصال';
             }
             if (ind.setAttribute) ind.setAttribute('aria-label', ind.title || 'حالة المزامنة');
@@ -2834,7 +3053,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             document.getElementById('landing-view').classList.add('hidden');
             const modal = document.createElement('div');
             modal.id = 'google-name-modal';
-            modal.className = 'fixed inset-0 z-[100] bg-slate-950/80 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 z-[100] bg-[var(--ds-overlay)] flex items-center justify-center p-4';
+            modal.setAttribute('data-ds', 'default');   // نافذة عامة: تبقى على اللوحة الافتراضية دائماً
             modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'إكمال الاسم الأكاديمي');
             modal.innerHTML = `
                 <div class="bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-3xl max-w-md w-full p-7 space-y-5 shadow-[var(--ds-shadow-lg)] text-right">
@@ -2926,6 +3146,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function openProfileModal() {
+            if (!isOverlayOpen('profile')) registerOverlayNavigation('profile');
+            setOverlayOpen('profile', true);
             rememberFocus();
             document.getElementById('profile-input-name').value = currentUserName;
             document.getElementById('profile-select-dept').value = activeDepartmentKey;
@@ -2945,8 +3167,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             focusDialog(pm);
         }
         function closeProfileModal() {
+            const wasOpen = isOverlayOpen('profile');
+            setOverlayOpen('profile', false);
             document.getElementById('profile-modal').classList.add('hidden');
             restoreFocus();
+            if (wasOpen) syncHistoryAfterClose();
         }
 
         function updateHeaderAvatar() {
@@ -3222,10 +3447,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (html && html.classList) { if (dark) html.classList.add('dark'); else html.classList.remove('dark'); }
             const icon = document.getElementById('theme-icon');
             if (icon) icon.innerHTML = SETTINGS_ICONS.theme(m, dark);
-            try {
-                const meta = document.querySelector ? document.querySelector('meta[name="theme-color"]') : null;
-                if (meta && meta.setAttribute) meta.setAttribute('content', dark ? '#07131b' : '#0284c7');
-            } catch (e) {}
+            syncThemeColorMeta();   // لون شريط النظام: داكن/فاتح × نطاق القسم (أخضر في التركيز)
             updateThemeBadges(m, dark);
             return dark ? 'dark' : 'light';
         }
@@ -3309,6 +3531,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (activeBtn) { activeBtn.className = NAV_CLASS_ACTIVE; if (activeBtn.setAttribute) activeBtn.setAttribute('aria-current', 'page'); }
             activeTabId = tabId;
             safeSetItem('zp_active_tab', tabId);
+            applySectionTheme(tabId);   // لوحة القسم: أخضر/أبيض للتركيز، والأساسي لغيره
+            updateBackButton();         // زر الرجوع العام يظهر في كل الأقسام
             if (tabId === 'home') updateHomeStats();
             if (tabId === 'achievements') renderAchievements();
             updateFab(tabId);
@@ -3344,6 +3568,188 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (activeTabId === 'pomodoro') { togglePomo(); return true; }
             if (activeTabId === 'achievements') { openShareModal(); return true; }
             return false;
+        }
+
+        // =====================================================================
+        // 7.b) نطاق الألوان لكل قسم (Theme Scope)
+        // التركيز وحده = أخضر/أبيض، وكل الأقسام الأخرى = الأساسي الافتراضي + الأبيض.
+        // النطاق يُوضع على <body> لا على القسم وحده، حتى ترثه الترويسة وشريط التنقّل
+        // والزر العائم وشريط الجلسة المصغّر — ويبقى معزولاً تماماً عن بقية الأقسام.
+        // =====================================================================
+        const FOCUS_SCOPED_TABS = ['pomodoro'];
+        function themeScopeForTab(tabId) {
+            return FOCUS_SCOPED_TABS.indexOf(tabId) >= 0 ? 'focus' : 'default';
+        }
+        function setThemeScope(scope) {
+            const value = scope === 'focus' ? 'focus' : 'default';
+            let body = null;
+            try { body = (typeof document !== 'undefined') ? document.body : null; } catch (e) { body = null; }
+            if (!body) return false;
+            try {
+                if (typeof body.setAttribute === 'function') { body.setAttribute('data-ds', value); return true; }
+                if (body.dataset) { body.dataset.ds = value; return true; }
+            } catch (e) { /* بيئة اختبار بلا DOM حقيقي */ }
+            return false;
+        }
+        function currentSectionScope() {
+            try {
+                const body = (typeof document !== 'undefined') ? document.body : null;
+                if (body && body.dataset && typeof body.dataset.ds === 'string' && body.dataset.ds) return body.dataset.ds;
+                if (body && typeof body.getAttribute === 'function') {
+                    const v = body.getAttribute('data-ds');
+                    if (v) return v;
+                }
+            } catch (e) {}
+            return themeScopeForTab(activeTabId);
+        }
+        function themeColorFor(scope, dark) {
+            if (scope === 'focus') return dark ? '#06110c' : '#0f6b4a';
+            return dark ? '#070d18' : '#16305c';
+        }
+        // شريط حالة النظام/المتصفح يتلوّن مع القسم أيضاً (أخضر في التركيز)
+        function syncThemeColorMeta() {
+            try {
+                const meta = (document.querySelector) ? document.querySelector('meta[name="theme-color"]') : null;
+                if (meta && meta.setAttribute) {
+                    meta.setAttribute('content', themeColorFor(currentSectionScope(), resolvedTheme() === 'dark'));
+                }
+            } catch (e) {}
+        }
+        function applySectionTheme(tabId) {
+            const scope = themeScopeForTab(tabId || activeTabId);
+            setThemeScope(scope);
+            syncThemeColorMeta();
+            return scope;
+        }
+
+        // =====================================================================
+        // 7.c) التنقّل العكسي الموحّد (Universal Back Navigation)
+        // زر رجوع واحد في الترويسة + زر في ترويسة كل نافذة/درج، يدفع حالة في سجل
+        // المتصفح فتعمل معه إيماءة iOS وزر الرجوع في أندرويد بشكل أصلي، ومع غياب
+        // السجل يعود تلقائياً إلى الشاشة الرئيسية.
+        // =====================================================================
+        const ZP_HISTORY_KEY = 'zp';
+        let zpNavDepth = 0;           // كم حالة دفعها التطبيق إلى سجل المتصفح
+        let zpPendingCloseSync = 0;   // طبقات أُغلقت يدوياً وتنتظر مزامنة السجل
+        let zpNavSyncTimer = null;
+        let zpNavSyncUntil = 0;       // نافذة تجاهل popstate الناتج من مزامنتنا
+        let zpApplyingNavState = false;
+
+        function navHistorySupported() {
+            try {
+                return typeof window !== 'undefined' && !!window.history &&
+                    typeof window.history.pushState === 'function' &&
+                    typeof window.history.back === 'function';
+            } catch (e) { return false; }
+        }
+        function pushNavState(state) {
+            if (!navHistorySupported()) return false;
+            try {
+                if (zpPendingCloseSync > 0) {
+                    // إغلاق طبقة وفتح أخرى فوراً (تنقّل بين النوافذ): نستبدل المدخلة
+                    zpPendingCloseSync--;
+                    if (zpPendingCloseSync === 0 && zpNavSyncTimer) { clearTimeout(zpNavSyncTimer); zpNavSyncTimer = null; }
+                    window.history.replaceState({ [ZP_HISTORY_KEY]: state }, '');
+                    return true;
+                }
+                window.history.pushState({ [ZP_HISTORY_KEY]: state }, '');
+                zpNavDepth++;
+                return true;
+            } catch (e) { return false; }
+        }
+        // إغلاق يدوي (زر إغلاق/خلفية/مفتاح Escape): نُزيل مدخلة السجل التي دفعناها
+        function syncHistoryAfterClose() {
+            if (zpApplyingNavState) return false;
+            if (!navHistorySupported() || zpNavDepth <= 0) return false;
+            zpPendingCloseSync++;
+            if (!zpNavSyncTimer) zpNavSyncTimer = setTimeout(stepNavHistorySync, 0);
+            return true;
+        }
+        function stepNavHistorySync() {
+            zpNavSyncTimer = null;
+            if (zpPendingCloseSync <= 0) return;
+            if (!navHistorySupported() || zpNavDepth <= 0) { zpPendingCloseSync = 0; return; }
+            zpPendingCloseSync--;
+            zpNavDepth = Math.max(0, zpNavDepth - 1);
+            zpNavSyncUntil = Date.now() + 900;
+            try { window.history.back(); } catch (e) {}
+            if (zpPendingCloseSync > 0) zpNavSyncTimer = setTimeout(stepNavHistorySync, 140);
+        }
+        // حالة كل طبقة مفتوحة (مصدر حقيقة واحد يمنع تضارب الصفوف مع السجل)
+        const overlayOpenState = { profile: false, install: false, share: false, 'tree-setup': false, support: false };
+        function isOverlayOpen(name) { return overlayOpenState[name] === true; }
+        function setOverlayOpen(name, open) {
+            if (Object.prototype.hasOwnProperty.call(overlayOpenState, name)) overlayOpenState[name] = !!open;
+            return isOverlayOpen(name);
+        }
+        function isSupportDrawerShown() { return isOverlayOpen('support'); }
+        function anyOverlayShown() { return Object.keys(overlayOpenState).some((k) => overlayOpenState[k]); }
+        function closeOverlayByName(name) {
+            if (name === 'support') { closeSupportDrawer(); return true; }
+            if (name === 'profile') { closeProfileModal(); return true; }
+            if (name === 'install') { closeInstallModal(); return true; }
+            if (name === 'share') { closeShareModal(); return true; }
+            if (name === 'tree-setup') { closeTreeSetupModal(); return true; }
+            return false;
+        }
+        function openOverlayByName(name) {
+            if (name === 'support') return openSupportDrawer();
+            if (name === 'profile') { openProfileModal(); return true; }
+            if (name === 'install') { openInstallModal(); return true; }
+            if (name === 'share') { openShareModal(); return true; }
+            if (name === 'tree-setup') { openTreeSetupModal(); return true; }
+            return false;
+        }
+        function closeAllOverlays() {
+            Object.keys(overlayOpenState).forEach((name) => {
+                if (overlayOpenState[name]) closeOverlayByName(name);
+            });
+        }
+        // يُستدعى من كل دوال الفتح: يدفع حالة واحدة فقط لكل طبقة
+        function registerOverlayNavigation(name) {
+            if (zpApplyingNavState) return false;
+            return pushNavState({ overlay: name, tab: activeTabId });
+        }
+        function applyNavState(state) {
+            const zp = (state && state[ZP_HISTORY_KEY]) || null;
+            const targetTab = (zp && zp.tab && APP_TABS.indexOf(zp.tab) >= 0) ? zp.tab : 'home';
+            zpApplyingNavState = true;
+            try {
+                closeAllOverlays();
+                showTab(targetTab);
+                if (zp && zp.overlay) openOverlayByName(zp.overlay);
+            } catch (e) { recordRuntimeIssue(e, 'applyNavState', { silent: true }); }
+            finally { zpApplyingNavState = false; }
+        }
+        function navigateToTab(tabId) {
+            if (APP_TABS.indexOf(tabId) < 0) tabId = 'home';
+            if (tabId !== activeTabId) pushNavState({ tab: tabId });
+            showTab(tabId);
+            return true;
+        }
+        // زر الرجوع الموحّد: طبقات مفتوحة ← رجوع أصلي في السجل ← الشاشة الرئيسية
+        function navigateBack() {
+            if (anyOverlayShown()) { closeAllOverlays(); return true; }
+            if (navHistorySupported() && zpNavDepth > 0) {
+                try { window.history.back(); return true; } catch (e) {}
+            }
+            if (activeTabId !== 'home') {
+                showTab('home');
+                showToast('رجعت إلى الشاشة الرئيسية', 'info');
+            }
+            return true;
+        }
+        // ظهور زر الرجوع: في كل الأقسام ما عدا الرئيسية (وفي النوافذ المنبثقة زر خاص بها)
+        function updateBackButton() {
+            const btn = document.getElementById('app-back-btn');
+            if (!btn) return false;
+            const show = activeTabId !== 'home';
+            if (btn.classList && btn.classList.toggle) btn.classList.toggle('hidden', !show);
+            try { btn.hidden = !show; } catch (e) {}
+            if (btn.setAttribute) {
+                btn.setAttribute('aria-label', show ? 'رجوع إلى الصفحة الرئيسية' : 'رجوع إلى الصفحة السابقة');
+            }
+            return show;
         }
 
         // الروابط المختصرة (اختصارات PWA في manifest.json) تعمل عبر #tab-english أو #support
@@ -3405,9 +3811,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         initTheme();
 
         // ============ 10. مركز الدعم الفني (درج جانبي) ============
-        const APP_VERSION = 'v34';
+        const APP_VERSION = 'v35';
         function openSupportDrawer(topicId) {
             refreshSupportPanel();
+            if (!isOverlayOpen('support')) registerOverlayNavigation('support');
+            setOverlayOpen('support', true);
             const drawer = document.getElementById('support-drawer');
             const overlay = document.getElementById('support-overlay');
             if (!isSupportDrawerOpen()) rememberFocus();
@@ -3426,6 +3834,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             return true;
         }
         function closeSupportDrawer() {
+            const wasOpen = isOverlayOpen('support');
+            setOverlayOpen('support', false);
             const drawer = document.getElementById('support-drawer');
             const overlay = document.getElementById('support-overlay');
             if (drawer) drawer.classList.add('translate-x-full');
@@ -3433,6 +3843,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (document.body && document.body.style) document.body.style.overflow = '';
             localStorage.removeItem('zp_support_open');
             restoreFocus();
+            if (wasOpen) syncHistoryAfterClose();
             return true;
         }
         function isSupportDrawerOpen() { return localStorage.getItem('zp_support_open') === '1'; }
@@ -3693,10 +4104,10 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const inner = document.getElementById('toast-inner');
             if (!box || !inner) return;
             const palette = {
-                success: 'bg-emerald-600/95 text-white border-emerald-300/30',
-                error: 'bg-rose-600/95 text-white border-rose-300/30',
-                warn: 'bg-amber-500/95 text-slate-900 border-amber-200/40',
-                info: 'bg-slate-900/95 text-white border-white/10'
+                success: 'ds-state-success',
+                error: 'ds-state-danger',
+                warn: 'ds-state-warn',
+                info: 'ds-state-info'
             };
             inner.innerText = msg;
             inner.className = 'text-xs font-bold px-4 py-2.5 rounded-xl shadow-[var(--ds-shadow-lg)] border max-w-sm text-center ' + (palette[kind] || palette.info);
@@ -3782,23 +4193,23 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
 
             if (state === 'granted') {
                 if (banner) banner.classList.add('hidden');
-                if (icon) icon.className = 'fa-solid fa-bell text-xs text-emerald-500';
+                if (icon) icon.className = 'fa-solid fa-bell text-xs ds-tone-success';
                 setLabel(bannerBtn, 'تم التفعيل');
             } else if (state === 'unsupported') {
                 if (banner) banner.classList.add('hidden');
                 if (icon) icon.className = 'fa-solid fa-bell-slash text-xs text-[var(--ds-muted)]';
             } else if (state === 'denied') {
-                if (icon) icon.className = 'fa-solid fa-bell-slash text-xs text-rose-500';
+                if (icon) icon.className = 'fa-solid fa-bell-slash text-xs ds-tone-danger';
                 if (bannerText) bannerText.innerText = 'الإشعارات محجوبة من المتصفح — لن يصلك تنبيه انتهاء الجلسة. اضغط لعرض خطوات التفعيل.';
                 setLabel(bannerBtn, 'خطوات التفعيل');
-                swapClasses(banner, ['bg-emerald-500', 'bg-amber-500'], ['bg-rose-500']);
+                swapClasses(banner, ['ds-state-success', 'ds-state-warn'], ['ds-state-danger']);
                 if (bannerIcon) bannerIcon.className = 'fa-solid fa-bell-slash text-sm shrink-0';
                 if (banner) { if (dismissedRecently) banner.classList.add('hidden'); else banner.classList.remove('hidden'); }
             } else {
-                if (icon) icon.className = 'fa-solid fa-bell text-xs text-amber-500';
+                if (icon) icon.className = 'fa-solid fa-bell text-xs ds-tone-warn';
                 if (bannerText) bannerText.innerText = 'فعّل التنبيهات حتى ننبّهك فور انتهاء جلسة التركيز — حتى لو كان التطبيق بالخلفية.';
                 setLabel(bannerBtn, 'تفعيل الآن');
-                swapClasses(banner, ['bg-rose-500', 'bg-amber-500'], ['bg-emerald-500']);
+                swapClasses(banner, ['ds-state-danger', 'ds-state-warn'], []);   // يعود للون الأساسي للقسم
                 if (bannerIcon) bannerIcon.className = 'fa-solid fa-bell text-sm animate-bounce shrink-0';
                 if (banner) { if (dismissedRecently) banner.classList.add('hidden'); else banner.classList.remove('hidden'); }
             }
@@ -4207,13 +4618,21 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             }
         }
         function openInstallModal() {
+            if (!isOverlayOpen('install')) registerOverlayNavigation('install');
+            setOverlayOpen('install', true);
             rememberFocus();
             const modal = document.getElementById('install-modal');
             if (modal) modal.classList.remove('hidden');
             renderInstallGuides();
             focusDialog(modal);
         }
-        function closeInstallModal() { document.getElementById('install-modal')?.classList.add('hidden'); restoreFocus(); }
+        function closeInstallModal() {
+            const wasOpen = isOverlayOpen('install');
+            setOverlayOpen('install', false);
+            document.getElementById('install-modal')?.classList.add('hidden');
+            restoreFocus();
+            if (wasOpen) syncHistoryAfterClose();
+        }
         function triggerAndroidPwaInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -4400,7 +4819,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 '<linearGradient id="forestGround" x1="0" y1="0" x2="0" y2="1">' +
                 '<stop offset="0%" stop-color="#cfebdb"/><stop offset="100%" stop-color="#a9d9bf"/></linearGradient></defs>';
             out += '<rect width="900" height="320" fill="url(#forestSky)"/>';
-            out += '<circle cx="760" cy="64" r="30" fill="#ffe8a3" opacity="0.75"/>';
+            out += '<circle cx="760" cy="64" r="30" fill="#d7f0e2" opacity="0.8"/>';
             out += '<path d="M0 214c120-34 210-8 320 6s200 22 300-6 180-30 280-6v40H0Z" fill="#cfe8da" opacity="0.85"/>';
             out += '<path d="M0 252c140-26 240 8 360 12s220-16 320-24 160 0 220 10v70H0Z" fill="url(#forestGround)"/>';
             // الطبقات: خلفية → أمامية (الأحدث في المقدّمة)
@@ -4452,10 +4871,10 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (setup) setup.classList.toggle('hidden', !treesTableMissing);
             if (dot) {
                 dot.className = 'w-2 h-2 rounded-full shrink-0 ' + (
-                    forestState === 'loading' ? 'bg-slate-400 animate-ping'
-                    : forestState === 'error' ? 'bg-rose-500'
-                    : treesTableMissing ? 'bg-amber-400'
-                    : pending ? 'bg-amber-400' : 'bg-emerald-500');
+                    forestState === 'loading' ? 'ds-fill-muted animate-ping'
+                    : forestState === 'error' ? 'ds-fill-danger'
+                    : treesTableMissing ? 'ds-fill-warn'
+                    : pending ? 'ds-fill-warn' : 'ds-fill-success');
             }
             if (text) {
                 text.innerText =
@@ -4477,13 +4896,18 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         function openTreeSetupModal() {
             const modal = document.getElementById('tree-setup-modal');
             if (!modal) return;
+            if (!isOverlayOpen('tree-setup')) registerOverlayNavigation('tree-setup');
+            setOverlayOpen('tree-setup', true);
             rememberFocus();
             modal.classList.remove('hidden');
             focusDialog(modal);
         }
         function closeTreeSetupModal() {
+            const wasOpen = isOverlayOpen('tree-setup');
+            setOverlayOpen('tree-setup', false);
             document.getElementById('tree-setup-modal')?.classList.add('hidden');
             restoreFocus();
+            if (wasOpen) syncHistoryAfterClose();
         }
         async function copyTreeSql() {
             const el = document.getElementById('tree-sql-code');
@@ -4975,7 +5399,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             renderForest();
             const prefs = getNotifyPrefs();
             if (prefs.sound) playChime(true);
-            awardXP(30); triggerConfetti();
+            awardXP(30); triggerConfetti(['#0f6b4a', '#2fbf8b', '#d6f1e2', '#ffffff']);
             if (prefs.sessionEnd && notificationState() === 'granted') {
                 sendAppNotification('أحسنت! انتهت الجلسة', `أنجزت جلسة ${currentPomoMins} دقيقة — خذ استراحة قصيرة الآن.`, 'zp-done');
             }
@@ -5132,6 +5556,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function openShareModal() {
+            if (!isOverlayOpen('share')) registerOverlayNavigation('share');
+            setOverlayOpen('share', true);
             const shareXp = document.getElementById('share-xp');
             const shareTrees = document.getElementById('share-trees');
             if (shareXp) shareXp.innerText = `${userXP} XP`;
@@ -5142,7 +5568,13 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (sm) sm.classList.remove('hidden');
             focusDialog(sm);
         }
-        function closeShareModal() { document.getElementById('share-modal')?.classList.add('hidden'); restoreFocus(); }
+        function closeShareModal() {
+            const wasOpen = isOverlayOpen('share');
+            setOverlayOpen('share', false);
+            document.getElementById('share-modal')?.classList.add('hidden');
+            restoreFocus();
+            if (wasOpen) syncHistoryAfterClose();
+        }
         function buildShareText() {
             return `منصة ZeroPlus الأكاديمية\nالطالب: ${currentUserName || 'طالب ZeroPlus'}\nالرصيد: ${userXP} XP\nوقت التركيز: ${totalFocusMins} دقيقة\nالجلسات المنجزة: ${userForest.length}`;
         }
@@ -5245,6 +5677,19 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (notificationsSupported() && Notification.addEventListener) {
                 Notification.addEventListener('permissionchange', () => checkNotificationBanner());
             }
+
+            // سجل التنقّل: نجعل حالة البداية هي الشاشة الحالية، ثم كل تنقّل يدفع حالة
+            // جديدة — فيعمل زر الرجوع في الواجهة، وزر أندرويد، وإيماءة iOS، بشكل أصلي.
+            if (navHistorySupported()) {
+                try { window.history.replaceState({ [ZP_HISTORY_KEY]: { tab: activeTabId } }, ''); } catch (e) {}
+            } else {
+                zpNavDepth = 0;
+            }
+            window.addEventListener('popstate', (ev) => {
+                if (zpNavSyncUntil && Date.now() < zpNavSyncUntil) { zpNavSyncUntil = 0; return; }
+                zpNavDepth = Math.max(0, zpNavDepth - 1);
+                applyNavState(ev ? ev.state : null);
+            });
 
             // ترقية ترقيم قديم: من كان مسجّلاً قبل هذا التحديث لا يملك مفتاح مالك البيانات
             const existingDeviceId = localStorage.getItem('zp_device_id');

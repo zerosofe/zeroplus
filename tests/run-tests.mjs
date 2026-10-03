@@ -321,11 +321,13 @@ test('17) تذكير الإشعارات يتفاعل مع حالة الإذن (�
   assert.equal(bannerHidden(), true, 'التذكير ما زال ظاهراً بعد التفعيل');
   assert.equal(landingVisible(), false, 'تذكير شاشة الدخول ما زال ظاهراً بعد التفعيل');
   assert.match(nodes.get('home-notify-status').innerText, /مفعّلة/);
-  assert.match(nodes.get('notify-icon').className, /emerald/);
+  assert.match(nodes.get('notify-icon').className, /ds-tone-success/, 'أيقونة التنبيهات لا تلبس لون النجاح من لوحة القسم');
+  assert.ok(!nodes.get('notify-reminder-banner').classList.contains('ds-state-danger'), 'شريط التذكير ما زال بحالة الخطر بعد التفعيل');
 
   sandbox.Notification.permission = 'denied';
   sandbox.checkNotificationBanner();
   assert.equal(bannerHidden(), false, 'لا يوجد تنبيه عند حجب الإشعارات');
+  assert.equal(nodes.get('notify-reminder-banner').classList.contains('ds-state-danger'), true, 'شريط الحجب لا يلبس حالة الخطر من لوحة القسم');
   assert.match(nodes.get('notify-banner-btn').innerText, /خطوات التفعيل/);
   assert.match(nodes.get('home-notify-status').innerText, /محجوبة/);
   assert.match(nodes.get('landing-notify-text').innerText, /محجوبة/, 'شاشة الدخول لا تشرح أن الإشعارات محجوبة');
@@ -1152,6 +1154,173 @@ test('54) فحص ثابت: جدول trees مكتمل في schema.sql (أعمدة
   // ويجب أن يطابق أعمدة النسخة الوهمية المستخدمة في الاختبارات
   const mockCols = ['id', 'user_id', 'tree_type', 'duration', 'planted_at', 'created_at'];
   for (const col of mockCols) assert.ok(TABLE_COLUMNS.trees.includes(col), 'عمود مفقود من mock-supabase: ' + col);
+});
+
+// ============================================================================
+// v35 — لوحة الألوان لكل قسم + الرجوع الموحّد + الاستجابة للأجهزة
+// ============================================================================
+
+test('57) لوحة الألوان: التركيز أخضر/أبيض فقط على مستوى التطبيق كله، وبقية الأقسام بالنطاق الافتراضي', () => {
+  const { sandbox } = createHarness();
+  // نطاق التركيز يُطبَّق على <body> فترثه الترويسة وشريط التنقّل والزر العائم وشريط الجلسة
+  sandbox.showTab('pomodoro');
+  assert.equal(sandbox.document.body.getAttribute('data-ds'), 'focus', 'قسم التركيز لا يضع النطاق الأخضر على body');
+  assert.equal(sandbox.currentSectionScope(), 'focus', 'النطاق الحالي ليس التركيز');
+  // وكل قسم آخر يرجع للنطاق الافتراضي (الأساسي الكحلي) فوراً
+  for (const tab of ['home', 'todo', 'english', 'achievements', 'zero']) {
+    sandbox.showTab(tab);
+    assert.equal(sandbox.document.body.getAttribute('data-ds'), 'default', 'قسم ' + tab + ' لم يرجع للنطاق الافتراضي');
+  }
+  sandbox.showTab('pomodoro');
+  sandbox.showTab('home');
+  assert.equal(sandbox.document.body.getAttribute('data-ds'), 'default', 'الرئيسية يجب أن تبقى على النطاق الافتراضي');
+  // لون شريط النظام يتبع القسم: أخضر في التركيز، والأساسي في غيره
+  assert.equal(sandbox.themeColorFor('focus', false), '#0f6b4a');
+  assert.equal(sandbox.themeColorFor('default', false), '#16305c');
+  assert.notEqual(sandbox.themeColorFor('focus', false), sandbox.themeColorFor('default', false), 'لون التركيز لا يختلف عن الافتراضي');
+
+  // فحص ثابت للـ CSS: نطاقان معرّفان، والنطاق الأخضر محدود، ولا لون أساسي افتراضي داخله
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.match(html, /:root, \[data-ds="default"\]\s*\{/, 'نطاق الألوان الافتراضي غير معرّف بـ [data-ds="default"]');
+  assert.match(html, /\.dark, \.dark \[data-ds="default"\]\s*\{/, 'النطاق الافتراضي لا يعرّف الوضع الداكن');
+  assert.match(html, /\[data-ds="focus"\]\s*\{/, 'نطاق التركيز غير معرّف');
+  assert.match(html, /\.dark \[data-ds="focus"\]\s*\{/, 'وضع داكن أخضر غير معرّف');
+  const focusBlocks = html.match(/\[data-ds="focus"\]\s*\{[\s\S]*?\n        \}/g) || [];
+  assert.ok(focusBlocks.length >= 1, 'لم يُعثر على كتلة نطاق التركيز');
+  assert.ok(!/#16305c|#0284c7|#3f6fb5/.test(focusBlocks.join('\n')), 'لون أساسي افتراضي داخل نطاق التركيز الأخضر');
+  // النوافذ والأدراج العامة تبقى على النطاق الافتراضي حتى لو فُتحت من قسم التركيز
+  ['profile-modal', 'install-modal', 'share-modal', 'support-drawer', 'landing-view'].forEach((id) => {
+    const i = html.indexOf('id="' + id + '"');
+    assert.ok(i > 0, 'عنصر مفقود: ' + id);
+    assert.match(html.slice(i, i + 400), /data-ds="default"/, 'العنصر ' + id + ' لا يحمل النطاق الافتراضي');
+  });
+  // ولا شيء داخل قسم التركيز يستعمل لوناً خارج الأخضر/الأبيض
+  const pomo = html.slice(html.indexOf('<section id="tab-pomodoro"'), html.indexOf('<section id="tab-english"'));
+  assert.ok(!/(rose|sky|amber|violet|slate)-[0-9]/.test(pomo), 'لون خارج لوحة القسم داخل قسم التركيز');
+});
+
+test('58) زر الرجوع: موجود في الترويسة وفي كل نافذة/درج، ويظهر في كل الأقسام ويختفي في الرئيسية', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const buttons = html.match(/class="ds-back-btn[^"]*"/g) || [];
+  assert.ok(buttons.length >= 6, 'عدد أزرار الرجوع قليل: ' + buttons.length);
+  // كل زر رجوع له تسمية لقارئ الشاشة وليس مخفياً عن المفاتيح
+  const tags = html.match(/<button[^>]*ds-back-btn[^>]*>/g) || [];
+  tags.forEach((tag) => {
+    assert.match(tag, /aria-label="/, 'زر رجوع بلا aria-label: ' + tag.slice(0, 80));
+    assert.ok(!/tabindex="-1"/.test(tag), 'زر رجوع غير قابل للوصول بلوحة المفاتيح');
+  });
+  // الترويسة العامّة + ترويسات النوافذ
+  assert.match(html, /id="app-back-btn"[^>]*onclick="navigateBack\(\)"/, 'زر الرجوع العام غير مربوط بـ navigateBack');
+  ['profile-modal', 'install-modal', 'share-modal', 'tree-setup-modal', 'support-drawer'].forEach((id) => {
+    const i = html.indexOf('id="' + id + '"');
+    const block = html.slice(i, i + 1400);
+    assert.match(block, /onclick="navigateBack\(\)"/, 'نافذة/درج بلا زر رجوع: ' + id);
+  });
+
+  const { sandbox, nodes } = createHarness();
+  const backHidden = () => nodes.get('app-back-btn').classList.contains('hidden');
+  sandbox.showTab('home');
+  assert.equal(backHidden(), true, 'زر الرجوع ظاهر في الشاشة الرئيسية');
+  for (const tab of ['todo', 'pomodoro', 'english', 'achievements', 'zero']) {
+    sandbox.showTab(tab);
+    assert.equal(backHidden(), false, 'زر الرجوع مخفي في قسم ' + tab);
+  }
+  sandbox.showTab('home');
+  assert.equal(backHidden(), true, 'زر الرجوع لم يختفِ بعد الرجوع للرئيسية');
+});
+
+test('59) الرجوع بلا سجل متصفح: يغلق الطبقة المفتوحة أولاً ثم يعود للشاشة الرئيسية', () => {
+  const { sandbox, nodes } = createHarness();
+  sandbox.showTab('pomodoro');
+  sandbox.openProfileModal();
+  assert.equal(nodes.get('profile-modal').classList.contains('hidden'), false, 'نافذة الملف لم تُفتح');
+  sandbox.navigateBack();
+  assert.equal(nodes.get('profile-modal').classList.contains('hidden'), true, 'الرجوع لم يُغلق نافذة الملف الشخصي');
+  assert.equal(sandbox.__api.activeTabId, 'pomodoro', 'الرجوع أغلق النافذة وغيّر القسم أيضاً');
+  sandbox.navigateBack();
+  assert.equal(sandbox.__api.activeTabId, 'home', 'الرجوع من قسم لم يعد للشاشة الرئيسية');
+
+  // درج الدعم يُغلق بنفس الزر
+  sandbox.showTab('achievements');
+  sandbox.openSupportDrawer();
+  assert.equal(nodes.get('support-drawer').classList.contains('translate-x-full'), false, 'درج الدعم لم يُفتح');
+  sandbox.navigateBack();
+  assert.equal(nodes.get('support-drawer').classList.contains('translate-x-full'), true, 'الرجوع لم يُغلق درج الدعم');
+  assert.equal(sandbox.__api.activeTabId, 'achievements', 'الرجوع أغلق الدرج وغيّر القسم أيضاً');
+});
+
+test('60) الرجوع الأصلي (سجل المتصفح): كل تنقّل يدفع حالة، ورجع النظام/الإيماءة يُطبّقها', async () => {
+  const tick = () => new Promise((r) => setTimeout(r, 10));
+  const { sandbox, nodes, historyMock } = createHarness({ withHistory: true, boot: true });
+  const scope = () => sandbox.document.body.getAttribute('data-ds');
+  // عند الإقلاع تُثبَّت حالة البداية في السجل
+  assert.equal(sandbox.__api.activeTabId, 'home', 'التطبيق لم يبدأ من الشاشة الرئيسية');
+  assert.equal(historyMock.length, 1, 'حالة البداية لم تُثبَّت في سجل المتصفح');
+
+  // تنقّل للأمام يدفع حالة، والنطاق الأخضر يُطبَّق على التطبيق كله
+  sandbox.navigateToTab('pomodoro');
+  assert.equal(historyMock.length, 2, 'التنقل لم يدفع حالة في السجل');
+  assert.equal(sandbox.__api.activeTabId, 'pomodoro');
+  assert.equal(scope(), 'focus', 'قسم التركيز لم يفعّل النطاق الأخضر');
+
+  // رجوع أصلي (زر أندرويد / إيماءة iOS): يُطبَّق بدون أي تدخّل من واجهتنا
+  historyMock.back();
+  await tick();
+  assert.equal(sandbox.__api.activeTabId, 'home', 'الرجوع الأصلي لم يُعد للشاشة الرئيسية');
+  assert.equal(scope(), 'default', 'نطاق اللون لم يتزامن مع الرجوع');
+
+  // نافذة مفتوحة: الرجوع الأصلي يغلقها ويعود لنفس القسم
+  sandbox.navigateToTab('achievements');
+  sandbox.openShareModal();
+  assert.equal(nodes.get('share-modal').classList.contains('hidden'), false, 'نافذة المشاركة لم تُفتح');
+  historyMock.back();
+  await tick();
+  assert.equal(nodes.get('share-modal').classList.contains('hidden'), true, 'الرجوع الأصلي لم يُغلق النافذة');
+  assert.equal(sandbox.__api.activeTabId, 'achievements', 'الرجوع الأصلي غيّر القسم بدل إغلاق النافذة');
+
+  // الإغلاق اليدوي يزامن السجل حتى لا تبقى مدخلة رجوع ميّتة
+  sandbox.openShareModal();
+  sandbox.closeShareModal();
+  await tick();
+  assert.equal(JSON.stringify(historyMock.state), JSON.stringify({ zp: { tab: 'achievements' } }), 'الإغلاق اليدوي لم يزامن السجل');
+  historyMock.back();
+  await tick();
+  assert.equal(sandbox.__api.activeTabId, 'home', 'بعد الإغلاق اليدوي صار الرجوع يقفز فوق قسم كامل');
+
+  // زر الرجوع في الواجهة يستخدم السجل نفسه
+  sandbox.navigateToTab('todo');
+  sandbox.navigateBack();
+  await tick();
+  assert.equal(sandbox.__api.activeTabId, 'home', 'زر الرجوع لم يستخدم سجل المتصفح');
+});
+
+test('61) الاستجابة للأجهزة: الحواف الآمنة + منع تكبير iOS + حاويات مقيّدة + أهداف لمس 44px', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
+  // 1) الحواف الآمنة: أعلى/أسفل/يمين/يسار (Notch + شريط الإيماءات) مع value بديل للمتصفحات القديمة
+  ['top', 'bottom', 'left', 'right'].forEach((side) => {
+    assert.ok(css.includes('env(safe-area-inset-' + side + ')'), 'الحافة الآمنة ' + side + ' غير مدعومة');
+  });
+  assert.match(html, /viewport-fit=cover/, 'viewport-fit=cover مفقود — بدونه لا تعمل الحواف الآمنة على iOS');
+  assert.match(css, /#app-header\s*\{[^}]*env\(safe-area-inset-top\)/, 'الترويسة لا تحترم الحافة العليا');
+  assert.match(css, /#app-bottom-nav\s*\{[^}]*env\(safe-area-inset-(left|right)/, 'شريط التنقّل لا يحترم الحواف الجانبية');
+  assert.match(css, /\.ios-nav-safe\s*\{[^}]*env\(safe-area-inset-bottom\)/, 'شريط التنقّل لا يحترم شريط الإيماءات');
+  assert.match(css, /#support-drawer\s*\{[^}]*100dvh/, 'درج الدعم لا يحترم ارتفاع الشاشة المرئي (dvh)');
+  // 2) منع تكبير iOS عند الكتابة: حقول الإدخال ≥ 16px على الأجهزة اللمسية
+  assert.match(css, /@media[^{]*\(pointer: coarse\)[^{]*\{[\s\S]{0,240}font-size: 16px/, 'قاعدة منع التكبير على الأجهزة اللمسية مفقودة');
+  assert.match(css, /input:not\(\[type="checkbox"\]\)/, 'قاعدة حقول الإدخال غير محدّدة بدقة');
+  // 3) حاويات مقيّدة ومتوسّطة بدل التمدّد على الأجهزة اللوحية
+  assert.match(css, /\.ds-shell\s*\{[^}]*max-width:\s*var\(--app-max-w\)[^}]*margin-left:\s*auto/, 'حاوية التخطيط المقيّدة مفقودة');
+  assert.match(css, /@media \(min-width: 1024px\)\s*\{\s*:root\s*\{\s*--app-max-w/, 'لا يوجد حدّ عرض للأجهزة اللوحية بالعرض الأفقي');
+  assert.ok((html.match(/ds-shell/g) || []).length >= 4, 'الحاوية المقيّدة غير مطبَّقة على الترويسة/المحتوى/الشريط');
+  // 4) أهداف اللمس: 44×44 لزر الرجوع، و44 ارتفاعاً لأزرار الترويسة وشريط التنقّل
+  assert.match(css, /\.ds-back-btn\s*\{[^}]*min-width:\s*44px[^}]*min-height:\s*44px/s, 'زر الرجوع أصغر من 44×44');
+  assert.match(css, /#app-header button[^{]*\{[^}]*min-height:\s*44px/, 'أزرار الترويسة أصغر من 44px');
+  assert.match(css, /#app-bottom-nav button[^{]*\{[^}]*min-height:\s*44px/, 'أزرار شريط التنقّل أصغر من 44px');
+  assert.match(css, /touch-action:\s*manipulation/, 'لم تُضبط استجابة اللمس (touch-action)');
+  // 5) الأجهزة اللوحية: الوضع الأفقي مسموح في manifest
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.orientation, 'any', 'manifest يمنع الوضع الأفقي على الأجهزة اللوحية');
 });
 
 function readJson(storage, key, fallback) {
