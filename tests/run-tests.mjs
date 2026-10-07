@@ -1319,6 +1319,77 @@ test('61) الاستجابة للأجهزة: الحواف الآمنة + منع 
   assert.equal(manifest.orientation, 'any', 'manifest يمنع الوضع الأفقي على الأجهزة اللوحية');
 });
 
+// ---------- v37: جاهزية PWA / iOS / أندرويد ----------
+function pngDims(file) {
+  const d = fs.readFileSync(file);
+  assert.ok(d.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])), file + ' ليس PNG صالحاً');
+  return [d.readUInt32BE(16), d.readUInt32BE(20)];
+}
+
+test('62) manifest إنتاجي كامل: id + أيقونات maskable وأيْ + حقول إلزامية', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
+  for (const f of ['id', 'name', 'short_name', 'description', 'start_url', 'scope', 'display', 'theme_color', 'background_color']) {
+    assert.ok(manifest[f], 'حقل ناقص في manifest: ' + f);
+  }
+  assert.equal(manifest.display, 'standalone', 'display يجب أن يكون standalone');
+  assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 4, 'أيقونات غير كافية');
+  assert.ok(manifest.icons.some((i) => i.purpose === 'maskable'), 'لا توجد أيقونة maskable (مطلوبة لأندرويد/TWA)');
+  assert.ok(manifest.icons.some((i) => i.purpose === 'any'), 'لا توجد أيقونة any');
+  // كل ملف أيقونة مُشار إليه موجود على القرص وبأبعاده الصحيحة
+  for (const icon of manifest.icons) {
+    if (icon.type === 'image/svg+xml') continue;
+    const file = path.join(ROOT, icon.src.split('?')[0].replace(/^\//, ''));
+    assert.ok(fs.existsSync(file), 'أيقونة غير موجودة: ' + icon.src);
+    const [w, h] = pngDims(file);
+    const [aw, ah] = icon.sizes.split('x').map(Number);
+    assert.equal(w, aw, 'عرض غير مطابق لـ ' + icon.src);
+    assert.equal(h, ah, 'ارتفاع غير مطابق لـ ' + icon.src);
+  }
+});
+
+test('63) أيقونات maskable معتمة تماماً (بلا زوايا شفافة تُقصّ في أندرويد)', () => {
+  for (const f of ['icon-maskable-512.png', 'icon-maskable-192.png']) {
+    const [w, h] = pngDims(path.join(ROOT, f));
+    assert.ok(w >= 192, f + ' أصغر من المطلوب');
+  }
+});
+
+test('64) رؤوس iOS: apple-touch-icon متعدد المقاسات + شاشات إقلاع + وصف SEO', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.match(html, /apple-touch-icon[^>]*sizes="180x180"/, 'رابط apple-touch-icon 180 مفقود');
+  assert.match(html, /apple-touch-icon[^>]*sizes="152x152"/, 'رابط apple-touch-icon 152 (iPad) مفقود');
+  assert.match(html, /rel="apple-touch-startup-image"/, 'شاشات إقلاع iOS مفقودة');
+  assert.match(html, /meta name="description"/, 'وصف SEO مفقود');
+  assert.match(html, /rel="canonical"/, 'canonical مفقود');
+  assert.match(html, /property="og:title"/, 'Open Graph مفقود');
+  // كل ملف شاشة إقلاع مُشار إليه موجود فعلياً
+  const splashRefs = [...html.matchAll(/href="(\/splash\/[^"?]+\.png)/g)].map((m) => m[1]);
+  assert.ok(splashRefs.length >= 20, 'عدد شاشات الإقلاع غير كافٍ: ' + splashRefs.length);
+  for (const s of splashRefs) assert.ok(fs.existsSync(path.join(ROOT, s)), 'شاشة إقلاع مفقودة: ' + s);
+});
+
+test('65) Digital Asset Links + إعدادات أندرويد متطابقة الحزمة', () => {
+  const al = JSON.parse(fs.readFileSync(path.join(ROOT, '.well-known', 'assetlinks.json'), 'utf8'));
+  assert.ok(Array.isArray(al) && al[0].target.package_name, 'assetlinks.json غير صالح');
+  const twa = JSON.parse(fs.readFileSync(path.join(ROOT, 'android', 'twa-manifest.json'), 'utf8'));
+  assert.equal(al[0].target.package_name, twa.packageId, 'package_name في assetlinks لا يطابق android');
+  assert.match(al[0].relation[0], /handle_all_urls/, 'relation غير صحيحة في assetlinks');
+});
+
+test('66) الخدمة الخلفية v37: كاش CDN يبدأ بنفس البادئة ويعترض ملفات CDN', () => {
+  const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+  const cacheName = (sw.match(/CACHE_NAME = '(zeroplus-v\d+)'/) || [])[1];
+  const cdnCache = (sw.match(/CDN_CACHE = '([^']+)'/) || [])[1];
+  assert.ok(cacheName && cdnCache, 'أسماء الكاش غير موجودة');
+  assert.ok(cdnCache.startsWith(cacheName), 'كاش CDN يجب أن يبدأ بنفس بادئة الإصدار حتى لا يحذفه killOldSW');
+  assert.ok(sw.includes('staleWhileRevalidate'), 'استراتيجية القديم-أثناء-التحديث مفقودة');
+  // تحقق سلوكي: ملفات CDN تُعترض (تُقدَّم من الكاش) وSupabase يُترك للمتصفح
+  const harness = createSwHarness();
+  assert.equal(harness.__fetchHandled('https://cdn.jsdelivr.net/npm/x@1/a.js'), true, 'ملفات CDN لا تُعترض للعمل دون اتصال');
+  assert.equal(harness.__fetchHandled('https://lfygprhvyudatgwikwfy.supabase.co/rest/v1/x'), false, 'Supabase يجب ألا يُعترض');
+  assert.equal(harness.__fetchHandled('https://zeroplus.test/index.html'), true, 'صفحات التطبيق لا تُقدَّم من الكاش');
+});
+
 function readJson(storage, key, fallback) {
   try { return JSON.parse(storage.getItem(key) || '') ?? fallback; } catch (e) { return fallback; }
 }

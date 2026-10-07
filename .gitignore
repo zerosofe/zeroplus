@@ -6,6 +6,8 @@ package-lock.json
 .env
 .env.*
 *.pem
+*.jks                      # مفاتيح توقيع أندرويد (TWA) — لا تُرفع أبداً
+android/upload-keystore.jks
 
 # ملفات النظام
 .DS_Store
