@@ -1,114 +1,142 @@
-# Achievement Forest upgrade — implementation & verification report
+# Achievement Forest redesign — tile-based productivity forest
 
-Date: 2026-10-07
+Date: 2026-10-07 (v38)
 
 ## COMPLETED
 
-- Replaced the geometric SVG forest with layered, photorealistic tree cutouts and textured meadow terrain.
-- Applied the same visual language to the main forest, home preview, tree record thumbnails, species catalog, and newly planted tree confirmation.
-- Preserved the single-page HTML/JavaScript PWA, Arabic content, section colors, typography, navigation, card structure, and existing account / focus / achievement integration.
-- Removed the tree wobble and bouncing growth animation. The scene is deliberately still rather than running a continuous rendering loop.
-- Added image-failure feedback and a scene-only retry control. Image failures never change achievements.
-- Converted the consumer-facing SQL setup dialog to Arabic save-recovery help, retaining retry, support navigation, and the existing save verification operation. Maintainer setup instructions are below instead of in the application.
+- Replaced the photorealistic layered-image forest with a **tile-based productivity forest**:
+  square land tiles, each a fixed **4×4 grid = 16 planting slots**.
+- **One completed focus session = exactly one tree**, planted sequentially in the first
+  available empty slot. When a tile fills up, a new tile opens automatically.
+- Created an **original 12-species SVG tree art system** (oak, pine, palm, cypress, olive,
+  willow, maple, eucalyptus, cedar, blossom, ginkgo, baobab) in one unified stylized
+  direction: trunk + branches + foliage/flowers, colorful and charming, no photos,
+  no emojis, no 3D engine.
+- Tiles connect visually into one growing forest via a responsive grid; full tiles get a
+  subtle completion state (richer grass + soft gold ring + «✓ مكتمل» badge).
+- Empty slots are soil patches with a seed dot — part of the land, not white cards.
+- New-tile and new-tree planting animations are short, one-shot, and disabled under
+  `prefers-reduced-motion` by the existing global rule.
+- Added natural progress UI: «المربع الحالي: س / 16» + remaining-sessions hint
+  («4 جلسات متبقية لإكمال المربع») + progress bar + «غابتك تضم N شجرة».
+- Deleted the 20 photorealistic WebP assets (~906 KB) and the obsolete WebP
+  optimization tool. The forest is now **~8.5 KB of inline SVG, zero image requests**,
+  and renders instantly offline.
+- Preserved everything else: focus timer, Pomodoro/background sessions, tasks,
+  achievements, auth, navigation, design system, database schema, and all
+  local + Supabase persistence paths. No schema change was needed.
+- Removed the last user-visible-adjacent backend reference (an HTML comment naming
+  the backend) and the word «database» from rendered output (icon class swap).
+  The UI only ever says things like «كل شجرة محفوظة في حسابك».
 
-## FOREST IMPLEMENTATION
+## FOREST SYSTEM
 
-The forest uses a lightweight **2.5D image composition, not a real-time WebGL scene**:
+`forestTilePlan(trees)` is the single source of tile math (pure function, fully tested):
 
-- Nine distinct photorealistic tree cutouts have textured bark, irregular branching, and detailed foliage.
-- Transparent WebP cutouts are placed over a treeless terrain plate. The environment itself therefore never adds unearned trees.
-- Far-to-near paint order, perspective scale, varied positions, slight width / tone variation, and soft contact shadows provide spatial depth.
-- Responsive scene proportions: 4:3 on small screens, 16:9 on larger screens; the smaller home preview uses its own proportions.
-- The scene has an accessible Arabic description with the actual total, and a visible caption discloses when only part of a large collection is shown.
-- Deterministic placement avoids random reshuffling on rerender. Positions remain stable when adding a new tree until the bounded rendering window rolls over.
-- Image errors hide the broken-image icon and expose an Arabic retry control while retaining the count and records.
+- Input: the existing `displayForest()` records (real `userTrees` + legacy `userForest`
+  sessions, deduplicated by id — unchanged).
+- Trees are ordered chronologically (oldest first), then dealt sequentially:
+  tree *i* → tile `floor(i / 16)`, slot `(i % 16)`.
+- `tileCount = max(1, ceil(total / 16))` — zero sessions still show one empty tile.
+- Output: per-tile `{ number, slots[16], filled, isFull, isCurrent }` plus
+  `total`, `currentFilled`, and `remaining` for the progress UI.
 
-### Asset provenance
+Rendering (`renderForestTiles`, same signature-skip optimization as before):
 
-The new artwork was AI-generated specifically for this implementation, then white-matted, cropped, resized, and compressed locally. These are **photorealistic generated assets**, not photographs or scanned 3D models. No game or commercial stock artwork was copied. The large source renders are not Git assets; the app ships only the optimized WebPs. The optimization tool accepts a separately retained source-render directory.
+- Main scene renders **all tiles** (no truncated sample, no fake counts).
+- Home preview renders the **current tile only** (≤ 16 slots — always tiny).
+- Record grid (recent 60), species catalog, and the newly-planted card reuse the same
+  SVG art via `treeImage()`, so every surface shows identical trees.
 
-The generation budget provided nine tree forms. Three existing catalog entries currently use a shared visual form: `blossom → oak`, `ginkgo → maple`, and `baobab → olive`. Their stored species, Arabic names, rarity, and eligibility rules are unchanged. These three images are not botanically accurate representations of their labels; dedicated artwork remains an art follow-up.
+## TREE SYSTEM
 
-## TREE PROGRESSION
-
-`displayForest()` remains the source of truth. It merges `userTrees` with legacy `userForest` focus sessions and deduplicates by ID. Its implementation was not changed.
-
-The existing flow remains:
+The existing flow is untouched and remains the source of truth:
 
 1. A completed focus session is recorded by `finishPomoSession()`.
-2. `plantTreeForSession()` chooses a species using the existing duration / rarity logic.
-3. The existing local storage, cloud-write, and retry-queue paths persist the record.
-4. The visual layer consumes `displayForest()` without writing or inventing records.
+2. `plantTreeForSession()` picks a species with the existing duration/rarity logic
+   (no consecutive repeats) and stores one record (same id as the session).
+3. The existing local-storage, cloud-write, and retry-queue paths persist it.
+4. The tile layer consumes `displayForest()` without writing or inventing records.
 
-Zero achievements show only terrain. One achievement renders one tree. Several achievements create a grove. Larger collections produce denser, depth-layered scenes. The main scene renders up to **96 actual records**, and the home preview up to **24**, with explicit “shown / total” wording beyond those bounds. All totals remain uncapped. The existing 60-item recent-record grid and persistence limits are unchanged.
+Because tree records share the session id, refresh / re-login / multi-device flows
+deduplicate to exactly one tree per session — verified by the existing regression
+tests (46–50, 55–56) plus the new tile tests.
 
-There was no stored seed-to-mature growth-stage system to preserve; the old grow effect was an entrance animation. No new growth or achievement rules were introduced.
+## TILE PROGRESSION
+
+| Sessions | Tiles | Current tile |
+| --- | --- | --- |
+| 0 | 1 (empty) | 0 / 16 |
+| 1 | 1 | 1 / 16 |
+| 15 | 1 | 15 / 16 |
+| 16 | 1 (complete) | 16 / 16 |
+| 17 | 2 | 1 / 16 (tree 17 in tile 2, slot 1) |
+| 32 | 2 (both complete) | 16 / 16 |
+| 33 | 3 | 1 / 16 |
+
+…and so on indefinitely. Tile *n* is full exactly when it holds 16 trees; the next
+session always creates tile *n+1* automatically. Verified for 0–1000 sessions.
+
+## TREE VISUAL STYLE
+
+- 12 hand-authored vector symbols (`FOREST_TREE_ART`), each on a shared 64×80 grid:
+  ground shadow, tapered two-tone trunk, visible branches, layered canopy blobs with
+  highlights, plus species details (palm fronds + coconuts, blossom petals, golden
+  ginkgo fan, baobab trunk, cedar tiers, willow strands, maple autumn tones…).
+- Defined **once** in a hidden `<svg><defs>` block (`ensureForestArt()`), then
+  instantiated with `<svg><use href="#zp-tree-…"/></svg>` — roughly one DOM element
+  per tree, no downloads, no decoding, no canvas, no WebGL.
+- Controlled per-tree variation via a deterministic id hash (`treeSlotVariation`):
+  scale 0.93–1.00 and ±3% horizontal offset — always inside the slot, never
+  overlapping, stable across re-renders.
+- Dark-mode grass palette overrides keep tiles readable in both themes.
 
 ## FILES MODIFIED
 
 | File | Changes |
 | --- | --- |
-| `index.html` | Forest styles and image renderer, responsive composition, previews and thumbnails, loading accessibility, image recovery, consumer-facing wording and safe error messages, recovery dialog. |
-| `package.json` | Added forest test commands and included forest logic tests in `npm test`; no new production or mandatory development dependency. |
-| `tests/run-tests.mjs` | Updated six existing wording expectations for plain-language recovery messages; retained persistence, authentication, queue, and runtime-log assertions. |
+| `index.html` | Forest CSS → tile system; progress block + art-defs host in the forest card; backend-wording comment cleanup; `treeImage()` → SVG `<use>`; new `FOREST_TREE_ART` / `forestArtDefs()` / `ensureForestArt()`; new `forestTilePlan()` / `renderForestTiles()` / `renderForestTile()` / `renderForestProgress()`; preview + scene + progress wiring; `fa-database` → `fa-history` badge icon; version v37 → v38. |
+| `sw.js` | Cache version v37 → v38 (drops stale cached WebP, keeps CDN strategy). |
+| `README.md` | Forest bullet now describes the 4×4 tile system. |
+| `docs/achievement-forest.md` | This report (replaces the photorealistic-scene report). |
+| `tests/forest-rendering.mjs` | Rewritten for tiles: math, sequential placement, slot counts, progress UI, celebration, art/escaping, safe wording, no-image assertions. |
+| `tests/forest-browser.mjs` | Rewritten for tiles: viewport matrix, bounds checks (slots in tiles, trees in slots), shared defs, stable nodes, states, preview, safe wording, app-shell offline check. |
 
 ## FILES ADDED
 
-| File | Purpose |
+None. The redesign reuses the existing single-file app structure.
+
+## FILES DELETED
+
+| File | Reason |
 | --- | --- |
-| `docs/achievement-forest.md` | This report, asset provenance, limitations, test instructions, and maintainer recovery guidance. |
-| `tools/optimize-forest-assets.mjs` | Reproducible white-background matting, transparent cutout sizing, thumbnail generation, and WebP compression. |
-| `tests/forest-rendering.mjs` | Count, deduplication, stable placement, catalog asset, wording audit, and asset-budget regression tests. |
-| `tests/forest-browser.mjs` | Optional browser viewport, bounds, decoding, state, recovery, and real service-worker offline tests. |
-| `assets/forest/meadow-640.webp` | 640×427 mobile terrain plate. |
-| `assets/forest/meadow-1280.webp` | 1280×853 larger-screen terrain plate. |
-| `assets/forest/oak.webp` | Full-resolution oak-form transparent tree. |
-| `assets/forest/oak-thumb.webp` | Oak-form thumbnail. |
-| `assets/forest/pine.webp` | Full-resolution pine-form transparent tree. |
-| `assets/forest/pine-thumb.webp` | Pine-form thumbnail. |
-| `assets/forest/palm.webp` | Full-resolution palm-form transparent tree. |
-| `assets/forest/palm-thumb.webp` | Palm-form thumbnail. |
-| `assets/forest/cypress.webp` | Full-resolution cypress-form transparent tree. |
-| `assets/forest/cypress-thumb.webp` | Cypress-form thumbnail. |
-| `assets/forest/olive.webp` | Full-resolution olive-form transparent tree. |
-| `assets/forest/olive-thumb.webp` | Olive-form thumbnail. |
-| `assets/forest/willow.webp` | Full-resolution willow-form transparent tree. |
-| `assets/forest/willow-thumb.webp` | Willow-form thumbnail. |
-| `assets/forest/maple.webp` | Full-resolution maple-form transparent tree. |
-| `assets/forest/maple-thumb.webp` | Maple-form thumbnail. |
-| `assets/forest/euca.webp` | Full-resolution eucalyptus-form transparent tree. |
-| `assets/forest/euca-thumb.webp` | Eucalyptus-form thumbnail. |
-| `assets/forest/cedar.webp` | Full-resolution cedar-form transparent tree. |
-| `assets/forest/cedar-thumb.webp` | Cedar-form thumbnail. |
+| `assets/forest/*.webp` (20 files) | Photorealistic system replaced by inline SVG; also removes ~906 KB. |
+| `tools/optimize-forest-assets.mjs` | Obsolete WebP pipeline for the deleted assets. |
 
 ## SUPABASE UI CLEANUP
 
-Searched the repository for `Supabase`, `supa`, `database`, `table`, `Storage`, `Auth`, and `backend`, distinguishing implementation references from visible text. The app no longer displays Supabase in its authored user-facing copy, accessibility labels, tree tooltips, account/help copy, status messages, or error feedback.
-
-- Tree messages use account-centered wording such as **«كل شجرة محفوظة في حسابك»**.
-- Offline and pending states explicitly distinguish device-local storage from successful account synchronization.
-- `describeCloudError()` converts backend errors to Arabic recovery guidance instead of exposing raw service names, SQL, table names, or server text.
-- Cloud-indicator tooltips, support status, copied diagnostics, authentication failures, and forest errors use safe messages.
-- Detailed internal errors still exist in internal logs; technical imports, configuration, backend clients, queries, schema, and service-worker backend exclusions remain intact.
-- Administrator SQL instructions were removed from the consumer dialog, not from the repository or backend setup capability.
-
-### Maintainer-only recovery guidance
-
-For an uninitialized deployment, an authorized maintainer should inspect the existing `supabase/schema.sql`, verify the target project and its access-policy requirements, and apply the existing schema using the Supabase SQL Editor. This change does not modify or automatically execute the schema. Do not instruct ordinary students to administer the backend.
-
-After restoring the service, use the application's existing retry control to load the forest and flush locally pending trees. The existing save-check control still performs its temporary write/read/delete verification; it is not a new achievement rule or a source of visual demo data.
+- Searched the repo for `Supabase`, `supa`, `database`, `table`, `Storage`, `Auth`,
+  `backend` (plus `schema.sql`, `SQL Editor`, `RLS` in tests).
+- User-facing surfaces (static copy, aria-labels, titles, placeholders, captions,
+  progress hints, sync states, badges, error messages, diagnostics, support flow)
+  contain none of these terms — enforced by automated tests on every HTML page and
+  every rendered forest string.
+- Backend code (client init, queries, schema, env, sync queue, service worker
+  exclusions) is untouched; only visible wording was cleaned.
+- Consumer wording examples: «كل شجرة محفوظة في حسابك»،
+  «أشجارك محفوظة على جهازك — ستتم مزامنتها عند الاتصال بحسابك»،
+  «نحمّل غابتك من حسابك...».
 
 ## PERFORMANCE
 
-- No rendering library, WebGL context, animation frame loop, particles, or continuous tree animation was added.
-- Native `loading="lazy"`, asynchronous image decoding, shared asset URLs, and separate 96×128 thumbnails reduce loading and decoding work.
-- Full tree cutouts are only 384×512; terrain is 640 or 1280 pixels wide. No 4K/8K imagery is shipped.
-- All 20 images together: **906,274 bytes**. The mobile set including every tree, every thumbnail, and the smaller terrain: **703,560 bytes**. A single-tree view needs much less.
-- The mobile terrain is 55,958 bytes; all nine thumbnails together are 53,890 bytes.
-- The main scene has at most 96 tree image nodes and the preview at most 24. No achievement counts are truncated.
-- A state signature preserves scene DOM nodes when the achievement IDs/types have not changed.
-- The existing service worker already runtime-caches same-origin images; it was left unchanged. Viewed forest assets were verified available offline.
-- A desktop sandbox Chromium run measured scene render/update calls at **3.5 ms p95 / 7.2 ms maximum** across the viewport/count matrix. These are JavaScript update measurements, **not** mobile frame-rate, full paint, GPU-memory, or battery benchmarks.
+- Zero image requests for the forest (was: up to 96 full + terrain + thumbnails).
+- ~8.5 KB of inline SVG art total, defined once and shared via `<use>`.
+- Each tree ≈ 3 spans + 1 svg + 1 use; each empty slot = 1 span with CSS-only soil.
+  A 300-tree forest is ~3,000 light nodes with no decode cost.
+- Signature check (`data-forest-key`) skips DOM rebuilds when achievements are
+  unchanged; one-shot animations only (no loops, no `requestAnimationFrame`).
+- Realistic data is already bounded by existing storage limits (300 local trees,
+  200 cloud rows per load + pending local + legacy sessions).
 
 ## TESTING
 
@@ -116,25 +144,19 @@ After restoring the service, use the application's existing retry control to loa
 
 | Check | Result |
 | --- | --- |
-| Existing regression suite | **66 / 66 passed**. Includes account flows, cloud mocks, offline queueing, session completion, tree writes/loading/deduplication, missing-service recovery, deletion, navigation, achievements, and service-worker behavior. |
-| New forest logic suite | **14 scenario groups passed**. Counts 0, 1, 6, 10, 30, 96, 300, and 1000; no fake production data; correct caps/disclosures; stable placement; asset existence; safe text; budget. |
-| DOM smoke suite with jsdom installed | **124 button interactions, 48 state checks, zero console errors**. |
-| Chromium viewport matrix | **56 combinations passed**: seven counts across eight viewport sizes. No page horizontal overflow, clipped tree-image bounds, undecodable scene images, or uncaught JavaScript errors. |
-| Responsive asset loading | Smaller terrain below 768px, larger terrain at/above 768px; hidden focus-tree assets were not loaded at initial empty-home boot. |
-| State / accessibility checks | Loading `aria-busy`, error retry, recovery dialog, home subset caption, dark-mode state, reduced-motion setting, and no infinite scene animations passed. |
-| Image-failure recovery | Broken scene asset feedback and retry passed; achievement total stayed unchanged. |
-| Actual PWA image cache | Terrain, a full tree, and a thumbnail fetched successfully offline through the existing service worker after online loading. |
-| Visual inspection | Single-tree and multi-tree scene screenshots inspected at mobile and desktop sizes. |
+| Existing regression suite | **66 / 66 passed** (auth, sync, offline queue, sessions, tree writes/loading/dedup, recovery, deletion, navigation, achievements, SW, PWA, design system — all untouched behavior intact). |
+| New forest tile suite | **32 scenario groups passed**: tile math for 0–1000 sessions; exact tile/slot/complete counts for 0,1,5,15,16,17,32,33; sequential placement incl. tree 17 → tile 2 slot 1; current-tile-only preview (0,1,17,33,300); legacy dedup; one-shot planting + new-tile celebration; 12 SVG arts + escaping + <8.5 KB defs; deterministic in-slot variation; safe-wording + static HTML audit; zero `assets/forest` references; old WebP gone. |
+| Art inspection | All 12 species + full/partial tile compositions rendered to PNG and visually reviewed: unified stylized direction, no overlaps, soil patches read as planting areas. |
 | Patch hygiene | `git diff --check` passed. No database/schema changes. |
 
-Viewport sizes: **320×568, 390×844, 430×932, 360×800, 768×1024, 1024×768, 800×1280, 1440×960**. These approximate small/large iPhones, Android phones/tablets, iPad orientations, and desktop. They are Chromium viewport simulations, not actual Safari/iOS/Android hardware tests.
-
-Browser tests use locally compiled Tailwind CSS and stub external CDN scripts because of sandbox network restrictions. Existing inline app code and local image files are tested as shipped. Production authentication and database behavior are covered by the repository's mock-backed regressions, not a live-account test. No production account or achievement data was altered.
+Viewport coverage for the tile layout (browser matrix) is implemented in
+`tests/forest-browser.mjs` for 8 sizes (320×568 → 1440×960); it requires a local
+server + Playwright browser and was not executed in this sandbox (no browser
+available). Layout rules are standard CSS grid with no viewport-dependent JS.
 
 ### Run the tests
 
 ```sh
-npm install
 npm test
 
 # Optional DOM smoke test
@@ -149,18 +171,19 @@ python -m http.server 8000 --bind 0.0.0.0
 npm run test:forest:browser
 ```
 
-Browser settings: `FOREST_TEST_URL` overrides the default local server; `CHROMIUM_PATH` selects a system browser; `FOREST_TEST_ARTIFACTS` writes optional screenshots outside Git. The restricted sandbox used `FOREST_TEST_CHROMIUM=sparticuz` with the optional `@sparticuz/chromium` package and its bundled shared libraries.
-
-Asset preparation, when the original renders are available:
-
-```sh
-node tools/optimize-forest-assets.mjs /path/to/source-renders
-```
-
 ## REMAINING LIMITATIONS
 
-1. This is photorealistic **layered 2.5D imagery**, not an orbitable 3D world or a physically simulated AAA environment. Shadows are composited approximations; no live wind or leaf simulation is included.
-2. Blossom, ginkgo, and baobab currently share other tree-form artwork. Dedicated, botanically appropriate cutouts remain to be produced.
-3. Large collections show a bounded visual sample (96 main / 24 preview), explicitly labeled. The actual total remains correct; the pre-existing record grid shows the most recent 60 entries.
-4. Physical iOS/Safari, Android hardware, mobile battery/GPU-memory measurements, and live production authentication/persistence were not tested here.
-5. Offline imagery is available after it has been loaded and cached. A first visit without connectivity cannot download uncached assets and instead uses the image-recovery state.
+1. Very large forests (hundreds of tiles) render all tiles on one scrolling page;
+   each tree is a few light SVG nodes, but no windowing/virtualization was added
+   since real data is bounded by existing storage limits (~hundreds of trees).
+2. No seed-to-mature growth stages: a planted tree appears at full charm immediately
+   (with a one-shot pop). The spec allows this simplification.
+3. Tree art is original flat-styled vector work — deliberately game-like, not
+   botanical illustration; species differ in silhouette + palette, not in fine detail.
+4. Physical iOS/Safari and Android hardware were not tested here; the layout uses
+   standard responsive CSS grid plus the repo's existing safe-area/touch rules.
+5. The optional Playwright browser matrix was updated but not executed in this
+   sandbox (no browser installed); logic, rendering, and wording are covered by the
+   executed suites above.
+6. Offline imagery note no longer applies (there are no forest images); the app
+   shell itself remains available offline via the existing service worker.

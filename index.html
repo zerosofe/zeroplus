@@ -22,18 +22,18 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v37')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v38')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=37">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=37">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=37">
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png?v=37">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png?v=37">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=38">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=38">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=38">
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png?v=38">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png?v=38">
     <!-- شاشات إقلاع iOS (iPhone/iPad) — مولّدة من tools/generate-pwa-assets.mjs -->
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2868x1320.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
@@ -65,8 +65,8 @@
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2224x1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2048x1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-    <link rel="shortcut icon" href="/icon.svg?v=37">
-    <link rel="manifest" href="/manifest.json?v=37">
+    <link rel="shortcut icon" href="/icon.svg?v=38">
+    <link rel="manifest" href="/manifest.json?v=38">
     <meta name="theme-color" content="#16305c">
     <meta name="color-scheme" content="light dark">
     <meta name="mobile-web-app-capable" content="yes">
@@ -553,33 +553,93 @@
         .pomo-ring-track { stroke: var(--ds-ring-track); }
         .pomo-ring-value { stroke: var(--ds-ring); }
 
-        /* ====== شجرة/غابة التركيز ====== */
-        /* Still, layered photorealistic imagery: no render loop, wind wobble, or GPU canvas. */
+        /* ====== غابة الإنجاز: مربعات مزروعة (SVG خفيف، بلا صور ولا محرك 3D) ====== */
         .forest-stage { border-radius: 24px; overflow: hidden; border: 1px solid var(--ds-border); background: var(--ds-sunken); }
-        .forest-empty-sky { background: var(--ds-sunken); }
+        .forest-empty-sky { background: var(--ds-card); }
         .forest-view { margin: 0; min-width: 0; }
-        .forest-landscape { position: relative; aspect-ratio: 16 / 9; overflow: hidden; isolation: isolate; background: #737d59; direction: ltr; }
-        .forest-terrain { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 58%; }
-        .forest-plant { position: absolute; aspect-ratio: 3 / 4; max-width: 36%; transform: translateX(-50%); }
-        .forest-plant::before { content: ''; position: absolute; left: 30%; bottom: -1%; width: 66%; height: 9%; border-radius: 50%; background: radial-gradient(ellipse, rgba(25,31,12,.48), rgba(25,31,12,0) 72%); transform: rotate(-19deg); }
-        .forest-plant img { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform-origin: bottom center; }
-        .forest-tree-art { display: block; object-fit: contain; object-position: bottom; }
+        /* شبكة المربعات: قطع أرض متجاورة تكوّن غابة واحدة */
+        .forest-tiles { display: grid; gap: 10px; padding: 12px; background: var(--ds-card);
+            grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: center; }
+        .forest-tiles.is-single { grid-template-columns: minmax(0, 248px); }
+        .forest-tile-wrap { min-width: 0; width: 100%; max-width: 250px; justify-self: center;
+            display: flex; flex-direction: column; gap: 6px; }
+        /* قطعة الأرض المربعة: عشب متدرج + حافة ترابية + ظل ناعم */
+        .forest-tile { --tile-hi: #8fd07e; --tile-base: #69b45e; --tile-lo: #4d9a4b; --tile-edge: #3d7a39;
+            position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--tile-edge);
+            background:
+                radial-gradient(38% 30% at 22% 16%, rgba(255,255,255,.30), rgba(255,255,255,0) 70%),
+                radial-gradient(46% 34% at 80% 28%, rgba(20,60,25,.14), rgba(20,60,25,0) 70%),
+                radial-gradient(54% 42% at 28% 84%, rgba(20,60,25,.16), rgba(20,60,25,0) 70%),
+                linear-gradient(160deg, var(--tile-hi), var(--tile-base) 55%, var(--tile-lo));
+            box-shadow: inset 0 3px 0 rgba(255,255,255,.35), inset 0 -7px 0 rgba(110,66,32,.35),
+                inset 0 0 0 2px rgba(255,255,255,.08), 0 3px 8px rgba(25,50,25,.18); }
+        /* حصى صغير وزهرة خجولة — تفاصيل بيئية خلف الخانات */
+        .forest-tile::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+            background:
+                radial-gradient(7px 5px at 11% 89%, rgba(232,232,226,.9), rgba(232,232,226,0) 70%),
+                radial-gradient(5px 4px at 16% 92%, rgba(205,205,198,.85), rgba(205,205,198,0) 70%),
+                radial-gradient(7px 5px at 89% 10%, rgba(232,232,226,.75), rgba(232,232,226,0) 70%); }
+        .forest-tile::after { content: ''; position: absolute; left: 80%; top: 79%; width: 9%; aspect-ratio: 1;
+            pointer-events: none; opacity: .95;
+            background:
+                radial-gradient(circle at 50% 50%, #ffd94d 20%, rgba(255,217,77,0) 21%),
+                radial-gradient(circle at 50% 8%, #ff9ec4 20%, rgba(255,158,196,0) 21%),
+                radial-gradient(circle at 50% 92%, #ff9ec4 20%, rgba(255,158,196,0) 21%),
+                radial-gradient(circle at 8% 50%, #ff9ec4 20%, rgba(255,158,196,0) 21%),
+                radial-gradient(circle at 92% 50%, #ff9ec4 20%, rgba(255,158,196,0) 21%); }
+        .dark .forest-tile { --tile-hi: #5f9d5c; --tile-base: #47824a; --tile-lo: #35663a; --tile-edge: #274d2c; }
+        /* شبكة الزراعة 4×4 داخل المربع */
+        .tile-slots { position: absolute; inset: 7%; z-index: 1; display: grid;
+            grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 2%; }
+        .tile-slot { position: relative; display: flex; align-items: flex-end; justify-content: center;
+            min-width: 0; min-height: 0; }
+        /* خانة فارغة: بقعة تراب + نقطة بذرة — تنتمي للأرض */
+        .tile-slot.is-empty::before { content: ''; width: 74%; aspect-ratio: 1.7; margin-bottom: 14%;
+            border-radius: 50%; background: radial-gradient(ellipse at 50% 35%, #a9764b, #7c5027 72%);
+            box-shadow: inset 0 2px 3px rgba(40,20,8,.55), 0 1px 0 rgba(255,255,255,.25); }
+        .tile-slot.is-empty::after { content: ''; position: absolute; bottom: 24%; width: 12%; aspect-ratio: 1;
+            border-radius: 50%; background: #4e2f16; opacity: .7; }
+        /* الشجرة تملأ خانتها فقط — بلا تجاوز ولا تداخل */
+        .slot-plant { display: block; width: 100%; height: 100%; line-height: 0; }
+        .slot-plant svg { width: 100%; height: 100%; display: block;
+            filter: drop-shadow(0 2px 2px rgba(20,45,20,.30)); }
+        .tile-caption { display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-size: 10px; font-weight: 800; color: var(--ds-muted); }
+        .tile-done { color: #0f7a4d; background: rgba(16,122,77,.12); border-radius: 999px; padding: 1px 8px;
+            font-size: 9px; font-weight: 900; }
+        .dark .tile-done { color: #5fd39a; }
+        /* المربع المكتمل: عشب أغنى + إطار ذهبي ناعم */
+        .forest-tile.is-complete { --tile-hi: #83d189; --tile-base: #57ab60; --tile-lo: #418d47;
+            border-color: #2f6b35;
+            box-shadow: inset 0 3px 0 rgba(255,255,255,.35), inset 0 -7px 0 rgba(110,66,32,.35),
+                inset 0 0 0 2px rgba(255,255,255,.08), 0 3px 8px rgba(25,50,25,.20),
+                0 0 0 2px rgba(214,164,60,.45); }
+        /* ظهور المربع الجديد + زراعة الشجرة: حركتان قصيرتان لمرة واحدة */
+        @keyframes tile-enter { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+        .forest-tile-wrap.is-new { animation: tile-enter .5s ease-out; }
+        @keyframes tree-pop { 0% { opacity: 0; transform: scale(.3) translateY(30%); }
+            60% { opacity: 1; transform: scale(1.06) translateY(0); } 100% { opacity: 1; transform: scale(1); } }
+        .tile-slot.is-new .slot-plant svg { animation: tree-pop .55s ease-out; transform-origin: 50% 100%; }
+        /* فن الشجرة الموحد في السجل والكتالوج وبطاقة الزراعة */
+        .forest-tree-art { display: block; width: 100%; height: 100%; }
         .forest-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; padding: 12px 16px; font-size: 11px; line-height: 1.8; color: var(--ds-muted); background: var(--ds-card); }
-        .forest-fallback { display: none; padding: 10px 14px; font-size: 11px; color: var(--ds-muted); background: var(--ds-card); }
-        .forest-image-error .forest-fallback { display: block; }
-        .forest-fallback button { color: var(--ds-primary); text-decoration: underline; padding: 8px; min-height: 44px; }
         .forest-caption strong { color: var(--ds-text); font-weight: 800; }
-        .forest-preview { margin: 8px 4px 12px; border-radius: 18px; overflow: hidden; }
-        .forest-preview .forest-landscape { aspect-ratio: 2 / 1; }
+        .forest-preview { margin: 8px 4px 12px; border-radius: 18px; overflow: hidden; border: 1px solid var(--ds-border); }
+        .forest-preview .forest-tiles { grid-template-columns: minmax(0, 200px); padding: 10px; gap: 8px; }
         .forest-preview .forest-caption { padding: 8px 12px; font-size: 10px; }
+        .forest-progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2f9e63, #5cc47c); transition: width .4s ease; }
         #forest-sync-bar { flex-wrap: wrap; }
         #forest-sync-text { white-space: normal; overflow: visible; }
         #forest-grid .ds-tile { min-width: 0; }
         #forest-grid .ds-chip { max-width: 100%; white-space: normal; }
         #forest-scene-loading { background: var(--ds-card); opacity: .92; }
-        @media (max-width: 639px) {
-            .forest-landscape { aspect-ratio: 4 / 3; }
-            .forest-preview .forest-landscape { aspect-ratio: 16 / 9; }
+        @media (min-width: 560px) {
+            .forest-tiles { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; padding: 14px; }
+            .forest-tiles.is-single { grid-template-columns: minmax(0, 260px); }
+        }
+        @media (max-width: 399px) {
+            .forest-tiles { gap: 8px; padding: 10px; }
             .forest-caption { padding: 10px 12px; }
         }
 
@@ -1238,7 +1298,7 @@
                     <span class="text-[var(--ds-muted)]">|</span>
                     <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i aria-hidden="true" class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
                 </div>
-                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v37</p>
+                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v38</p>
             </div>
         </section>
 
@@ -1557,7 +1617,7 @@
         </section>
     </main>
 
-    <!-- TREE SETUP MODAL: يظهر فقط إذا كان جدول trees غير مُهيّأ في Supabase -->
+    <!-- نافذة مساعدة حفظ الأشجار: تظهر فقط عند تعذّر الحفظ في الحساب -->
     <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="مساعدة حفظ الأشجار" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
         <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-[var(--ds-shadow-lg)]">
             <div class="flex items-start justify-between gap-3">
@@ -1921,7 +1981,7 @@
         </div>
 
         <div class="px-4 py-3 border-t border-[var(--ds-border)] flex items-center justify-between gap-2 shrink-0">
-            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v37</span>
+            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v38</span>
             <button onclick="closeSupportDrawer()" class="bg-[var(--ds-sunken)] text-[var(--ds-text-soft)] px-4 py-2 rounded-lg text-[11px] font-bold">إغلاق</button>
         </div>
     </aside>
@@ -2020,20 +2080,119 @@
             return TREE_SPECIES.find(t => t.id === id) || TREE_SPECIES[0];
         }
 
-        // Photographic assets only. Catalog / rarity / earning rules remain unchanged.
-        // Three catalog species currently share the closest available canopy form.
-        function treeAssetName(speciesId) {
-            const aliases = { blossom: 'oak', ginkgo: 'maple', baobab: 'olive' };
-            const species = treeSpeciesById(speciesId);
-            return aliases[species.id] || species.id;
+        // فنّ الأشجار: 12 رمز SVG أصلياً بهوية واحدة (جذع + أغصان + أوراق/أزهار).
+        // تُعرَّف مرة واحدة كـ <symbol> ثم تُستنسخ عبر <use> — عنصر واحد لكل شجرة، بلا صور ولا شبكة.
+        const FOREST_ART_VIEWBOX = '0 0 64 80';
+        const FOREST_ART_IDS = ['oak', 'pine', 'palm', 'cypress', 'olive', 'willow', 'maple', 'euca', 'cedar', 'blossom', 'ginkgo', 'baobab'];
+        const FOREST_TREE_ART = {
+            oak: '<ellipse cx="32" cy="69" rx="13" ry="3.6" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M29 68 L30 48 L34 48 L35 68 Z" fill="#7a5233"/><path d="M32 68 L32 48 L34 48 L35 68 Z" fill="#5f3f26"/>' +
+                '<path d="M31 54 L26 46 M33 52 L38 44" stroke="#5f3f26" stroke-width="2.4" stroke-linecap="round" fill="none"/>' +
+                '<circle cx="20" cy="40" r="11" fill="#35945a"/><circle cx="44" cy="40" r="11" fill="#35945a"/>' +
+                '<circle cx="32" cy="33" r="16" fill="#3f9e5f"/><circle cx="32" cy="25" r="10" fill="#4cb873"/>' +
+                '<circle cx="26" cy="28" r="4" fill="#8adba4" opacity=".9"/><circle cx="38" cy="35" r="3" fill="#8adba4" opacity=".8"/>' +
+                '<circle cx="24" cy="38" r="1.6" fill="#c98f3d"/><circle cx="40" cy="30" r="1.6" fill="#c98f3d"/>',
+            pine: '<ellipse cx="32" cy="69" rx="12" ry="3.4" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M30 68 L30 56 L34 56 L34 68 Z" fill="#6b4a2f"/>' +
+                '<path d="M8 60 L32 40 L56 60 Z" fill="#2b7a4c"/><path d="M13 50 L32 32 L51 50 Z" fill="#34945c"/>' +
+                '<path d="M18 40 L32 24 L46 40 Z" fill="#3fa465"/><path d="M24 31 L32 18 L40 31 Z" fill="#4cb873"/>' +
+                '<circle cx="26" cy="46" r="2" fill="#8adba4" opacity=".8"/><circle cx="37" cy="55" r="2.2" fill="#8adba4" opacity=".7"/>',
+            palm: '<ellipse cx="30" cy="69" rx="11" ry="3.2" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M27 68 C28 58 30 50 34 42 L38 44 C34 52 32 60 31 68 Z" fill="#8a6238"/>' +
+                '<path d="M28 62 L31 62 M29 56 L32 55 M30 50 L33 49" stroke="#6b4a2f" stroke-width="1.4" fill="none"/>' +
+                '<path d="M36 42 C28 33 19 31 11 34 C19 36 26 39 31 45 Z" fill="#3da66b"/>' +
+                '<path d="M36 42 C44 33 53 31 61 34 C53 36 46 39 41 45 Z" fill="#35945a"/>' +
+                '<path d="M36 43 C29 41 22 43 17 49 C24 48 31 47 36 46 Z" fill="#2f8a55"/>' +
+                '<path d="M36 43 C43 41 50 43 55 49 C48 48 41 47 36 46 Z" fill="#3da66b"/>' +
+                '<path d="M35 42 C33 34 33 27 36 20 C39 27 39 34 37 42 Z" fill="#4cb873"/>' +
+                '<circle cx="33" cy="44" r="2.6" fill="#6b4a2f"/><circle cx="39" cy="45" r="2.6" fill="#7a5636"/>',
+            cypress: '<ellipse cx="32" cy="69" rx="9" ry="3" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M30 68 L30 62 L34 62 L34 68 Z" fill="#6b4a2f"/>' +
+                '<path d="M32 8 C39 20 42 32 41 46 C40 56 37 62 32 62 C27 62 24 56 23 46 C22 32 25 20 32 8 Z" fill="#257048"/>' +
+                '<path d="M32 8 C29 20 28 32 29 46 C29 54 30 59 32 62 C27 62 24 56 23 46 C22 32 25 20 32 8 Z" fill="#1b5a3a"/>' +
+                '<path d="M35 16 C38 26 39 36 38 48" stroke="#5cc47c" stroke-width="2" stroke-linecap="round" opacity=".7" fill="none"/>' +
+                '<circle cx="30" cy="30" r="1.8" fill="#5cc47c" opacity=".6"/><circle cx="34" cy="42" r="1.8" fill="#5cc47c" opacity=".6"/>',
+            olive: '<ellipse cx="32" cy="69" rx="13" ry="3.4" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M28 68 C28 62 27 60 24 56 L28 54 C30 57 31 59 31 62 L33 56 L37 57 C36 61 36 64 36 68 Z" fill="#6e5136"/>' +
+                '<ellipse cx="32" cy="44" rx="17" ry="10" fill="#649a7d"/><ellipse cx="22" cy="48" rx="9" ry="6" fill="#578a70"/>' +
+                '<ellipse cx="42" cy="48" rx="9" ry="6" fill="#578a70"/><ellipse cx="28" cy="39" rx="9" ry="5" fill="#8fb9a1"/>' +
+                '<circle cx="24" cy="46" r="1.5" fill="#3d5a45"/><circle cx="36" cy="48" r="1.5" fill="#3d5a45"/>' +
+                '<circle cx="42" cy="43" r="1.5" fill="#3d5a45"/><circle cx="30" cy="42" r="1.5" fill="#cfe3d6" opacity=".9"/>',
+            willow: '<ellipse cx="32" cy="69" rx="13" ry="3.4" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M29 68 L30 50 L34 50 L35 68 Z" fill="#7a5a38"/><path d="M32 68 L32 50 L34 50 L34 68 Z" fill="#5f452a"/>' +
+                '<path d="M12 52 C12 34 22 25 32 25 C42 25 52 34 52 52 L48 52 C48 38 40 30 32 30 C24 30 16 38 16 52 Z" fill="#4c9a66"/>' +
+                '<path d="M18 50 C18 56 17 60 16 64 M24 50 C24 57 23 62 22 66 M30 50 C30 58 30 62 29 66 M36 50 C36 57 37 62 38 66 M42 50 C42 56 43 60 44 64 M47 50 C47 55 48 58 49 62" stroke="#66b37e" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
+                '<path d="M21 50 C21 56 20 60 19 63 M33 50 C33 58 33 62 34 66 M45 50 C45 55 46 59 47 62" stroke="#8fd0a0" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
+                '<circle cx="26" cy="34" r="2" fill="#8fd0a0" opacity=".8"/><circle cx="38" cy="36" r="2" fill="#8fd0a0" opacity=".8"/>',
+            maple: '<ellipse cx="32" cy="69" rx="13" ry="3.6" fill="#3a1f14" opacity=".16"/>' +
+                '<path d="M29 68 L30 46 L34 46 L35 68 Z" fill="#6e4a2c"/><path d="M32 68 L32 46 L34 46 L35 68 Z" fill="#54371f"/>' +
+                '<path d="M31 52 L25 44 M33 50 L39 42" stroke="#54371f" stroke-width="2.2" stroke-linecap="round" fill="none"/>' +
+                '<circle cx="20" cy="38" r="10" fill="#c85a34"/><circle cx="44" cy="38" r="10" fill="#c85a34"/>' +
+                '<circle cx="32" cy="31" r="15" fill="#d96b3f"/><circle cx="32" cy="23" r="9" fill="#e8804f"/>' +
+                '<circle cx="26" cy="27" r="3.4" fill="#f5a86a"/><circle cx="38" cy="33" r="2.6" fill="#f5a86a"/>' +
+                '<circle cx="24" cy="36" r="1.6" fill="#e8b04b"/><circle cx="42" cy="28" r="1.6" fill="#e8b04b"/>',
+            euca: '<ellipse cx="32" cy="69" rx="10" ry="3" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M30 68 L30 28 L34 28 L34 68 Z" fill="#a8b39a"/><path d="M32 68 L32 28 L34 28 L34 68 Z" fill="#8b9683"/>' +
+                '<path d="M30 44 L32 44 M30 54 L32 54 M32 36 L34 36" stroke="#6f7a68" stroke-width="1.4" fill="none"/>' +
+                '<ellipse cx="25" cy="24" rx="8" ry="6" fill="#7fb3a3"/><ellipse cx="39" cy="20" rx="9" ry="7" fill="#8fc0ae"/>' +
+                '<ellipse cx="32" cy="30" rx="7" ry="5" fill="#6da294"/>' +
+                '<circle cx="36" cy="18" r="2" fill="#c4e0d4" opacity=".9"/><circle cx="27" cy="26" r="1.6" fill="#c4e0d4" opacity=".8"/>',
+            cedar: '<ellipse cx="32" cy="69" rx="12" ry="3.4" fill="#1e3a1f" opacity=".18"/>' +
+                '<path d="M30 68 L30 54 L34 54 L34 68 Z" fill="#5f3f26"/>' +
+                '<rect x="10" y="52" width="44" height="6.5" rx="3.2" fill="#2e7d4f"/>' +
+                '<rect x="14" y="45.5" width="36" height="6" rx="3" fill="#35945a"/>' +
+                '<rect x="18" y="39" width="28" height="6" rx="3" fill="#2e7d4f"/>' +
+                '<rect x="22" y="32.5" width="20" height="6" rx="3" fill="#35945a"/>' +
+                '<path d="M27 33 L32 22 L37 33 Z" fill="#3fa465"/>' +
+                '<rect x="10" y="52" width="44" height="2.2" rx="1.1" fill="#5cc47c" opacity=".55"/>' +
+                '<rect x="14" y="45.5" width="36" height="2" rx="1" fill="#5cc47c" opacity=".55"/>' +
+                '<rect x="18" y="39" width="28" height="2" rx="1" fill="#5cc47c" opacity=".5"/>',
+            blossom: '<ellipse cx="32" cy="69" rx="13" ry="3.6" fill="#3a1f2a" opacity=".14"/>' +
+                '<path d="M29 68 L30 46 L34 46 L35 68 Z" fill="#5a3a28"/>' +
+                '<path d="M31 54 L25 44 M33 52 L39 42 M32 48 L32 40" stroke="#4a2e1f" stroke-width="2.2" stroke-linecap="round" fill="none"/>' +
+                '<circle cx="21" cy="38" r="10" fill="#ee93b5"/><circle cx="43" cy="38" r="10" fill="#ee93b5"/>' +
+                '<circle cx="32" cy="31" r="15" fill="#f2a7c3"/><circle cx="32" cy="23" r="9" fill="#f7c3d7"/>' +
+                '<circle cx="25" cy="28" r="2" fill="#ffffff" opacity=".95"/><circle cx="33" cy="33" r="2" fill="#ffffff" opacity=".95"/>' +
+                '<circle cx="40" cy="27" r="2" fill="#ffffff" opacity=".95"/><circle cx="29" cy="38" r="1.6" fill="#e87ba2"/>' +
+                '<circle cx="37" cy="37" r="1.6" fill="#e87ba2"/><circle cx="32" cy="25" r="1.6" fill="#e87ba2"/>',
+            ginkgo: '<ellipse cx="32" cy="69" rx="10" ry="3" fill="#3a2f14" opacity=".14"/>' +
+                '<path d="M30 68 L31 48 L33 48 L34 68 Z" fill="#6b4a2f"/>' +
+                '<path d="M32 50 L13 31 C18 20 24 15 32 15 C40 15 46 20 51 31 Z" fill="#e8b93f"/>' +
+                '<path d="M32 50 L22 26 M32 50 L32 19 M32 50 L42 26" stroke="#c9962e" stroke-width="1.6" fill="none"/>' +
+                '<path d="M32 50 L17 28 C21 21 26 17 32 16 L32 50 Z" fill="#f5d67a" opacity=".8"/>' +
+                '<circle cx="26" cy="30" r="1.6" fill="#fff3c4"/><circle cx="38" cy="30" r="1.6" fill="#fff3c4"/>',
+            baobab: '<ellipse cx="32" cy="69" rx="14" ry="3.6" fill="#3a2a14" opacity=".14"/>' +
+                '<path d="M23 68 L25 40 C25 35 39 35 39 40 L41 68 Z" fill="#9a7350"/>' +
+                '<path d="M23 68 L25 40 C25 37 29 35.5 32 35.5 L32 68 Z" fill="#7d5a3e"/>' +
+                '<path d="M32 38 L28 30 M32 38 L36 30 M32 38 L32 28" stroke="#7d5a3e" stroke-width="2.2" stroke-linecap="round" fill="none"/>' +
+                '<ellipse cx="32" cy="29" rx="14" ry="5" fill="#4c9a66"/>' +
+                '<circle cx="24" cy="25" r="4" fill="#5cb173"/><circle cx="32" cy="23" r="5" fill="#5cb173"/>' +
+                '<circle cx="40" cy="25" r="4" fill="#5cb173"/>' +
+                '<circle cx="30" cy="21" r="1.8" fill="#a5e0b6"/><circle cx="37" cy="24" r="1.5" fill="#a5e0b6"/>'
+        };
+        let forestArtReady = false;
+        function forestArtDefs() {
+            let defs = '<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>';
+            FOREST_ART_IDS.forEach(id => {
+                defs += '<symbol id="zp-tree-' + id + '" viewBox="' + FOREST_ART_VIEWBOX + '">' + (FOREST_TREE_ART[id] || FOREST_TREE_ART.oak) + '</symbol>';
+            });
+            return defs + '</defs></svg>';
+        }
+        function ensureForestArt() {
+            if (forestArtReady) return true;
+            const host = document.getElementById('forest-art-defs');
+            if (!host) return false;
+            host.innerHTML = forestArtDefs();
+            forestArtReady = true;
+            return true;
         }
         function treeImage(speciesId, opts) {
             opts = opts || {};
-            const name = treeAssetName(speciesId);
-            const size = opts.large ? '' : '-thumb';
-            return '<img class="forest-tree-art ' + escapeHtml(opts.className || 'w-full h-full') +
-                '" src="assets/forest/' + name + size + '.webp" width="' + (opts.large ? 384 : 96) +
-                '" height="' + (opts.large ? 512 : 128) + '" loading="lazy" decoding="async" alt="' + escapeHtml(opts.title || '') + '">';
+            const species = treeSpeciesById(speciesId);
+            const label = opts.title || species.name;
+            return '<svg class="forest-tree-art ' + escapeHtml(opts.className || 'w-full h-full') +
+                '" viewBox="' + FOREST_ART_VIEWBOX + '" preserveAspectRatio="xMidYMax meet" role="img" aria-label="' +
+                escapeHtml(label) + '"><title>' + escapeHtml(label) + '</title><use href="#zp-tree-' + species.id + '"></use></svg>';
         }
 
         // اختيار نوع الشجرة: عشوائي + نُدرة حسب مدة الجلسة + لا تكرار متتالٍ (كل شجرة مختلفة)
@@ -3092,11 +3251,11 @@
         }
 
         // ============ 4. UI INITIALIZATION & SYNC ============
-        // معاينة مصغّرة لغابة الإنجاز في الصفحة الرئيسية
+        // معاينة مصغّرة لغابة الإنجاز في الصفحة الرئيسية (المربع الحالي فقط)
         function renderHomeForestPreview() {
             const box = document.getElementById('home-forest-preview');
             if (!box) return;
-            renderNaturalForest(box, displayForest(), true);
+            renderForestTiles(box, displayForest(), true);
         }
 
         function updateGreetingHeader() {
@@ -3560,7 +3719,7 @@
         initTheme();
 
         // ============ 10. مركز الدعم الفني (درج جانبي) ============
-        const APP_VERSION = 'v37';
+        const APP_VERSION = 'v38';
         function openSupportDrawer(topicId) {
             refreshSupportPanel();
             if (!isOverlayOpen('support')) registerOverlayNavigation('support');
@@ -4540,65 +4699,124 @@
             return '<span class="ds-chip" title="جلسة تركيز سابقة في حسابك"><i aria-hidden="true" class="fa-solid fa-database text-[9px]"></i> جلسة سابقة</span>';
         }
 
-        // Stable placements: old trees keep their location when a new session is earned.
-        // A bounded window avoids hundreds of image nodes on mobile; totals are never capped.
-        function forestLayout(trees, limit) {
-            return trees.slice(0, limit).reverse().map((tree, i) => {
-                let seed = 2166136261;
-                for (const char of String(tree.id)) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
-                const noise = (seed % 997) / 997;
-                const depth = i === 0 ? .82 : .12 + ((i * .61803398875) % 1) * .8;
-                const height = (24 + depth * 46) * (.91 + noise * .12);
-                return { tree, x: i === 0 ? 50 : 20 + ((i * .754877666 + noise * .08) % 1) * 60,
-                    bottom: 43 - depth * 35, height, width: .91 + ((seed >>> 8) % 19) / 100,
-                    depth, tone: .93 + ((seed >>> 16) % 12) / 100 };
-            }).sort((a, b) => a.depth - b.depth);
+        // ===== نظام مربعات الغابة: كل مربع 4×4 = 16 شجرة، يُزرع بالتتابع =====
+        // جلسة تركيز واحدة = شجرة واحدة في أول خانة فارغة. عند امتلاء المربع يُفتح مربع جديد تلقائياً.
+        const FOREST_TILE_COLS = 4;
+        const FOREST_TILE_ROWS = 4;
+        const FOREST_SLOTS_PER_TILE = FOREST_TILE_COLS * FOREST_TILE_ROWS; // 16
+        let celebratedTreeId = null;
+
+        // الترتيب الزمني للزراعة: الأقدم أولاً (الشجرة 1 → المربع 1 / الخانة 1)
+        function forestChronological(trees) {
+            return (trees || []).slice().sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
         }
-        function renderNaturalForest(box, trees, compact) {
-            // Use the same composition in both cards. Native lazy images do not load in hidden tabs.
-            const limit = compact ? 24 : 96;
-            const signature = (compact ? 'preview:' : 'full:') + trees.map(t => String(t.id) + ':' + t.tree_type).join('|');
+
+        // خطة المربعات من بيانات الإنجاز الحقيقية — لا أرقام وهمية ولا عيّنة مقتطعة
+        function forestTilePlan(trees) {
+            const ordered = forestChronological(trees);
+            const total = ordered.length;
+            const tileCount = Math.max(1, Math.ceil(total / FOREST_SLOTS_PER_TILE));
+            const tiles = [];
+            for (let t = 0; t < tileCount; t++) {
+                const slots = [];
+                for (let s = 0; s < FOREST_SLOTS_PER_TILE; s++) {
+                    slots.push(ordered[t * FOREST_SLOTS_PER_TILE + s] || null);
+                }
+                const filled = slots.filter(Boolean).length;
+                tiles.push({ index: t, number: t + 1, slots: slots, filled: filled,
+                    isFull: filled === FOREST_SLOTS_PER_TILE, isCurrent: t === tileCount - 1 });
+            }
+            const current = tiles[tiles.length - 1];
+            return { total: total, tileCount: tileCount, tiles: tiles, current: current,
+                currentFilled: current.filled, remaining: FOREST_SLOTS_PER_TILE - current.filled };
+        }
+
+        // تنويع بصري ثابت لكل شجرة (نفس الشجرة تبدو نفسها دائماً — بلا تجاوز لحدود الخانة)
+        function treeSlotVariation(tree, slotIndex) {
+            let seed = 2166136261;
+            const key = String((tree && tree.id) || slotIndex) + ':' + slotIndex;
+            for (const char of key) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
+            const r1 = (seed % 1000) / 1000, r2 = ((seed >>> 9) % 1000) / 1000;
+            const scale = (0.93 + r1 * 0.07).toFixed(3);
+            const dx = ((r2 - 0.5) * 6).toFixed(2);
+            return 'transform:scale(' + scale + ') translateX(' + dx + '%);transform-origin:50% 100%';
+        }
+
+        function forestRemainingLabel(remaining) {
+            if (remaining <= 0) return 'مربع مكتمل! الجلسة القادمة تفتح مربعاً جديداً';
+            if (remaining === 1) return 'جلسة واحدة متبقية لإكمال المربع';
+            if (remaining === 2) return 'جلستان متبقيتان لإكمال المربع';
+            if (remaining <= 10) return remaining + ' جلسات متبقية لإكمال المربع';
+            return remaining + ' جلسة متبقية لإكمال المربع';
+        }
+
+        function renderForestTile(tile, celebrateId) {
+            let slots = '';
+            for (let s = 0; s < tile.slots.length; s++) {
+                const tree = tile.slots[s];
+                if (!tree) {
+                    slots += '<span class="tile-slot is-empty" aria-hidden="true"></span>';
+                } else {
+                    const isNew = celebrateId && String(tree.id) === String(celebrateId);
+                    slots += '<span class="tile-slot is-filled' + (isNew ? ' is-new' : '') + '" data-tile="' + tile.number +
+                        '" data-slot="' + (s + 1) + '" data-tree="' + escapeHtml(String(tree.id)) + '"><span class="slot-plant" style="' +
+                        treeSlotVariation(tree, s) + '">' + treeImage(tree.tree_type, { className: 'tile-tree-svg' }) + '</span></span>';
+                }
+            }
+            const tileIsNew = celebrateId && tile.slots[0] && String(tile.slots[0].id) === String(celebrateId) && tile.index > 0;
+            return '<div class="forest-tile-wrap' + (tileIsNew ? ' is-new' : '') + '">' +
+                '<div class="forest-tile' + (tile.isFull ? ' is-complete' : '') + '" role="img" aria-label="المربع ' + tile.number + ': ' +
+                tile.filled + ' من ' + FOREST_SLOTS_PER_TILE + ' شجرة">' +
+                '<div class="tile-slots">' + slots + '</div></div>' +
+                '<div class="tile-caption"><span>المربع ' + tile.number + '</span>' +
+                (tile.isFull ? '<span class="tile-done">✓ مكتمل</span>' : '<span>' + tile.filled + ' / ' + FOREST_SLOTS_PER_TILE + '</span>') +
+                '</div></div>';
+        }
+
+        function renderForestTiles(box, trees, compact) {
+            ensureForestArt();
+            // لا إعادة بناء للـ DOM ما لم تتغيّر الشجرات فعلاً (نفس التوقيع = نفس المشهد)
+            const signature = (compact ? 'tiles-preview:' : 'tiles:') + trees.map(t => String(t.id) + ':' + t.tree_type).join('|');
             if (box.getAttribute('data-forest-key') === signature) return;
             box.setAttribute('data-forest-key', signature);
-            const layout = forestLayout(trees, limit);
+            const plan = forestTilePlan(trees);
+            const celebrateId = (!compact && lastPlantedTree && celebratedTreeId !== String(lastPlantedTree.id)) ? String(lastPlantedTree.id) : null;
             let out = '<figure class="forest-view' + (compact ? ' forest-preview' : '') + '">';
-            out += '<div class="forest-landscape" role="img" aria-label="غابة إنجازك: ' + trees.length + ' شجرة' +
-                (trees.length > limit ? '، يظهر منها ' + layout.length + ' في المشهد' : '') + '">';
-            out += '<picture><source media="(min-width: 768px)" srcset="assets/forest/meadow-1280.webp">' +
-                '<img class="forest-terrain" src="assets/forest/meadow-640.webp" width="640" height="427" loading="lazy" decoding="async" alt=""></picture>';
-            layout.forEach(p => {
-                out += '<span class="forest-plant" aria-hidden="true" style="left:' + p.x.toFixed(2) + '%;bottom:' + p.bottom.toFixed(2) +
-                    '%;height:' + p.height.toFixed(2) + '%"><img src="assets/forest/' + treeAssetName(p.tree.tree_type) +
-                    (compact ? '-thumb' : '') + '.webp" width="384" height="512" loading="lazy" decoding="async" alt="" style="transform:scaleX(' +
-                    p.width.toFixed(2) + ');filter:brightness(' + p.tone.toFixed(2) + ')"></span>';
-            });
-            out += '</div><figcaption class="forest-caption">';
-            if (!trees.length) out += '<strong>هنا تبدأ غابتك</strong><span>أكمل جلسة تركيز لتزرع شجرتك الأولى</span>';
-            else out += '<strong>' + (trees.length === 1 ? 'بداية تنمو معك' : trees.length < 10 ? 'جلسة بعد جلسة، تنمو غابتك' : 'وقت تركيزك أصبح غابة') +
-                '</strong><span>' + (trees.length > limit ? 'يظهر ' + layout.length + ' من ' + trees.length + ' شجرة' : 'كل شجرة تحكي جلسة تركيز') + '</span>';
-            out += '</figcaption><div class="forest-fallback" role="status">تعذّر تحميل بعض تفاصيل المشهد. عدد أشجارك لم يتغيّر. <button type="button" onclick="retryForestImages(this)">إعادة تحميل المشهد</button></div></figure>';
+            if (compact) {
+                // اللقطة المصغّرة: المربع الحالي فقط (16 خانة كحد أقصى — خفيف دائماً)
+                out += '<div class="forest-tiles is-single" role="img" aria-label="المربع الحالي: ' + plan.currentFilled + ' من ' + FOREST_SLOTS_PER_TILE + ' شجرة">';
+                out += renderForestTile(plan.current, null);
+                out += '</div><figcaption class="forest-caption">';
+                if (!plan.total) out += '<strong>هنا تبدأ غابتك</strong><span>أكمل جلسة تركيز لتزرع شجرتك الأولى</span>';
+                else out += '<strong>غابتك تضم ' + plan.total + ' شجرة</strong><span>المربع الحالي: ' + plan.currentFilled + ' / ' + FOREST_SLOTS_PER_TILE + '</span>';
+            } else {
+                out += '<div class="forest-tiles' + (plan.tiles.length === 1 ? ' is-single' : '') + '" role="img" aria-label="غابة إنجازك: ' + plan.total + ' شجرة في ' + plan.tileCount + ' مربع">';
+                plan.tiles.forEach(tile => { out += renderForestTile(tile, celebrateId); });
+                out += '</div><figcaption class="forest-caption">';
+                if (!plan.total) out += '<strong>هنا تبدأ غابتك</strong><span>أكمل جلسة تركيز لتزرع شجرتك الأولى</span>';
+                else if (plan.total === 1) out += '<strong>غابتك تضم شجرة واحدة</strong><span>جلسة بعد جلسة، تنمو غابتك</span>';
+                else if (plan.tileCount === 1) out += '<strong>غابتك تضم ' + plan.total + ' شجرة</strong><span>مربع واحد — كل شجرة = جلسة تركيز</span>';
+                else if (plan.tileCount === 2) out += '<strong>غابتك تضم ' + plan.total + ' شجرة</strong><span>مربعان — كل شجرة = جلسة تركيز</span>';
+                else out += '<strong>غابتك تضم ' + plan.total + ' شجرة</strong><span>' + plan.tileCount + ' مربعات — كل شجرة = جلسة تركيز</span>';
+            }
+            out += '</figcaption></figure>';
             box.innerHTML = out;
-        }
-        // Asset failures must not hide achievements or show broken-image icons.
-        document.addEventListener('error', function (event) {
-            const image = event.target;
-            if (!image || image.tagName !== 'IMG' || !(image.getAttribute('src') || '').startsWith('assets/forest/')) return;
-            image.style.visibility = 'hidden';
-            image.closest('.forest-view')?.classList.add('forest-image-error');
-        }, true);
-        function retryForestImages(button) {
-            const scene = button.closest('.forest-view');
-            if (!scene) return;
-            scene.classList.remove('forest-image-error');
-            scene.querySelectorAll('img').forEach(image => {
-                if (image.style.visibility !== 'hidden') return;
-                image.style.visibility = '';
-                image.src = image.src;
-            });
+            if (celebrateId) celebratedTreeId = celebrateId;
         }
         function renderForestScene(trees) {
             const box = document.getElementById('forest-scene');
-            if (box) renderNaturalForest(box, trees, false);
+            if (box) renderForestTiles(box, trees, false);
+        }
+
+        function renderForestProgress(plan) {
+            const title = document.getElementById('forest-progress-title');
+            const hint = document.getElementById('forest-progress-hint');
+            const fill = document.getElementById('forest-progress-fill');
+            const bar = document.getElementById('forest-progress-bar');
+            if (title) title.innerText = 'المربع الحالي: ' + plan.currentFilled + ' / ' + FOREST_SLOTS_PER_TILE;
+            if (hint) hint.innerText = !plan.total ? 'أكمل جلسة تركيز لتزرع شجرتك الأولى' : forestRemainingLabel(plan.remaining);
+            if (fill) fill.style.width = Math.round((plan.currentFilled / FOREST_SLOTS_PER_TILE) * 100) + '%';
+            if (bar) bar.setAttribute('aria-valuenow', String(plan.currentFilled));
         }
 
         function renderTreeSpeciesStrip() {
@@ -4873,7 +5091,9 @@
             const achForest = document.getElementById('ach-forest-count');
             if (achForest) achForest.innerText = `${trees.length} شجرة`;
 
+            ensureForestArt();
             renderForestScene(trees);
+            renderForestProgress(forestTilePlan(trees));
             updateForestSyncUI();
             renderHomeForestPreview();
 
@@ -5494,6 +5714,27 @@
                     pomoPaused = true;
                     const btn = document.getElementById('pomo-play-btn');
                     if (btn) btn.innerHTML = '<span>استئناف</span> <i aria-hidden="true" class="fa-solid fa-play mr-2 text-xs"></i>';
+                    updatePomoDisplay();
+                    updateBackgroundStatus();
+                }
+            }
+            requestBackgroundPomoStatus();   // الحقيقة النهائية لحالة الجلسة عند الخدمة الخلفية
+            hardenInlineHandlers();          // كل زر محميّ بـ try/catch ويبلّغ عن الخطأ بدل الصمت
+        });
+
+        // أي خطأ غير متوقع لا يمرّ بصمت: يُسجَّل في تقرير المشكلة ويُعرض للطالب
+        window.addEventListener('error', (ev) => {
+            const err = (ev && (ev.error || ev.message)) || 'خطأ غير معروف';
+            recordRuntimeIssue(err, 'window', { silent: true });
+        });
+        window.addEventListener('unhandledrejection', (ev) => {
+            const reason = (ev && ev.reason) || 'وعد مرفوض';
+            recordRuntimeIssue(reason, 'promise', { silent: true });
+        });
+    </script>
+</body>
+</html>
+       if (btn) btn.innerHTML = '<span>استئناف</span> <i aria-hidden="true" class="fa-solid fa-play mr-2 text-xs"></i>';
                     updatePomoDisplay();
                     updateBackgroundStatus();
                 }
