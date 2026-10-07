@@ -142,7 +142,7 @@ test('7) خطأ الصلاحيات (42501) يظهر كمؤشر أحمر ويُب
   assert.ok(sandbox.__api.lastSyncError && /permission denied/.test(sandbox.__api.lastSyncError), 'لم يُسجَّل الخطأ');
   const queued = JSON.parse(localStorage.getItem('zp_sync_queue'));
   assert.ok(Object.keys(queued).some(k => k.startsWith('tasks:')), 'فُقدت العملية بعد الفشل');
-  assert.match(sandbox.describeCloudError({ message: sandbox.__api.lastSyncError }), /تسجيل الدخول|الدعم/, 'رسالة التوضيح لا تذكر خطوة مفيدة للمستخدم');
+  assert.match(sandbox.describeCloudError({ message: sandbox.__api.lastSyncError }), /schema\.sql/, 'رسالة التوضيح لا تذكر الحل');
 });
 
 test('8) فشل localStorage (امتلاء) لا يكسر التطبيق ويُظهر تنبيهاً واضحاً', async () => {
@@ -222,8 +222,7 @@ test('12) فشل حفظ حساب Google يُظهر خطأً واضحاً ولا 
   await sandbox.completeGoogleSignup('g_test', 'student@example.com');
 
   assert.ok(alerts.some(a => /تعذر حفظ بيانات الحساب/.test(a)), 'لم يظهر تنبيه الفشل: ' + alerts.join(' | '));
-  assert.ok(alerts.some(a => /الدعم/.test(a)), 'التنبيه لا يشرح خطوة الاستعادة');
-  assert.ok(alerts.every(a => !/supabase|schema\.sql|table/i.test(a)), 'ظهر خطأ تقني للمستخدم');
+  assert.ok(alerts.some(a => /schema\.sql/.test(a)), 'التنبيه لا يشرح الحل');
   assert.equal(localStorage.getItem('zp_user_registered'), null, 'دخل التطبيق رغم فشل الحفظ');
 });
 
@@ -894,8 +893,7 @@ test('44) أي خطأ غير متوقع يُسجَّل ويظهر للطالب �
 
   const log = JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors'));
   assert.equal(log[0].source, 'زر الاختبار');
-  assert.match(log[0].message, /فشل تجريبي/, 'التفاصيل التقنية مفقودة من السجل الداخلي');
-  assert.match(sandbox.buildDiagnostics(), /تعذّر إتمام العملية/, 'الخطأ لا يصل بصيغة آمنة لتقرير المشكلة');
+  assert.match(sandbox.buildDiagnostics(), /فشل تجريبي/, 'الخطأ لا يصل لتقرير المشكلة');
 
   for (let i = 0; i < 8; i++) sandbox.recordRuntimeIssue(new Error('خطأ ' + i), 'تكرار', { silent: true });
   assert.equal(JSON.parse(sandbox.localStorage.getItem('zp_runtime_errors')).length, 5, 'سجل الأخطاء ينمو بلا حد');
@@ -1017,7 +1015,7 @@ test('49) غياب جدول trees لا يُعطّل التطبيق: حفظ مح�
   assert.equal(sandbox.__api.treesTableMissing, true, 'لم يُكتشف غياب جدول trees');
   assert.equal(sandbox.__api.userTrees.length, 1, 'ضاعت الشجرة عند غياب الجدول');
   assert.equal(sandbox.__api.userTrees[0].sync, 'local', 'حالة الحفظ المحلي غير صحيحة');
-  assert.match(nodes.get('forest-sync-text').innerText, /غير متاح.*محفوظة على جهازك/, 'لا توجد رسالة واضحة عن الحفظ المحلي');
+  assert.match(nodes.get('forest-sync-text').innerText, /غير مُهيّأ/, 'لا توجد رسالة واضحة عن تهيئة الجدول');
   const setupBtn = nodes.get('forest-setup-btn');
   assert.equal(setupBtn.classList.contains('hidden'), false, 'زر التهيئة لا يظهر عند غياب الجدول');
 
@@ -1122,7 +1120,7 @@ test('55) اختبار الحفظ الفعلي: الكتابة في trees ثم �
   assert.equal(rowsOf(supabaseMock, 'trees').length, 0, 'الصف التجريبي لم يُحذف بعد الاختبار');
   const calls = supabaseMock._state.calls.filter(c => c.table === 'trees').map(c => c.op);
   assert.deepEqual(calls.slice(0, 3), ['upsert', 'select', 'delete'], 'مسار الاختبار غير مطابق: ' + calls.join(','));
-  assert.match(nodes.get('tree-test-result').innerText, /تم التحقق/, 'لا تظهر نتيجة نجاح واضحة للطالب');
+  assert.match(nodes.get('tree-test-result').innerText, /نجح الاختبار/, 'لا تظهر نتيجة نجاح واضحة للطالب');
 });
 
 test('56) فشل جدول trees أثناء اختبار الحفظ يعرض خطأً واضحاً ولا يكسر التطبيق', async () => {
@@ -1133,7 +1131,7 @@ test('56) فشل جدول trees أثناء اختبار الحفظ يعرض خط
   const ok = await sandbox.testTreesStorage();
   assert.equal(ok, false);
   assert.equal(sandbox.__api.treesTableMissing, true, 'لم تُسجَّل حالة غياب الجدول');
-  assert.match(nodes.get('tree-test-result').innerText, /أعد المحاولة|الدعم/, 'رسالة الخطأ غير مفيدة للطالب');
+  assert.match(nodes.get('tree-test-result').innerText, /schema\.sql|غير/, 'رسالة الخطأ غير مفيدة للطالب');
 });
 
 test('54) فحص ثابت: جدول trees مكتمل في schema.sql (أعمدة + صلاحيات + سياسات + فهرس)', () => {

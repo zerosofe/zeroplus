@@ -1,11 +1,11 @@
-// sw.js — ZeroPlus (Z+) v38
+// sw.js — ZeroPlus (Z+) v37
 // الخدمة الخلفية: كاش التطبيق + مؤقّت التركيز الذي يعمل حتى لو أُغلقت الصفحة
 // + إشعار مستمر بالوقت المتبقي وأزرار إيقاف/استئناف + تذكيرات مجدولة (يومية ودورية)
-const CACHE_NAME = 'zeroplus-v38';
+const CACHE_NAME = 'zeroplus-v37';
 // كاش منفصل لمكتبات CDN حتى يعمل التطبيق «بشكله الكامل» بدون إنترنت.
-// ملاحظة: يجب أن يبدأ بنفس بادئة CACHE_NAME ('zeroplus-v38') حتى لا يحذفه
+// ملاحظة: يجب أن يبدأ بنفس بادئة CACHE_NAME ('zeroplus-v37') حتى لا يحذفه
 // سكربت killOldSW في index.html الذي يمسح أي كاش لا يبدأ بالإصدار الحالي.
-const CDN_CACHE = 'zeroplus-v38-cdn';
+const CDN_CACHE = 'zeroplus-v37-cdn';
 // سقف حجم كاش الـ CDN حتى لا ينمو إلى ما لا نهاية على أجهزة الطلاب
 const RUNTIME_CACHE_MAX = 80;
 const ASSETS_TO_CACHE = [
