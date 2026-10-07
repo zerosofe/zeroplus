@@ -233,8 +233,15 @@ export function createHarness(options = {}) {
   get pomoDuration(){ return pomoDuration; },
   get pomoEndTimestamp(){ return pomoEndTimestamp; }, set pomoEndTimestamp(v){ pomoEndTimestamp = v; },
   get activeTabId(){ return activeTabId; },
-  get currentPomoMins(){ return currentPomoMins; }
-};`;
+  get currentPomoMins(){ return currentPomoMins; },
+  get focusPhase(){ return focusPhase; },
+  get focusStageMode(){ return focusStageMode; }
+};
+// الثوابت المعرّفة بـ const لا تصل إلى كائن البيئة تلقائياً ← نكشفها للاختبارات
+if (typeof TREE_SPECIES !== 'undefined') globalThis.TREE_SPECIES = TREE_SPECIES;
+if (typeof TREE_GROWTH_STAGES !== 'undefined') globalThis.TREE_GROWTH_STAGES = TREE_GROWTH_STAGES;
+if (typeof FOREST_TILE_SLOTS !== 'undefined') globalThis.FOREST_TILE_SLOTS = FOREST_TILE_SLOTS;
+if (typeof FOCUS_DURATIONS !== 'undefined') globalThis.FOCUS_DURATIONS = FOCUS_DURATIONS;`;
   vm.createContext(sandbox);
   vm.runInContext(code + epilogue, sandbox, { filename: 'index-inline.js' });
   // إقلاع التطبيق: تشغيل مستمعي DOMContentLoaded (مثل المتصفح تماماً) عند الطلب
