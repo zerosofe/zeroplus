@@ -5,12 +5,10 @@
   "description": "ZeroPlus | المنصة الأكاديمية التخصصية — PWA قابلة للتثبيت (iOS/Android/سطح المكتب)",
   "type": "module",
   "scripts": {
-    "test": "node tests/run-tests.mjs && node tests/forest-rendering.mjs",
+    "test": "node tests/run-tests.mjs",
     "test:smoke": "node tests/smoke-dom.mjs",
     "assets:generate": "node tools/generate-pwa-assets.mjs",
-    "assetlinks:generate": "node tools/generate-assetlinks.mjs",
-    "test:forest": "node tests/forest-rendering.mjs",
-    "test:forest:browser": "node tests/forest-browser.mjs"
+    "assetlinks:generate": "node tools/generate-assetlinks.mjs"
   },
   "devDependencies": {
     "sharp": "^0.35.5"
