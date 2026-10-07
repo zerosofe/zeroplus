@@ -22,22 +22,72 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v36')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v37')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=36">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=36">
-    <link rel="shortcut icon" href="/icon.svg?v=36">
-    <link rel="manifest" href="/manifest.json?v=36">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=37">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=37">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=37">
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png?v=37">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png?v=37">
+    <!-- شاشات إقلاع iOS (iPhone/iPad) — مولّدة من tools/generate-pwa-assets.mjs -->
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2868x1320.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1206x2622.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2622x1206.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2796x1290.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2556x1179.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2778x1284.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2532x1170.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2688x1242.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2436x1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1792x828.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2208x1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1334x750.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2732x2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2388x1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2224x1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/splash/apple-splash-2048x1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+    <link rel="shortcut icon" href="/icon.svg?v=37">
+    <link rel="manifest" href="/manifest.json?v=37">
     <meta name="theme-color" content="#16305c">
+    <meta name="color-scheme" content="light dark">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ZeroPlus">
+
+    <!-- ===== SEO / Open Graph / Twitter ===== -->
+    <meta name="description" content="منصة ZeroPlus الأكاديمية للطلاب في العراق: تنظيم المهام، جلسات تركيز تعمل بالخلفية مع تنبيهات، غابة إنجاز، ومزامنة سحابية — تعمل كتطبيق مثبّت على الآيفون والأندرويد واللابتوب.">
+    <link rel="canonical" href="https://zeroplus-8jz.pages.dev/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZeroPlus">
+    <meta property="og:title" content="ZeroPlus | المنصة الأكاديمية التخصصية">
+    <meta property="og:description" content="نظّم مهامك، ركّز بمؤقّت يعمل بالخلفية، وازرع غابة إنجازك — مع مزامنة سحابية تعمل حتى بدون إنترنت.">
+    <meta property="og:url" content="https://zeroplus-8jz.pages.dev/">
+    <meta property="og:image" content="https://zeroplus-8jz.pages.dev/icon-512.png">
+    <meta property="og:locale" content="ar_IQ">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ZeroPlus | المنصة الأكاديمية التخصصية">
+    <meta name="twitter:description" content="منصة أكاديمية: مهام، جلسات تركيز بالخلفية، غابة إنجاز، ومزامنة سحابية.">
+    <meta name="twitter:image" content="https://zeroplus-8jz.pages.dev/icon-512.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -253,6 +303,10 @@
             text-size-adjust: 100%;
             /* منع سحب الصفحة المطّاطي فوق/تحت (يبدو كتطبيق أصلي على iOS) */
             overscroll-behavior-y: none;
+            /* منع أي تمرير أفقي عرضي على الهواتف والأجهزة اللوحية.
+               hidden للمتصفحات القديمة و clip (أفضل: لا يكسر sticky) للحديثة. */
+            overflow-x: hidden;
+            overflow-x: clip;
             background-color: var(--ds-bg);
         }
         body {
@@ -1162,7 +1216,7 @@
                     <span class="text-[var(--ds-muted)]">|</span>
                     <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i aria-hidden="true" class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
                 </div>
-                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v36</p>
+                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v37</p>
             </div>
         </section>
 
@@ -1874,7 +1928,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         </div>
 
         <div class="px-4 py-3 border-t border-[var(--ds-border)] flex items-center justify-between gap-2 shrink-0">
-            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v36</span>
+            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v37</span>
             <button onclick="closeSupportDrawer()" class="bg-[var(--ds-sunken)] text-[var(--ds-text-soft)] px-4 py-2 rounded-lg text-[11px] font-bold">إغلاق</button>
         </div>
     </aside>
@@ -3550,7 +3604,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         initTheme();
 
         // ============ 10. مركز الدعم الفني (درج جانبي) ============
-        const APP_VERSION = 'v36';
+        const APP_VERSION = 'v37';
         function openSupportDrawer(topicId) {
             refreshSupportPanel();
             if (!isOverlayOpen('support')) registerOverlayNavigation('support');
@@ -5350,11 +5404,20 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     .catch((err) => console.warn('SW register failed:', err));
             }
 
+            // تحديث الإصدار دون فقدان عمل الطالب: إعادة تحميل مفاجئة أثناء الكتابة
+            // تمسح بيانات غير محفوظة، لذا نؤجّل التحميل حتى يخرج التطبيق من المقدمة.
             let refreshing = false;
+            let pendingUpdateReload = false;
+            const doUpdateReload = () => { if (refreshing) return; refreshing = true; window.location.reload(); };
+            const isVisibleInteractive = () =>
+                document.visibilityState === 'visible' &&
+                (typeof document.hasFocus !== 'function' || document.hasFocus());
             navigator.serviceWorker?.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-                window.location.reload();
+                if (isVisibleInteractive()) { pendingUpdateReload = true; return; }
+                doUpdateReload();
+            });
+            document.addEventListener('visibilitychange', () => {
+                if (pendingUpdateReload && document.visibilityState === 'hidden') doUpdateReload();
             });
 
             // رسائل الخدمة الخلفية: نهاية الجلسة، أزرار الإشعار المستمر، التذكيرات

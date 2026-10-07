@@ -1,12 +1,33 @@
-// sw.js — ZeroPlus (Z+) v36
+// sw.js — ZeroPlus (Z+) v37
 // الخدمة الخلفية: كاش التطبيق + مؤقّت التركيز الذي يعمل حتى لو أُغلقت الصفحة
 // + إشعار مستمر بالوقت المتبقي وأزرار إيقاف/استئناف + تذكيرات مجدولة (يومية ودورية)
-const CACHE_NAME = 'zeroplus-v36';
+const CACHE_NAME = 'zeroplus-v37';
+// كاش منفصل لمكتبات CDN حتى يعمل التطبيق «بشكله الكامل» بدون إنترنت.
+// ملاحظة: يجب أن يبدأ بنفس بادئة CACHE_NAME ('zeroplus-v37') حتى لا يحذفه
+// سكربت killOldSW في index.html الذي يمسح أي كاش لا يبدأ بالإصدار الحالي.
+const CDN_CACHE = 'zeroplus-v37-cdn';
+// سقف حجم كاش الـ CDN حتى لا ينمو إلى ما لا نهاية على أجهزة الطلاب
+const RUNTIME_CACHE_MAX = 80;
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable-192.png',
+  '/icon-maskable-512.png',
+  '/apple-touch-icon.png'
 ];
+// مكتبات CDN الخارجية (أنماط/خطوط/أيقونات/سكربتات) — تُخزّن للعمل دون اتصال
+const CDN_HOSTS = [
+  'cdn.jsdelivr.net',
+  'cdnjs.cloudflare.com',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+  'cdn.tailwindcss.com',
+  'unpkg.com'
+];
+const isCDN = (url) => CDN_HOSTS.some((h) => url.includes(h));
 
 // ===== مؤقّت التركيز بالخلفية =====
 // الصفحة ترسل START_POMO_TIMER مع وقت النهاية (deadlineAt). نحن نحتفظ به ونطلق
@@ -25,8 +46,18 @@ let lastOngoingText = '';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
+  // تخزين متسامح: فشل أصل واحد (انقطاع/٤٤) لا يُجهض التثبيت كاملاً —
+  // عكس cache.addAll التي تفشل كل شيء إن سقط طلب واحد.
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        ASSETS_TO_CACHE.map((url) =>
+          fetch(url, { cache: 'reload' })
+            .then((res) => { if (res && res.ok) return cache.put(url, res); })
+            .catch(() => {})
+        )
+      )
+    )
   );
 });
 
@@ -35,7 +66,8 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
+          // نُبقي كاش التطبيق وكاش الـ CDN للإصدار الحالي فقط
+          if (cache !== CACHE_NAME && cache !== CDN_CACHE) {
             return caches.delete(cache);
           }
         })
@@ -46,37 +78,100 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// قصّ الكاش حين يتجاوز السقف حتى لا يستهلك مساحة جهاز الطالب بلا حدود
+function trimCache(cacheName, maxEntries) {
+  if (!maxEntries) return Promise.resolve();
+  return caches.open(cacheName).then((cache) => {
+    if (typeof cache.keys !== 'function') return;   // سياقات الاختبار لا توفر keys
+    return cache.keys().then((entries) => {
+      if (!entries || entries.length <= maxEntries) return;
+      const overflow = entries.slice(0, entries.length - maxEntries);
+      return Promise.all(overflow.map((e) => cache.delete(e)));
+    });
+  }).catch(() => {});
+}
+
+// استراتيجية «القديم أثناء التحديث»: يقدَّم الكاش فوراً (لحظة/دون اتصال)
+// ويُحدَّث من الشبكة في الخلفية. مثالية لمكتبات CDN شبه الثابتة.
+function staleWhileRevalidate(request, cacheName, maxEntries) {
+  return caches.open(cacheName).then((cache) => cache.match(request).catch(() => null))
+    .then((cached) => {
+      const refresh = fetch(request).then((res) => {
+        if (res && (res.type === 'basic' || res.type === 'cors')) {
+          const clone = res.clone();
+          caches.open(cacheName)
+            .then((c) => c.put(request, clone))
+            .then(() => trimCache(cacheName, maxEntries))
+            .catch(() => {});
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || refresh;
+    });
+}
+
 self.addEventListener('fetch', (event) => {
-  // تجاهل طلبات الـ API والملفات الخارجية تماماً لكي لا يتسبب في انهيار التطبيق
+  const req = event.request;
+  const url = req.url || '';
+
+  // Supabase (بيانات المستخدم/المصادقة) لا تُمَسّ أبداً: لا تُخزَّن ولا تُعاد
+  // من الكاش حتى لا تُقدَّم بيانات خاصة قديمة أو تتعطل المصادقة.
+  // وطلب المؤقّت الداخلي لا يُعترض إطلاقاً. وكل ما ليس GET يُترك للمتصفح.
   if (
-    event.request.url.includes('supabase.co') ||
-    event.request.url.includes('cdn.jsdelivr.net') ||
-    event.request.url.includes('cdnjs.cloudflare.com') ||
-    event.request.url.includes('fonts.googleapis.com') ||
-    event.request.url.includes('tailwindcss.com') ||
-    event.request.url.includes(POMO_STORE_KEY) ||   // تخزين داخلي للمؤقّت — لا يُطلب من الشبكة
-    event.request.method !== 'GET'
+    url.includes('supabase.co') ||
+    url.includes(POMO_STORE_KEY) ||
+    req.method !== 'GET'
   ) {
-    return; // اترك المتصفح يتعامل معها مباشرة
+    return;
   }
 
   // أي طلب يوقظ الخدمة الخلفية ← فرصة لفحص المؤقّتات المستحقة (موثوقية التسليم)
   checkDueWork();
 
+  // 1) مكتبات CDN: «القديم أثناء التحديث» حتى تعمل الواجهة/الخطوط دون إنترنت
+  if (isCDN(url)) {
+    event.respondWith(staleWhileRevalidate(req, CDN_CACHE, RUNTIME_CACHE_MAX));
+    return;
+  }
+
+  // 2) تنقّلات الصفحة (نمط navigate): الشبكة أولاً ثم غلاف التطبيق دون اتصال،
+  //    لأن التطبيق صفحة واحدة (SPA) فأي مسار يرجع إلى index.html.
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((c) => c.put('/index.html', clone)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(req).then((m) =>
+            m || caches.match('/index.html', { ignoreSearch: true })
+              .then((s) => s || caches.match('/', { ignoreSearch: true })))
+        )
+    );
+    return;
+  }
+
+  // 3) الأصول الثابتة لنفس الأصل (أيقونات/شاشات/manifest): الشبكة أولاً ثم
+  //    الكاش، مع ignoreSearch حتى تنجح المطابقة رغم معاملات الإصدار ?v=.
   event.respondWith(
-    fetch(event.request)
+    fetch(req)
       .then((response) => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+          cache.put(req, responseToCache);
         });
         return response;
       })
       .catch(() => {
-        return caches.match(event.request);
+        return caches.match(req, { ignoreSearch: true })
+          .then((m) => m || caches.match(req));
       })
   );
 });

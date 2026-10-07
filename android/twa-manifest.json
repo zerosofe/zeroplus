@@ -1,0 +1,33 @@
+{
+  "packageId": "com.zeroplus.android",
+  "host": "zeroplus-8jz.pages.dev",
+  "name": "ZeroPlus | المنصة الأكاديمية التخصصية",
+  "launcherName": "ZeroPlus",
+  "display": "standalone",
+  "themeColor": "#16305c",
+  "navigationColor": "#070d18",
+  "backgroundColor": "#070d18",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "/icon-512.png",
+  "maskableIconUrl": "/icon-maskable-512.png",
+  "monochromeIconUrl": "/icon-maskable-512.png",
+  "splashScreenFadeOutTime": 300,
+  "signingKey": {
+    "path": "./upload-keystore.jks",
+    "alias": "upload"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "fallbackType": "customtabs",
+  "useBrowserOnDesktop": false,
+  "orientation": "any",
+  "features": [],
+  "fingerprints": [],
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScreenUrl": "",
+  "protocolHandlers": []
+}

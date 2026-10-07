@@ -1,0 +1,16 @@
+{
+  "name": "zeroplus",
+  "version": "37.0.0",
+  "private": true,
+  "description": "ZeroPlus | المنصة الأكاديمية التخصصية — PWA قابلة للتثبيت (iOS/Android/سطح المكتب)",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run-tests.mjs",
+    "test:smoke": "node tests/smoke-dom.mjs",
+    "assets:generate": "node tools/generate-pwa-assets.mjs",
+    "assetlinks:generate": "node tools/generate-assetlinks.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
+  }
+}

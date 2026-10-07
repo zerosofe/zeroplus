@@ -1,6 +1,8 @@
 /*
   X-Content-Type-Options: nosniff
-  X-XSS-Protection: 1; mode=block
+  # 0 بدل 1;mode=block: الترويسة مهجورة وقيم 1 قد تُفعّل فلتر IE القديم الذي
+  # يُستغل لحقن ثغرات؛ التوصية الحديثة تعطيلها والاعتماد على CSP.
+  X-XSS-Protection: 0
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-Frame-Options: SAMEORIGIN
@@ -68,3 +70,15 @@
 /sitemap.xml
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600, s-maxage=86400
+
+# ===== Digital Asset Links (Android TWA / Google Play) =====
+# يجب أن يُقدَّم بمحتوى application/json عبر HTTPS من هذا المسار بالضبط.
+# مدة تخزين قصيرة حتى تصل تغييرات البصمة بعد إعادة التوقيع بسرعة.
+/.well-known/assetlinks.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  X-Content-Type-Options: nosniff
+
+# ===== شاشات إقلاع iOS (مجلد splash) — خزّنها دائماً =====
+/splash/*.png
+  Cache-Control: public, max-age=604800, s-maxage=604800, immutable
