@@ -142,7 +142,9 @@ test('7) خطأ الصلاحيات (42501) يظهر كمؤشر أحمر ويُب
   assert.ok(sandbox.__api.lastSyncError && /permission denied/.test(sandbox.__api.lastSyncError), 'لم يُسجَّل الخطأ');
   const queued = JSON.parse(localStorage.getItem('zp_sync_queue'));
   assert.ok(Object.keys(queued).some(k => k.startsWith('tasks:')), 'فُقدت العملية بعد الفشل');
-  assert.match(sandbox.describeCloudError({ message: sandbox.__api.lastSyncError }), /schema\.sql/, 'رسالة التوضيح لا تذكر الحل');
+  const studentMsg = sandbox.describeCloudError({ message: sandbox.__api.lastSyncError });
+  assert.ok(/محفوظ على جهازك|تقدّمك/.test(studentMsg), 'رسالة الخطأ لا تطمئن الطالب على بياناته: ' + studentMsg);
+  assert.ok(!/schema\.sql|Supabase|SQL|RLS/i.test(studentMsg), 'رسالة الخطأ تكشف اسم تقنية للطالب: ' + studentMsg);
 });
 
 test('8) فشل localStorage (امتلاء) لا يكسر التطبيق ويُظهر تنبيهاً واضحاً', async () => {
@@ -222,7 +224,9 @@ test('12) فشل حفظ حساب Google يُظهر خطأً واضحاً ولا 
   await sandbox.completeGoogleSignup('g_test', 'student@example.com');
 
   assert.ok(alerts.some(a => /تعذر حفظ بيانات الحساب/.test(a)), 'لم يظهر تنبيه الفشل: ' + alerts.join(' | '));
-  assert.ok(alerts.some(a => /schema\.sql/.test(a)), 'التنبيه لا يشرح الحل');
+  const alertText = alerts.join(' | ');
+  assert.ok(/محفوظ على جهازك|تقدّمك/.test(alertText), 'التنبيه لا يشرح حالة البيانات: ' + alertText);
+  assert.ok(!/schema\.sql|Supabase|SQL Editor|RLS/i.test(alertText), 'التنبيه يكشف اسم تقنية: ' + alertText);
   assert.equal(localStorage.getItem('zp_user_registered'), null, 'دخل التطبيق رغم فشل الحفظ');
 });
 
@@ -1388,6 +1392,307 @@ test('66) الخدمة الخلفية v37: كاش CDN يبدأ بنفس البا
   assert.equal(harness.__fetchHandled('https://cdn.jsdelivr.net/npm/x@1/a.js'), true, 'ملفات CDN لا تُعترض للعمل دون اتصال');
   assert.equal(harness.__fetchHandled('https://lfygprhvyudatgwikwfy.supabase.co/rest/v1/x'), false, 'Supabase يجب ألا يُعترض');
   assert.equal(harness.__fetchHandled('https://zeroplus.test/index.html'), true, 'صفحات التطبيق لا تُقدَّم من الكاش');
+});
+
+
+// ============================================================================
+// v38 — تجربة غابة التركيز: النموّ، الجلسة، منع التكرار، قطع الأرض، إخفاء التقنية
+// ============================================================================
+
+test('67) نموّ الشجرة مرتبط فعلياً بنسبة تقدّم المؤقّت (٠/٢٥/٥٠/٧٥/١٠٠٪)', () => {
+  const { sandbox } = createHarness();
+  // مرحلة النموّ تُشتق من النسبة الحقيقية لا من أي مؤقّت شكلي
+  assert.equal(sandbox.focusStageForPct(0), 0);
+  assert.equal(sandbox.focusStageForPct(24), 0);
+  assert.equal(sandbox.focusStageForPct(25), 1);
+  assert.equal(sandbox.focusStageForPct(50), 2);
+  assert.equal(sandbox.focusStageForPct(75), 3);
+  assert.equal(sandbox.focusStageForPct(99), 3);
+  assert.equal(sandbox.focusStageForPct(100), 4);
+  // سقف المراحل خمس، وكل مرحلة معرّفة بالنسبة والوصف
+  assert.equal(sandbox.TREE_GROWTH_STAGES.length, 5);
+  assert.equal(JSON.stringify(sandbox.TREE_GROWTH_STAGES.map(s => s.pct)), JSON.stringify([0, 25, 50, 75, 100]));
+  assert.equal(JSON.stringify(sandbox.FOCUS_DURATIONS), JSON.stringify([15, 25, 30, 45, 60, 90]), 'مدد التركيز المقترحة غير مطابقة');
+  // SVG النموّ يحمل المراحل الخمس مكدّسة، وواحدة فقط ظاهرة في كل لحظة
+  const svg = sandbox.treeGrowthSVG('oak', {});
+  const stages = (svg.match(/data-tree-stage="\d"/g) || []).length;
+  assert.equal(stages, 5, 'SVG النموّ لا يحمل خمس مراحل: ' + stages);
+  assert.equal((svg.match(/opacity:1/g) || []).length, 1, 'يجب أن تكون مرحلة واحدة ظاهرة عند البداية');
+
+  // والمؤقّت نفسه: نصف الوقت = نصف النموّ
+  const { sandbox: sb } = createHarness();
+  sb.setPomoMode(20, 'جلسة تركيز (20 دقيقة)', null);
+  assert.equal(sb.focusProgressPct(), 0, 'التقدّم لا يبدأ من صفر');
+  sb.__api.pomoRemaining = 10 * 60;
+  assert.equal(sb.focusProgressPct(), 50, 'نصف الوقت يجب أن يكون ٥٠٪ نموّ');
+  sb.__api.pomoRemaining = 5 * 60;
+  assert.equal(sb.focusProgressPct(), 75, 'ربع الوقت المتبقي يجب أن يكون ٧٥٪ نموّ');
+  sb.__api.pomoRemaining = 0;
+  assert.equal(sb.focusProgressPct(), 100, 'انتهاء الوقت يجب أن يكون ١٠٠٪ نموّ');
+});
+
+test('68) جلسة واحدة = شجرة واحدة: لا تكرار عند إعادة الإنهاء ولا بعد تحديث الصفحة', async () => {
+  const { sandbox, supabaseMock, localStorage } = createHarness();
+  await signup(sandbox, 'طالب الشجرة الواحدة');
+  const deviceId = localStorage.getItem('zp_device_id');
+
+  sandbox.setPomoMode(25, 'جلسة تركيز (25 دقيقة)', null);
+  const chosen = sandbox.focusEnsureSpecies();
+  assert.equal(sandbox.startPomo(), true, 'لم تبدأ الجلسة');
+  const active = JSON.parse(localStorage.getItem('zp_focus_active'));
+  assert.ok(active && active.id, 'الجلسة الجارية غير محفوظة — لا يمكن استعادتها بعد تحديث الصفحة');
+  assert.equal(active.species, chosen, 'الشجرة المختارة لم تُثبَّت مع الجلسة');
+  assert.equal(active.mins, 25);
+
+  sandbox.__api.pomoRemaining = 0;
+  assert.equal(sandbox.finishPomoSession(), true, 'لم تُحتسب الجلسة المنتهية');
+  await sandbox.flushSyncQueue();
+  assert.equal(sandbox.__api.userTrees.length, 1, 'عدد الأشجار ليس واحداً');
+  assert.equal(sandbox.__api.userTrees[0].tree_type, chosen, 'الشجرة المزروعة ليست التي اختارها الطالب');
+  assert.equal(sandbox.__api.userTrees[0].id, active.id, 'معرّف الشجرة يجب أن يساوي معرّف الجلسة (منع التكرار)');
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 1, 'عدد الأشجار في السحابة ليس واحداً');
+  assert.equal(sandbox.__api.userForest.length, 1, 'عدد الجلسات المسجّلة ليس واحداً');
+  assert.equal(localStorage.getItem('zp_focus_active'), null, 'الجلسة الجارية لم تُنظَّف بعد الاكتمال');
+  assert.equal(localStorage.getItem('zp_pomo_end_time'), null, 'بقي وقت نهاية قديم ← قد تُحتسب الجلسة مرّتين');
+
+  const minsAfterWin = sandbox.__api.totalFocusMins;
+  const xpAfterWin = sandbox.__api.userXP;
+  // محاكاة تحديث الصفحة: نفس الجلسة عادت من التخزين ثم وصل حدث إنهاء متأخّر
+  localStorage.setItem('zp_focus_active', JSON.stringify(active));
+  sandbox.finishPomoSession();
+  await sandbox.flushSyncQueue();
+  assert.equal(sandbox.__api.userTrees.length, 1, 'تكرّرت الشجرة بعد إعادة الإنهاء');
+  assert.equal(rowsOf(supabaseMock, 'trees').length, 1, 'تكرّرت الشجرة في السحابة');
+  assert.equal(sandbox.__api.userForest.length, 1, 'تكرّر سجل الجلسة محلياً');
+  // النتيجة كلها واحدة: لا دقائق ولا XP ولا إنجاز مضاعف
+  assert.equal(sandbox.__api.totalFocusMins, minsAfterWin, 'دقائق التركيز تضاعفت عند إعادة التحصيل');
+  assert.equal(sandbox.__api.userXP, xpAfterWin, 'نقاط الخبرة تضاعفت عند إعادة التحصيل');
+  assert.equal(localStorage.getItem('zp_focus_mins'), String(minsAfterWin), 'إجمالي الدقائق المحفوظ تغيّر عند إعادة التحصيل');
+  assert.equal(deviceId, sandbox.__api.userTrees[0].user_id, 'الشجرة غير مربوطة بحساب الطالب');
+});
+
+test('69) التخلّي عن الجلسة لا يزرع شجرة ولا يسجّل جلسة (لكن الدقائق لا تُهدَر)', async () => {
+  const { sandbox, supabaseMock, localStorage, nodes } = createHarness();
+  await signup(sandbox, 'طالب التخلّي');
+  sandbox.setPomoMode(25, 'جلسة تركيز (25 دقيقة)', null);
+  sandbox.startPomo();
+  assert.equal(sandbox.focusIsActive(), true, 'الجلسة لم تبدأ');
+  // مرّت ١٠ دقائق ثم تخلّى الطالب
+  sandbox.__api.pomoRemaining = 15 * 60;
+  assert.equal(sandbox.abandonPomoSession(), true, 'لم تُلغَ الجلسة');
+  await sandbox.flushSyncQueue();
+
+  assert.equal(sandbox.__api.userTrees.length, 0, 'زُرعت شجرة لجلسة لم تكتمل');
+  assert.equal((rowsOf(supabaseMock, 'trees') || []).length, 0, 'وصلت شجرة إلى السحابة من جلسة ملغاة');
+  assert.equal(sandbox.__api.userForest.length, 0, 'سُجّلت جلسة ملغاة');
+  assert.equal(localStorage.getItem('zp_focus_active'), null, 'بقيت جلسة جارية بعد التخلّي');
+  assert.equal(sandbox.__api.totalFocusMins, 0, 'احتسبت الجلسة الملغاة ضمن جلسات التركيز المكتملة');
+  const partials = JSON.parse(localStorage.getItem('zp_focus_partial_mins') || '{}');
+  const todayKey = new Date().toISOString().slice(0, 10);
+  assert.equal(partials[todayKey], 10, 'دقائق التركيز قبل التخلّي لم تُسجَّل في إحصاءات اليوم');
+  assert.equal(sandbox.focusTodayMins(), 10, 'دقائق اليوم لا تحتسب ما ركّزه الطالب قبل التوقف');
+  assert.equal(nodes.get('focus-abandoned-card').classList.contains('hidden'), false, 'بطاقة «لم تكتمل» لا تظهر');
+  assert.match(nodes.get('focus-abandoned-sub').innerText, /سُجّلت في إحصاءات اليوم/, 'رسالة التخلّي لا تشرح أثر التركيز');
+  // والبدء من جديد يعيد الواجهة لحالة الاستعداد
+  sandbox.focusStartAnother();
+  sandbox.setPomoMode(15, 'جلسة تركيز (15 دقيقة)', null);
+  sandbox.startPomo();
+  sandbox.__api.pomoRemaining = 0;
+  sandbox.finishPomoSession();
+  await sandbox.flushSyncQueue();
+  assert.equal(sandbox.__api.userTrees.length, 1, 'الجلسة المكتملة بعد التخلّي لم تُزرع (أو زُرعت أكثر من واحدة)');
+});
+
+test('70) قطع الأرض ٤×٤: ١٦ موضعاً في القطعة ثم تُفتح قطعة جديدة تلقائياً', async () => {
+  const { sandbox, nodes } = createHarness();
+  await signup(sandbox, 'طالب القطع');
+  assert.equal(sandbox.FOREST_TILE_SLOTS, 16, 'عدد مواضع القطعة ليس ١٦');
+  const info = (n) => sandbox.focusTilesInfo(n);
+  assert.equal(JSON.stringify(info(0)), JSON.stringify({ count: 0, tiles: 1, current: 0, full: false }), 'حالة الغابة الفارغة غير صحيحة');
+  assert.equal(info(1).tiles, 1, 'شجرة واحدة يجب أن تبقى في قطعة واحدة');
+  assert.equal(info(15).current, 15);
+  assert.equal(info(16).full, true, 'القفلة عند ١٦ شجرة غير مكتشفة');
+  assert.equal(info(16).tiles, 1, 'القطعة الأولى يجب أن تُحتسب ممتلئة لا قطعتين');
+  assert.equal(info(17).tiles, 2, 'الشجرة ١٧ يجب أن تفتح قطعة أرض ثانية');
+  assert.equal(info(17).current, 1);
+  assert.equal(info(32).tiles, 2);
+  assert.equal(info(33).tiles, 3, 'الشجرة ٣٣ يجب أن تفتح قطعة ثالثة');
+  assert.equal(sandbox.focusTilesPhrase(2), 'قطعتا أرض');
+
+  // ونصّ الواجهة يتبع البيانات الحقيقية (لا شيء محفور)
+  const trees = [];
+  for (let i = 1; i <= 17; i++) trees.push({ id: 1700000000000 + i, user_id: sandbox.localStorage.getItem('zp_device_id'), tree_type: 'oak', duration: 25, planted_at: new Date().toISOString(), created_at: new Date().toISOString(), sync: 'synced' });
+  sandbox.__api.userTrees = trees;
+  sandbox.renderForest();
+  assert.equal(nodes.get('forest-count-chip').innerText, '17 شجرة');
+  assert.match(nodes.get('forest-tiles-chip').innerText, /قطعتا أرض/, 'عدّاد القطع لا يعكس البيانات: ' + nodes.get('forest-tiles-chip').innerText);
+  assert.equal(nodes.get('forest-slot-chip').innerText, '1 / 16 في القطعة الحالية');
+  // أطول جلسة: من نفس بيانات الإنجازات لا من نظام منفصل
+  assert.equal(nodes.get('focus-longest-chip').innerText, 'أطول جلسة: 25 دقيقة', 'أطول جلسة لا تُحسب من بيانات الجلسات');
+  assert.match(nodes.get('forest-scene').innerHTML, /forest-tile-shadow/g, 'مشهد الغابة لا يرسم قطع أرض');
+  const tiles = (nodes.get('forest-scene').innerHTML.match(/<g class="forest-tile-shadow"/g) || []).length;
+  assert.equal(tiles, 2, 'عدد قطع الأرض في المشهد غير مطابق: ' + tiles);
+  assert.equal((nodes.get('forest-grid').innerHTML.match(/ds-tile/g) || []).length, 17, 'سجل الأشجار لا يعرض كل الأشجار');
+});
+
+test('71) لا يظهر أي مصطلح تقني للخادم في واجهة التركيز (كل النصوص للمستخدم)', async () => {
+  const { sandbox, getNode } = createHarness();
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const start = html.indexOf('<section id="tab-pomodoro"');
+  const end = html.indexOf('<section id="tab-zero"');
+  const section = html.slice(start, end);
+  assert.ok(start > 0 && end > start, 'قسم التركيز غير موجود');
+  for (const bad of ['Supabase', 'supabase', 'PostgreSQL', 'Postgres', 'RLS', 'schema.sql', 'trees_table', 'select *']) {
+    assert.ok(!section.includes(bad), 'ظهر مصطلح تقني في قسم التركيز: ' + bad);
+  }
+  // ونصوص الحالة التي تُعرض للطالب خالية من أي اسم تقنية
+  await signup(sandbox, 'طالب النصوص');
+  const texts = [];
+  ['forest-sync-text', 'forest-cloud-state', 'pomo-bg-text', 'focus-card-sub', 'focus-stage-label', 'focus-progress-hint'].forEach(id => {
+    const t = (getNode(id).innerText || '');
+    texts.push(t);
+    for (const bad of ['Supabase', 'supabase', 'جدول trees', 'schema.sql']) {
+      assert.ok(!t.includes(bad), 'نص واجهة يحمل اسم تقنية (' + id + '): ' + t);
+    }
+  });
+  assert.ok(texts.some(t => /محفوظ/.test(t)), 'لا توجد رسالة طمأنة للطالب عن حفظ تقدّمه');
+  // ونافذة تفعيل الحفظ كذلك (نصّها المرئي فقط، بلا كتلة الكود المخفية)
+  const modal = html.slice(html.indexOf('id="tree-setup-modal"'), html.indexOf('id="share-modal"'));
+  assert.ok(!/Supabase/.test(modal), 'اسم التقنية ما زال ظاهراً في نافذة تفعيل الحفظ');
+  assert.ok(!/shغّل|شغّل schema/.test(modal), 'تعليمة تقنية للمستخدم ما زالت ظاهرة');
+});
+
+test('72) اختيار الشجرة: ١٦ نوعاً، النُدرة تُقفل بالوقت، والاختيار يُحفظ للجلسة القادمة', async () => {
+  const { sandbox, localStorage, nodes } = createHarness();
+  await signup(sandbox, 'طالب الأنواع');
+  assert.equal(sandbox.TREE_SPECIES.length, 16, 'عدد أنواع الأشجار ليس ١٦');
+  const ids = sandbox.TREE_SPECIES.map(s => s.id);
+  assert.equal(new Set(ids).size, ids.length, 'أنواع مكرّرة في الكتالوج');
+  // شجرة نادرة (تحتاج ٦٠ دقيقة) لا تُقبل في جلسة ١٥ دقيقة
+  sandbox.setPomoMode(15, 'جلسة تركيز (15 دقيقة)', null);
+  const paulownia = sandbox.TREE_SPECIES.find(s => s.id === 'paulownia');
+  assert.equal(paulownia.minMins, 60);
+  assert.equal(sandbox.focusSelectSpecies('paulownia'), false, 'قُبلت شجرة أسطورية في جلسة قصيرة');
+  assert.notEqual(localStorage.getItem('zp_focus_species'), 'paulownia');
+  // وشجرة متاحة تُقبل وتُحفظ
+  assert.equal(sandbox.focusSelectSpecies('pine'), true, 'لم تُقبل شجرة متاحة');
+  assert.equal(localStorage.getItem('zp_focus_species'), 'pine', 'اختيار الشجرة لم يُحفظ');
+  assert.match(nodes.get('focus-tree-picker').innerHTML, /data-species="pine"/, 'منتقي الشجرة لا يعرض الأنواع');
+  assert.match(nodes.get('focus-tree-picker').innerHTML, /aria-pressed="true"/, 'الاختيار الحالي غير معلَن لقارئ الشاشة');
+  // والجلسة الجارية تحمي الشجرة المختارة من التغيير في منتصف الطريق
+  sandbox.startPomo();
+  assert.equal(sandbox.focusSelectSpecies('cypress'), false, 'تغيّرت الشجرة داخل جلسة جارية');
+  assert.equal(localStorage.getItem('zp_focus_species'), 'pine');
+  // بعد الاكتمال تُقترح شجرة جديدة تلقائياً للجلسة القادمة
+  sandbox.__api.pomoRemaining = 0;
+  sandbox.finishPomoSession();
+  const nextSpecies = localStorage.getItem('zp_focus_species');
+  assert.ok(nextSpecies, 'لم تُقترح شجرة للجلسة القادمة');
+  assert.equal(sandbox.__api.userTrees[0].tree_type, 'pine', 'الشجرة المزروعة ليست المختارة');
+  assert.notEqual(nextSpecies, 'pine', 'الشجرة المقترحة مكرّرة بعد الزراعة');
+});
+
+test('73) شاشة التركيز تشرح التسلسل: مدة ← شجرة ← ابدأ ← نموّ ← غابة (وسائل وصول كاملة)', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const section = html.slice(html.indexOf('<section id="tab-pomodoro"'), html.indexOf('<section id="tab-zero"'));
+  // عناصر أساسية موجودة بمعرّفاتها
+  ['focus-duration-row', 'focus-tree-picker', 'focus-tree-stage', 'pomo-display', 'pomo-play-btn',
+   'focus-progress-bar', 'focus-complete-card', 'focus-abandoned-card', 'forest-scene', 'forest-tile-bar',
+   'focus-streak-chip', 'stat-total-mins', 'stat-tree-count', 'pomo-count-stat'].forEach(id => {
+    assert.ok(section.includes('id="' + id + '"'), 'عنصر مفقود في شاشة التركيز: ' + id);
+  });
+  // زر البدء وأزرار استسلام واضحة، وأهداف لمس ≥ 44px لكل عنصر تحكّم
+  assert.match(section, /id="pomo-play-btn"[^>]*onclick="togglePomo\(\)"/, 'زر البدء غير مربوط بالمؤقّت');
+  assert.match(section, /id="focus-abandon-btn"[^>]*onclick="focusRequestAbandon\(\)"/, 'زر الاستسلام غير مربوط');
+  assert.match(section, /id="pomo-display"[^>]*dir="ltr"/, 'العدّاد لا يُعرض بالأرقام اللاتينية اتجاهياً');
+  assert.ok(!/🌳|🌱|🌲/.test(section), 'استُخدمت إيموجي أشجار في الواجهة');
+  assert.ok(!/<img[^>]+tree/i.test(section), 'استُخدمت صورة جاهزة للأشجار');
+  // نافذة تأكيد الاستسلام تشرح النتيجة قبل التنفيذ
+  const modal = html.slice(html.indexOf('id="focus-confirm-modal"'), html.indexOf('id="focus-confirm-modal"') + 2000);
+  assert.match(modal, /لن تُضاف شجرة/, 'نافذة التأكيد لا توضّح نتيجة التخلّي');
+  assert.match(modal, /onclick="confirmAbandonFocus\(\)"/, 'زر تأكيد التخلّي غير مربوط');
+  assert.match(modal, /aria-modal="true"/, 'نافذة التأكيد بلا سمات وصول');
+});
+
+
+test('74) بعد الاكتمال: شجرة الجلسة تبقى معروضة مكتملة حتى تبدأ جلسة جديدة', async () => {
+  const { sandbox, nodes } = createHarness();
+  await signup(sandbox, 'طالب المرحلة الأخيرة');
+  sandbox.setPomoMode(25, 'جلسة تركيز (25 دقيقة)', null);
+  sandbox.focusSelectSpecies('pine');
+  sandbox.startPomo();
+  sandbox.__api.pomoRemaining = 0;
+  sandbox.finishPomoSession();
+
+  assert.equal(sandbox.__api.focusPhase, 'complete', 'طور الجلسة لم يصبح «مكتملة»');
+  assert.match(nodes.get('focus-stage-label').innerText, /نمت بالكامل/, 'المسرح لا يُظهر اكتمال الشجرة: ' + nodes.get('focus-stage-label').innerText);
+  assert.match(nodes.get('focus-stage-label').innerText, /صنوبر/, 'المسرح لا يسمّي الشجرة المكتملة');
+  // الشجرة المعروضة في المسرح هي شجرة الجلسة نفسها (لا معاينة شجرة أخرى)
+  const stageArt = nodes.get('focus-tree-art').innerHTML;
+  assert.ok(stageArt.length > 200, 'المسرح فارغ بعد الاكتمال');
+  assert.match(stageArt, /<title>صنوبر<\/title>/, 'المسرح لا يعرض رسم شجرة الجلسة المكتملة (الصنوبر)');
+  // والشجرة معروضة في مرحلتها المكتملة (نفس رسم الشجرة المزروعة في البطاقة)
+  assert.equal(stageArt.slice(stageArt.indexOf('<g>')), nodes.get('focus-complete-art').innerHTML.replace(/^[\s\S]*?(<g>)/, '$1'),
+    'رسم المسرح لا يطابق شجرة بطاقة النتيجة');
+  // وبطاقة النتيجة تظهر بنوع الشجرة الصحيح
+  assert.equal(nodes.get('focus-complete-card').classList.contains('hidden'), false);
+  assert.match(nodes.get('focus-complete-sub').innerText, /صنوبر/, 'بطاقة النتيجة لا تسمّي الشجرة');
+  // وشجرة الغابة هي نفسها (نوع واحد فقط للجلسة الواحدة)
+  assert.equal(sandbox.__api.userTrees.length, 1);
+  assert.equal(sandbox.__api.userTrees[0].tree_type, 'pine');
+  // البدء من جديد يعرض الشجرة الجديدة المختارة
+  sandbox.focusStartAnother();
+  assert.equal(sandbox.__api.focusPhase, 'setup');
+  assert.match(nodes.get('focus-stage-label').innerText, /الشجرة التي ستنمو/, 'لم تعد الواجهة لحالة الاستعداد');
+  const nextSpecies = JSON.parse(readJson(sandbox.localStorage, 'zp_focus_species', '""'));
+  assert.notEqual(nextSpecies, 'pine', 'لم تُقترح شجرة جديدة للجلسة القادمة');
+});
+
+test('75) استعادة الجلسة بعد تحديث الصفحة: نفس المعرّف ونفس المدة وشجرة النموّ', () => {
+  const { sandbox, localStorage, nodes } = createHarness({ boot: true });
+  sandbox.setPomoMode(45, 'جلسة تركيز (45 دقيقة)', null);
+  assert.equal(sandbox.__api.currentPomoMins, 45);
+  assert.equal(localStorage.getItem('zp_pomo_mins'), '45', 'المدة المختارة لم تُحفظ (تُفقد بعد التحديث)');
+  sandbox.startPomo();
+  const session = JSON.parse(localStorage.getItem('zp_focus_active'));
+  assert.equal(session.mins, 45);
+
+  // إعادة تحميل الصفحة: نفس مفتاح الجلسة + طابع نهاية في المستقبل ← الطالب يكمل جلسته
+  localStorage.setItem('zp_pomo_end_time', String(Date.now() + 40 * 60 * 1000));
+  const restored = sandbox.focusBeginSession();
+  assert.equal(restored.id, session.id, 'معرّف الجلسة تغيّر بعد التحديث (جلسة مكرّرة)');
+  assert.equal(sandbox.__api.currentPomoMins, 45, 'مدة الجلسة المستعادة غير مطابقة');
+  assert.equal(sandbox.__api.pomoDuration, 45 * 60, 'مؤقّت الجلسة المستعادة غير مطابق');
+  sandbox.focusRenderStage('active');
+  assert.equal(sandbox.__api.focusStageMode, 'active', 'المسرح بعد الاستعادة ليس مسرح النموّ');
+  assert.match(nodes.get('focus-tree-art').innerHTML, /data-tree-stage/, 'المسرح لا يعرض مراحل النموّ');
+  assert.equal(localStorage.getItem('zp_focus_active') && JSON.parse(localStorage.getItem('zp_focus_active')).id, session.id,
+    'الجلسة المحفوظة تغيّرت بعد الاستعادة');
+  // ولا شجرة زُرعت بمجرد الاستعادة
+  assert.equal(sandbox.__api.userTrees.length, 0);
+});
+
+
+test('76) لا يظهر اسم أي تقنية خادم في أي نص يراه الطالب في التطبيق كله', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const noScript = html.replace(/<script[\s\S]*?<\/script>/g, '')
+                       .replace(/<style[\s\S]*?<\/style>/g, '')
+                       .replace(/<!--[\s\S]*?-->/g, '');
+  const texts = [...noScript.matchAll(/>([^<>]{3,})</g)].map(m => m[1].trim()).filter(Boolean);
+  const script = html.slice(html.lastIndexOf('<script'), html.lastIndexOf('</script>'));
+  // ما يُكتب في console ليس واجهة مستخدم (تفاصيل المطوّر تبقى كاملة)
+  const scriptNoConsole = script.replace(/console\.(warn|error|log|info)\([^;]*\);/g, '');
+  // كتلة التفعيل التقنية (SQL) أداة مطوّر تُنسخ يدوياً ولا تُعرض للطالب إطلاقاً ← خارج الفحص
+  const scriptForUI = scriptNoConsole.replace(/const TREE_SETUP_SQL = '[\s\S]*?';\n/, '');
+  const literals = [...scriptForUI.matchAll(/'([^'\n]{6,200})'/g)].map(m => m[1]).filter(t => /[\u0600-\u06FF]/.test(t));
+  const bad = ['Supabase', 'supabase', 'Postgres', 'PostgreSQL', 'schema.sql', 'SQL Editor', 'RLS', 'device_id', 'user_id', 'جدول trees', 'trees table'];
+  const hits = [];
+  texts.forEach(t => bad.forEach(b => { if (t.includes(b)) hits.push('واجهة: ' + t.slice(0, 80)); }));
+  literals.forEach(t => bad.forEach(b => { if (t.includes(b)) hits.push('نص منطق: ' + t.slice(0, 80)); }));
+  assert.equal(hits.length, 0, 'مصطلح تقني ظاهر للطالب (' + hits.length + '): ' + hits.slice(0, 4).join(' || '));
+  // وكود التفعيل التقني لم يبقَ في العلامة المرسومة (لا في DOM إطلاقاً)
+  assert.ok(!/<pre id="tree-sql-code"/.test(html), 'كود SQL ما زال داخل الصفحة المرسومة');
+  assert.match(html, /const TREE_SETUP_SQL = /, 'زر النسخ التقني بلا مصدر');
 });
 
 function readJson(storage, key, fallback) {

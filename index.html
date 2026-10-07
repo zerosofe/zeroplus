@@ -22,18 +22,18 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v37')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v38')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=37">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=37">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=37">
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png?v=37">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png?v=37">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=38">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=38">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=38">
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png?v=38">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png?v=38">
     <!-- شاشات إقلاع iOS (iPhone/iPad) — مولّدة من tools/generate-pwa-assets.mjs -->
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2868x1320.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
@@ -65,8 +65,8 @@
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2224x1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link rel="apple-touch-startup-image" href="/splash/apple-splash-2048x1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-    <link rel="shortcut icon" href="/icon.svg?v=37">
-    <link rel="manifest" href="/manifest.json?v=37">
+    <link rel="shortcut icon" href="/icon.svg?v=38">
+    <link rel="manifest" href="/manifest.json?v=38">
     <meta name="theme-color" content="#16305c">
     <meta name="color-scheme" content="light dark">
     <meta name="mobile-web-app-capable" content="yes">
@@ -553,7 +553,108 @@
         .pomo-ring-track { stroke: var(--ds-ring-track); }
         .pomo-ring-value { stroke: var(--ds-ring); }
 
-        /* ====== شجرة/غابة التركيز ====== */
+        /* =====================================================================
+           غابة التركيز — مكوّنات خاصة بشاشة التركيز فقط (لا تمسّ بقية الأقسام)
+           ===================================================================== */
+        /* مسرح الشجرة: سماكة النموّ تتغيّر مع --focus-progress (٠ → ١) */
+        .focus-stage {
+            position: relative;
+            border-radius: 24px;
+            border: 1px solid var(--ds-border);
+            background: linear-gradient(180deg, var(--ds-tint) 0%, var(--ds-card) 62%, var(--ds-tint) 100%);
+            overflow: hidden;
+            min-height: 208px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            isolation: isolate;
+        }
+        @media (min-width: 640px) { .focus-stage { min-height: 258px; } }
+        .focus-cloud {
+            position: absolute; border-radius: 999px; background: #ffffff;
+            box-shadow: 0 10px 26px -12px rgba(15, 107, 74, 0.22);
+            opacity: calc(0.5 + var(--focus-progress, 0) * 0.35);
+            transition: opacity 0.6s ease;
+        }
+        .focus-cloud-a { width: 74px; height: 26px; top: 26px; right: 12%; }
+        .focus-cloud-b { width: 52px; height: 19px; top: 54px; left: 14%; opacity: calc(0.32 + var(--focus-progress, 0) * 0.3); }
+        .focus-hill {
+            position: absolute; left: -10%; right: -10%; bottom: 0; height: 34%;
+            background: linear-gradient(180deg, color-mix(in srgb, var(--ds-primary-soft) 70%, #ffffff) 0%, var(--ds-primary-soft) 100%);
+            border-top-left-radius: 50% 32%; border-top-right-radius: 50% 32%;
+        }
+        .focus-tree {
+            position: relative; z-index: 1;
+            width: 132px; height: 172px; margin-bottom: 10px;
+            transform: scale(calc(0.86 + var(--focus-progress, 0) * 0.14));
+            transform-origin: 50% 100%;
+            transition: transform 0.8s ease;
+        }
+        @media (min-width: 640px) { .focus-tree { width: 158px; height: 206px; margin-bottom: 12px; } }
+        .focus-tree svg { width: 100%; height: 100%; display: block; }
+        /* مراحل النموّ: مجموعة واحدة ظاهرة في كل لحظة (تُبدَّل مع تقدّم المؤقّت) */
+        .focus-tree-stage { transition: opacity 0.55s ease; }
+        /* التخلّي عن الجلسة: الشجرة تذبل وتخفت بهدوء (بلا عقاب بصري) */
+        .focus-stage.is-withered #focus-tree-art { filter: grayscale(0.5) saturate(0.6); opacity: 0.72; transition: filter 0.6s ease, opacity 0.6s ease; }
+        #focus-tree-art { transition: filter 0.6s ease, opacity 0.6s ease; }
+        .focus-tree-stage.is-hidden { opacity: 0; }
+        .focus-tree-stage.is-shown { opacity: 1; }
+        .focus-stage-label {
+            position: absolute; top: 10px; inset-inline-start: 12px; z-index: 2;
+            font-size: 10px !important;
+        }
+        /* المؤقّت */
+        .focus-timer-wrap { position: relative; width: 168px; height: 168px; }
+        @media (min-width: 640px) { .focus-timer-wrap { width: 196px; height: 196px; } }
+        .focus-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+        .focus-timer-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .focus-timer-digits { font-size: 2.6rem; line-height: 1; font-weight: 900; letter-spacing: -0.02em; color: var(--ds-primary); font-variant-numeric: tabular-nums; }
+        @media (min-width: 640px) { .focus-timer-digits { font-size: 3.2rem; } }
+        .focus-timer-caption { font-size: 10.5px; font-weight: 800; color: var(--ds-muted); }
+        /* اختيار المدة */
+        .focus-duration {
+            min-height: 44px; padding: 0 0.9rem; border-radius: 14px; font-size: 12px; font-weight: 800;
+            border: 1px solid var(--ds-border); background: var(--ds-card); color: var(--ds-text-soft);
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .focus-duration:hover { border-color: var(--ds-primary); color: var(--ds-primary); }
+        .focus-duration.is-active { background: var(--ds-primary); border-color: var(--ds-primary); color: #ffffff; }
+        /* اختيار الشجرة */
+        .focus-picker {
+            display: grid; gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        }
+        @media (min-width: 640px) { .focus-picker { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); } }
+        .focus-tree-option {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            padding: 8px 4px 10px; border-radius: 16px; border: 1px solid var(--ds-border);
+            background: var(--ds-card); min-height: 118px; text-align: center;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+        .focus-tree-option:hover { border-color: var(--ds-primary); transform: translateY(-2px); }
+        .focus-tree-option.is-selected { border-color: var(--ds-primary); background: var(--ds-primary-soft); box-shadow: inset 0 0 0 1px var(--ds-primary); }
+        .focus-tree-option.is-locked { opacity: 0.45; cursor: not-allowed; }
+        .focus-tree-option.is-locked:hover { border-color: var(--ds-border); transform: none; }
+        .focus-tree-option-art { width: 46px; height: 62px; display: block; }
+        .focus-tree-option-name { font-size: 11px; font-weight: 900; color: var(--ds-text); }
+        .focus-tree-option-meta { font-size: 9px; font-weight: 700; color: var(--ds-muted); }
+        /* بطاقتا النتيجة (اكتملت / لم تكتمل) */
+        .focus-result { border-radius: 20px; border: 1px solid var(--ds-success-border); background: var(--ds-primary-soft); padding: 14px; }
+        #focus-abandoned-card { border-color: var(--ds-border); background: var(--ds-sunken); }
+        /* شريط التقدّم: انتقال ناعم فقط عند التحديث الحقيقي */
+        .focus-bar { transition: width 0.6s ease; }
+        /* مشهد الغابة (قطع الأرض) */
+        .forest-viewport { border-radius: 20px; overflow: hidden; background: linear-gradient(180deg, #f0faf4 0%, #e2f4ea 100%); }
+        .forest-scene h3 { font-size: 11px; }
+        .dark .forest-viewport { background: linear-gradient(180deg, #0e1f19 0%, #10352a 100%); }
+        .forest-tile-shadow { filter: drop-shadow(0 6px 10px rgba(12, 60, 42, 0.12)); }
+        .forest-tree-sway { transform-origin: 50% 100%; animation: treeSway 7s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+            .forest-tree-sway { animation: none !important; }
+        }
+        .forest-log-badge { font-size: 9px !important; padding: 2px 6px !important; }
+
+        /* ====== شجرة/غابة التركيز (قديم: يُستكمل بأنماط الشجرة الجديدة) ====== */
         .tree-sway { transform-origin: 50% 100%; animation: treeSway 6s ease-in-out infinite; }
         @keyframes treeSway { 0%, 100% { transform: rotate(-1.1deg); } 50% { transform: rotate(1.1deg); } }
         .tree-grow { transform-origin: 50% 100%; animation: treeGrow 0.8s cubic-bezier(0.22, 1.1, 0.36, 1) both; }
@@ -773,10 +874,10 @@
                     <button onclick="closeProfileModal(); showTab('pomodoro');" class="ds-btn-ghost py-2.5 text-[11px]">غابة إنجازي</button>
                 </div>
                 <div class="flex items-center justify-between gap-2 bg-[var(--ds-sunken)] border border-[var(--ds-border)] rounded-xl px-3 py-2.5">
-                    <span class="text-[10.5px] font-bold text-[var(--ds-muted)]">أشجار محفوظة في Supabase</span>
+                    <span class="text-[10.5px] font-bold text-[var(--ds-muted)]">أشجار محفوظة في حسابك</span>
                     <span id="profile-forest-count" class="text-[11px] font-black text-[var(--ds-primary)]">0</span>
                 </div>
-                <p class="text-[10px] text-[var(--ds-muted)] font-semibold leading-relaxed">الحساب بالاسم وكلمة المرور فقط — بياناتك (المهام، الجلسات، الأشجار) مربوطة بحسابك في Supabase.</p>
+                <p class="text-[10px] text-[var(--ds-muted)] font-semibold leading-relaxed">الحساب بالاسم وكلمة المرور فقط — بياناتك (المهام، الجلسات، الأشجار) محفوظة في حسابك وتُزامن تلقائياً.</p>
             </div>
             <div class="space-y-2 pt-2">
                 <button onclick="saveProfileChanges()" class="ds-btn-primary w-full py-3 text-xs">حفظ التعديلات</button>
@@ -970,7 +1071,7 @@
                         </div>
                         <div>
                             <h3 class="ds-title">غابة إنجازك</h3>
-                            <p class="ds-sub">كل جلسة تركيز تزرع شجرة — محفوظة في Supabase</p>
+                            <p class="ds-sub">كل جلسة تركيز مكتملة تزرع شجرة في غابتك</p>
                         </div>
                     </div>
                     <span id="home-forest-count" class="ds-chip shrink-0">0 شجرة</span>
@@ -1013,7 +1114,7 @@
                             <svg class="ds-icon text-base text-[var(--ds-primary)]" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/></svg>
                             مزامنة سحابية فعلية
                         </span>
-                        <p class="text-[11px] text-[var(--ds-muted)] mt-1.5 leading-relaxed font-semibold">المهام والجلسات والأشجار تُحفظ في Supabase وتُرفع تلقائياً عند عودة الإنترنت.</p>
+                        <p class="text-[11px] text-[var(--ds-muted)] mt-1.5 leading-relaxed font-semibold">المهام والجلسات والأشجار محفوظة في حسابك، وتُزامن تلقائياً عند عودة الإنترنت.</p>
                     </div>
                     <div class="ds-tile p-4">
                         <span class="text-xs font-black text-[var(--ds-text)] flex items-center gap-2">
@@ -1216,7 +1317,7 @@
                     <span class="text-[var(--ds-muted)]">|</span>
                     <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i aria-hidden="true" class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
                 </div>
-                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v37</p>
+                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v38</p>
             </div>
         </section>
 
@@ -1251,95 +1352,173 @@
             <div id="todo-list" class="space-y-2.5"></div>
         </section>
 
-        <!-- التركيز (بومودورو) — النظام الأخضر فقط: نفس المكوّنات والأحجام، اللون يتغيّر -->
-        <section id="tab-pomodoro" data-ds="focus" class="hidden space-y-5">
-            <!-- إحصائيات صغيرة -->
+        <!-- التركيز — تجربة غابة الإنجاز: اختر المدة والشجرة ← ابدأ ← تنمو شجرتك ← تكتمل وتُضاف إلى غابتك -->
+        <section id="tab-pomodoro" data-ds="focus" class="hidden space-y-4">
+
+            <!-- إحصاءات حقيقية من بيانات الطالب (إجمالي التركيز · اليوم · الأشجار · الحفظ) -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div class="ds-tile p-3.5">
                     <span class="ds-sub block">إجمالي التركيز</span>
                     <span id="stat-total-mins" class="text-base sm:text-lg font-black text-[var(--ds-primary)] mt-1 block">0 دقيقة</span>
+                    <span id="focus-total-long" class="text-[10px] font-bold text-[var(--ds-muted)] mt-0.5 block">0 ساعة و0 دقيقة</span>
                 </div>
                 <div class="ds-tile p-3.5">
                     <span class="ds-sub block">جلسات اليوم</span>
                     <span id="pomo-count-stat" class="text-base sm:text-lg font-black text-[var(--ds-primary)] mt-1 block">0 جلسات</span>
+                    <span id="focus-today-mins" class="text-[10px] font-bold text-[var(--ds-muted)] mt-0.5 block">0 دقيقة اليوم</span>
                 </div>
                 <div class="ds-tile p-3.5">
-                    <span class="ds-sub block">أشجار مزروعة</span>
+                    <span class="ds-sub block">أشجار غابتك</span>
                     <span id="stat-tree-count" class="text-base sm:text-lg font-black text-[var(--ds-primary)] mt-1 block">0 شجرة</span>
+                    <span id="focus-tiles-hint" class="text-[10px] font-bold text-[var(--ds-muted)] mt-0.5 block">قطعة أرض واحدة</span>
                 </div>
                 <div class="ds-tile p-3.5">
-                    <span class="ds-sub block">حالة الحفظ السحابي</span>
+                    <span class="ds-sub block">الحفظ التلقائي</span>
                     <span id="forest-cloud-state" class="text-[11px] font-black text-[var(--ds-primary)] mt-1.5 block">—</span>
+                    <span class="text-[10px] font-bold text-[var(--ds-muted)] mt-0.5 block">إنجازاتك محفوظة تلقائياً</span>
                 </div>
             </div>
 
-            <!-- المؤقّت -->
-            <div class="ds-card ds-card-lg p-6 sm:p-9 text-center max-w-lg mx-auto space-y-6">
-                <div class="flex justify-center gap-2 bg-[var(--ds-sunken)] p-1.5 rounded-2xl max-w-sm mx-auto">
-                    <button onclick="setPomoMode(25, 'جلسة تركيز دراسي (25 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold bg-[var(--ds-primary)] text-white">تركيز 25</button>
-                    <button onclick="setPomoMode(5, 'استراحة قصيرة (5 دقائق)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--ds-text-soft)]">استراحة 5</button>
-                    <button onclick="setPomoMode(15, 'استراحة مطولة (15 دقيقة)', this)" class="pomo-mode-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--ds-text-soft)]">طويلة 15</button>
-                </div>
-
-                <!-- مدة مخصّصة -->
-                <div class="max-w-sm mx-auto flex items-center gap-2 ds-field p-2">
-                    <label for="pomo-custom-mins" class="text-[11px] font-bold text-[var(--ds-muted)] whitespace-nowrap">مدة مخصّصة:</label>
-                    <input id="pomo-custom-mins" type="number" min="1" max="180" step="1" value="50" inputmode="numeric"
-                        onkeydown="if(event.key==='Enter') applyCustomPomoMode()"
-                        class="w-20 bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-lg px-2 py-1.5 text-xs font-black text-center text-[var(--ds-text)] focus:outline-none focus:border-[var(--ds-primary)]">
-                    <span class="text-[11px] text-[var(--ds-muted)] font-bold">دقيقة</span>
-                    <button onclick="applyCustomPomoMode()" class="flex-1 bg-[var(--ds-primary)] hover:bg-[var(--ds-primary-hover)] text-white py-1.5 rounded-xl text-[11px] font-black">تطبيق المدة</button>
-                </div>
-
-                <div class="relative w-60 h-60 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-2">
-                    <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
-                        <circle cx="50" cy="50" r="44" fill="none" class="pomo-ring-track" stroke-width="4.5"></circle>
-                        <circle id="pomo-circle" cx="50" cy="50" r="44" fill="none" class="pomo-ring-value" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="0" style="transition: stroke-dashoffset 0.3s ease"></circle>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <div id="pomo-tree-preview" class="w-12 h-12 rounded-2xl bg-[var(--ds-primary-soft)] text-[var(--ds-primary)] flex items-center justify-center mb-2 border border-[var(--ds-border)]">
-                            <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0L9 6.5M12 9l3-2.5"/><circle cx="12" cy="14" r="3.6"/><path d="M12 17.5V21"/></svg>
+            <!-- بطاقة الجلسة: المسرح (الشجرة) ← المؤقّت ← الأزرار ← مدة التركيز واختيار الشجرة -->
+            <div class="ds-card ds-card-lg p-4 sm:p-6 space-y-4">
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="ds-icon-tile">
+                            <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0L9 6.5M12 9l3-2.5"/><circle cx="12" cy="14" r="3.6"/><path d="M12 17.5V21"/></svg>
                         </div>
-                        <span id="pomo-display" dir="ltr" class="text-5xl sm:text-6xl font-black tracking-tight text-[var(--ds-primary)]">25:00</span>
+                        <div class="min-w-0">
+                            <h3 id="focus-card-title" class="ds-title">جلسة تركيز جديدة</h3>
+                            <p id="focus-card-sub" class="ds-sub">اختر المدة والشجرة، ثم ابدأ — وستنمو شجرتك مع كل دقيقة تركيز</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                        <span id="focus-longest-chip" class="ds-chip">أطول جلسة: —</span>
+                        <span id="focus-streak-chip" class="ds-chip">لا سلسلة بعد</span>
                     </div>
                 </div>
 
-                <div class="bg-[var(--ds-tint)] border border-[var(--ds-border-strong)] py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-[var(--ds-primary)]"></span>
-                    <span id="pomo-status" class="text-xs sm:text-sm text-[var(--ds-primary)] font-bold">جلسة تركيز دراسي (25 دقيقة)</span>
+                <!-- مسرح الشجرة: تنمو مع تقدّم المؤقّت -->
+                <div id="focus-tree-stage" class="focus-stage" style="--focus-progress:0">
+                    <span class="focus-cloud focus-cloud-a" aria-hidden="true"></span>
+                    <span class="focus-cloud focus-cloud-b" aria-hidden="true"></span>
+                    <span class="focus-hill" aria-hidden="true"></span>
+                    <div id="focus-tree-art" class="focus-tree" role="img" aria-label="شجرتك"> </div>
+                    <span id="focus-stage-label" class="ds-chip focus-stage-label">لم تبدأ الجلسة بعد</span>
                 </div>
-                <div id="pomo-bg-badge" class="flex items-center justify-center gap-1.5 text-[10px] font-bold text-[var(--ds-muted)]">
-                    <i id="pomo-bg-icon" class="fa-solid fa-satellite-dish"></i>
-                    <span id="pomo-bg-text">يعمل بالخلفية: يكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة</span>
+
+                <!-- المؤقّت -->
+                <div class="space-y-2.5">
+                    <div class="focus-timer-wrap mx-auto">
+                        <svg class="focus-ring" viewBox="0 0 100 100" aria-hidden="true">
+                            <circle cx="50" cy="50" r="45" fill="none" class="pomo-ring-track" stroke-width="3.2"></circle>
+                            <circle id="pomo-circle" cx="50" cy="50" r="45" fill="none" class="pomo-ring-value" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="282.74" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="focus-timer-inner">
+                            <span id="pomo-display" dir="ltr" class="focus-timer-digits">25:00</span>
+                            <span id="focus-timer-caption" class="focus-timer-caption">مدة الجلسة</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[var(--ds-tint)] border border-[var(--ds-border-strong)] py-2.5 px-4 rounded-2xl max-w-sm mx-auto flex items-center justify-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[var(--ds-primary)] shrink-0"></span>
+                        <span id="pomo-status" class="text-xs sm:text-sm text-[var(--ds-primary)] font-bold text-center">جلسة تركيز (25 دقيقة)</span>
+                    </div>
+
+                    <div id="pomo-bg-badge" class="flex items-center justify-center gap-1.5 text-[10px] font-bold text-[var(--ds-muted)] text-center">
+                        <i id="pomo-bg-icon" aria-hidden="true" class="fa-solid fa-satellite-dish"></i>
+                        <span id="pomo-bg-text">يعمل بالخلفية: يكمل العدّ ويطلق التنبيه حتى لو أغلقت الصفحة</span>
+                    </div>
                 </div>
-                <div class="flex justify-center gap-3 pt-1">
-                    <button id="pomo-play-btn" onclick="togglePomo()" class="ds-btn-primary px-10 py-3.5 text-sm flex items-center gap-2">
-                        <span>بدء المؤقت</span>
+
+                <!-- الأزرار: ابدأ/إيقاف مؤقت + استسلام -->
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <button id="pomo-play-btn" onclick="togglePomo()" class="ds-btn-primary px-8 sm:px-10 py-3.5 text-sm flex items-center gap-2">
+                        <span id="pomo-play-label">ابدأ جلسة التركيز</span>
                         <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5 19 12 7 19.5v-15Z"/></svg>
                     </button>
-                    <button onclick="resetPomo()" aria-label="إنهاء الجلسة وإعادة ضبط المؤقت" class="ds-btn-ghost px-5 py-3.5">
-                        <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.3M20 5.5V11h-5.5"/></svg>
+                    <button id="focus-abandon-btn" onclick="focusRequestAbandon()" class="ds-btn-ghost px-5 py-3.5 hidden">
+                        <span>استسلام</span>
                     </button>
                 </div>
-            </div>
 
-            <!-- بطاقة الشجرة المزروعة حديثاً (تظهر عند انتهاء الجلسة) -->
-            <div id="tree-planted-card" class="hidden ds-card ds-card-lg p-5 max-w-lg mx-auto ds-enter">
-                <div class="flex items-center gap-4">
-                    <div id="tree-planted-art" class="w-20 h-20 rounded-2xl bg-[var(--ds-tint)] border border-[var(--ds-border)] flex items-end justify-center overflow-hidden shrink-0"></div>
-                    <div class="min-w-0 flex-1">
-                        <span class="ds-chip">شجرة جديدة</span>
-                        <h3 id="tree-planted-title" class="font-black text-sm text-[var(--ds-text)] mt-1.5">زُرعت شجرة جديدة في غابتك</h3>
-                        <p id="tree-planted-sub" class="text-[11px] text-[var(--ds-muted)] font-semibold mt-0.5"></p>
+                <!-- تقدّم الجلسة ونموّ الشجرة -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between gap-2 text-[11px] font-bold">
+                        <span id="focus-progress-hint" class="text-[var(--ds-muted)]">لم تبدأ الشجرة بالنمو بعد</span>
+                        <span id="focus-progress-pct" class="text-[var(--ds-primary)]" dir="ltr">0%</span>
                     </div>
-                    <button onclick="dismissTreeCard()" aria-label="إغلاق بطاقة الشجرة" class="w-8 h-8 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
-                        <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-                    </button>
+                    <div class="h-2.5 rounded-full bg-[var(--ds-sunken)] border border-[var(--ds-border)] overflow-hidden">
+                        <div id="focus-progress-bar" class="h-full bg-[var(--ds-primary)] rounded-full focus-bar" style="width:0%"></div>
+                    </div>
+                    <div class="flex items-center justify-between gap-1 text-[9.5px] font-bold text-[var(--ds-muted)]">
+                        <span>بذرة</span><span>نبتة</span><span>شتلة</span><span>شجرة صغيرة</span><span>مكتملة</span>
+                    </div>
+                </div>
+
+                <!-- ما قبل البدء: ١) المدة  ٢) الشجرة -->
+                <div id="focus-setup" class="space-y-4 pt-2 border-t border-[var(--ds-border)]">
+                    <div class="space-y-2.5 pt-3">
+                        <span class="ds-eyebrow block">١) مدة التركيز</span>
+                        <div id="focus-duration-row" class="flex flex-wrap gap-2"></div>
+                        <div class="flex flex-wrap items-center gap-2 ds-field p-2 max-w-md">
+                            <label for="pomo-custom-mins" class="text-[11px] font-bold text-[var(--ds-muted)] whitespace-nowrap">مدة مخصّصة:</label>
+                            <input id="pomo-custom-mins" type="number" min="1" max="180" step="1" value="50" inputmode="numeric"
+                                aria-label="مدة مخصّصة بالدقائق"
+                                onkeydown="if(event.key==='Enter') applyCustomPomoMode()"
+                                class="w-20 bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-xl px-2 py-2 text-xs font-black text-center text-[var(--ds-text)] focus:outline-none focus:border-[var(--ds-primary)]">
+                            <span class="text-[11px] text-[var(--ds-muted)] font-bold">دقيقة (١–١٨٠)</span>
+                            <button onclick="applyCustomPomoMode()" class="flex-1 min-w-[120px] bg-[var(--ds-primary)] hover:bg-[var(--ds-primary-hover)] text-white py-2.5 rounded-xl text-[11px] font-black">تطبيق المدة</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="ds-eyebrow">٢) اختر شجرتك</span>
+                            <span class="text-[10px] font-bold text-[var(--ds-muted)]">كلما طالت الجلسة، زادت نُدرة الشجرة</span>
+                        </div>
+                        <div id="focus-tree-picker" class="focus-picker" role="group" aria-label="اختيار نوع الشجرة"></div>
+                    </div>
+                </div>
+
+                <!-- إتمام الجلسة -->
+                <div id="focus-complete-card" class="hidden focus-result" role="status" aria-live="polite">
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div id="focus-complete-art" class="w-24 h-32 shrink-0"></div>
+                        <div class="min-w-0 flex-1 text-center sm:text-right space-y-1.5">
+                            <span class="ds-chip">جلسة مكتملة</span>
+                            <h3 id="focus-complete-title" class="ds-title text-base">أحسنت! نمت شجرتك بالكامل</h3>
+                            <p id="focus-complete-sub" class="ds-sub">تمت إضافة شجرة جديدة إلى غابتك</p>
+                            <div class="flex flex-wrap gap-2 justify-center sm:justify-start pt-1">
+                                <span id="focus-complete-duration" class="ds-chip">0 دقيقة تركيز</span>
+                                <span id="focus-complete-xp" class="ds-chip">+30 نقطة خبرة</span>
+                                <span id="focus-complete-count" class="ds-chip">0 شجرة</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 justify-center pt-1">
+                        <button onclick="focusScrollToForest()" class="ds-btn-primary px-5 py-3 text-xs">شاهد غابتك</button>
+                        <button onclick="focusStartAnother()" class="ds-btn-ghost px-5 py-3 text-xs">جلسة جديدة</button>
+                    </div>
+                </div>
+
+                <!-- جلسة لم تكتمل -->
+                <div id="focus-abandoned-card" class="hidden focus-result" role="status" aria-live="polite">
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div id="focus-abandoned-art" class="w-20 h-24 shrink-0 opacity-60"></div>
+                        <div class="min-w-0 flex-1 text-center sm:text-right space-y-1">
+                            <span class="ds-chip">جلسة متوقّفة</span>
+                            <h3 class="ds-title text-sm">لم تكتمل هذه الجلسة — ولن تُضاف شجرة هذه المرة</h3>
+                            <p id="focus-abandoned-sub" class="ds-sub">لا بأس أبداً: دقائق تركيزك محفوظة، وغابتك تنتظر جلستك القادمة.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center pt-1">
+                        <button onclick="focusStartAnother()" class="ds-btn-primary px-5 py-3 text-xs">ابدأ من جديد</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- غابة الإنجاز: تنمو مع كل جلسة مكتملة -->
-            <div class="ds-card ds-card-lg overflow-hidden">
+            <!-- غابة الإنجاز: قطع أرض مربّعة، كل قطعة ٤×٤ = ١٦ شجرة -->
+            <div id="forest-card" class="ds-card ds-card-lg overflow-hidden">
                 <div class="p-5 pb-3 flex items-start justify-between gap-3">
                     <div class="flex items-center gap-2.5">
                         <div class="ds-icon-tile">
@@ -1347,50 +1526,58 @@
                         </div>
                         <div>
                             <h3 class="ds-title">غابة إنجازك</h3>
-                            <p class="ds-sub">كل جلسة تركيز مكتملة تزرع شجرة — محفوظة في Supabase</p>
+                            <p class="ds-sub">كل جلسة تركيز مكتملة تزرع شجرة دائمة — والغابة تكبر معك</p>
                         </div>
                     </div>
                     <span id="forest-count-chip" class="ds-chip shrink-0">0 شجرة</span>
                 </div>
 
-                <!-- شريط حالة الحفظ السحابي -->
+                <!-- شريط حالة الحفظ -->
                 <div id="forest-sync-bar" class="mx-5 mb-3 flex items-center justify-between gap-2 bg-[var(--ds-sunken)] border border-[var(--ds-border)] rounded-2xl px-3 py-2">
                     <span class="flex items-center gap-2 min-w-0">
                         <span id="forest-sync-dot" class="w-2 h-2 rounded-full ds-fill-muted shrink-0"></span>
                         <span id="forest-sync-text" class="text-[10.5px] font-bold text-[var(--ds-muted)] truncate">جارٍ تجهيز الغابة...</span>
                     </span>
                     <button id="forest-retry-btn" onclick="loadForestFromCloud(true)" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">إعادة المحاولة</button>
-                    <button id="forest-setup-btn" onclick="openTreeSetupModal()" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">تهيئة الجدول</button>
+                    <button id="forest-setup-btn" onclick="openTreeSetupModal()" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">تفعيل الحفظ</button>
                 </div>
 
                 <!-- مشهد الغابة -->
-                <div class="px-3 pb-3">
+                <div class="px-3 pb-2">
                     <div class="forest-stage relative">
                         <div id="forest-scene-loading" class="hidden absolute inset-0 z-10 forest-empty-sky flex items-center justify-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-[var(--ds-primary)] animate-ping"></span>
-                            <span class="text-[11px] font-bold text-[var(--ds-muted)]">نحمّل غابتك من السحابة...</span>
+                            <span class="text-[11px] font-bold text-[var(--ds-muted)]">نُحضّر غابتك...</span>
                         </div>
-                        <div id="forest-scene" class="w-full"></div>
+                        <div id="forest-scene" class="w-full" role="img" aria-label="غابة إنجازك"></div>
                     </div>
+                </div>
+
+                <!-- تقدّم قطعة الأرض الحالية -->
+                <div class="px-5 pb-4 space-y-2">
+                    <div class="flex items-center justify-between gap-2 text-[11px] font-bold">
+                        <span id="forest-tiles-chip" class="text-[var(--ds-text-soft)]">قطعة أرض واحدة</span>
+                        <span id="forest-slot-chip" class="text-[var(--ds-muted)]">0 / 16 في القطعة الحالية</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-[var(--ds-sunken)] border border-[var(--ds-border)] overflow-hidden">
+                        <div id="forest-tile-bar" class="h-full bg-[var(--ds-primary)] rounded-full focus-bar" style="width:0%"></div>
+                    </div>
+                    <p class="text-[10px] font-bold text-[var(--ds-muted)] leading-relaxed">
+                        كل قطعة أرض تتّسع لـ ١٦ شجرة (٤×٤). عندما تكتمل القطعة نفتح قطعة جديدة تلقائياً — والشجرة لا تُفقد أبداً.
+                    </p>
                 </div>
 
                 <!-- سجل الأشجار -->
-                <div class="px-5 pb-5 space-y-3">
-                    <div class="flex items-center justify-between gap-2">
+                <details id="forest-log" class="mx-5 mb-5 rounded-2xl border border-[var(--ds-border)] bg-[var(--ds-sunken)] overflow-hidden">
+                    <summary class="cursor-pointer px-4 py-3 flex items-center justify-between gap-2 min-h-[48px]">
                         <span class="ds-eyebrow">سجل الأشجار</span>
-                        <button onclick="clearForestConfirmation()" class="text-[11px] font-bold text-[var(--ds-muted)] hover:text-[var(--ds-danger)] transition">مسح السجل</button>
+                        <span id="forest-log-count" class="text-[10px] font-bold text-[var(--ds-muted)]">0 شجرة</span>
+                    </summary>
+                    <div class="px-4 pb-4 space-y-3">
+                        <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                        <button onclick="clearForestConfirmation()" class="w-full text-[11px] font-bold text-[var(--ds-muted)] hover:text-[var(--ds-primary)] transition py-2.5 min-h-[44px]">إعادة تهيئة سجل الجلسات</button>
                     </div>
-                    <div id="forest-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
-                </div>
-            </div>
-
-            <!-- أنواع الأشجار -->
-            <div class="ds-card p-5 space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                    <h3 class="ds-title">أنواع الأشجار</h3>
-                    <span class="ds-sub">كلما طالت الجلسة، زادت نُدرة الشجرة</span>
-                </div>
-                <div id="tree-species-strip" class="ds-scroll-x"></div>
+                </details>
             </div>
         </section>
 
@@ -1504,7 +1691,7 @@
                         <span id="ach-forest-count" class="ds-chip shrink-0">0 شجرة</span>
                     </div>
                     <h3 class="ds-title mt-3">غابة إنجازك</h3>
-                    <p class="ds-sub mt-0.5">شاهد كل شجرة زرعتها جلسة تركيز — محفوظة في Supabase</p>
+                    <p class="ds-sub mt-0.5">شاهد كل شجرة زرعتها جلسة تركيز — محفوظة في حسابك</p>
                 </button>
                 <button onclick="openProfileModal()" class="ds-card p-4 text-right hover:border-[var(--ds-primary)] transition">
                     <div class="flex items-center justify-between gap-2">
@@ -1535,17 +1722,38 @@
         </section>
     </main>
 
-    <!-- TREE SETUP MODAL: يظهر فقط إذا كان جدول trees غير مُهيّأ في Supabase -->
-    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="تهيئة جدول الأشجار في Supabase" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
-        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-[var(--ds-shadow-lg)]">
+    <!-- تأكيد التخلّي عن جلسة التركيز: يوضّح النتيجة قبل أي إجراء -->
+    <div id="focus-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="focus-confirm-title" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="bg-[var(--ds-card)] border border-[var(--ds-border)] rounded-3xl ds-shadow-lg w-full max-w-md overflow-hidden" data-ds="focus">
+            <div class="p-5 space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="ds-icon-tile shrink-0">
+                        <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0L9 6.5M12 9l3-2.5"/><circle cx="12" cy="14" r="3.6"/><path d="M12 17.5V21"/></svg>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 id="focus-confirm-title" class="font-black text-sm text-[var(--ds-text)]">هل تريد التخلّي عن الجلسة؟</h3>
+                        <p class="text-[11.5px] font-semibold text-[var(--ds-muted)] leading-relaxed">لن تُضاف شجرة إلى غابتك ولن تُسجَّل الجلسة. يمكنك بدلاً من ذلك إيقاف الجلسة مؤقتاً والاستمرار لاحقاً.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                    <button onclick="closeFocusConfirm()" class="ds-btn-primary flex-1 py-3 text-xs">أكمل التركيز</button>
+                    <button onclick="confirmAbandonFocus()" class="ds-btn-ghost flex-1 py-3 text-xs">تخلَّ عن الجلسة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تفعيل حفظ الغابة: تظهر فقط إذا كان حفظ الغابة في الحساب غير مُهيّأ بعد -->
+    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="تفعيل حفظ الغابة في حسابك" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+        <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-[var(--ds-shadow-lg)]" data-ds="focus">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-2.5">
                     <div class="ds-icon-tile">
-                        <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
+                        <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0L9 6.5M12 9l3-2.5"/><circle cx="12" cy="14" r="3.6"/><path d="M12 17.5V21"/></svg>
                     </div>
                     <div>
-                        <h3 class="font-black text-sm text-[var(--ds-text)]">تهيئة جدول الأشجار في Supabase</h3>
-                        <p class="text-[11px] text-[var(--ds-muted)] font-semibold">خطوة واحدة لمرة واحدة — يفعّل الحفظ السحابي الكامل للغابة</p>
+                        <h3 class="font-black text-sm text-[var(--ds-text)]">تفعيل حفظ الغابة في حسابك</h3>
+                        <p class="text-[11px] text-[var(--ds-muted)] font-semibold">أشجارك آمنة على جهازك الآن — وهذه خطوة لمرة واحدة تربطها بحسابك</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -1553,56 +1761,34 @@
                         <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
                         <span class="hidden sm:inline">رجوع</span>
                     </button>
-                    <button onclick="closeTreeSetupModal()" aria-label="إغلاق نافذة تهيئة الجدول" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
+                    <button onclick="closeTreeSetupModal()" aria-label="إغلاق النافذة" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
                         <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
                     </button>
                 </div>
             </div>
-            <ol class="text-[11.5px] text-[var(--ds-text-soft)] font-semibold space-y-1.5 leading-relaxed list-decimal pr-5">
-                <li>افتح مشروعك في Supabase ← <strong>SQL Editor</strong> ← <strong>New query</strong>.</li>
-                <li>الصق الكود بالأسفل ثم اضغط <strong>Run</strong>.</li>
-                <li>ارجع للتطبيق واضغط <strong>«إعادة المحاولة»</strong> — ستُرفع الأشجار المحفوظة على جهازك تلقائياً.</li>
-            </ol>
-            <pre id="tree-sql-code" class="ds-code" tabindex="0">-- ZeroPlus: جدول الأشجار (غابة الإنجاز)
-create table if not exists public.trees (
-    id          bigint not null,
-    user_id     text   not null,
-    tree_type   text   not null default 'oak',
-    duration    integer not null default 25,
-    planted_at  timestamptz not null default now(),
-    created_at  timestamptz not null default now(),
-    primary key (user_id, id)
-);
-
-alter table public.trees enable row level security;
-
-drop policy if exists "zp_anon_all_trees" on public.trees;
-create policy "zp_anon_all_trees" on public.trees
-    for all to anon using (true) with check (true);
-
-drop policy if exists "zp_auth_all_trees" on public.trees;
-create policy "zp_auth_all_trees" on public.trees
-    for all to authenticated using (true) with check (true);
-
-grant select, insert, update, delete on table public.trees to anon, authenticated, service_role;</pre>
+            <ul class="text-[11.5px] text-[var(--ds-text-soft)] font-semibold space-y-1.5 leading-relaxed">
+                <li>كل شجرة تكمل جلستها تُحفظ فوراً على جهازك، فلا شيء يُفقد.</li>
+                <li>بعد تفعيل الحفظ في حسابك تُرفع أشجارك كلها تلقائياً، وتظهر على أي جهاز تسجّل الدخول منه.</li>
+                <li>إن استمرت الرسالة، أرسل تقريراً من مركز الدعم وسنكمل التفعيل معك.</li>
+            </ul>
             <div class="ds-tile p-3.5 space-y-2">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-black text-[var(--ds-text)]">اختبار الحفظ الفعلي في Supabase</span>
+                    <span class="text-[11px] font-black text-[var(--ds-text)]">اختبار حفظ الغابة</span>
                     <button onclick="testTreesStorage()" class="ds-btn-ghost px-3 py-1.5 text-[10.5px]">تشغيل الاختبار</button>
                 </div>
                 <p id="tree-test-result" role="status" aria-live="polite" class="text-[10.5px] font-bold text-[var(--ds-muted)] leading-relaxed">
-                    يكتب صفاً تجريبياً في جدول trees ثم يقرأه ويحذفه — للتأكد أن الحفظ حقيقي وليس محلياً فقط.
+                    نكتب شجرة تجريبية ثم نقرأها ونحذفها — للتأكد أن الحفظ في حسابك يعمل فعلاً وليس على الجهاز فقط.
                 </p>
             </div>
             <div class="flex gap-2">
                 <button onclick="copyTreeSql()" class="ds-btn-primary flex-1 py-3 text-xs flex items-center justify-center gap-2">
                     <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 4H6a2 2 0 0 0-2 2v6.5A2.5 2.5 0 0 0 6.5 15"/></svg>
-                    نسخ كود SQL
+                    نسخ تقرير تقني للمطوّر
                 </button>
                 <button onclick="closeTreeSetupModal(); loadForestFromCloud(true);" class="ds-btn-ghost px-4 py-3 text-xs">إعادة المحاولة</button>
             </div>
             <p class="text-[10.5px] text-[var(--ds-muted)] font-semibold leading-relaxed">
-                الأشجار التي تزرعها الآن محفوظة على جهازك ولن تُفقد — وبعد التهيئة تُرفع كلها تلقائياً إلى جدول <code class="text-[var(--ds-primary)]">trees</code>.
+                لا تحتاج لفعل أي شيء الآن: أكمل جلساتك بشكل طبيعي، وستُحفظ أشجارك وترتفع تلقائياً مع أول تحديث ناجح لحسابك.
             </p>
         </div>
     </div>
@@ -1928,7 +2114,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         </div>
 
         <div class="px-4 py-3 border-t border-[var(--ds-border)] flex items-center justify-between gap-2 shrink-0">
-            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v37</span>
+            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v38</span>
             <button onclick="closeSupportDrawer()" class="bg-[var(--ds-sunken)] text-[var(--ds-text-soft)] px-4 py-2 rounded-lg text-[11px] font-bold">إغلاق</button>
         </div>
     </aside>
@@ -1992,7 +2178,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         if (!Array.isArray(tasks)) tasks = [];
         let userForest = safeParse('zp_forest', []);
         if (!Array.isArray(userForest)) userForest = [];
-        // غابة الأشجار: كل جلسة تركيز مكتملة تزرع شجرة تُحفظ في Supabase (جدول trees)
+        // غابة الأشجار: كل جلسة تركيز مكتملة تزرع شجرة تُحفظ في القاعدة السحابية (جدول trees داخلياً، بلا ذكر تقني في الواجهة)
         let userTrees = safeParse('zp_trees', []);
         if (!Array.isArray(userTrees)) userTrees = [];
         const TREES_TABLE = 'trees';
@@ -2002,98 +2188,451 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         let treesTableMissing = false;   // جدول trees غير مُهيّأ في Supabase بعد
         let lastPlantedTree = null;
 
-        let currentPomoMins = 25, pomoDuration = 25 * 60, pomoRemaining = 25 * 60, pomoInterval = null, pomoCompletedCount = 0;
+        // المدة المختارة تبقى محفوظة على الجهاز (وإلا عاد الطالب فوجد جلسة بمدة مختلفة)
+        const __zpStoredMins = Math.max(1, parseInt(localStorage.getItem('zp_pomo_mins') || '0') || 25);
+        let currentPomoMins = __zpStoredMins, pomoDuration = __zpStoredMins * 60, pomoRemaining = __zpStoredMins * 60, pomoInterval = null, pomoCompletedCount = 0;
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
 
-        // ============ 1.b كتالوج الأشجار (أنواع مختلفة + نُدرة حسب طول الجلسة) ============
-        // كل نوع له رسم SVG خطي موحّد الطراز، ونُدرة تُحدَّد بطول جلسة التركيز.
-        const TREE_SPECIES = [
-            { id: 'oak',      name: 'بلوط',        en: 'Oak',       rarity: 'common',   minMins: 0,  accent: '#2f7d59' },
-            { id: 'pine',     name: 'صنوبر',       en: 'Pine',      rarity: 'common',   minMins: 0,  accent: '#1f6b52' },
-            { id: 'palm',     name: 'نخلة',        en: 'Date Palm', rarity: 'common',   minMins: 0,  accent: '#2f8a63' },
-            { id: 'cypress',  name: 'سرو',         en: 'Cypress',   rarity: 'common',   minMins: 0,  accent: '#1d7a5c' },
-            { id: 'olive',    name: 'زيتون',       en: 'Olive',     rarity: 'uncommon', minMins: 15, accent: '#4f8f6d' },
-            { id: 'willow',   name: 'صفصاف',       en: 'Willow',    rarity: 'uncommon', minMins: 15, accent: '#3f8a6b' },
-            { id: 'maple',    name: 'قيقب',        en: 'Maple',     rarity: 'uncommon', minMins: 20, accent: '#2b7f60' },
-            { id: 'euca',     name: 'كافور',       en: 'Eucalyptus',rarity: 'uncommon', minMins: 25, accent: '#5a9b78' },
-            { id: 'cedar',    name: 'أرز',         en: 'Cedar',     rarity: 'rare',     minMins: 30, accent: '#175f47' },
-            { id: 'blossom',  name: 'لوز مزهر',    en: 'Blossom',   rarity: 'rare',     minMins: 35, accent: '#7fc7a2' },
-            { id: 'ginkgo',   name: 'جِنكة',       en: 'Ginkgo',    rarity: 'rare',     minMins: 45, accent: '#5fa982' },
-            { id: 'baobab',   name: 'باوباب',      en: 'Baobab',    rarity: 'legendary',minMins: 60, accent: '#2e6f4f' }
-        ];
-        const TREE_RARITY_LABEL = { common: 'شائعة', uncommon: 'غير شائعة', rare: 'نادرة', legendary: 'أسطورية' };
+// ============ 1.b كتالوج الأشجار + مولّد الرسم الأصلي (SVG) ============
+// كل أنواع الأشجار تُرسم بمولّد واحد موحّد الطراز (تاج بطبقات + تظليل + جذع/غصون + براعم أو ثمار).
+// لا صور ولا خطوط خارجية: الرسم محلي بالكامل، خفيف على الجوال، ويعمل بدون إنترنت.
+const TREE_SPECIES = [
+    // ===== أشجار خضراء =====
+    { id: 'oak', name: 'بلوط', en: 'Oak', rarity: 'common', minMins: 0, accent: '#2f9a63',
+      crown: 'round',   trunk: ['#8a5f3c', '#68452a'], leaf: ['#1c6642', '#2f9a63', '#63c58e', '#154d31'],
+      bloom: null, fruit: '#c08a44', scale: 1, trunkW: 1.2 },
+    { id: 'pine', name: 'صنوبر', en: 'Pine', rarity: 'common', minMins: 0, accent: '#22795a',
+      crown: 'tier',    trunk: ['#7b5433', '#5c3d22'], leaf: ['#175f45', '#22795a', '#3fa87c', '#11493a'],
+      bloom: null, fruit: null, scale: 1.02, trunkW: 1.15 },
+    { id: 'palm', name: 'نخلة', en: 'Date Palm', rarity: 'common', minMins: 0, accent: '#2f8f63',
+      crown: 'palm',    trunk: ['#a97a4c', '#8a5f37'], leaf: ['#1e7047', '#2f9a63', '#6fcf95', '#175c3b'],
+      bloom: null, fruit: '#d98b2b', scale: 1, trunkW: 1 },
+    { id: 'cypress', name: 'سرو', en: 'Cypress', rarity: 'common', minMins: 0, accent: '#1d7a5c',
+      crown: 'column',  trunk: ['#7b5433', '#5c3d22'], leaf: ['#124f3c', '#1d7a5c', '#2f9a74', '#0d3f30'],
+      bloom: null, fruit: null, scale: 1.04, trunkW: 0.8 },
+    { id: 'myrtle', name: 'آس', en: 'Myrtle', rarity: 'common', minMins: 0, accent: '#3f9f6b',
+      crown: 'shrub',   trunk: ['#8a6a4b', '#68452a'], leaf: ['#226b47', '#3f9f6b', '#7ad3a1', '#1a5638'],
+      bloom: ['#ffffff', '#eefaf3'], fruit: null, scale: 0.78, trunkW: 0.9 },
+    // ===== أشجار مزهرة =====
+    { id: 'blossom', name: 'لوز مزهر', en: 'Almond Blossom', rarity: 'rare', minMins: 35, accent: '#f0a2c0',
+      crown: 'round',   trunk: ['#8a6a4b', '#66472c'], leaf: ['#3f8f68', '#59ab80', '#8fd0aa', '#2e7050'],
+      bloom: ['#f6a8c8', '#ffe3f0'], fruit: null, scale: 0.96, trunkW: 0.95, bloomAmount: 0.86 },
+    { id: 'jacaranda', name: 'جاكاراندا', en: 'Jacaranda', rarity: 'rare', minMins: 30, accent: '#9d7ce8',
+      crown: 'feather', trunk: ['#8a6a4b', '#66472c'], leaf: ['#3f7f8f', '#56a0ae', '#8fd3dd', '#2f6a78'],
+      bloom: ['#a986ec', '#dcc9ff'], fruit: null, scale: 1, trunkW: 1, bloomAmount: 0.9 },
+    { id: 'paulownia', name: 'بولونيا', en: 'Paulownia', rarity: 'legendary', minMins: 60, accent: '#7aa6ee',
+      crown: 'conical', trunk: ['#8f6b45', '#6b4c2c'], leaf: ['#2f6f9a', '#3f93c4', '#86c8ec', '#215478'],
+      bloom: ['#8fb2f2', '#d5e2ff'], fruit: null, scale: 1.04, trunkW: 1.05, bloomAmount: 0.92 },
+    // ===== أشجار الموسم والزينة =====
+    { id: 'maple', name: 'قيقب', en: 'Maple', rarity: 'uncommon', minMins: 20, accent: '#e08a3c',
+      crown: 'star',    trunk: ['#8a5f3c', '#68452a'], leaf: ['#c2652a', '#e08a3c', '#f3b768', '#a04d1e'],
+      bloom: null, fruit: null, scale: 1, trunkW: 1.05 },
+    { id: 'ginkgo', name: 'جِنكة', en: 'Ginkgo', rarity: 'rare', minMins: 45, accent: '#e8b93f',
+      crown: 'fan',     trunk: ['#8a6a4b', '#66472c'], leaf: ['#d19f28', '#e8b93f', '#f7db84', '#b3821c'],
+      bloom: null, fruit: null, scale: 1, trunkW: 1 },
+    { id: 'holly', name: 'بهشية', en: 'Holly', rarity: 'uncommon', minMins: 15, accent: '#2f8f5f',
+      crown: 'shrub',   trunk: ['#7b5433', '#5c3d22'], leaf: ['#186746', '#2f8f5f', '#5cbb8b', '#114d34'],
+      bloom: null, fruit: '#d9424a', scale: 0.86, trunkW: 0.9 },
+    // ===== أشجار كبيرة / ظلّية =====
+    { id: 'cedar', name: 'أرز', en: 'Cedar', rarity: 'rare', minMins: 30, accent: '#1c6f52',
+      crown: 'tierflat', trunk: ['#7b5433', '#5c3d22'], leaf: ['#13624a', '#1c7a5e', '#35a184', '#0f4c3a'],
+      bloom: null, fruit: null, scale: 1.04, trunkW: 1.3 },
+    { id: 'baobab', name: 'باوباب', en: 'Baobab', rarity: 'legendary', minMins: 60, accent: '#2f7d59',
+      crown: 'umbrella', trunk: ['#b08a5f', '#8c6a42'], leaf: ['#2f8a63', '#3fa87c', '#77cf9f', '#226b4c'],
+      bloom: null, fruit: null, scale: 0.82, trunkW: 2.2 },
+    { id: 'euca', name: 'كافور', en: 'Eucalyptus', rarity: 'uncommon', minMins: 25, accent: '#5aa992',
+      crown: 'sparse',  trunk: ['#9c8168', '#7a6350'], leaf: ['#3f8a7c', '#5aa992', '#9ad8c6', '#2f6b60'],
+      bloom: null, fruit: null, scale: 1.02, trunkW: 0.9 },
+    { id: 'olive', name: 'زيتون', en: 'Olive', rarity: 'uncommon', minMins: 15, accent: '#6f9a63',
+      crown: 'puffy',   trunk: ['#8f7a5c', '#6d5b42'], leaf: ['#586f45', '#6f9a63', '#a8c48f', '#43562f'],
+      bloom: null, fruit: '#5f7a3a', scale: 0.98, trunkW: 1.15 },
+    { id: 'willow', name: 'صفصاف', en: 'Willow', rarity: 'uncommon', minMins: 15, accent: '#58a877',
+      crown: 'cascade', trunk: ['#8a6a4b', '#66472c'], leaf: ['#2f7a52', '#58a877', '#a3d9a8', '#22603f'],
+      bloom: null, fruit: null, scale: 1.02, trunkW: 1.1 }
+];
+const TREE_RARITY_LABEL = { common: 'شائعة', uncommon: 'غير شائعة', rare: 'نادرة', legendary: 'أسطورية' };
 
-        function treeSpeciesById(id) {
-            return TREE_SPECIES.find(t => t.id === id) || TREE_SPECIES[0];
-        }
+// مراحل النموّ الخمس — تُربط مباشرة بنسبة تقدّم المؤقّت (٠٪ / ٢٥٪ / ٥٠٪ / ٧٥٪ / ١٠٠٪)
+const TREE_GROWTH_STAGES = [
+    { key: 'seed',    name: 'بذرة',        pct: 0,   scale: 0.00, bloom: 0,    label: 'غُرست البذرة' },
+    { key: 'sprout',  name: 'نبتة صغيرة',  pct: 25,  scale: 0.30, bloom: 0,    label: 'ظهرت النبتة' },
+    { key: 'sapling', name: 'شتلة',        pct: 50,  scale: 0.55, bloom: 0.05, label: 'صارت شتلة' },
+    { key: 'young',   name: 'شجرة صغيرة',  pct: 75,  scale: 0.78, bloom: 0.35, label: 'كبرت شجرتك' },
+    { key: 'mature',  name: 'شجرة مكتملة', pct: 100, scale: 1.00, bloom: 1,    label: 'نمت بالكامل' }
+];
 
-        // رسم شجرة واحدة (SVG خطي، نفس الطراز لكل الأنواع — يتغيّر الشكل واللون فقط)
-        function treeSVG(speciesId, opts) {
-            opts = opts || {};
-            const cls = opts.className || 'w-full h-full';
-            const label = opts.title ? '<title>' + escapeHtml(opts.title) + '</title>' : '';
-            const art = {
-                oak: '<path d="M50 138V84" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                     '<path d="M50 104 38 92M50 96 62 84" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
-                     '<circle cx="50" cy="58" r="26" fill="VAR" opacity="0.9"/><circle cx="30" cy="72" r="17" fill="VAR" opacity="0.75"/><circle cx="70" cy="72" r="17" fill="VAR" opacity="0.75"/>',
-                pine: '<path d="M50 138V108" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                      '<path d="M50 14 74 58H26L50 14Z" fill="VAR"/><path d="M50 40 80 84H20L50 40Z" fill="VAR" opacity="0.9"/><path d="M50 66 86 112H14L50 66Z" fill="VAR" opacity="0.85"/>',
-                palm: '<path d="M50 138c-2-30-1-56 6-78" stroke="var(--ds-tree-trunk)" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
-                      '<path d="M56 60C40 44 24 42 12 50" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c16-16 34-16 44-6" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C46 40 30 32 16 32" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c10-20 26-28 40-26" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C50 42 40 30 28 24" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M56 60c8-18 20-28 34-30" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/>' +
-                      '<circle cx="58" cy="62" r="5" fill="VAR" opacity="0.85"/>',
-                cypress: '<path d="M50 138V110" stroke="var(--ds-tree-trunk)" stroke-width="4" stroke-linecap="round"/>' +
-                         '<path d="M50 8c16 22 22 46 22 66 0 24-10 40-22 40S28 98 28 74C28 54 34 30 50 8Z" fill="VAR"/>',
-                olive: '<path d="M50 138V104m0 12c-8-6-12-12-12-18m12 8c8-6 12-12 12-18" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round" fill="none"/>' +
-                       '<ellipse cx="50" cy="66" rx="30" ry="22" fill="VAR" opacity="0.85"/><ellipse cx="34" cy="80" rx="15" ry="12" fill="VAR" opacity="0.7"/><ellipse cx="66" cy="78" rx="15" ry="12" fill="VAR" opacity="0.7"/>',
-                willow: '<path d="M50 138V86" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                        '<path d="M50 60c22 0 30 14 26 30-3 12-14 18-26 18s-23-6-26-18c-4-16 4-30 26-30Z" fill="VAR" opacity="0.9"/>' +
-                        '<path d="M34 92c-4 14-6 24-4 34M44 96c-2 16-3 26-2 36M56 96c2 16 3 26 2 36M66 92c4 14 6 24 4 34" stroke="VAR" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
-                maple: '<path d="M50 138V92" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                       '<path d="M50 20 62 44h-6l14 22h-8l10 20H60l2 12H38l2-12H28l10-20h-8l14-22h-6L50 20Z" fill="VAR"/>',
-                euca: '<path d="M50 138V44" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                      '<path d="M50 44c-14-6-22-16-24-26 12 2 20 10 24 22" fill="VAR" opacity="0.85"/><path d="M50 60c14-8 24-6 32 2-10 6-22 6-32 4" fill="VAR" opacity="0.85"/><path d="M50 82c-14-6-24-4-30 4 12 6 22 4 30-2" fill="VAR" opacity="0.85"/><path d="M50 104c12-6 22-4 28 4-10 6-20 4-28-2" fill="VAR" opacity="0.8"/>',
-                cedar: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="5" stroke-linecap="round"/>' +
-                       '<path d="M50 34c12 0 20 6 20 12s-8 12-20 12-20-6-20-12 8-12 20-12Z" fill="VAR"/>' +
-                       '<path d="M50 56c22 0 34 8 34 16s-14 16-34 16-34-8-34-16 12-16 34-16Z" fill="VAR" opacity="0.9"/>',
-                blossom: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                         '<path d="M50 96 36 84m14 6 14-12" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
-                         '<circle cx="50" cy="60" r="24" fill="VAR" opacity="0.9"/><circle cx="32" cy="74" r="14" fill="VAR" opacity="0.8"/><circle cx="68" cy="74" r="14" fill="VAR" opacity="0.8"/>' +
-                         '<circle cx="40" cy="52" r="4" fill="#ffffff" opacity="0.8"/><circle cx="60" cy="66" r="3.4" fill="#ffffff" opacity="0.75"/><circle cx="52" cy="80" r="3" fill="#ffffff" opacity="0.7"/>',
-                ginkgo: '<path d="M50 138V78" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                        '<path d="M50 78C28 76 12 58 10 34c26 0 40 20 40 44Z" fill="VAR" opacity="0.9"/><path d="M50 78c22-2 38-20 40-44-26 0-40 20-40 44Z" fill="VAR" opacity="0.8"/>',
-                baobab: '<path d="M50 138c-3-20-4-38-4-58 0-10 2-16 4-18 2 2 4 8 4 18 0 20-1 38-4 58Z" fill="var(--ds-tree-trunk)"/>' +
-                        '<path d="M46 80 26 66m26 22 22-18" stroke="var(--ds-tree-trunk)" stroke-width="3.4" stroke-linecap="round"/>' +
-                        '<ellipse cx="50" cy="52" rx="42" ry="16" fill="VAR" opacity="0.9"/><ellipse cx="50" cy="42" rx="30" ry="12" fill="VAR" opacity="0.85"/>'
-            }[speciesId] || '';
-            const color = treeSpeciesById(speciesId).accent;
-            return '<svg viewBox="0 0 100 145" class="' + cls + '" role="img" aria-hidden="' + (opts.title ? 'false' : 'true') + '">' +
-                label + art.replace(/VAR/g, color) + '</svg>';
-        }
+function treeSpeciesById(id) {
+    return TREE_SPECIES.find(t => t.id === id) || TREE_SPECIES[0];
+}
+function treeNum(v) { return Math.round(v * 100) / 100; }
+// بذرة عشوائية ثابتة: نفس المدخل يعطي نفس الرسم دائماً (فلا يرتجف المشهد عند إعادة الرسم)
+function treeSeed(n) {
+    let x = (Math.abs(Math.floor(n)) || 1) % 2147483647;
+    if (x <= 0) x += 2147483646;
+    return function () {
+        x = (x * 16807) % 2147483647;
+        return (x - 1) / 2147483646;
+    };
+}
+function leafBlob(cx, cy, rx, ry, fill, rot, opacity) {
+    return '<ellipse cx="' + treeNum(cx) + '" cy="' + treeNum(cy) + '" rx="' + treeNum(rx) + '" ry="' + treeNum(ry) + '"' +
+        ' fill="' + fill + '"' + (opacity === undefined ? '' : ' opacity="' + opacity + '"') +
+        (rot ? ' transform="rotate(' + treeNum(rot) + ' ' + treeNum(cx) + ' ' + treeNum(cy) + ')"' : '') + '/>';
+}
+function leafDot(cx, cy, r, fill, opacity) {
+    return '<circle cx="' + treeNum(cx) + '" cy="' + treeNum(cy) + '" r="' + treeNum(r) + '" fill="' + fill + '"' +
+        (opacity === undefined ? '' : ' opacity="' + opacity + '"') + '/>';
+}
+// براعم الزهور (تُظهر تدريجياً مع نموّ الشجرة)
+function blooms(sp, spots) {
+    if (!sp.bloom) return '';
+    const c1 = sp.bloom[0], c2 = sp.bloom[1] || sp.bloom[0];
+    return spots.map(function (s) {
+        return leafDot(s[0], s[1], s[2], c1, 0.95) + leafDot(s[0] - s[2] * 0.22, s[1] - s[2] * 0.26, s[2] * 0.42, c2, 0.95);
+    }).join('');
+}
+// ثمار صغيرة (زيتون، رمان، تمر)
+function fruits(sp, spots) {
+    if (!sp.fruit) return '';
+    return spots.map(function (s) {
+        return leafDot(s[0], s[1], s[2], sp.fruit, 0.95) + leafDot(s[0] - s[2] * 0.24, s[1] - s[2] * 0.3, s[2] * 0.34, '#ffffff', 0.35);
+    }).join('');
+}
+// ورقة قيقب مُنمّطة: خمسة فصوص ناعمة (شكل أصلي مستوحى من الورقة لا من أي أصل جاهز)
+function mapleLeafPath(cx, cy, R, rot) {
+    const tips = [[-90, 1.0], [-32, 0.9], [30, 0.9], [90, 0.6], [150, 0.9], [212, 0.9]];
+    const pt = function (aDeg, r) {
+        const a = aDeg * Math.PI / 180;
+        return [cx + Math.cos(a) * R * r, cy + Math.sin(a) * R * r];
+    };
+    let d = '';
+    for (let i = 0; i < tips.length; i++) {
+        const cur = tips[i], nxt = tips[(i + 1) % tips.length];
+        const p0 = pt(cur[0], cur[1]);
+        if (i === 0) d += 'M' + treeNum(p0[0]) + ' ' + treeNum(p0[1]);
+        const gap = (((nxt[0] - cur[0]) % 360) + 360) % 360;
+        const mid = pt(cur[0] + gap / 2, 0.56);
+        const p2 = pt(nxt[0], nxt[1]);
+        d += 'Q' + treeNum(mid[0]) + ' ' + treeNum(mid[1]) + ' ' + treeNum(p2[0]) + ' ' + treeNum(p2[1]);
+    }
+    d += 'Z';
+    const body = '<path d="' + d + '"/>';
+    return rot ? '<g transform="rotate(' + treeNum(rot) + ' ' + treeNum(cx) + ' ' + treeNum(cy) + ')">' + body + '</g>' : body;
+}
+// مروحة الجِنكة: نصل عريض بحافة مُسنّنة، قاعدته على الغصن ودورانه حوله
+function ginkgoFan(cx, cy, w, h, rot, fill, hi) {
+    const P = function (x, y) { return treeNum(x) + ' ' + treeNum(y); };
+    let d = 'M' + P(0, 0) +
+        ' Q' + P(-w * 0.36, -h * 0.5) + ' ' + P(-w, -h * 0.7) +
+        ' Q' + P(-w * 0.66, -h * 0.98) + ' ' + P(-w * 0.4, -h * 0.84) +
+        ' Q' + P(-w * 0.22, -h * 1.04) + ' ' + P(0, -h * 0.78) +
+        ' Q' + P(w * 0.22, -h * 1.04) + ' ' + P(w * 0.4, -h * 0.84) +
+        ' Q' + P(w * 0.66, -h * 0.98) + ' ' + P(w, -h * 0.7) +
+        ' Q' + P(w * 0.36, -h * 0.5) + ' 0 0 Z';
+    let out = '<path d="' + d + '" fill="' + fill + '"/>';
+    out += '<path d="M' + P(0, -h * 0.06) + 'L' + P(-w * 0.5, -h * 0.56) +
+        'M' + P(0, -h * 0.06) + 'L' + P(w * 0.5, -h * 0.56) +
+        '" stroke="' + hi + '" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.45"/>';
+    return '<g transform="translate(' + treeNum(cx) + ' ' + treeNum(cy) + ')' + (rot ? ' rotate(' + treeNum(rot) + ')' : '') + '">' + out + '</g>';
+}
 
-        // اختيار نوع الشجرة: عشوائي + نُدرة حسب مدة الجلسة + لا تكرار متتالٍ (كل شجرة مختلفة)
-        function pickTreeSpecies(mins, seed) {
-            const m = Math.max(1, Number(mins) || 25);
-            const pool = TREE_SPECIES.filter(t => m >= t.minMins);
-            const usable = pool.length ? pool : [TREE_SPECIES[0]];
-            const recent = new Set(userTrees.slice(0, 2).map(t => t && t.tree_type));
-            const preferred = usable.filter(t => !recent.has(t.id));
-            const list = preferred.length ? preferred : usable;
-            // ترجيح أعلى للأنواع النادرة عند الجلسات الطويلة
-            const weighted = [];
-            list.forEach(t => {
-                const longSession = m >= 30;
-                let w = 3;
-                if (t.rarity === 'uncommon') w = longSession ? 3 : 2;
-                if (t.rarity === 'rare') w = longSession ? 2 : 1;
-                if (t.rarity === 'legendary') w = m >= 60 ? 2 : 0;
-                for (let i = 0; i < w; i++) weighted.push(t);
+// ===== تيجان الأشجار: لكل نوع شكل تاج مطابق (مستدير، مخروطي، نخلة، صفصاف، مظلّة...) =====
+function crownArt(sp, cx, cy, w, h, bloomAmt) {
+    const d = sp.leaf[0], b = sp.leaf[1], l = sp.leaf[2];
+    const out = [];
+    switch (sp.crown) {
+        case 'tier':      // صنوبر: ثلاث طبقات هرمية
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 0.62) + 'L' + treeNum(cx + w * 0.52) + ' ' + treeNum(cy - h * 0.04) + 'L' + treeNum(cx - w * 0.52) + ' ' + treeNum(cy - h * 0.04) + 'Z" fill="' + d + '"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 0.42) + 'L' + treeNum(cx + w * 0.66) + ' ' + treeNum(cy + h * 0.24) + 'L' + treeNum(cx - w * 0.66) + ' ' + treeNum(cy + h * 0.24) + 'Z" fill="' + b + '"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 0.2) + 'L' + treeNum(cx + w * 0.78) + ' ' + treeNum(cy + h * 0.5) + 'L' + treeNum(cx - w * 0.78) + ' ' + treeNum(cy + h * 0.5) + 'Z" fill="' + d + '"/>');
+            out.push('<path d="M' + treeNum(cx - w * 0.1) + ' ' + treeNum(cy - h * 0.6) + 'L' + treeNum(cx + w * 0.4) + ' ' + treeNum(cy - h * 0.06) + 'L' + treeNum(cx - w * 0.44) + ' ' + treeNum(cy - h * 0.06) + 'Z" fill="' + l + '" opacity="0.5"/>');
+            break;
+        case 'tierflat':  // أرز: طبقات عريضة مسطّحة
+            out.push(leafBlob(cx, cy + h * 0.46, w * 1.0, h * 0.22, d));
+            out.push(leafBlob(cx, cy + h * 0.14, w * 0.88, h * 0.2, b));
+            out.push(leafBlob(cx, cy - h * 0.18, w * 0.7, h * 0.18, d));
+            out.push(leafBlob(cx, cy - h * 0.48, w * 0.48, h * 0.15, b));
+            out.push(leafBlob(cx, cy - h * 0.74, w * 0.24, h * 0.1, d));
+            out.push(leafBlob(cx - w * 0.26, cy - h * 0.34, w * 0.34, h * 0.09, l, -4, 0.5));
+            break;
+        case 'column':    // سرو: لهب عمودي مدبّب القمّة
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 1.04) +
+                ' C' + treeNum(cx + w * 0.86) + ' ' + treeNum(cy - h * 0.62) + ' ' + treeNum(cx + w * 1.02) + ' ' + treeNum(cy - h * 0.06) + ' ' + treeNum(cx + w * 0.5) + ' ' + treeNum(cy + h * 0.52) +
+                ' L' + treeNum(cx - w * 0.5) + ' ' + treeNum(cy + h * 0.52) +
+                ' C' + treeNum(cx - w * 1.02) + ' ' + treeNum(cy - h * 0.06) + ' ' + treeNum(cx - w * 0.86) + ' ' + treeNum(cy - h * 0.62) + ' ' + treeNum(cx) + ' ' + treeNum(cy - h * 1.04) + 'Z" fill="' + d + '"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 0.8) +
+                ' C' + treeNum(cx + w * 0.46) + ' ' + treeNum(cy - h * 0.44) + ' ' + treeNum(cx + w * 0.54) + ' ' + treeNum(cy + h * 0.02) + ' ' + treeNum(cx + w * 0.26) + ' ' + treeNum(cy + h * 0.36) +
+                ' L' + treeNum(cx - w * 0.26) + ' ' + treeNum(cy + h * 0.36) +
+                ' C' + treeNum(cx - w * 0.54) + ' ' + treeNum(cy + h * 0.02) + ' ' + treeNum(cx - w * 0.46) + ' ' + treeNum(cy - h * 0.44) + ' ' + treeNum(cx) + ' ' + treeNum(cy - h * 0.8) + 'Z" fill="' + b + '"/>');
+            out.push('<path d="M' + treeNum(cx - w * 0.12) + ' ' + treeNum(cy - h * 0.72) + ' C' + treeNum(cx + w * 0.22) + ' ' + treeNum(cy - h * 0.4) + ' ' + treeNum(cx + w * 0.14) + ' ' + treeNum(cy + h * 0.1) + ' ' + treeNum(cx - w * 0.18) + ' ' + treeNum(cy + h * 0.2) + 'Z" fill="' + l + '" opacity="0.42"/>');
+            break;
+        case 'conical':   // بولونيا: مخروط فاتح واسع
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 1.02) + ' C' + treeNum(cx + w * 0.86) + ' ' + treeNum(cy - h * 0.42) + ' ' + treeNum(cx + w * 1.02) + ' ' + treeNum(cy + h * 0.24) + ' ' + treeNum(cx + w * 0.6) + ' ' + treeNum(cy + h * 0.52) +
+                ' L' + treeNum(cx - w * 0.6) + ' ' + treeNum(cy + h * 0.52) + ' C' + treeNum(cx - w * 1.02) + ' ' + treeNum(cy + h * 0.24) + ' ' + treeNum(cx - w * 0.86) + ' ' + treeNum(cy - h * 0.42) + ' ' + treeNum(cx) + ' ' + treeNum(cy - h * 1.02) + 'Z" fill="' + d + '"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy - h * 0.72) + ' C' + treeNum(cx + w * 0.6) + ' ' + treeNum(cy - h * 0.24) + ' ' + treeNum(cx + w * 0.7) + ' ' + treeNum(cy + h * 0.24) + ' ' + treeNum(cx + w * 0.42) + ' ' + treeNum(cy + h * 0.44) +
+                ' L' + treeNum(cx - w * 0.42) + ' ' + treeNum(cy + h * 0.44) + ' C' + treeNum(cx - w * 0.7) + ' ' + treeNum(cy + h * 0.24) + ' ' + treeNum(cx - w * 0.6) + ' ' + treeNum(cy - h * 0.24) + ' ' + treeNum(cx) + ' ' + treeNum(cy - h * 0.72) + 'Z" fill="' + b + '" opacity="0.9"/>');
+            out.push(leafBlob(cx - w * 0.26, cy - h * 0.34, w * 0.32, h * 0.18, l, -14, 0.5));
+            out.push(leafBlob(cx + w * 0.24, cy - h * 0.6, w * 0.26, h * 0.14, l, 12, 0.45));
+            break;
+        case 'fan':       // جِنكة: ثلاث مراوح ذهبية (وسطى + جانبيتان)
+            out.push(ginkgoFan(cx - w * 0.44, cy + h * 0.46, w * 0.56, h * 0.66, -30, d, b));
+            out.push(ginkgoFan(cx + w * 0.44, cy + h * 0.46, w * 0.56, h * 0.66, 30, d, b));
+            out.push(ginkgoFan(cx, cy + h * 0.6, w * 0.6, h * 0.78, 0, b, l));
+            break;
+        case 'star':      // قيقب: ثلاث ورقات قيقب مُنمّطة
+            out.push(mapleLeafPath(cx - w * 0.3, cy + h * 0.08, h * 0.46, -30).replace('<path', '<path fill="' + d + '"'));
+            out.push(mapleLeafPath(cx + w * 0.34, cy + h * 0.04, h * 0.44, 28).replace('<path', '<path fill="' + d + '"'));
+            out.push(mapleLeafPath(cx + w * 0.02, cy - h * 0.3, h * 0.5, 4).replace('<path', '<path fill="' + b + '"'));
+            out.push(mapleLeafPath(cx - w * 0.22, cy - h * 0.38, h * 0.3, -18).replace('<path', '<path fill="' + l + '" opacity="0.6"'));
+            break;
+        case 'umbrella':  // باوباب: مظلّة عريضة على جذع ضخم
+            out.push(leafBlob(cx, cy + h * 0.3, w * 0.94, h * 0.26, d));
+            out.push(leafBlob(cx, cy - h * 0.06, w * 0.82, h * 0.26, b));
+            out.push(leafBlob(cx - w * 0.26, cy - h * 0.34, w * 0.5, h * 0.18, d));
+            out.push(leafBlob(cx + w * 0.3, cy - h * 0.3, w * 0.44, h * 0.16, b));
+            out.push(leafBlob(cx - w * 0.1, cy - h * 0.44, w * 0.3, h * 0.12, l, -8, 0.55));
+            break;
+        case 'puffy':     // زيتون: كتل ناعمة
+            out.push(leafBlob(cx - w * 0.3, cy + h * 0.1, w * 0.46, h * 0.34, d, -8));
+            out.push(leafBlob(cx + w * 0.32, cy + h * 0.06, w * 0.44, h * 0.32, d, 6));
+            out.push(leafBlob(cx, cy - h * 0.28, w * 0.5, h * 0.36, b));
+            out.push(leafBlob(cx - w * 0.12, cy - h * 0.36, w * 0.28, h * 0.2, l, -10, 0.6));
+            break;
+        case 'cascade':   // صفصاف: قبّة ناعمة وخصلات متدلّية طويلة
+            for (let i = -5; i <= 5; i++) {
+                const x0 = cx + i * w * 0.17;
+                const drop = h * (0.78 - Math.abs(i) * 0.08);
+                out.push('<path d="M' + treeNum(x0) + ' ' + treeNum(cy + h * 0.26) + ' q ' + treeNum(i * 1.8) + ' ' + treeNum(drop * 0.55) + ' ' + treeNum(i * 2.4) + ' ' + treeNum(drop) +
+                    '" stroke="' + (i % 2 ? l : d) + '" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.92"/>');
+            }
+            out.push(leafBlob(cx - w * 0.36, cy + h * 0.18, w * 0.44, h * 0.38, d, -8));
+            out.push(leafBlob(cx + w * 0.36, cy + h * 0.16, w * 0.42, h * 0.36, d, 8));
+            out.push(leafBlob(cx, cy - h * 0.06, w * 0.6, h * 0.5, b));
+            out.push(leafBlob(cx - w * 0.16, cy - h * 0.3, w * 0.36, h * 0.24, l, -14, 0.55));
+            out.push(leafBlob(cx + w * 0.22, cy - h * 0.24, w * 0.3, h * 0.2, l, 12, 0.45));
+            break;
+        case 'sparse':    // كافور: عناقيد أوراق متطاولة على غصون مائلة
+            out.push('<path d="M' + treeNum(cx - w * 0.1) + ' ' + treeNum(cy + h * 1.0) + 'L' + treeNum(cx - w * 0.06) + ' ' + treeNum(cy - h * 0.34) +
+                '" stroke="' + sp.trunk[0] + '" stroke-width="2.8" fill="none" stroke-linecap="round"/>');
+            [[-1, 0.34], [-1, -0.3], [1, 0.08], [1, -0.56]].forEach(function (st) {
+                const dir = st[0], ty = cy + h * st[1];
+                const tx = cx + dir * w * 0.62;
+                out.push('<path d="M' + treeNum(cx - w * 0.06) + ' ' + treeNum(ty + h * 0.18) + 'L' + treeNum(tx) + ' ' + treeNum(ty) +
+                    '" stroke="' + sp.trunk[0] + '" stroke-width="2.1" fill="none" stroke-linecap="round"/>');
             });
-            if (!weighted.length) weighted.push(usable[0]);
-            const rnd = (typeof seed === 'number' ? seed : Date.now()) % weighted.length;
-            return weighted[Math.abs(rnd)] || weighted[0];
+            [[-0.6, 0.34, -16, d], [-0.86, 0.3, -30, b], [-0.5, 0.06, -8, b],
+             [0.58, 0.08, 14, d], [0.84, 0.04, 26, b], [0.44, -0.16, 6, l],
+             [-0.44, -0.3, -20, d], [-0.14, -0.46, -6, b], [-0.3, -0.64, -14, l], [0.36, -0.56, 18, d]].forEach(function (p) {
+                out.push(leafBlob(cx + w * p[0], cy + h * p[1], w * 0.34, h * 0.1, p[3], p[2], 0.96));
+            });
+            break;
+        case 'shrub':     // آس / بهشية: شجيرة منخفضة عريضة
+            out.push(leafBlob(cx - w * 0.44, cy + h * 0.34, w * 0.42, h * 0.34, d));
+            out.push(leafBlob(cx + w * 0.44, cy + h * 0.32, w * 0.42, h * 0.34, d));
+            out.push(leafBlob(cx, cy + h * 0.12, w * 0.6, h * 0.46, b));
+            out.push(leafBlob(cx - w * 0.2, cy - h * 0.14, w * 0.36, h * 0.3, l, -12, 0.6));
+            out.push(leafBlob(cx + w * 0.24, cy - h * 0.06, w * 0.3, h * 0.26, l, 10, 0.42));
+            break;
+        case 'feather':   // جاكاراندا: تاج ريشي ناعم
+            out.push(leafBlob(cx, cy - h * 0.06, w * 0.8, h * 0.4, d));
+            out.push(leafBlob(cx - w * 0.36, cy + h * 0.16, w * 0.42, h * 0.26, d, -10));
+            out.push(leafBlob(cx + w * 0.36, cy + h * 0.14, w * 0.42, h * 0.26, d, 10));
+            out.push(leafBlob(cx - w * 0.1, cy - h * 0.34, w * 0.46, h * 0.28, b));
+            for (let i = 0; i < 7; i++) {
+                const a = -2.5 + i * 0.42;
+                out.push(leafBlob(cx + Math.cos(a) * w * 0.62, cy + Math.sin(a) * h * 0.36, w * 0.2, h * 0.08, i % 2 ? b : l, a * 40, 0.75));
+            }
+            break;
+        case 'palm':      // نخلة: سعف مروحي متدلٍّ
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy) + ' C' + treeNum(cx - w * 0.9) + ' ' + treeNum(cy - h * 0.5) + ' ' + treeNum(cx - w * 1.1) + ' ' + treeNum(cy + h * 0.1) + ' ' + treeNum(cx - w * 1.24) + ' ' + treeNum(cy + h * 0.36) + '" stroke="' + d + '" stroke-width="' + treeNum(h * 0.2) + '" fill="none" stroke-linecap="round"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy) + ' C' + treeNum(cx + w * 0.9) + ' ' + treeNum(cy - h * 0.5) + ' ' + treeNum(cx + w * 1.1) + ' ' + treeNum(cy + h * 0.1) + ' ' + treeNum(cx + w * 1.24) + ' ' + treeNum(cy + h * 0.36) + '" stroke="' + d + '" stroke-width="' + treeNum(h * 0.2) + '" fill="none" stroke-linecap="round"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy) + ' C' + treeNum(cx - w * 0.5) + ' ' + treeNum(cy - h * 0.9) + ' ' + treeNum(cx - w * 0.2) + ' ' + treeNum(cy - h * 1.1) + ' ' + treeNum(cx + w * 0.06) + ' ' + treeNum(cy - h * 1.24) + '" stroke="' + b + '" stroke-width="' + treeNum(h * 0.22) + '" fill="none" stroke-linecap="round"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy) + ' C' + treeNum(cx + w * 0.4) + ' ' + treeNum(cy - h * 0.9) + ' ' + treeNum(cx + w * 0.2) + ' ' + treeNum(cy - h * 1.16) + ' ' + treeNum(cx + w * 0.92) + ' ' + treeNum(cy - h * 1.06) + '" stroke="' + b + '" stroke-width="' + treeNum(h * 0.22) + '" fill="none" stroke-linecap="round"/>');
+            out.push('<path d="M' + treeNum(cx) + ' ' + treeNum(cy) + ' C' + treeNum(cx - w * 0.3) + ' ' + treeNum(cy - h * 0.7) + ' ' + treeNum(cx - w * 0.96) + ' ' + treeNum(cy - h * 0.76) + ' ' + treeNum(cx - w * 1.06) + ' ' + treeNum(cy - h * 0.98) + '" stroke="' + d + '" stroke-width="' + treeNum(h * 0.2) + '" fill="none" stroke-linecap="round"/>');
+            out.push(leafBlob(cx + w * 0.06, cy - h * 0.06, w * 0.42, h * 0.24, l, -12, 0.42));
+            out.push(leafDot(cx + w * 0.02, cy + h * 0.08, h * 0.16, b, 0.9));
+            break;
+        case 'round':
+        default:          // تاج مستدير غني بطبقات (بلوط، لوز مزهر)
+            out.push(leafBlob(cx - w * 0.4, cy + h * 0.16, w * 0.46, h * 0.34, d, -6));
+            out.push(leafBlob(cx + w * 0.42, cy + h * 0.14, w * 0.44, h * 0.33, d, 8));
+            out.push(leafBlob(cx, cy + h * 0.04, w * 0.6, h * 0.45, b));
+            out.push(leafBlob(cx - w * 0.16, cy - h * 0.3, w * 0.44, h * 0.32, b));
+            out.push(leafBlob(cx + w * 0.24, cy - h * 0.22, w * 0.38, h * 0.28, l, 6, 0.7));
+            out.push(leafBlob(cx - w * 0.22, cy - h * 0.4, w * 0.3, h * 0.2, l, -12, 0.62));
+            break;
+    }
+    // براعم وثمار
+    if (sp.bloom) {
+        const bl = [];
+        for (let i = 0; i < 6; i++) {
+            const a = -2.7 + i * 0.62;
+            bl.push([cx + Math.cos(a) * w * 0.4, cy + Math.sin(a) * h * 0.26, Math.max(1.5, w * 0.065)]);
         }
+        out.push(blooms(sp, bl));
+        if (bloomAmt > 0 && sp.bloomAmount) {
+            const extra = [];
+            for (let i = 0; i < 8; i++) {
+                const a = -3.1 + i * 0.66;
+                extra.push([cx + Math.cos(a) * w * 0.52, cy + Math.sin(a) * h * 0.32, Math.max(1.4, w * 0.055)]);
+            }
+            const shown = Math.round(extra.length * Math.max(0, Math.min(1, (bloomAmt - 0.4) / 0.6)));
+            out.push(blooms(sp, extra.slice(0, shown)));
+        }
+    }
+    if (sp.fruit && sp.crown !== 'palm') {
+        out.push(fruits(sp, [
+            [cx - w * 0.3, cy + h * 0.22, Math.max(1.7, w * 0.07)],
+            [cx + w * 0.26, cy + h * 0.28, Math.max(1.6, w * 0.065)],
+            [cx + w * 0.02, cy + h * 0.36, Math.max(1.5, w * 0.06)]
+        ]));
+    }
+    return out.join('');
+}
 
-        // معرّف فريد تصاعدي: يمنع تصادم سجلين في نفس الميلي ثانية (جلسة + شجرة)
+// ===== هندسة كل تاج: نصف العرض، نصف الارتفاع، وارتفاع مركزه عن الأرض (نِسَب من ارتفاع الشجرة) =====
+// low: مقدار امتداد التاج للأسفل من مركزه (يُستخدم لربط الجذع بأسفل التاج بلا فراغ).
+function crownGeom(sp, H) {
+    switch (sp.crown) {
+        case 'tier':      return { w: H * 0.34, h: H * 0.40, cy: H * 0.66, low: 0.52 };
+        case 'tierflat':  return { w: H * 0.40, h: H * 0.34, cy: H * 0.70, low: 0.68 };
+        case 'column':    return { w: H * 0.16, h: H * 0.52, cy: H * 0.56, low: 0.56 };
+        case 'conical':   return { w: H * 0.40, h: H * 0.42, cy: H * 0.70, low: 0.56 };
+        case 'fan':       return { w: H * 0.42, h: H * 0.30, cy: H * 0.70, low: 0.62 };
+        case 'star':      return { w: H * 0.30, h: H * 0.40, cy: H * 0.70, low: 0.60 };
+        case 'umbrella':  return { w: H * 0.58, h: H * 0.30, cy: H * 0.80, low: 0.62 };
+        case 'puffy':     return { w: H * 0.34, h: H * 0.38, cy: H * 0.70, low: 0.46 };
+        case 'cascade':   return { w: H * 0.40, h: H * 0.36, cy: H * 0.76, low: 0.60 };
+        case 'sparse':    return { w: H * 0.34, h: H * 0.42, cy: H * 0.64, low: 0.44 };
+        case 'shrub':     return { w: H * 0.46, h: H * 0.34, cy: H * 0.60, low: 0.70 };
+        case 'feather':   return { w: H * 0.36, h: H * 0.38, cy: H * 0.70, low: 0.46 };
+        case 'palm':      return { w: H * 0.28, h: H * 0.24, cy: H * 0.80, low: 0.00 };
+        default:          return { w: H * 0.34, h: H * 0.40, cy: H * 0.70, low: 0.46 };   // round
+    }
+}
+
+// ===== الشجرة كاملة في مرحلة نموّ محدّدة =====
+// stage: 0 بذرة · 1 نبتة · 2 شتلة · 3 شجرة صغيرة · 4 شجرة مكتملة
+function treeStageArt(speciesId, stage) {
+    const sp = treeSpeciesById(speciesId);
+    const st = TREE_GROWTH_STAGES[Math.max(0, Math.min(4, Math.round(stage)))] || TREE_GROWTH_STAGES[4];
+    const shadow = '<ellipse cx="50" cy="139" rx="' + treeNum(19 * (0.55 + st.scale * 0.65)) + '" ry="3.6" fill="#0d3b28" opacity="0.10"/>';
+
+    if (st.scale === 0) {
+        // بذرة في تربة رطبة
+        return shadow +
+            '<path d="M31 138c6-7 32-7 38 0-6 4-32 4-38 0Z" fill="#a9773f"/>' +
+            '<path d="M33 138c6-5 30-5 34 0-6 3-28 3-34 0Z" fill="#c19457" opacity="0.85"/>' +
+            '<ellipse cx="50" cy="128" rx="7.4" ry="9" fill="#8a5f3c"/>' +
+            '<ellipse cx="47.4" cy="125" rx="2.6" ry="3.4" fill="#a9773f" opacity="0.9"/>' +
+            '<path d="M50 119c0-4 2-6 5-7" stroke="#2f9a63" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
+            '<path d="M55 112c3-1 5 1 5 3-3 1-5 0-5-3Z" fill="#63c58e"/>' +
+            '<circle cx="42" cy="131" r="1.1" fill="#ffffff" opacity="0.55"/>';
+    }
+    if (st.scale === 0.3) {
+        // نبتة صغيرة بورقتين
+        return shadow +
+            '<path d="M33 138c6-6 30-6 36 0-6 4-30 4-36 0Z" fill="#a9773f" opacity="0.9"/>' +
+            '<path d="M50 138V118" stroke="' + sp.leaf[1] + '" stroke-width="3.4" stroke-linecap="round"/>' +
+            '<path d="M50 126c-9-2-13-8-13-14 8 0 13 5 13 14Z" fill="' + sp.leaf[1] + '"/>' +
+            '<path d="M50 122c9-2 13-8 13-14-8 0-13 5-13 14Z" fill="' + sp.leaf[2] + '"/>' +
+            '<path d="M50 132c-5-1-8-4-9-8 5 0 8 3 9 8Z" fill="' + sp.leaf[0] + '" opacity="0.85"/>';
+    }
+
+    const sc = st.scale;
+    const H = 116 * sp.scale * sc;              // ارتفاع الشجرة
+    const baseY = 138;
+    const g = crownGeom(sp, H);
+    const crownCY = baseY - g.cy;
+    // أعلى نقطة في الجذع = أسفل التاج تماماً (بلا فراغ يُظهر التاج معلّقاً)
+    const trunkTopY = baseY - (g.cy - g.h * g.low);
+    const trunkW = 6.4 * sp.trunkW * (0.40 + sc * 0.60);
+    const crownW = g.w, crownH = g.h;
+
+    let trunk = '';
+    if (sp.crown === 'palm') {
+        trunk = '<path d="M' + treeNum(50 - trunkW * 0.3) + ' 138 C' + treeNum(48 - trunkW * 0.3) + ' ' + treeNum(baseY - H * 0.3) + ' ' + treeNum(48 + trunkW * 0.3) + ' ' + treeNum(baseY - H * 0.6) + ' ' + treeNum(51) + ' ' + treeNum(trunkTopY) +
+            '" stroke="' + sp.trunk[0] + '" stroke-width="' + treeNum(trunkW) + '" fill="none" stroke-linecap="round"/>' +
+            '<path d="M' + treeNum(50 - trunkW * 0.12) + ' 138 C' + treeNum(48.6) + ' ' + treeNum(baseY - H * 0.36) + ' ' + treeNum(49.4) + ' ' + treeNum(baseY - H * 0.64) + ' ' + treeNum(50.8) + ' ' + treeNum(trunkTopY) +
+            '" stroke="' + sp.trunk[1] + '" stroke-width="' + treeNum(trunkW * 0.34) + '" fill="none" stroke-linecap="round" opacity="0.5"/>';
+    } else if (sp.crown === 'umbrella') {
+        const half = trunkW * 0.62;
+        trunk = '<path d="M' + treeNum(50 - half) + ' 138 C' + treeNum(50 - half * 0.8) + ' ' + treeNum(baseY - H * 0.34) + ' ' + treeNum(50 - half * 0.66) + ' ' + treeNum(trunkTopY + H * 0.14) + ' ' + treeNum(50 - half * 0.5) + ' ' + treeNum(trunkTopY) +
+            ' L' + treeNum(50 + half * 0.5) + ' ' + treeNum(trunkTopY) + ' C' + treeNum(50 + half * 0.66) + ' ' + treeNum(trunkTopY + H * 0.14) + ' ' + treeNum(50 + half * 0.8) + ' ' + treeNum(baseY - H * 0.34) + ' ' + treeNum(50 + half) + ' 138 Z" fill="' + sp.trunk[0] + '"/>' +
+            '<path d="M' + treeNum(50 + half * 0.14) + ' 138 C' + treeNum(50 + half * 0.2) + ' ' + treeNum(baseY - H * 0.3) + ' ' + treeNum(50 + half * 0.26) + ' ' + treeNum(trunkTopY + H * 0.14) + ' ' + treeNum(50 + half * 0.3) + ' ' + treeNum(trunkTopY) + ' L' + treeNum(50 + half * 0.5) + ' ' + treeNum(trunkTopY) +
+            ' C' + treeNum(50 + half * 0.66) + ' ' + treeNum(trunkTopY + H * 0.14) + ' ' + treeNum(50 + half * 0.8) + ' ' + treeNum(baseY - H * 0.34) + ' ' + treeNum(50 + half) + ' 138 Z" fill="' + sp.trunk[1] + '" opacity="0.42"/>' +
+            (sc >= 0.42 ? '<path d="M' + treeNum(50 - half * 0.4) + ' ' + treeNum(baseY - H * 0.5) + ' L' + treeNum(50 - half * 2.2) + ' ' + treeNum(baseY - H * 0.72) + '" stroke="' + sp.trunk[0] + '" stroke-width="' + treeNum(2.4 * sp.trunkW) + '" stroke-linecap="round" fill="none"/>' +
+                '<path d="M' + treeNum(50 + half * 0.4) + ' ' + treeNum(baseY - H * 0.48) + ' L' + treeNum(50 + half * 2.2) + ' ' + treeNum(baseY - H * 0.7) + '" stroke="' + sp.trunk[0] + '" stroke-width="' + treeNum(2.4 * sp.trunkW) + '" stroke-linecap="round" fill="none"/>' : '');
+    } else {
+        const tw = trunkW;
+        trunk = '<path d="M' + treeNum(50 - tw * 0.5) + ' 138 Q' + treeNum(50 - tw * 0.42) + ' ' + treeNum((138 + trunkTopY) / 2) + ' ' + treeNum(50 - tw * 0.34) + ' ' + treeNum(trunkTopY) +
+            ' L' + treeNum(50 + tw * 0.34) + ' ' + treeNum(trunkTopY) + ' Q' + treeNum(50 + tw * 0.42) + ' ' + treeNum((138 + trunkTopY) / 2) + ' ' + treeNum(50 + tw * 0.5) + ' 138 Z" fill="' + sp.trunk[0] + '"/>' +
+            '<path d="M' + treeNum(50 + tw * 0.06) + ' 138 Q' + treeNum(50 + tw * 0.1) + ' ' + treeNum((138 + trunkTopY) / 2) + ' ' + treeNum(50 + tw * 0.16) + ' ' + treeNum(trunkTopY) +
+            ' L' + treeNum(50 + tw * 0.34) + ' ' + treeNum(trunkTopY) + ' Q' + treeNum(50 + tw * 0.42) + ' ' + treeNum((138 + trunkTopY) / 2) + ' ' + treeNum(50 + tw * 0.5) + ' 138 Z" fill="' + sp.trunk[1] + '" opacity="0.42"/>';
+        // غصون ظاهرة قبل أن يغطيها التاج (تُرسم من الجذع للأعلى)
+        if (sc >= 0.5 && sp.crown !== 'column' && sp.crown !== 'shrub' && sp.crown !== 'tier') {
+            const y1 = trunkTopY + (138 - trunkTopY) * 0.22, y2 = trunkTopY + (138 - trunkTopY) * 0.46;
+            const sw = 2.3 * sp.trunkW;
+            [-1, 1].forEach(function (dir) {
+                trunk += '<path d="M50 ' + treeNum(y1) + ' L' + treeNum(50 + dir * 15) + ' ' + treeNum(y1 - 14) +
+                    '" stroke="' + sp.trunk[0] + '" stroke-width="' + treeNum(sw) + '" stroke-linecap="round" fill="none"/>' +
+                    '<path d="M50 ' + treeNum(y2) + ' L' + treeNum(50 + dir * 11) + ' ' + treeNum(y2 - 10) +
+                    '" stroke="' + sp.trunk[0] + '" stroke-width="' + treeNum(sw * 0.78) + '" stroke-linecap="round" fill="none"/>';
+            });
+        }
+    }
+    const crown = crownArt(sp, 50, crownCY, crownW, crownH, st.bloom);
+    return '<g>' + shadow + trunk + crown + '</g>';
+}
+
+// شجرة كاملة (SVG جاهز للاستخدام في السجلات والبطاقات والغابة)
+function treeSVG(speciesId, opts) {
+    opts = opts || {};
+    const cls = opts.className === undefined ? 'w-full h-full' : opts.className;
+    const species = treeSpeciesById(speciesId);
+    const stage = opts.stage === undefined ? 4 : opts.stage;
+    const label = opts.title ? '<title>' + escapeHtml(opts.title) + '</title>' : '';
+    const extra = opts.g ? ' ' + opts.g : '';
+    return '<svg viewBox="0 0 100 145" class="' + cls + '"' + extra + ' role="img" aria-hidden="' + (opts.title ? 'false' : 'true') + '">' +
+        label + treeStageArt(species.id, stage) + '</svg>';
+}
+
+// شجرة تنمو: المراحل الخمس مكدّسة داخل SVG واحد — يظهر منها ما يوافق تقدّم المؤقّت لحظة بلحظة
+function treeGrowthSVG(speciesId, opts) {
+    opts = opts || {};
+    const cls = opts.className === undefined ? 'w-full h-full' : opts.className;
+    const species = treeSpeciesById(speciesId);
+    const groups = TREE_GROWTH_STAGES.map(function (st, i) {
+        return '<g class="focus-tree-stage" data-tree-stage="' + i + '" style="opacity:' + (i === 0 ? 1 : 0) + '">' +
+            treeStageArt(species.id, i) + '</g>';
+    }).join('');
+    return '<svg viewBox="0 0 100 145" class="' + cls + '" data-tree-species="' + species.id + '"' +
+        ' role="img" aria-label="' + escapeHtml(species.name + ' تنمو مع تقدّم جلستك') + '">' + groups + '</svg>';
+}
+
+// اختيار نوع الشجرة تلقائياً عند عدم اختيار الطالب: نُدرة حسب طول الجلسة + بلا تكرار متتالٍ
+function pickTreeSpecies(mins, seed) {
+    const m = Math.max(1, Number(mins) || 25);
+    const pool = TREE_SPECIES.filter(t => m >= t.minMins);
+    const usable = pool.length ? pool : [TREE_SPECIES[0]];
+    const recent = new Set((typeof userTrees !== 'undefined' ? userTrees : []).slice(0, 2).map(t => t && t.tree_type));
+    const preferred = usable.filter(t => !recent.has(t.id));
+    const list = preferred.length ? preferred : usable;
+    const weighted = [];
+    list.forEach(t => {
+        const longSession = m >= 30;
+        let w = 3;
+        if (t.rarity === 'uncommon') w = longSession ? 3 : 2;
+        if (t.rarity === 'rare') w = longSession ? 2 : 1;
+        if (t.rarity === 'legendary') w = m >= 60 ? 2 : 0;
+        for (let i = 0; i < w; i++) weighted.push(t);
+    });
+    if (!weighted.length) weighted.push(usable[0]);
+    const rnd = (typeof seed === 'number' ? seed : Date.now()) % weighted.length;
+    return weighted[Math.abs(rnd)] || weighted[0];
+}
+
+        // معرّف فريد تصاعدي: يمنع تصادم سجلين في نفس الملي ثانية (جلسة + شجرة)
         let lastRecordStamp = 0;
         function nextRecordId() {
             const now = Date.now();
@@ -2157,7 +2696,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             { id: 'level3', name: 'المستوى الثالث', desc: 'وصلت للمستوى ٣', icon: '<path d="M12 3.5 15 9h-2l3 5h-3v6h-2v-6H8l3-5H9l3-5.5Z"/>', check: d => d.level >= 3 },
             { id: 'long_session', name: 'جلسة ملحمية', desc: 'جلسة واحدة ٦٠ دقيقة+', icon: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.5 2"/><path d="M12 3.5V2M20.5 12H22M12 22v-1.5M3.5 12H2"/>', check: d => d.longest >= 60 },
             { id: 'sessions25', name: '٢٥ جلسة', desc: '٢٥ جلسة تركيز مكتملة', icon: '<path d="M12 3v18M5 8.5C5 6 7.5 4 12 4s7 2 7 4.5-2.5 3.5-7 3.5-7 1-7 3.5S7.5 20 12 20s7-2 7-4.5"/>', check: d => d.sessions >= 25 },
-            { id: 'sync_master', name: 'محفوظ سحابياً', desc: '١٠ أشجار محفوظة في Supabase', icon: '<path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/>', check: d => d.syncedTrees >= 10 }
+            { id: 'sync_master', name: 'محفوظ سحابياً', desc: '١٠ أشجار محفوظة في حسابك', icon: '<path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/>', check: d => d.syncedTrees >= 10 }
         ];
 
         function computeAchievementData() {
@@ -2262,12 +2801,14 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             catch(e) { console.warn("Supabase init error:", e); }
         }
 
+        // رسالة تُعرض للطالب: عربية محايدة بلا أي اسم تقنية — التفاصيل الخام تُسجَّل للمطوّر فقط
         function describeCloudError(err) {
             const msg = (err && err.message) ? err.message : String(err || 'خطأ غير معروف');
-            if (/permission denied|42501/i.test(msg)) return msg + '\n\nالحل: شغّل ملف supabase/schema.sql في SQL Editor (مشكلة صلاحيات).';
-            if (/does not exist|42P01/i.test(msg)) return msg + '\n\nالحل: جدول ناقص — شغّل ملف supabase/schema.sql كاملاً.';
-            if (/column|PGRST204/i.test(msg)) return msg + '\n\nالحل: عمود ناقص — شغّل ملف supabase/schema.sql كاملاً.';
-            return msg;
+            try { console.warn('ZeroPlus cloud error:', msg); } catch (e) {}
+            if (/permission denied|42501/i.test(msg)) return 'تعذّر إكمال العملية الآن: صلاحيات الحفظ على حسابك غير مكتملة — تقدّمك محفوظ على جهازك ولن يُفقد، وسنُكمل الحفظ تلقائياً.';
+            if (/does not exist|42P01/i.test(msg)) return 'تعذّر إكمال العملية الآن: حفظ حسابك غير مُهيّأ بالكامل بعد — تقدّمك محفوظ على جهازك ولن يُفقد.';
+            if (/column|PGRST204/i.test(msg)) return 'تعذّر إكمال العملية الآن: إعداد الحفظ على حسابك ناقص خطوة — تقدّمك محفوظ على جهازك.';
+            return 'تعذّر إكمال العملية مؤقتاً — تقدّمك محفوظ على جهازك، وسنُعيد المحاولة تلقائياً عند عودة الاتصال.';
         }
         // جدول/عمود غير موجود في مشروع Supabase (لم يُشغَّل schema.sql بعد)
         function isMissingTableError(err) {
@@ -2360,7 +2901,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 ind.title = 'توجد تغييرات بانتظار المزامنة';
             } else if (status === 'error') {
                 ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-danger';
-                ind.title = 'فشلت المزامنة: ' + (lastSyncError || '');
+                ind.title = 'فشل مزامنة مؤقت — تقدّمك محفوظ على جهازك وسنُعيد المحاولة تلقائياً';
             } else {
                 ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-soft';
                 ind.title = 'غير متصل — ستُرفع التغييرات عند عودة الاتصال';
@@ -2603,7 +3144,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
 
         async function handleGoogleLogin() {
             if (!supabaseClient) {
-                alert('تعذّر الاتصال بخدمة الحسابات (Supabase) — تحقق من الإنترنت ثم أعد المحاولة، أو استخدم الاسم وكلمة المرور.');
+                alert('تعذّر الاتصال بخدمة الحسابات — تحقق من الإنترنت ثم أعد المحاولة، أو استخدم الاسم وكلمة المرور.');
                 return;
             }
             if (!navigator.onLine) {
@@ -2631,7 +3172,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const owner = localStorage.getItem('zp_owner_device_id') || '';
             if (owner && owner !== deviceId) {
                 ['zp_tasks', 'zp_forest', 'zp_avatar_url', 'zp_xp', 'zp_focus_mins',
-                 'zp_pomo_end_time', SYNC_QUEUE_KEY, KNOWN_IDS_KEY].forEach(k => localStorage.removeItem(k));
+                 'zp_pomo_end_time', 'zp_focus_active', 'zp_focus_collected', 'zp_focus_species',
+                 SYNC_QUEUE_KEY, KNOWN_IDS_KEY].forEach(k => localStorage.removeItem(k));
                 tasks = [];
                 userForest = [];
                 userXP = 140;
@@ -3604,7 +4146,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         initTheme();
 
         // ============ 10. مركز الدعم الفني (درج جانبي) ============
-        const APP_VERSION = 'v37';
+        const APP_VERSION = 'v38';
         function openSupportDrawer(topicId) {
             refreshSupportPanel();
             if (!isOverlayOpen('support')) registerOverlayNavigation('support');
@@ -3657,7 +4199,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const cloud = document.getElementById('support-cloud-status');
             if (cloud) {
                 const state = !supabaseClient ? 'غير مهيّأة' : (!navigator.onLine ? 'غير متصل — تغييراتك محفوظة محلياً'
-                    : lastSyncError ? 'فشل مزامنة: ' + lastSyncError
+                    : lastSyncError ? 'فشل مزامنة مؤقت — تقدّمك محفوظ على جهازك'
                     : (pendingSyncCount() > 0 ? `${pendingSyncCount()} تغيير بانتظار الرفع` : 'متصل ومزامن'));
                 cloud.innerText = 'حالة السحابة: ' + state;
             }
@@ -4577,11 +5119,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function treeSyncBadge(sync) {
-            if (sync === 'synced') return '<span class="ds-chip !bg-emerald-500/10 !text-emerald-600 !border-emerald-500/20" title="محفوظة في Supabase"><i aria-hidden="true" class="fa-solid fa-cloud text-[9px]"></i> سحابي</span>';
-            if (sync === 'pending') return '<span class="ds-chip !bg-amber-500/10 !text-amber-600 !border-amber-500/25" title="بانتظار الرفع إلى Supabase"><i aria-hidden="true" class="fa-solid fa-clock text-[9px]"></i> بانتظار الرفع</span>';
-            if (sync === 'failed') return '<span class="ds-chip !bg-rose-500/10 !text-rose-500 !border-rose-500/25" title="فشل الرفع — سنعيد المحاولة"><i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-[9px]"></i> فشل الرفع</span>';
-            if (sync === 'local') return '<span class="ds-chip" title="محفوظة على جهازك — تتطلب تهيئة جدول trees"><i aria-hidden="true" class="fa-solid fa-mobile-screen text-[9px]"></i> على الجهاز</span>';
-            return '<span class="ds-chip" title="سجل جلسة سابق من Supabase"><i aria-hidden="true" class="fa-solid fa-database text-[9px]"></i> جلسة سابقة</span>';
+            if (sync === 'synced') return '<span class="ds-chip" title="محفوظة في حسابك"><i aria-hidden="true" class="fa-solid fa-cloud text-[9px]"></i> محفوظة</span>';
+            if (sync === 'pending') return '<span class="ds-chip" title="بانتظار المزامنة — تُرفع تلقائياً"><i aria-hidden="true" class="fa-solid fa-clock text-[9px]"></i> بانتظار المزامنة</span>';
+            if (sync === 'failed') return '<span class="ds-chip" title="تعذّرت المزامنة — سنعيد المحاولة"><i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-[9px]"></i> تُعاد المحاولة</span>';
+            if (sync === 'local') return '<span class="ds-chip" title="محفوظة على جهازك وستُرفع تلقائياً"><i aria-hidden="true" class="fa-solid fa-mobile-screen text-[9px]"></i> على جهازك</span>';
+            return '<span class="ds-chip" title="جلسة سابقة محفوظة"><i aria-hidden="true" class="fa-solid fa-database text-[9px]"></i> جلسة سابقة</span>';
         }
 
         // مشهد الغابة: SVG واحد يجمع الأشجار بثلاث طبقات عمق (تنمو مع كل استخدام)
@@ -4641,16 +5183,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             box.innerHTML = out;
         }
 
+        // منتقي الشجرة قبل الجلسة (كان شريط أنواع للعرض فقط — صار اختياراً فعلياً)
         function renderTreeSpeciesStrip() {
-            const strip = document.getElementById('tree-species-strip');
-            if (!strip) return;
-            strip.innerHTML = TREE_SPECIES.map(s =>
-                '<div class="ds-tile p-3 w-[104px] shrink-0 text-center">' +
-                '<div class="w-12 h-14 mx-auto">' + treeSVG(s.id, { className: 'w-full h-full' }) + '</div>' +
-                '<span class="block text-[10.5px] font-black text-[var(--ds-text)] mt-1">' + escapeHtml(s.name) + '</span>' +
-                '<span class="block text-[9px] font-bold text-[var(--ds-muted)]">' + TREE_RARITY_LABEL[s.rarity] + (s.minMins ? ' • +' + s.minMins + 'د' : '') + '</span>' +
-                '</div>'
-            ).join('');
+            focusRenderPicker();
+            focusRenderDurations();
+            focusSyncDurationButtons();
         }
 
         function updateForestSyncUI() {
@@ -4671,17 +5208,17 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             }
             if (text) {
                 text.innerText =
-                    forestState === 'loading' ? 'نجلب غابتك من Supabase...'
-                    : forestState === 'error' ? 'تعذّر جلب الغابة من السحابة — ' + (forestError || 'خطأ غير معروف')
-                    : treesTableMissing ? 'جدول trees غير مُهيّأ — الأشجار محفوظة على جهازك وبانتظار الرفع'
-                    : pending ? pending + ' شجرة بانتظار الرفع إلى Supabase'
-                    : 'كل شجرة محفوظة فعلياً في Supabase (جدول trees) — تُرفع فور إكمال الجلسة';
+                    forestState === 'loading' ? 'نُحضّر غابتك...'
+                    : forestState === 'error' ? 'تعذّر تحديث الغابة الآن — ' + (forestError || 'سنعيد المحاولة تلقائياً')
+                    : treesTableMissing ? 'حفظ الغابة غير مُهيّأ بعد — أشجارك محفوظة على جهازك وستُرفع تلقائياً'
+                    : pending ? pending + ' شجرة بانتظار المزامنة — سنرفعها عند عودة الاتصال'
+                    : 'كل شجرة محفوظة في حسابك — تُحفظ لحظة إكمال الجلسة';
             }
             if (stateEl) {
-                stateEl.innerText = forestState === 'loading' ? 'جارٍ الجلب...'
-                    : forestState === 'error' ? 'خطأ في الجلب'
-                    : treesTableMissing ? 'بانتظار التهيئة'
-                    : pending ? 'قيد الرفع' : 'متصل ومحفوظ';
+                stateEl.innerText = forestState === 'loading' ? 'جارٍ التحضير...'
+                    : forestState === 'error' ? 'تعذّر التحديث'
+                    : treesTableMissing ? 'حفظ محلي مؤقت'
+                    : pending ? 'قيد المزامنة' : 'محفوظ في حسابك';
             }
         }
 
@@ -4702,10 +5239,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             restoreFocus();
             if (wasOpen) syncHistoryAfterClose();
         }
+        // تفاصيل التفعيل التقنية تبقى داخل الكود فقط (لا تظهر في الصفحة ولا في الواجهة)
+        const TREE_SETUP_SQL = '-- ZeroPlus | تفعيل جدول غابة الإنجاز\ncreate table if not exists public.trees (\n    id          bigint not null,\n    user_id     text   not null,\n    tree_type   text   not null default \'oak\',\n    duration    integer not null default 25,\n    planted_at  timestamptz not null default now(),\n    created_at  timestamptz not null default now(),\n    primary key (user_id, id)\n);\nalter table public.trees enable row level security;\ndrop policy if exists "zp_anon_all_trees" on public.trees;\ncreate policy "zp_anon_all_trees" on public.trees for all to anon using (true) with check (true);\ndrop policy if exists "zp_auth_all_trees" on public.trees;\ncreate policy "zp_auth_all_trees" on public.trees for all to authenticated using (true) with check (true);\ngrant select, insert, update, delete on table public.trees to anon, authenticated, service_role;';
         async function copyTreeSql() {
-            const el = document.getElementById('tree-sql-code');
-            const ok = await copyText(el ? el.innerText : '');
-            showToast(ok ? 'تم نسخ كود SQL — ألصقه في SQL Editor' : 'تعذّر النسخ تلقائياً', ok ? 'success' : 'warn');
+            const ok = await copyText(TREE_SETUP_SQL);
+            showToast(ok ? 'تم نسخ التفاصيل التقنية — أرسلها لفريق الدعم وسنكمل التفعيل' : 'تعذّر النسخ تلقائياً', ok ? 'success' : 'warn');
             return ok;
         }
 
@@ -4716,9 +5254,9 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 if (out) { out.innerText = msg; out.className = 'text-[10.5px] font-bold leading-relaxed ' + (kind === 'error' ? 'text-rose-500' : kind === 'success' ? 'text-emerald-600' : 'text-[var(--ds-muted)]'); }
             };
             const deviceId = localStorage.getItem('zp_device_id');
-            if (!supabaseClient) { say('لا يوجد اتصال بـ Supabase (المكتبة لم تُحمّل).', 'error'); return false; }
+            if (!supabaseClient) { say('تعذّر الاختبار: لا يوجد اتصال بخدمة الحسابات — تحقق من الإنترنت.', 'error'); return false; }
             if (!deviceId) { say('سجّل الدخول أولاً حتى نربط الشجرة بحسابك.', 'error'); return false; }
-            say('جارٍ الاختبار: نكتب صفاً في جدول trees...');
+            say('جارٍ الاختبار: نكتب شجرة تجريبية في حسابك...');
             const probe = {
                 id: nextRecordId(), user_id: deviceId, tree_type: 'oak', duration: 1,
                 planted_at: new Date().toISOString(), created_at: new Date().toISOString()
@@ -4726,8 +5264,13 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             try {
                 const { error } = await supabaseClient.from(TREES_TABLE).upsert(probe, { onConflict: 'user_id,id' });
                 if (error) {
-                    if (isMissingTableError(error)) { treesTableMissing = true; updateForestSyncUI(); }
-                    say('فشل الاختبار: ' + describeCloudError(error), 'error');
+                    if (isMissingTableError(error)) {
+                        treesTableMissing = true;
+                        updateForestSyncUI();
+                        say('حفظ الغابة غير مُهيّأ بعد في حسابك — أشجارك محفوظة على جهازك وستُرفع تلقائياً.', 'error');
+                        return false;
+                    }
+                    say('لم يكتمل الاختبار: ' + describeCloudError(error), 'error');
                     return false;
                 }
                 const { data, error: readErr } = await supabaseClient
@@ -4738,8 +5281,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 treesTableMissing = false;
                 updateForestSyncUI();
                 say(found
-                    ? 'نجح الاختبار ✔ كُتب الصف في Supabase وقُرئ ثم حُذف — الحفظ حقيقي وليس محلياً فقط.'
-                    : 'لم نجد الصف بعد الكتابة — تحقق من سياسات RLS والصلاحيات (شغّل schema.sql).', found ? 'success' : 'error');
+                    ? 'نجح الاختبار: كُتبت شجرة تجريبية وقُرئت ثم حُذفت — حفظ الغابة في حسابك يعمل فعلاً.'
+                    : 'تعذّر الاختبار: لم نجد الشجرة التجريبية بعد كتابتها — سنكمل التفعيل من مركز الدعم.', found ? 'success' : 'error');
                 return found;
             } catch (e) {
                 recordRuntimeIssue(e, 'testTreesStorage');
@@ -4796,7 +5339,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                         treesTableMissing = true;
                         markTreeSync(tree.id, 'local');
                         console.warn('ZeroPlus: جدول trees غير موجود — شغّل supabase/schema.sql');
-                        showToast('جدول الأشجار غير مُهيّأ — شغّل schema.sql (زر «تهيئة الجدول»)', 'warn');
+                        showToast('حفظ الغابة غير مُهيّأ بعد — أشجارك محفوظة على جهازك وستُرفع تلقائياً', 'warn');
                     } else {
                         markTreeSync(tree.id, 'failed');
                         lastSyncError = error.message;
@@ -4859,7 +5402,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     }
                     updateForestSyncUI();
                     renderForest();
-                    if (manual) showToast(forestState === 'error' ? 'تعذّر جلب الغابة: ' + forestError : 'جدول trees غير مُهيّأ بعد في Supabase', forestState === 'error' ? 'error' : 'warn');
+                    if (manual) showToast(forestState === 'error' ? 'تعذّر تحديث الغابة: ' + forestError : 'حفظ الغابة غير مُهيّأ بعد في حسابك — أشجارك محفوظة على جهازك', forestState === 'error' ? 'error' : 'warn');
                     return false;
                 }
                 treesTableMissing = false;
@@ -4884,7 +5427,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 renderForest();
                 renderAchievements();
                 if (navigator.onLine) flushSyncQueue();
-                if (manual) showToast('تم جلب غابتك من Supabase (' + cloudTrees.length + ' شجرة)', 'success');
+                if (manual) showToast('تم تحديث غابتك (' + cloudTrees.length + ' شجرة)', 'success');
                 return true;
             } catch (e) {
                 forestState = 'error';
@@ -4904,8 +5447,6 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const sceneLoading = document.getElementById('forest-scene-loading');
             if (sceneLoading) sceneLoading.classList.toggle('hidden', !loading);
 
-            const count = document.getElementById('stat-tree-count');
-            if (count) count.innerText = `${trees.length} شجرة`;
             const chip = document.getElementById('forest-count-chip');
             if (chip) chip.innerText = `${trees.length} شجرة`;
             const homeSessions = document.getElementById('home-stat-sessions');
@@ -4939,30 +5480,29 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     treeSyncBadge(t.sync) +
                     '</div>';
             }).join('');
+            focusRenderStats();          // إحصاءات القسم (إجمالي/اليوم/القطع) من نفس البيانات
         }
 
         function dismissTreeCard() {
-            document.getElementById('tree-planted-card')?.classList.add('hidden');
+            document.getElementById('focus-complete-card')?.classList.add('hidden');
             return true;
         }
 
+        // بطاقة نتيجة الجلسة: تظهر في مكانها داخل شاشة التركيز مع تفاصيل الشجرة الجديدة
         function showTreePlantedCard(tree) {
-            const card = document.getElementById('tree-planted-card');
-            const art = document.getElementById('tree-planted-art');
-            const title = document.getElementById('tree-planted-title');
-            const sub = document.getElementById('tree-planted-sub');
+            const card = document.getElementById('focus-complete-card');
+            const sub = document.getElementById('focus-complete-sub');
             if (!card) return;
             const species = treeSpeciesById(tree.tree_type);
-            if (art) art.innerHTML = treeSVG(tree.tree_type, { className: 'w-full h-full tree-grow', title: species.name });
-            if (title) title.innerText = 'زُرعت شجرة ' + species.name + ' في غابتك';
-            if (sub) sub.innerText = 'جلسة ' + tree.duration + ' دقيقة • ' + TREE_RARITY_LABEL[species.rarity] + ' • ' + (treesTableMissing ? 'محفوظة على جهازك (بانتظار تهيئة الجدول)' : 'تُحفظ في Supabase');
+            if (sub) sub.innerText = 'زُرعت شجرة ' + species.name + ' في غابتك — إنجازاتك محفوظة تلقائياً';
             card.classList.remove('hidden');
         }
 
-        // زراعة شجرة عند انتهاء جلسة التركيز (تُحفظ فوراً في Supabase)
-        function plantTreeForSession(sessionObj) {
+        // زراعة شجرة عند انتهاء جلسة التركيز — الشجرة التي اختارها الطالب ورآها تنمو
+        function plantTreeForSession(sessionObj, speciesId) {
             const mins = Number(sessionObj && sessionObj.mins) || currentPomoMins;
-            const species = pickTreeSpecies(mins, Number(sessionObj && sessionObj.id) || Date.now());
+            const chosen = speciesId || (sessionObj && sessionObj.species);
+            const species = chosen ? treeSpeciesById(chosen) : pickTreeSpecies(mins, Number(sessionObj && sessionObj.id) || Date.now());
             const nowIso = new Date().toISOString();
             const deviceId = localStorage.getItem('zp_device_id') || '';
             const tree = {
@@ -4980,8 +5520,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             lastPlantedTree = tree;
             renderForest();
             showTreePlantedCard(tree);
-            showToast('🌳 زُرعت شجرة ' + species.name + ' — جلسة ' + mins + ' دقيقة', 'success');
-            plantTreeInCloud(tree);       // الكتابة الفعلية في جدول trees
+            showToast('زُرعت شجرة ' + species.name + ' في غابتك — ' + mins + ' دقيقة تركيز', 'success');
+            plantTreeInCloud(tree);       // الحفظ الفعلي في حساب الطالب (مع طابور إعادة محاولة)
             renderAchievements();
             return tree;
         }
@@ -4996,6 +5536,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 const offset = 276 - (pomoDuration ? pomoRemaining / pomoDuration : 0) * 276;
                 circle.style.strokeDashoffset = offset;
             }
+            focusUpdateLive();      // الشجرة والتقدّم والتسميات تتبع نفس اللحظة
             // العدّاد يظهر في عنوان التبويب حتى والتطبيق بالخلفية/في تبويب آخر
             if (typeof document !== 'undefined') {
                 document.title = pomoRunning
@@ -5006,12 +5547,31 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function setPomoMode(mins, msg, btn) {
-            resetPomo();
+            // جلسة جارية؟ لا نمسّ مؤقّتها: نُخبر الطالب بلطف ونتركه يكمل
+            if (focusIsActive() && Number(mins) !== Number(currentPomoMins)) {
+                showToast('جلستك الحالية قائمة — يمكنك تغيير المدة بعد أن تكتمل شجرتك', 'info');
+                focusSyncDurationButtons();
+                return false;
+            }
+            resetPomo({ silent: true });                 // تغيير المدة يلغي جلسة غير جارية
             currentPomoMins = mins; pomoDuration = mins * 60; pomoRemaining = pomoDuration;
+            safeSetItem(ZP_MINS_KEY, String(Number(mins) || 25));   // المدة المختارة تبقى بعد تحديث الصفحة
             const statusEl = document.getElementById('pomo-status');
-            if (statusEl) statusEl.innerText = msg;
-            document.querySelectorAll('.pomo-mode-btn').forEach(b => b.className = 'pomo-mode-btn flex-1 py-2 rounded-lg text-xs font-bold text-[var(--ds-text-soft)]');
-            if (btn) btn.className = 'pomo-mode-btn flex-1 py-2 rounded-lg text-xs font-bold bg-[var(--ds-primary)] text-white shadow-sm';
+            if (statusEl) statusEl.innerText = msg || ('جلسة تركيز (' + mins + ' دقيقة)');
+            focusStartAnother();                          // نعود لواجهة الاختيار ونُخفي بطاقات النتيجة
+            focusRenderDurations();
+            focusSyncDurationButtons();
+            // شجرة مختارة لم تعد مناسبة للمدة الجديدة ← نختار بديلاً متاحاً
+            const sp = treeSpeciesById(focusEnsureSpecies());
+            if (mins < sp.minMins) {
+                const pool = focusEligibleSpecies(mins);
+                if (pool.length) {
+                    focusSelectedSpecies = pool[Math.abs(Number(mins) + Date.now()) % pool.length].id;
+                    safeSetItem(FOCUS_SPECIES_KEY, focusSelectedSpecies);
+                }
+            }
+            focusRenderPicker();
+            focusRenderStage('setup');
             updatePomoDisplay();
         }
 
@@ -5020,6 +5580,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         let pomoRunning = false;
         let pomoPaused = false;
         const POMO_PAUSE_KEY = 'zp_pomo_paused_remaining';
+        const ZP_MINS_KEY = 'zp_pomo_mins';
         function isPomoRunning() { return pomoRunning; }
         function isPomoPaused() { return pomoPaused; }
         function backgroundTimerSupported() {
@@ -5167,6 +5728,9 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             return true;
         }
 
+        // انتهت الجلسة فعلاً: تُحتسب مرّة واحدة فقط، وتزرع شجرة واحدة بالضبط.
+        // الجلسة الجارية محفوظة في الجهاز بمعرّف ثابت، فلو حُدّثت الصفحة أو تكرّر الحدث
+        // لن تُحتسب مرتين ولن تُزرع شجرة إضافية (نفس المعرّف = نفس النتيجة).
         function finishPomoSession() {
             clearInterval(pomoInterval); pomoInterval = null;
             pomoRunning = false;
@@ -5177,30 +5741,47 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             disarmBackgroundTimer();
             disarmCheckInAlert();
             releasePomoWakeLock();
+
+            const mins = Math.max(1, Number(currentPomoMins) || 25);
+            const session = focusReadSession();
+            const sessionId = (session && session.id) ? session.id : nextRecordId();
+            if (focusAlreadyCollected(sessionId)) {         // حُصّلت سابقاً ← لا تكرار
+                focusFinishState();
+                resetPomo({ fromCompletion: true });
+                renderForest();
+                return false;
+            }
+            focusMarkCollected(sessionId);
+            const speciesId = (session && session.species) || focusEnsureSpecies();
+
             pomoCompletedCount++;
-            const countStat = document.getElementById('pomo-count-stat');
-            const totalMinsStat = document.getElementById('stat-total-mins');
-            if (countStat) countStat.innerText = `${pomoCompletedCount} جلسات`;
-            totalFocusMins += currentPomoMins;
+            totalFocusMins += mins;
             localStorage.setItem('zp_focus_mins', totalFocusMins);
-            if (totalMinsStat) totalMinsStat.innerText = `${totalFocusMins} دقيقة`;
             const now = new Date();
-            const sessionObj = { id: nextRecordId(), name: `جلسة ${currentPomoMins} دقيقة`, mins: currentPomoMins, time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}` };
+            const sessionObj = {
+                id: sessionId,
+                name: `جلسة ${mins} دقيقة`,
+                mins: mins,
+                species: speciesId,
+                time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+            };
             userForest.unshift(sessionObj);
             safeSetItem('zp_forest', JSON.stringify(userForest));
-            plantTreeForSession(sessionObj);   // 🌳 شجرة جديدة تُحفظ فوراً في Supabase
+            const tree = plantTreeForSession(sessionObj, speciesId);   // شجرة واحدة لهذه الجلسة
+            focusOnCompleted(tree, mins);
             renderForest();
             const prefs = getNotifyPrefs();
             if (prefs.sound) playChime(true);
             awardXP(30); triggerConfetti(['#0f6b4a', '#2fbf8b', '#d6f1e2', '#ffffff']);
             if (prefs.sessionEnd && notificationState() === 'granted') {
-                sendAppNotification('أحسنت! انتهت الجلسة', `أنجزت جلسة ${currentPomoMins} دقيقة — خذ استراحة قصيرة الآن.`, 'zp-done');
+                sendAppNotification('أحسنت! انتهت الجلسة', `أنجزت جلسة ${mins} دقيقة — نبتت شجرتك في غابتك.`, 'zp-done');
             }
             // تذكير بالعودة بعد الاستراحة (جلسة تركيز ≥ 15 دقيقة تستحق استراحة 5 دقائق)
-            if (prefs.breakNudge && currentPomoMins >= 15) scheduleBreakNudge(5);
+            if (prefs.breakNudge && mins >= 15) scheduleBreakNudge(5);
             syncSessionToCloud(sessionObj);
             syncProfileWithCloud();
-            resetPomo();
+            resetPomo({ fromCompletion: true });
+            return true;
         }
 
         function togglePomo() {
@@ -5212,8 +5793,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         function startPomo(opts) {
             opts = opts || {};
             if (pomoRunning) return false;
-            const btn = document.getElementById('pomo-play-btn');
-            if (btn) btn.innerHTML = '<span>إيقاف</span> <i aria-hidden="true" class="fa-solid fa-pause mr-2 text-xs"></i>';
+            focusBeginSession();                     // جلسة واحدة لكل تشغيل (والاستئناف يعيد استخدامها)
+            document.getElementById('focus-tree-stage')?.classList.remove('is-withered');
+            document.getElementById('focus-complete-card')?.classList.add('hidden');
+            document.getElementById('focus-abandoned-card')?.classList.add('hidden');
+            focusRenderStage('active');              // الشجرة تبدأ صغيرة وتنمو مع المؤقّت
             if (opts.deadlineAt) pomoRemaining = Math.max(1, Math.ceil((opts.deadlineAt - Date.now()) / 1000));
             pomoEndTimestamp = Date.now() + (pomoRemaining * 1000);
             localStorage.setItem('zp_pomo_end_time', String(pomoEndTimestamp));
@@ -5224,6 +5808,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             requestPomoWakeLock();
             maybeRemindNotificationsForPomo();
             armCheckInAlert();
+            focusUpdateStageControls();
             updateBackgroundStatus();
             updatePomoDisplay();
             pomoInterval = setInterval(() => {
@@ -5249,8 +5834,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (!opts.fromBackground) pauseBackgroundTimer(pomoRemaining * 1000);
             disarmCheckInAlert();
             releasePomoWakeLock();
-            const btn = document.getElementById('pomo-play-btn');
-            if (btn) btn.innerHTML = '<span>استئناف</span> <i aria-hidden="true" class="fa-solid fa-play mr-2 text-xs"></i>';
+            focusUpdateStageControls();
             updateBackgroundStatus();
             updatePomoDisplay();
             return true;
@@ -5266,6 +5850,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             opts = opts || {};
             clearInterval(pomoInterval); pomoInterval = null;
             const wasActive = pomoRunning || pomoPaused;
+            const hadSession = !!focusReadSession();
             pomoRunning = false;
             pomoPaused = false;
             pomoEndTimestamp = 0;
@@ -5275,8 +5860,10 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             disarmCheckInAlert();
             releasePomoWakeLock();
             pomoRemaining = pomoDuration;
-            const btn = document.getElementById('pomo-play-btn');
-            if (btn) btn.innerHTML = '<span>بدء المؤقت</span> <i aria-hidden="true" class="fa-solid fa-play mr-2 text-xs"></i>';
+            // جلسة جارية أُلغيت (زر «إنهاء» من الإشعار أو إعادة تهيئة صريحة): لا شجرة ولا سجل
+            if (hadSession && !opts.fromCompletion && !opts.silent) focusOnAbandoned({ silent: true });
+            else if (hadSession && (opts.fromCompletion || opts.silent)) focusClearSession();
+            focusUpdateStageControls();
             updatePomoDisplay();
             updateBackgroundStatus();
             return wasActive;
@@ -5309,8 +5896,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 pomoRemaining = remainingSec;
                 pomoPaused = true;
                 safeSetItem(POMO_PAUSE_KEY, String(remainingSec));
-                const btn = document.getElementById('pomo-play-btn');
-                if (btn) btn.innerHTML = '<span>استئناف</span> <i aria-hidden="true" class="fa-solid fa-play mr-2 text-xs"></i>';
+                focusUpdateStageControls();
                 updatePomoDisplay();
                 updateBackgroundStatus();
                 return true;
@@ -5344,7 +5930,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             renderForest();
             renderAchievements();
             updateGamificationBar();
-            showToast('تم مسح سجل الأشجار من الجهاز ومن Supabase', 'info');
+            showToast('تمّت إعادة تهيئة سجل الأشجار على جهازك وفي حسابك', 'info');
             return true;
         }
 
@@ -5388,6 +5974,678 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         // ============ STARTUP ============
+        // ============ 12. تجربة غابة التركيز: الاختيار ← النموّ ← الجلسة ← الغابة ============
+        // الفكرة: كل جلسة تركيز مكتملة = شجرة واحدة دائمة في غابة الطالب، والغابة تُبنى من قطع
+        // أرض مربّعة (٤×٤ = ١٦ شجرة في القطعة) وتكبر تلقائياً. لا شيء مزيّف: المؤقّت حقيقي،
+        // والنموّ مربوط بنسبة التقدّم الفعلية، والقوّة كلها من بيانات الطالب المحفوظة.
+        const FOCUS_SPECIES_KEY = 'zp_focus_species';    // الشجرة التي اختارها الطالب لجلساته
+        const FOCUS_ACTIVE_KEY = 'zp_focus_active';      // الجلسة الجارية (تُستعاد بعد تحديث الصفحة)
+        const FOCUS_DONE_KEY = 'zp_focus_collected';     // معرّفات الجلسات المُحصّلة (منع التكرار)
+        const FOCUS_DURATIONS = [15, 25, 30, 45, 60, 90];
+        const FOREST_TILE_SLOTS = 16;                    // ٤ × ٤ موضعاً في كل قطعة أرض
+        const FOREST_TILES_SHOWN = 6;                    // ما نرسمه في المشهد (الباقي في السجل)
+        let focusSelectedSpecies = localStorage.getItem(FOCUS_SPECIES_KEY) || '';
+        let focusPhase = 'setup';                        // setup | active | complete | abandoned
+        let focusStageShown = -1;                        // آخر مرحلة نموّ رسمناها
+        let focusStageNodes = null;                      // مجموعات المراحل داخل SVG النموّ
+        let focusStageMode = '';                         // setup | active | complete — ما هو معروض الآن
+        let focusLiveCache = { pct: -1, stage: -1, hint: '', label: '' };
+
+        function focusIsActive() { return !!(pomoRunning || pomoPaused); }
+        function focusReadSession() { return safeParse(FOCUS_ACTIVE_KEY, null); }
+        function focusWriteSession(s) { safeSetItem(FOCUS_ACTIVE_KEY, JSON.stringify(s)); }
+        function focusClearSession() { try { localStorage.removeItem(FOCUS_ACTIVE_KEY); } catch (e) {} }
+
+        // منع احتساب الجلسة مرتين (تحديث الصفحة، تكرار الأحداث، عودة الاتصال…)
+        function focusCollectedIds() { const v = safeParse(FOCUS_DONE_KEY, []); return Array.isArray(v) ? v : []; }
+        function focusAlreadyCollected(id) { return focusCollectedIds().some(x => String(x) === String(id)); }
+        function focusMarkCollected(id) {
+            const list = focusCollectedIds().filter(x => String(x) !== String(id));
+            list.unshift(id);
+            safeSetItem(FOCUS_DONE_KEY, JSON.stringify(list.slice(0, 60)));
+        }
+
+        // ===== اختيار الشجرة =====
+        function focusEnsureSpecies() {
+            const valid = TREE_SPECIES.some(t => t.id === focusSelectedSpecies);
+            if (!valid) {
+                focusSelectedSpecies = pickTreeSpecies(currentPomoMins, Date.now()).id;
+                safeSetItem(FOCUS_SPECIES_KEY, focusSelectedSpecies);
+            }
+            return focusSelectedSpecies;
+        }
+        function focusEligibleSpecies(mins) {
+            const m = Number(mins) || currentPomoMins || 25;
+            return TREE_SPECIES.filter(t => m >= t.minMins);
+        }
+        function focusSelectSpecies(id) {
+            const sp = treeSpeciesById(id);
+            if (focusIsActive()) {
+                showToast('أنت داخل جلسة الآن — شجرتك الحالية تنمو، ويمكنك تغيير النوع بعد انتهائها', 'info');
+                return false;
+            }
+            if ((Number(currentPomoMins) || 25) < sp.minMins) {
+                showToast('شجرة ' + sp.name + ' تحتاج جلسة ' + sp.minMins + ' دقيقة على الأقل', 'warn');
+                return false;
+            }
+            focusSelectedSpecies = sp.id;
+            safeSetItem(FOCUS_SPECIES_KEY, sp.id);
+            focusRenderPicker();
+            if (focusPhase === 'complete') focusStartAnother();   // بدأ يستعد للجلسة القادمة ← نطوي بطاقة النتيجة
+            else { focusRenderStage('setup'); focusUpdateLive(true); }
+            showToast('اخترت شجرة ' + sp.name + ' — ستنمو مع جلستك القادمة', 'success');
+            return true;
+        }
+
+        function focusRenderPicker() {
+            const box = document.getElementById('focus-tree-picker');
+            if (!box) return;
+            const locked = focusIsActive();
+            box.innerHTML = TREE_SPECIES.map(function (sp) {
+                const selected = sp.id === focusSelectedSpecies;
+                const allowed = (Number(currentPomoMins) || 25) >= sp.minMins;
+                const cls = 'focus-tree-option' + (selected ? ' is-selected' : '') + ((!allowed || locked) ? ' is-locked' : '');
+                const meta = TREE_RARITY_LABEL[sp.rarity] + (sp.minMins ? ' • ' + sp.minMins + 'د+' : '');
+                return '<button type="button" class="' + cls + '" data-species="' + sp.id + '"' +
+                    ' aria-pressed="' + (selected ? 'true' : 'false') + '"' +
+                    ' aria-label="شجرة ' + escapeHtml(sp.name) + ' — ' + escapeHtml(meta) + '"' +
+                    ' onclick="focusSelectSpecies(\'' + sp.id + '\')">' +
+                    '<span class="focus-tree-option-art">' + treeSVG(sp.id, { className: 'w-full h-full' }) + '</span>' +
+                    '<span class="focus-tree-option-name">' + escapeHtml(sp.name) + '</span>' +
+                    '<span class="focus-tree-option-meta">' + escapeHtml(meta) + '</span>' +
+                    '</button>';
+            }).join('');
+        }
+
+        function focusRenderDurations() {
+            const row = document.getElementById('focus-duration-row');
+            if (!row) return;
+            row.innerHTML = FOCUS_DURATIONS.map(function (m) {
+                const active = Number(currentPomoMins) === m;
+                return '<button type="button" class="pomo-mode-btn focus-duration' + (active ? ' is-active' : '') + '"' +
+                    ' data-mins="' + m + '" aria-pressed="' + (active ? 'true' : 'false') + '"' +
+                    ' onclick="setPomoMode(' + m + ', \'جلسة تركيز (' + m + ' دقيقة)\', this)">' + m + ' دقيقة</button>';
+            }).join('');
+        }
+
+        function focusSyncDurationButtons() {
+            const row = document.getElementById('focus-duration-row');
+            if (!row) return;
+            const buttons = row.querySelectorAll ? row.querySelectorAll('.focus-duration') : [];
+            Array.prototype.forEach.call(buttons, function (b) {
+                const on = Number(b.getAttribute('data-mins')) === Number(currentPomoMins);
+                b.classList.toggle('is-active', on);
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+        }
+
+        // ===== المسرح: الشجرة تنمو مع نسبة التقدّم =====
+        function focusStageForPct(pct) {
+            if (pct >= 100) return 4;
+            if (pct >= 75) return 3;
+            if (pct >= 50) return 2;
+            if (pct >= 25) return 1;
+            return 0;
+        }
+        // النسبة الفعلية: من الوقت الفعلي (طوابع زمنية) لا من عدّاد الواجهة
+        function focusProgressPct() {
+            const total = Math.max(1, Number(pomoDuration) || (Number(currentPomoMins) || 25) * 60);
+            const left = Math.max(0, Math.min(total, Number(pomoRemaining) || 0));
+            return Math.max(0, Math.min(100, Math.round(((total - left) / total) * 100)));
+        }
+        function focusSetStageProgress(pct, stage) {
+            const stageEl = document.getElementById('focus-tree-stage');
+            if (stageEl && stageEl.style && typeof stageEl.style.setProperty === 'function') {
+                stageEl.style.setProperty('--focus-progress', String(Math.max(0, Math.min(1, pct / 100))));
+            }
+            if (!focusStageNodes || !focusStageNodes.length) return;
+            focusStageNodes.forEach(function (g, i) {
+                const on = i === stage;
+                if (g.classList) {
+                    g.classList.toggle('is-shown', on);
+                    g.classList.toggle('is-hidden', !on);
+                }
+                // النمط المباشر يضمن الظهور الصحيح بغضّ النظر عن أولوية أنماط CSS
+                if (g.style) g.style.opacity = on ? '1' : '0';
+            });
+        }
+        function focusRenderStage(state) {
+            const box = document.getElementById('focus-tree-art');
+            if (!box) return;
+            const species = focusEnsureSpecies();
+            focusStageNodes = null;
+            focusStageMode = state;
+            focusStageShown = -1;
+            if (state === 'complete' && focusLastCompletedTree) {
+                box.innerHTML = treeSVG(focusLastCompletedTree.tree_type, { className: 'w-full h-full tree-grow', title: treeSpeciesById(focusLastCompletedTree.tree_type).name });
+                return;
+            }
+            if (state === 'active') {
+                // شجرة النموّ: خمس مراحل مكدّسة داخل SVG واحد، نظهر منها ما يوافق التقدّم
+                box.innerHTML = treeGrowthSVG(species, { className: 'w-full h-full' });
+                const svg = box.querySelector ? box.querySelector('[data-tree-species]') : null;
+                focusStageNodes = svg && svg.querySelectorAll ? Array.prototype.slice.call(svg.querySelectorAll('[data-tree-stage]')) : [];
+                focusSetStageProgress(focusProgressPct(), focusStageForPct(focusProgressPct()));
+                return;
+            }
+            // ما قبل البدء: معاينة الشجرة كاملة وهي بانتظار جلستك
+            box.innerHTML = treeSVG(species, { className: 'w-full h-full', title: treeSpeciesById(species).name });
+        }
+
+        // ===== التحديث الحيّ للتسميات والتقدّم (يُستدعى من updatePomoDisplay) =====
+        function focusMinutesText(mins) {
+            const m = Math.max(0, Math.round(Number(mins) || 0));
+            if (m <= 0) return 'أقل من دقيقة';
+            if (m === 1) return 'دقيقة واحدة';
+            if (m === 2) return 'دقيقتان';
+            if (m <= 10) return m + ' دقائق';
+            return m + ' دقيقة';
+        }
+        function focusUpdateLive(force) {
+            const total = Math.max(1, Number(pomoDuration) || (Number(currentPomoMins) || 25) * 60);
+            const left = Math.max(0, Math.min(total, Number(pomoRemaining) || 0));
+            const pct = focusProgressPct();
+            const stage = focusStageForPct(pct);
+            const running = focusIsActive();
+            const hint = !running
+                ? (focusPhase === 'abandoned' ? 'لم تكتمل الجلسة — لا شجرة هذه المرة' : (pct > 0 ? 'الجلسة موقوفة مؤقتاً' : 'لم تبدأ الشجرة بالنمو بعد'))
+                : (pct >= 100 ? 'شجرتك مكتملة!' : 'بقي ' + focusMinutesText(Math.ceil(left / 60)));
+
+            const pctEl = document.getElementById('focus-progress-pct');
+            if (pctEl && (force || focusLiveCache.pct !== pct)) pctEl.innerText = pct + '%';
+            const bar = document.getElementById('focus-progress-bar');
+            if (bar && (force || focusLiveCache.pct !== pct)) bar.style.width = pct + '%';
+            const hintEl = document.getElementById('focus-progress-hint');
+            if (hintEl && (force || focusLiveCache.hint !== hint)) hintEl.innerText = hint;
+            const caption = document.getElementById('focus-timer-caption');
+            if (caption) {
+                const cap = !running ? (focusPhase === 'abandoned' ? 'مدة الجلسة' : 'مدة الجلسة') : 'الوقت المتبقي';
+                if (force || focusLiveCache.caption !== cap) { caption.innerText = cap; focusLiveCache.caption = cap; }
+            }
+            const stageLabel = document.getElementById('focus-stage-label');
+            if (stageLabel) {
+                const st = TREE_GROWTH_STAGES[stage] || TREE_GROWTH_STAGES[0];
+                const label = focusPhase === 'complete' && !running
+                    ? 'نمت بالكامل — ' + treeSpeciesById(focusLastCompletedTree ? focusLastCompletedTree.tree_type : focusEnsureSpecies()).name
+                    : (!running && pct === 0
+                        ? (focusPhase === 'abandoned' ? 'لم تكتمل الجلسة' : 'الشجرة التي ستنمو: ' + treeSpeciesById(focusEnsureSpecies()).name)
+                        : st.label);
+                if (force || focusLiveCache.label !== label) { stageLabel.innerText = label; focusLiveCache.label = label; }
+            }
+            // إصلاح ذاتي: أي جلسة جارية (بدأت الآن أو استُعيدت بعد تحديث الصفحة أو من الخلفية)
+            // يجب أن تعرض مسرح النموّ لا معاينة الشجرة المكتملة
+            if (running && focusStageMode !== 'active') focusRenderStage('active');
+            // وجلسة مكتملة تبقى شجرتها المكتملة معروضة ما دامت بطاقة النتيجة معروضة
+            const completeCard = document.getElementById('focus-complete-card');
+            if (!running && focusPhase === 'complete' && focusLastCompletedTree && completeCard &&
+                !completeCard.classList.contains('hidden') && focusStageMode !== 'complete') {
+                focusRenderStage('complete');
+            }
+            if (force || focusLiveCache.pct !== pct || focusStageShown !== stage || focusStageNodes) {
+                if (focusStageNodes) focusSetStageProgress(pct, stage);
+                focusStageShown = stage;
+            }
+            focusLiveCache.pct = pct;
+            focusLiveCache.stage = stage;
+            focusLiveCache.hint = hint;
+        }
+
+        // ===== حالة الأزرار والعناوين =====
+        function focusSetPlayButton(mode) {
+            const btn = document.getElementById('pomo-play-btn');
+            const label = document.getElementById('pomo-play-label');
+            if (!btn) return;
+            const text = mode === 'resume' ? 'استئناف الجلسة' : (mode === 'pause' ? 'إيقاف مؤقت' : 'ابدأ جلسة التركيز');
+            if (label) label.innerText = text;
+            const icon = btn.querySelector ? btn.querySelector('svg path') : null;
+            if (icon) icon.setAttribute('d', mode === 'pause' ? 'M8 5h3v14H8zM13 5h3v14h-3z' : 'M7 4.5 19 12 7 19.5v-15Z');
+            btn.setAttribute('aria-label', text);
+        }
+        function focusUpdateStageControls() {
+            const active = focusIsActive();
+            const setup = document.getElementById('focus-setup');
+            const abandon = document.getElementById('focus-abandon-btn');
+            if (setup) setup.classList.toggle('hidden', active);
+            if (abandon) abandon.classList.toggle('hidden', !active);
+            const title = document.getElementById('focus-card-title');
+            const sub = document.getElementById('focus-card-sub');
+            if (title) {
+                title.innerText = active
+                    ? (pomoPaused ? 'جلستك موقوفة مؤقتاً' : 'تركيز جارٍ الآن')
+                    : (focusPhase === 'complete' ? 'جلسة مكتملة' : 'جلسة تركيز جديدة');
+            }
+            if (sub) {
+                const sp = treeSpeciesById(focusEnsureSpecies());
+                sub.innerText = active
+                    ? ((pomoPaused ? 'شجرة ' : 'شجرة ') + sp.name + (pomoPaused ? ' تنتظر استئنافك' : ' تنمو مع كل ثانية'))
+                    : 'اختر المدة والشجرة، ثم ابدأ — وستنمو شجرتك مع كل دقيقة تركيز';
+            }
+            focusSetPlayButton(focusIsActive() ? (pomoRunning ? 'pause' : 'resume') : 'start');
+            focusRenderDurations();
+            focusSyncDurationButtons();
+            focusUpdateStreakChip();
+        }
+
+        // أطول جلسة تركيز — من نفس بيانات الإنجازات (بلا نظام إحصاء ثانٍ)
+        function focusUpdateLongestChip() {
+            const chip = document.getElementById('focus-longest-chip');
+            if (!chip) return;
+            let longest = 0;
+            try { longest = Number(computeAchievementData().longest) || 0; } catch (e) { longest = 0; }
+            chip.innerText = longest > 0 ? ('أطول جلسة: ' + focusMinutesText(longest)) : 'أطول جلسة: —';
+        }
+        function focusUpdateStreakChip() {
+            const chip = document.getElementById('focus-streak-chip');
+            if (!chip) return;
+            let streak = 0;
+            try { streak = Number(computeAchievementData().streak) || 0; } catch (e) { streak = 0; }
+            chip.innerText = streak > 0
+                ? (streak === 1 ? 'يوم تركيز واحد' : streak + ' أيام تركيز متتالية')
+                : 'لا سلسلة بعد — ابدأ اليوم';
+        }
+
+        // ===== دورة الجلسة =====
+        // تبدأ جلسة جديدة مرة واحدة فقط عند الضغط على «ابدأ» (الاستئناف يعيد استخدام نفس الجلسة)
+        function focusBeginSession() {
+            const existing = focusReadSession();
+            if (existing && Number(existing.mins) > 0) {
+                // جلسة مستعادة بعد تحديث الصفحة: نتبنّى مدتها ونُكمل بنفس معرّفها (جلسة واحدة، شجرة واحدة)
+                const m = Number(existing.mins);
+                if (Number(currentPomoMins) !== m) {
+                    currentPomoMins = m; pomoDuration = m * 60;
+                    focusSyncDurationButtons();
+                }
+                focusPhase = 'active';
+                return existing;
+            }
+            const session = {
+                id: nextRecordId(),
+                species: focusEnsureSpecies(),
+                mins: Math.max(1, Number(currentPomoMins) || 25),
+                startedAt: Date.now()
+            };
+            focusWriteSession(session);
+            focusPhase = 'active';
+            return session;
+        }
+        function focusFinishState() {
+            focusPhase = 'complete';
+            focusClearSession();
+        }
+        let focusLastCompletedTree = null;
+
+        // اكتملت الجلسة: شجرة واحدة فقط تُزرع بالمعرّف نفسه (لا تكرار بعد تحديث الصفحة)
+        function focusOnCompleted(tree, mins) {
+            focusLastCompletedTree = tree;
+            focusFinishState();
+            const species = treeSpeciesById(tree.tree_type);
+            const art = document.getElementById('focus-complete-art');
+            if (art) art.innerHTML = treeSVG(tree.tree_type, { className: 'w-full h-full tree-grow', title: species.name });
+            const title = document.getElementById('focus-complete-title');
+            if (title) title.innerText = 'أحسنت! نمت شجرتك بالكامل';
+            const sub = document.getElementById('focus-complete-sub');
+            if (sub) sub.innerText = 'زُرعت شجرة ' + species.name + ' في غابتك — إنجازاتك محفوظة تلقائياً';
+            const dur = document.getElementById('focus-complete-duration');
+            if (dur) dur.innerText = focusMinutesText(mins) + ' تركيز';
+            const count = document.getElementById('focus-complete-count');
+            if (count) count.innerText = displayForest().length + ' شجرة في غابتك';
+            const xp = document.getElementById('focus-complete-xp');
+            if (xp) xp.innerText = '+30 نقطة خبرة';
+            const card = document.getElementById('focus-complete-card');
+            if (card) card.classList.remove('hidden');
+            document.getElementById('focus-abandoned-card')?.classList.add('hidden');
+            focusRenderStage('complete');
+            // شجرتك زرعت في الغابة ← نجهّز شجرة جديدة للجلسة القادمة (كل جلسة تعطي نوعاً مختلفاً)
+            focusSelectedSpecies = pickTreeSpecies(mins, Number(tree.id) || Date.now()).id;
+            safeSetItem(FOCUS_SPECIES_KEY, focusSelectedSpecies);
+            focusRenderPicker();
+            focusUpdateStageControls();
+            focusUpdateLive(true);
+            focusRenderStats();          // الإحصاءات (الشجرة/الوقت/الجلسات) تتحدّث لحظة الاكتمال
+        }
+
+        // لم تكتمل الجلسة: لا شجرة ولا سجل — نحفظ الدقائق في الإحصاءات فقط، والرسالة محفّزة لا معاقبة
+        function focusOnAbandoned(opts) {
+            opts = opts || {};
+            const mins = Math.max(1, Number(currentPomoMins) || 25);
+            const total = Math.max(1, Number(pomoDuration) || mins * 60);
+            const spentSec = opts.spentSec !== undefined
+                ? Math.max(0, Number(opts.spentSec) || 0)
+                : Math.max(0, total - Math.max(0, Math.min(total, Number(pomoRemaining) || 0)));
+            const spentMins = Math.round(spentSec / 60);
+            focusPhase = 'abandoned';
+            focusClearSession();
+            const art = document.getElementById('focus-abandoned-art');
+            if (art) art.innerHTML = treeSVG(focusSelectedSpecies || focusEnsureSpecies(), { className: 'w-full h-full', stage: 1 });
+            const sub = document.getElementById('focus-abandoned-sub');
+            if (sub) {
+                sub.innerText = spentMins > 0
+                    ? ('ركّزت ' + focusMinutesText(spentMins) + ' قبل التوقف — سُجّلت في إحصاءات اليوم، وغابتك تنتظر جلستك القادمة.')
+                    : 'لا بأس أبداً: غابتك تنتظر جلستك القادمة، وكل دقيقة تركيز تُحسب لك.';
+            }
+            document.getElementById('focus-abandoned-card')?.classList.remove('hidden');
+            document.getElementById('focus-complete-card')?.classList.add('hidden');
+            const stageEl = document.getElementById('focus-tree-stage');
+            if (stageEl) stageEl.classList.add('is-withered');
+            focusRenderStage('setup');
+            focusUpdateStageControls();
+            focusUpdateLive(true);
+            focusRenderStats();          // دقائق اليوم تُحدَّث فوراً بما ركّزه الطالب قبل التوقف
+            if (!opts.silent) showToast('أُنهيت الجلسة — لا تُضاف شجرة هذه المرة', 'info');
+        }
+
+        function focusRequestAbandon() {
+            if (!focusIsActive()) return false;
+            openFocusConfirm();
+            return true;
+        }
+        function openFocusConfirm() {
+            const modal = document.getElementById('focus-confirm-modal');
+            if (modal) modal.classList.remove('hidden');
+            return true;
+        }
+        function closeFocusConfirm() {
+            const modal = document.getElementById('focus-confirm-modal');
+            if (modal) modal.classList.add('hidden');
+            return true;
+        }
+        function confirmAbandonFocus() {
+            closeFocusConfirm();
+            abandonPomoSession();
+            return true;
+        }
+        function abandonPomoSession() {
+            const wasActive = focusIsActive();
+            // نحسب ما ركّزه الطالب فعلاً قبل التصفير (يُحتسب في إحصاءات التركيز بلا شجرة ولا سلسلة)
+            const totalSec = Math.max(1, Number(pomoDuration) || (Number(currentPomoMins) || 25) * 60);
+            const spentSec = Math.max(0, totalSec - Math.max(0, Math.min(totalSec, Number(pomoRemaining) || 0)));
+            clearInterval(pomoInterval); pomoInterval = null;
+            pomoRunning = false;
+            pomoPaused = false;
+            pomoEndTimestamp = 0;
+            try {
+                localStorage.removeItem('zp_pomo_end_time');
+                localStorage.removeItem(POMO_PAUSE_KEY);
+            } catch (e) {}
+            disarmBackgroundTimer();
+            disarmCheckInAlert();
+            releasePomoWakeLock();
+            pomoRemaining = pomoDuration;
+            // نُسجّل الدقائق أولاً حتى تُظهر الإحصاءاتُ الجديدةُ أثرها في نفس اللحظة
+            if (wasActive) markAbandonInHistory(spentSec);
+            focusOnAbandoned({ silent: false, spentSec: spentSec });
+            updatePomoDisplay();
+            updateBackgroundStatus();
+            return wasActive;
+        }
+        // دقائق الجلسات المتوقّفة (بلا شجرة) موزّعة على أيامها — تُحتسب في تركيز اليوم
+        function focusPartialMinutes(day) {
+            let map = {};
+            try {
+                const raw = localStorage.getItem('zp_focus_partial_mins') || '{}';
+                map = raw.charAt(0) === '{' ? JSON.parse(raw) : {};
+            } catch (e) { map = {}; }
+            if (!map || typeof map !== 'object') map = {};
+            if (day) return Number(map[day]) || 0;
+            return map;
+        }
+        // نُبقي أثراً لإحصاءات التركيز حتى لا تُهدَر دقائق الطالب (بلا شجرة ولا سلسلة إنجاز)
+        function markAbandonInHistory(spentSec) {
+            try {
+                const spent = Number(spentSec);
+                if (Number.isFinite(spent) && spent >= 60) {
+                    const day = new Date().toISOString().slice(0, 10);
+                    const map = focusPartialMinutes();
+                    map[day] = (Number(map[day]) || 0) + Math.round(spent / 60);
+                    // نُبقي ٦٠ يوماً فقط حتى لا ينمو التخزين بلا حد
+                    Object.keys(map).sort().slice(0, -60).forEach(function (k) { delete map[k]; });
+                    safeSetItem('zp_focus_partial_mins', JSON.stringify(map));
+                }
+            } catch (e) {}
+        }
+
+        function focusStartAnother() {
+            document.getElementById('focus-complete-card')?.classList.add('hidden');
+            document.getElementById('focus-abandoned-card')?.classList.add('hidden');
+            const stageEl = document.getElementById('focus-tree-stage');
+            if (stageEl) stageEl.classList.remove('is-withered');
+            focusLastCompletedTree = null;
+            focusPhase = 'setup';
+            focusRenderStage('setup');
+            focusUpdateStageControls();
+            focusUpdateLive(true);
+            updateBackgroundStatus();
+            return true;
+        }
+        function focusScrollToForest() {
+            const card = document.getElementById('forest-card');
+            if (card && card.scrollIntoView) card.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+            return true;
+        }
+
+        // ===== الإحصاءات =====
+        function focusTilesInfo(treeCount) {
+            const n = Math.max(0, Number(treeCount) || 0);
+            const tiles = Math.max(1, Math.ceil(n / FOREST_TILE_SLOTS));
+            const filledInLast = n % FOREST_TILE_SLOTS;
+            const current = n > 0 && filledInLast === 0 ? FOREST_TILE_SLOTS : filledInLast;
+            return { count: n, tiles: tiles, current: current, full: current === FOREST_TILE_SLOTS };
+        }
+        function focusTilesPhrase(tiles) {
+            const t = Math.max(1, Number(tiles) || 1);
+            if (t === 1) return 'قطعة أرض واحدة';
+            if (t === 2) return 'قطعتا أرض';
+            if (t <= 10) return t + ' قطع أرض';
+            return t + ' قطعة أرض';
+        }
+        function focusTodayMins() {
+            const todayKey = new Date().toISOString().slice(0, 10);
+            // دقائق الجلسات المتوقّفة اليوم تُحتسب مع جلسات اليوم المكتملة
+            return focusPartialMinutes(todayKey) + displayForest().reduce(function (sum, t) {
+                const raw = t.planted_at || t.created_at;
+                const d = raw ? new Date(raw) : new Date(Number(t.id) || 0);
+                return (d && !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === todayKey) ? sum + (Number(t.duration) || 0) : sum;
+            }, 0);
+        }
+        function focusHoursText(mins) {
+            const m = Math.max(0, Math.round(Number(mins) || 0));
+            const h = Math.floor(m / 60), rest = m % 60;
+            if (h <= 0) return m + ' دقيقة';
+            return h + ' ساعة و' + rest + ' دقيقة';
+        }
+        function focusRenderStats() {
+            const trees = displayForest();
+            const info = focusTilesInfo(trees.length);
+            const todayMins = focusTodayMins();
+            const todaySessions = displayForest().filter(function (t) {
+                const raw = t.planted_at || t.created_at;
+                const d = raw ? new Date(raw) : new Date(Number(t.id) || 0);
+                return d && !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10);
+            }).length;
+            const set = function (id, txt) { const el = document.getElementById(id); if (el) el.innerText = txt; };
+            set('stat-total-mins', (Number(totalFocusMins) || 0) + ' دقيقة');
+            set('focus-total-long', focusHoursText(totalFocusMins));
+            set('pomo-count-stat', todaySessions + ' جلسات');
+            const partialToday = focusPartialMinutes(new Date().toISOString().slice(0, 10));
+            set('focus-today-mins', todayMins > 0
+                ? focusHoursText(todayMins) + ' اليوم' + (partialToday > 0 ? ' — منها ' + focusMinutesText(partialToday) + ' من جلسات لم تكتمل' : '')
+                : (partialToday > 0 ? focusMinutesText(partialToday) + ' اليوم من جلسات لم تكتمل' : 'لا تركيز اليوم بعد'));
+            set('stat-tree-count', trees.length + ' شجرة');
+            set('focus-tiles-hint', focusTilesPhrase(info.tiles));
+            set('forest-log-count', trees.length + ' شجرة');
+            set('forest-count-chip', trees.length + ' شجرة');
+            set('forest-tiles-chip', trees.length
+                ? focusTilesPhrase(info.tiles) + ' • ' + trees.length + ' شجرة'
+                : 'قطعة أرض بانتظار أول شجرة');
+            set('forest-slot-chip', info.current + ' / ' + FOREST_TILE_SLOTS + ' في القطعة الحالية');
+            const bar = document.getElementById('forest-tile-bar');
+            if (bar) bar.style.width = Math.round((info.current / FOREST_TILE_SLOTS) * 100) + '%';
+            focusUpdateStreakChip();
+            focusUpdateLongestChip();
+        }
+
+        // ===== مشهد الغابة: قطع أرض ٤×٤ =====
+        const FOREST_TILE_SIZE = 150;      // وحدات الرسم
+        const FOREST_TILE_GAP = 10;
+        const FOREST_TILE_PAD = 11;
+        const FOREST_SLOT = (FOREST_TILE_SIZE - FOREST_TILE_PAD * 2) / 4;   // ٣٢ وحدة لكل موضع
+
+        function forestSlotPos(i) {
+            const col = i % 4, row = Math.floor(i / 4);
+            return { x: FOREST_TILE_PAD + col * FOREST_SLOT, y: FOREST_TILE_PAD + row * FOREST_SLOT, col: col, row: row };
+        }
+        // زخارف قطعة الأرض: تُوضع على المواضع الفارغة فقط، وتزيد كلما امتلأت القطعة
+        function forestTileDecor(tileIndex, filled) {
+            const out = [];
+            const rnd = treeSeed(tileIndex * 97 + 13);
+            const emptySlots = [];
+            for (let i = FOREST_TILE_SLOTS - 1; i >= filled; i--) emptySlots.push(i);
+            const soil = function (p) {
+                return '<ellipse cx="' + treeNum(p.x + FOREST_SLOT / 2) + '" cy="' + treeNum(p.y + FOREST_SLOT - 4) + '" rx="9" ry="3" fill="#b9dcbf" opacity="0.75"/>';
+            };
+            const tuft = function (p, o) {
+                const x = p.x + FOREST_SLOT / 2, y = p.y + FOREST_SLOT - 4;
+                return '<path d="M' + treeNum(x) + ' ' + treeNum(y) + 'q-3-6-6-7M' + treeNum(x) + ' ' + treeNum(y) + 'q0-7 1-9M' + treeNum(x) + ' ' + treeNum(y) + 'q3-6 6-7"' +
+                    ' stroke="#7cc096" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="' + (o || 0.9) + '"/>';
+            };
+            const stone = function (p, r) {
+                const x = p.x + FOREST_SLOT / 2, y = p.y + FOREST_SLOT - 5;
+                return '<ellipse cx="' + treeNum(x) + '" cy="' + treeNum(y) + '" rx="' + treeNum(r) + '" ry="' + treeNum(r * 0.66) + '" fill="#c9d6cf"/>' +
+                    '<ellipse cx="' + treeNum(x - r * 0.25) + '" cy="' + treeNum(y - r * 0.22) + '" rx="' + treeNum(r * 0.42) + '" ry="' + treeNum(r * 0.26) + '" fill="#e2ebe6" opacity="0.9"/>';
+            };
+            const flowers = function (p) {
+                const x = p.x + FOREST_SLOT / 2, y = p.y + FOREST_SLOT - 5;
+                const colors = ['#f4a7c4', '#f6d365', '#ffffff', '#b9a4f0'];
+                let s = '';
+                for (let i = 0; i < 3; i++) {
+                    const fx = x + (i - 1) * 6, fy = y - (i % 2) * 2;
+                    s += '<line x1="' + treeNum(fx) + '" y1="' + treeNum(fy + 6) + '" x2="' + treeNum(fx) + '" y2="' + treeNum(fy) + '" stroke="#7cc096" stroke-width="1.2"/>' +
+                        '<circle cx="' + treeNum(fx) + '" cy="' + treeNum(fy) + '" r="2.2" fill="' + colors[(i + tileIndex) % colors.length] + '"/>';
+                }
+                return s;
+            };
+            const mushroom = function (p) {
+                const x = p.x + FOREST_SLOT / 2, y = p.y + FOREST_SLOT - 5;
+                return '<rect x="' + treeNum(x - 1.6) + '" y="' + treeNum(y - 5) + '" width="3.2" height="6" rx="1.4" fill="#f1e6d6"/>' +
+                    '<path d="M' + treeNum(x - 5.4) + ' ' + treeNum(y - 4) + 'q5.4-6 10.8 0Z" fill="#e59a86"/>' +
+                    '<circle cx="' + treeNum(x - 1.8) + '" cy="' + treeNum(y - 5.4) + '" r="1.1" fill="#ffffff" opacity="0.85"/>';
+            };
+            const bush = function (p) {
+                const x = p.x + FOREST_SLOT / 2, y = p.y + FOREST_SLOT - 5;
+                return '<ellipse cx="' + treeNum(x - 4) + '" cy="' + treeNum(y - 3) + '" rx="6" ry="4.6" fill="#3f9f6b"/>' +
+                    '<ellipse cx="' + treeNum(x + 4) + '" cy="' + treeNum(y - 3) + '" rx="5.4" ry="4.2" fill="#2f8a5c"/>' +
+                    '<ellipse cx="' + treeNum(x) + '" cy="' + treeNum(y - 6) + '" rx="6.6" ry="5.4" fill="#4fb37c"/>';
+            };
+            // كلما زاد عدد الأشجار زادت تفاصيل الأرض (مرحلة أولى → غابة ممتلئة)
+            const steps = [
+                { min: 1,  fn: function (p) { return soil(p) + tuft(p, 0.85); } },
+                { min: 4,  fn: function (p) { return soil(p) + tuft(p, 0.7); } },
+                { min: 7,  fn: stone },
+                { min: 10, fn: flowers },
+                { min: 12, fn: mushroom },
+                { min: 14, fn: bush }
+            ];
+            let used = 0;
+            steps.forEach(function (step) {
+                if (filled < step.min) return;
+                if (emptySlots.length <= used) return;
+                const p = forestSlotPos(emptySlots[used]);
+                // بعض الخطوات تحتاج موضعاً إضافياً لتبدو طبيعية
+                if (filled >= 8 && emptySlots.length > used + 1 && (step.min % 2 === 1)) {
+                    out.push(step.fn(p));
+                    used++;
+                    out.push(step.fn(forestSlotPos(emptySlots[used])));
+                } else {
+                    out.push(step.fn(p));
+                }
+                used++;
+            });
+            // لمسة عشوائية خفيفة على الأرض لتجنّب التسطيح
+            for (let i = 0; i < 3; i++) {
+                const gx = FOREST_TILE_PAD + rnd() * (FOREST_TILE_SIZE - FOREST_TILE_PAD * 2);
+                const gy = FOREST_TILE_PAD + rnd() * (FOREST_TILE_SIZE - FOREST_TILE_PAD * 2);
+                out.push('<circle cx="' + treeNum(gx) + '" cy="' + treeNum(gy) + '" r="0.9" fill="#8ec9a2" opacity="0.5"/>');
+            }
+            return out.join('');
+        }
+
+        function forestTileArt(tileIndex, tileTrees, isCurrent) {
+            const filled = Math.min(FOREST_TILE_SLOTS, tileTrees.length);
+            let out = '<g class="forest-tile-shadow">' +
+                '<rect x="0" y="0" width="' + FOREST_TILE_SIZE + '" height="' + FOREST_TILE_SIZE + '" rx="18" fill="#d9f0e0"/>' +
+                '<rect x="0" y="0" width="' + FOREST_TILE_SIZE + '" height="' + FOREST_TILE_SIZE + '" rx="18" fill="none" stroke="' + (isCurrent ? '#4fb37c' : '#bfe3cd') + '" stroke-width="' + (isCurrent ? 2.4 : 1.4) + '"' + (isCurrent ? ' stroke-dasharray="7 5"' : '') + '/>' +
+                '<rect x="6" y="6" width="' + (FOREST_TILE_SIZE - 12) + '" height="' + (FOREST_TILE_SIZE - 12) + '" rx="14" fill="url(#forestTileInner)"/>' +
+                '</g>';
+            // مواضع فارغة: آثار تربة خفيفة تُظهر أن القطعة تتّسع لـ ١٦ شجرة
+            for (let i = filled; i < FOREST_TILE_SLOTS; i++) {
+                const p = forestSlotPos(i);
+                const cx = p.x + FOREST_SLOT / 2, cy = p.y + FOREST_SLOT / 2 + 2;
+                // علامة موضع خفيفة: تُظهر أن القطعة تتّسع لـ ١٦ شجرة بلا زحام بصري
+                out += '<circle cx="' + treeNum(cx) + '" cy="' + treeNum(cy) + '" r="7.4" fill="#ffffff" opacity="' + (filled < 4 ? 0.3 : 0.22) + '"/>' +
+                    '<circle cx="' + treeNum(cx) + '" cy="' + treeNum(cy) + '" r="7.4" fill="none" stroke="#a9d9bf" stroke-width="0.9" stroke-dasharray="2.4 3" opacity="' + (filled < 4 ? 0.8 : 0.6) + '"/>';
+            }
+            out += forestTileDecor(tileIndex, filled);
+            // الأشجار: من الخلف إلى الأمام حتى تتراكب الطبقات بشكل صحيح
+            const byRow = tileTrees.slice(0, FOREST_TILE_SLOTS).map(function (t, i) { return { tree: t, slot: i }; });
+            byRow.sort(function (a, b) { return forestSlotPos(a.slot).row - forestSlotPos(b.slot).row; });
+            byRow.forEach(function (item) {
+                const p = forestSlotPos(item.slot);
+                const jitter = ((Number(item.tree.id) || item.slot) % 5) - 2;
+                const w = 18.4, h = 26.6;   // الشجرة تبقى داخل موضعها (٣٢ وحدة) فلا تزاحم الصفّ الذي فوقها
+                // قاعدة الشجرة (٩٥٪ من ارتفاع الرسم) تجلس على أرض الموضع، فلا يُقصّ أي شكل
+                const x = p.x + (FOREST_SLOT - w) / 2 + jitter * 0.6;
+                const y = p.y + FOREST_SLOT - 3 - h * 0.952;
+                const isNewest = item.tree === tileTrees[tileTrees.length - 1] && filled === tileTrees.length;
+                out += '<g' + (isNewest ? ' class="forest-tree-sway"' : '') + ' style="' + (isNewest ? 'animation-delay:-1.4s;' : '') + '">' +
+                    '<svg x="' + treeNum(x) + '" y="' + treeNum(y) + '" width="' + w + '" height="' + h + '" viewBox="0 0 100 145">' +
+                    treeSVG(item.tree.tree_type, { className: '' }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '') +
+                    '</svg></g>';
+            });
+            return out;
+        }
+
+        // مشهد الغابة كاملاً: قطع أرض جنباً إلى جنب، والقسم الجديد يُفتح تلقائياً عند الامتلاء
+        function renderForestScene(trees) {
+            const box = document.getElementById('forest-scene');
+            if (!box) return;
+            if (forestState === 'loading') {
+                box.innerHTML = '<div class="ds-skeleton h-56 w-full"></div>';
+                return;
+            }
+            const ordered = (trees || []).slice().sort(function (a, b) { return Number(a.id) - Number(b.id); });
+            const shownCount = Math.min(ordered.length, FOREST_TILES_SHOWN * FOREST_TILE_SLOTS);
+            const shownTrees = ordered.slice(0, shownCount);
+            const totalTiles = Math.max(1, Math.ceil(ordered.length / FOREST_TILE_SLOTS));
+            const tiles = Math.max(1, Math.ceil(Math.max(1, shownCount) / FOREST_TILE_SLOTS));
+            const cols = Math.min(tiles, tiles <= 2 ? tiles : 3);
+            const rows = Math.ceil(tiles / cols);
+            const GAP = FOREST_TILE_GAP;
+            const W = cols * FOREST_TILE_SIZE + (cols - 1) * GAP;
+            const H = rows * FOREST_TILE_SIZE + (rows - 1) * GAP;
+
+            let svg = '<svg class="w-full" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="غابة إنجازك: ' + ordered.length + ' شجرة في ' + totalTiles + ' قطعة أرض">';
+            svg += '<defs><linearGradient id="forestTileInner" x1="0" y1="0" x2="0" y2="1">' +
+                '<stop offset="0%" stop-color="#eafaf0"/><stop offset="100%" stop-color="#cdead8"/></linearGradient></defs>';
+            for (let t = 0; t < tiles; t++) {
+                const col = t % cols, row = Math.floor(t / cols);
+                const tx = col * (FOREST_TILE_SIZE + GAP), ty = row * (FOREST_TILE_SIZE + GAP);
+                const tileTrees = shownTrees.slice(t * FOREST_TILE_SLOTS, (t + 1) * FOREST_TILE_SLOTS);
+                const isCurrent = t === tiles - 1;
+                svg += '<g transform="translate(' + treeNum(tx) + ' ' + treeNum(ty) + ')">' + forestTileArt(t, tileTrees, isCurrent) + '</g>';
+            }
+            svg += '</svg>';
+
+            let html = svg;
+            if (!ordered.length) {
+                html = '<div class="px-4 pt-4 text-center space-y-1.5">' +
+                    '<p class="text-xs font-black text-[var(--ds-text)]">غابتك تنتظر أول شجرة</p>' +
+                    '<p class="text-[11px] font-semibold text-[var(--ds-muted)]">اختر مدة وشجرة، ثم ابدأ جلسة تركيز — وعندما تكتمل ستُزرع شجرتك هنا نهائياً.</p></div>' + svg;
+            } else if (ordered.length > shownCount) {
+                html += '<p class="text-center text-[10.5px] font-bold text-[var(--ds-muted)] pt-2">+' + (ordered.length - shownCount) + ' شجرة أخرى في سجل الأشجار</p>';
+            }
+            box.innerHTML = html;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updatePomoDisplay();
             updateGamificationBar();
@@ -5506,6 +6764,12 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             renderTasks();
             renderTreeSpeciesStrip();
             renderForest();
+            focusEnsureSpecies();
+            focusRenderPicker();
+            focusRenderStage('setup');
+            focusUpdateStageControls();
+            focusUpdateLive(true);
+            focusRenderStats();
             renderAchievements();
             refreshSupportPanel();
             renderInstallGuides();
@@ -5526,8 +6790,9 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             catchUpScheduledAlerts();   // وتسليم ما فات منها والتطبيق مغلق
 
             if (pomoEndTimestamp && pomoEndTimestamp > Date.now()) {
+                // جلسة جارية أُغلقت الصفحة أثناءها ← تُستأنف بنفس المعرّف وبنفس المدة
                 pomoRemaining = Math.ceil((pomoEndTimestamp - Date.now()) / 1000);
-                if (pomoRemaining > 0 && pomoRemaining < pomoDuration) startPomo();
+                if (pomoRemaining > 0) startPomo();
             } else if (pomoEndTimestamp && pomoEndTimestamp <= Date.now()) {
                 checkPomoDeadline();   // انتهت الجلسة والتطبيق مغلق ← تُسجَّل الآن
             } else {
@@ -5541,6 +6806,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     updatePomoDisplay();
                     updateBackgroundStatus();
                 }
+            }
+            // جلسة معلّقة بلا مؤقّت ولا إيقاف ولا وقت منتهٍ (تخزين ناقص) ← تُنظَّف بلا شجرة
+            if (!pomoRunning && !pomoPaused && !pomoEndTimestamp) {
+                const leftover = localStorage.getItem('zp_focus_active');
+                if (leftover) focusClearSession();
             }
             requestBackgroundPomoStatus();   // الحقيقة النهائية لحالة الجلسة عند الخدمة الخلفية
             hardenInlineHandlers();          // كل زر محميّ بـ try/catch ويبلّغ عن الخطأ بدل الصمت
