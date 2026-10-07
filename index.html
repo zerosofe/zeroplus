@@ -22,17 +22,17 @@
             if (window.caches) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (!k.startsWith('zeroplus-v35')) caches.delete(k);
+                        if (!k.startsWith('zeroplus-v36')) caches.delete(k);
                     });
                 }).catch(() => {});
             }
         })();
     </script>
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=35">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=35">
-    <link rel="shortcut icon" href="/icon.svg?v=35">
-    <link rel="manifest" href="/manifest.json?v=35">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=36">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=36">
+    <link rel="shortcut icon" href="/icon.svg?v=36">
+    <link rel="manifest" href="/manifest.json?v=36">
     <meta name="theme-color" content="#16305c">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -507,53 +507,6 @@
         .forest-stage { border-radius: 24px; overflow: hidden; border: 1px solid var(--ds-border); background: var(--ds-card); }
         .forest-empty-sky { background: linear-gradient(180deg, var(--ds-tint) 0%, var(--ds-card) 100%); }
 
-        /* ====== اليوم الوطني 94: العلم العراقي المموّج ====== */
-        .iq-flag {
-            --amp: 2.4px; --speed: 3.4s;
-            position: relative; width: 100%; aspect-ratio: 3 / 2;
-            border-radius: 10px; overflow: hidden;
-            box-shadow: 0 10px 26px -14px rgba(11, 30, 60, 0.55);
-            background: #ffffff; cursor: pointer;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        .iq-flag:hover { transform: translateY(-2px); box-shadow: 0 16px 32px -16px rgba(11, 30, 60, 0.6); }
-        .iq-flag.is-windy { --amp: 5.6px; --speed: 2.1s; }
-        .iq-flag__cloth { display: flex; flex-direction: row; direction: ltr; width: 100%; height: 100%; }
-        .iq-flag__slice {
-            flex: 1 1 0; height: 100%; overflow: hidden; position: relative;
-            margin-inline: -0.5px;
-            transform-origin: 100% 50%;
-            animation: iqWave var(--speed) ease-in-out infinite;
-            animation-delay: calc(var(--a) * -0.62s);
-            will-change: transform;
-        }
-        .iq-flag__slice > svg { display: block; width: 100%; height: 100%; }
-        @keyframes iqWave {
-            0%, 100% {
-                transform: translateY(calc(var(--amp) * var(--a) * -1)) skewY(calc(-0.55deg * var(--a)))
-                           scaleY(calc(1 + 0.014 * var(--a)));
-            }
-            50% {
-                transform: translateY(calc(var(--amp) * var(--a))) skewY(calc(0.55deg * var(--a)))
-                           scaleY(calc(1 - 0.014 * var(--a)));
-            }
-        }
-        .iq-flag__pole {
-            position: absolute; top: -6%; right: -3px; width: 6px; height: 112%;
-            background: linear-gradient(90deg, #b9c3d1, #6c7a8c);
-            border-radius: 4px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-        }
-        .iq-flag__pole::before {
-            content: ''; position: absolute; top: -7px; right: -3px; width: 12px; height: 12px;
-            border-radius: 999px; background: radial-gradient(circle at 35% 30%, #f8d477, #c9962b);
-        }
-        .national-hero { background: linear-gradient(135deg, #0f2246 0%, #1b3763 55%, #24457c 100%); }
-        .national-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 999px; padding: 5px 12px; font-size: 10px; font-weight: 800; color: #fff;
-        }
-
         .ios-nav-safe {
             padding-bottom: 0.75rem;                                    /* بديل للمتصفحات القديمة */
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
@@ -598,84 +551,14 @@
         </div>
     </div>
 
-    <!-- ===== اليوم الوطني العراقي 94: رسم العلم (يُستخدم في المقاطع المتحركة) ===== -->
-    <svg width="0" height="0" aria-hidden="true" focusable="false" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;pointer-events:none">
-        <defs>
-            <g id="iqFlagArt">
-                <rect x="0" y="0" width="1400" height="311" fill="#ce1126"/>
-                <rect x="0" y="311" width="1400" height="311" fill="#ffffff"/>
-                <rect x="0" y="622" width="1400" height="311" fill="#000000"/>
-                <text x="700" y="500" text-anchor="middle" fill="#007a3d"
-                      font-family="Cairo, 'Segoe UI', Tahoma, sans-serif" font-weight="700"
-                      font-size="188" letter-spacing="2">الله أكبر</text>
-                <rect x="0" y="0" width="1400" height="933" fill="url(#iqFlagShade)"/>
-            </g>
-            <linearGradient id="iqFlagShade" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#000000" stop-opacity="0.10"/>
-                <stop offset="18%" stop-color="#ffffff" stop-opacity="0.06"/>
-                <stop offset="46%" stop-color="#000000" stop-opacity="0.07"/>
-                <stop offset="72%" stop-color="#ffffff" stop-opacity="0.10"/>
-                <stop offset="100%" stop-color="#000000" stop-opacity="0.16"/>
-            </linearGradient>
-        </defs>
-    </svg>
-
     <!-- رسائل سريعة (Toast) — تأكيد مرئي لكل زر -->
     <div id="toast" class="hidden fixed bottom-24 inset-x-0 z-[80] flex justify-center px-4 pointer-events-none" role="status" aria-live="polite">
         <div id="toast-inner" class="ds-state-info text-xs font-bold px-4 py-2.5 rounded-xl shadow-[var(--ds-shadow-lg)] border max-w-sm text-center"></div>
     </div>
 
-    <!-- LANDING VIEW (تظهر قبل تسجيل الدخول — وتحمل احتفاء اليوم الوطني 94) -->
+    <!-- LANDING VIEW (تظهر قبل تسجيل الدخول) -->
     <div id="landing-view" data-ds="default" class="fixed inset-0 z-50 bg-[var(--ds-bg)] overflow-y-auto flex flex-col justify-between p-4 sm:p-8 hidden">
         <div class="max-w-3xl w-full mx-auto space-y-6 my-auto py-8">
-
-            <!-- 🇮🇶 اليوم الوطني 94 — يظهر قبل تسجيل الدخول ولا يحتاج حساباً -->
-            <section id="national-day-card" class="national-hero rounded-[24px] p-5 sm:p-6 text-white shadow-[var(--ds-shadow-primary)] space-y-4 ds-enter" aria-label="احتفاء اليوم الوطني العراقي 94">
-                <div class="flex items-center justify-between gap-3">
-                    <span class="national-badge">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" aria-hidden="true"></span>
-                        مناسبة وطنية
-                    </span>
-                    <span class="text-[10px] font-bold text-white/70">٣ تشرين الأول</span>
-                </div>
-                <div class="grid sm:grid-cols-[1.15fr_1fr] gap-5 items-center">
-                    <div class="relative w-[92%] mr-auto">
-                        <div class="iq-flag__pole" aria-hidden="true"></div>
-                        <button type="button" id="iq-flag-btn" class="iq-flag block w-full"
-                            onclick="celebrateNationalDay()"
-                            aria-label="علم العراق — اضغط لتحريكه احتفاءً باليوم الوطني 94">
-                            <span class="iq-flag__cloth" id="iq-flag-cloth">
-                            <span class="iq-flag__slice" style="--a: 1.00"><svg viewBox="0 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.94"><svg viewBox="100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.89"><svg viewBox="200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.83"><svg viewBox="300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.77"><svg viewBox="400 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.71"><svg viewBox="500 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.66"><svg viewBox="600 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.60"><svg viewBox="700 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.54"><svg viewBox="800 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.49"><svg viewBox="900 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.43"><svg viewBox="1000 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.37"><svg viewBox="1100 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.32"><svg viewBox="1200 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            <span class="iq-flag__slice" style="--a: 0.26"><svg viewBox="1300 0 100 933" preserveAspectRatio="none" aria-hidden="true"><use href="#iqFlagArt" xlink:href="#iqFlagArt"/></svg></span>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="space-y-2 text-center sm:text-right">
-                        <h2 class="text-xl sm:text-2xl font-black leading-tight">
-                            اليوم الوطني العراقي <span class="text-emerald-300" dir="ltr">94</span>
-                        </h2>
-                        <p class="text-[11px] sm:text-xs text-white/80 font-semibold leading-relaxed">
-                            من أرض الرافدين إلى كل طالب عراقي — نرفع العلم ونحتفل معك. اضغط على العلم ليتحرّك، أو مرّر الصفحة ليتراقص معك.
-                        </p>
-                        <div class="flex flex-wrap gap-2 justify-center sm:justify-start pt-1">
-                            <span class="national-badge" dir="ltr"><span dir="ltr">National Day 94</span></span>
-                            <span class="national-badge">اليوم الوطني 94</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <div class="text-center space-y-4">
                 <div class="w-20 h-20 rounded-[24px] bg-[var(--ds-primary)] text-white mx-auto flex items-center justify-center font-black text-3xl shadow-[var(--ds-shadow-primary)]" dir="ltr">Z+</div>
@@ -958,13 +841,6 @@
                     </div>
                     <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-xl shrink-0" dir="ltr">Z+</div>
                 </div>
-                <button onclick="showTab('pomodoro'); celebrateNationalDay();" class="w-full flex items-center justify-between gap-2 bg-white/10 border border-white/20 rounded-2xl px-3 py-2 text-right hover:bg-white/15 transition">
-                    <span class="flex items-center gap-2 min-w-0">
-                        <span class="text-base leading-none" aria-hidden="true">🇮🇶</span>
-                        <span class="text-[11px] font-black truncate">اليوم الوطني العراقي 94 — نرفع العلم معك</span>
-                    </span>
-                    <span class="text-[10px] font-black text-white/70 shrink-0" dir="ltr">National Day 94</span>
-                </button>
                 <div class="grid grid-cols-4 gap-2 pt-1">
                     <div class="bg-white/10 border border-white/20 rounded-xl p-2.5 text-center">
                         <span id="home-stat-xp" class="block text-sm sm:text-base font-black text-amber-300">0</span>
@@ -1263,14 +1139,10 @@
                     <div class="w-9 h-9 rounded-xl bg-[var(--ds-tint)] text-[var(--ds-primary)] flex items-center justify-center text-sm border border-[var(--ds-border-strong)]"><i aria-hidden="true" class="fa-solid fa-hourglass-half"></i></div>
                     <div>
                         <h3 class="font-black text-sm text-[var(--ds-text)]">قادم قريباً</h3>
-                        <p class="text-[11px] text-[var(--ds-muted)]">قسمان جديدان قيد التطوير</p>
+                        <p class="text-[11px] text-[var(--ds-muted)]">قسم جديد قيد التطوير</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <button onclick="showTab('english')" class="text-right bg-[var(--ds-sunken)] border border-[var(--ds-border)] p-3.5 rounded-2xl hover:border-[var(--ds-primary)] transition">
-                        <span class="text-xs font-black text-[var(--ds-text)]"><i aria-hidden="true" class="fa-solid fa-language text-[var(--ds-primary)] ml-1"></i> البناء اللغوي</span>
-                        <span class="block text-[11px] text-[var(--ds-muted)] mt-0.5">مسار لغوي متدرج حسب مستويات CEFR — قريباً.</span>
-                    </button>
+                <div class="grid grid-cols-1 gap-2.5">
                     <button onclick="showTab('zero')" class="text-right bg-[var(--ds-sunken)] border border-[var(--ds-border)] p-3.5 rounded-2xl hover:border-[var(--ds-primary)] transition">
                         <span class="text-xs font-black text-[var(--ds-text)]"><i aria-hidden="true" class="fa-solid fa-graduation-cap text-[var(--ds-accent)] ml-1"></i> المساعد الأكاديمي</span>
                         <span class="block text-[11px] text-[var(--ds-muted)] mt-0.5">متابعة المحاضرات والمراجعة — قريباً.</span>
@@ -1290,7 +1162,7 @@
                     <span class="text-[var(--ds-muted)]">|</span>
                     <button onclick="openSupportDrawer('faq-contact')" class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:underline"><i aria-hidden="true" class="fa-solid fa-headset"></i> <span>الدعم الفني</span></button>
                 </div>
-                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v35</p>
+                <p id="app-version-text" class="text-[10px] text-[var(--ds-muted)] font-bold">الإصدار v36</p>
             </div>
         </section>
 
@@ -1465,79 +1337,6 @@
                     <span class="ds-sub">كلما طالت الجلسة، زادت نُدرة الشجرة</span>
                 </div>
                 <div id="tree-species-strip" class="ds-scroll-x"></div>
-            </div>
-        </section>
-
-        <!-- ENGLISH (قريباً) -->
-        <section id="tab-english" class="hidden space-y-4">
-            <!-- ترويسة القسم -->
-            <div class="ds-hero p-5 sm:p-6 flex items-center justify-between gap-4">
-                <div class="space-y-1.5">
-                    <span class="text-[10px] font-black tracking-wider text-white/70 uppercase">Building Language</span>
-                    <h2 class="text-xl sm:text-2xl font-black">قسم البناء اللغوي</h2>
-                    <p class="text-[11px] text-white/80 font-semibold leading-relaxed max-w-md">مسار متدرّج لبناء اللغة الإنجليزية خطوة بخطوة، من المستوى المبتدئ حتى المتقدّم — قيد التطوير.</p>
-                </div>
-                <span class="ds-chip !bg-white/15 !text-white !border-white/25 shrink-0">قريباً</span>
-            </div>
-
-            <!-- خريطة المسار -->
-            <div class="ds-card ds-card-lg p-5 space-y-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="ds-icon-tile">
-                        <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-11Z"/><path d="M4 9.5h16M10.5 9.5V19"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="ds-title">خريطة المسار اللغوي</h3>
-                        <p class="ds-sub">خمس مراحل حسب الإطار الأوروبي المرجعي (CEFR)</p>
-                    </div>
-                </div>
-                <ol class="space-y-2.5">
-                    <li class="ds-tile p-3.5 flex items-center gap-3">
-                        <span class="w-9 h-9 rounded-xl bg-[var(--ds-primary)] text-white text-[11px] font-black flex items-center justify-center shrink-0" dir="ltr">A1</span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block text-xs font-black text-[var(--ds-text)]">الأساسيات — المبتدئ</span>
-                            <span class="block text-[10.5px] text-[var(--ds-muted)] font-semibold mt-0.5">المفردات اليومية والجمل القصيرة</span>
-                        </span>
-                        <span class="ds-chip shrink-0">المرحلة ١</span>
-                    </li>
-                    <li class="ds-tile p-3.5 flex items-center gap-3">
-                        <span class="w-9 h-9 rounded-xl bg-[var(--ds-primary-soft)] text-[var(--ds-primary)] text-[11px] font-black flex items-center justify-center shrink-0" dir="ltr">A2</span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block text-xs font-black text-[var(--ds-text)]">التواصل البسيط</span>
-                            <span class="block text-[10.5px] text-[var(--ds-muted)] font-semibold mt-0.5">الحوارات القصيرة والزمن الحاضر</span>
-                        </span>
-                        <span class="ds-chip shrink-0">المرحلة ٢</span>
-                    </li>
-                    <li class="ds-tile p-3.5 flex items-center gap-3 opacity-70">
-                        <span class="w-9 h-9 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] text-[11px] font-black flex items-center justify-center shrink-0" dir="ltr">B1</span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block text-xs font-black text-[var(--ds-text)]">الاستقلال اللغوي</span>
-                            <span class="block text-[10.5px] text-[var(--ds-muted)] font-semibold mt-0.5">القراءة والفهم والنقاش الأكاديمي</span>
-                        </span>
-                        <svg class="ds-icon text-sm text-[var(--ds-muted)] shrink-0" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
-                    </li>
-                    <li class="ds-tile p-3.5 flex items-center gap-3 opacity-70">
-                        <span class="w-9 h-9 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] text-[11px] font-black flex items-center justify-center shrink-0" dir="ltr">B2</span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block text-xs font-black text-[var(--ds-text)]">الطلاقة المتقدّمة</span>
-                            <span class="block text-[10.5px] text-[var(--ds-muted)] font-semibold mt-0.5">المصطلحات التخصصية والكتابة الأكاديمية</span>
-                        </span>
-                        <svg class="ds-icon text-sm text-[var(--ds-muted)] shrink-0" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
-                    </li>
-                    <li class="ds-tile p-3.5 flex items-center gap-3 opacity-70">
-                        <span class="w-9 h-9 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] text-[11px] font-black flex items-center justify-center shrink-0" dir="ltr">C1</span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block text-xs font-black text-[var(--ds-text)]">الإتقان</span>
-                            <span class="block text-[10.5px] text-[var(--ds-muted)] font-semibold mt-0.5">العروض والمراجع الطبية باللغة الإنجليزية</span>
-                        </span>
-                        <svg class="ds-icon text-sm text-[var(--ds-muted)] shrink-0" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
-                    </li>
-                </ol>
-                <div class="flex items-center gap-2 text-[11px] font-bold text-[var(--ds-muted)] pt-1">
-                    <svg class="ds-icon text-sm shrink-0" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
-                    <span>جميع وظائف القسم معطّلة مؤقتاً حتى الإطلاق.</span>
-                </div>
-                <button onclick="openSupportDrawer('faq-contact')" class="ds-btn-ghost w-full py-2.5 text-[11px]">أبلغني عند الإطلاق</button>
             </div>
         </section>
 
@@ -2075,7 +1874,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         </div>
 
         <div class="px-4 py-3 border-t border-[var(--ds-border)] flex items-center justify-between gap-2 shrink-0">
-            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v35</span>
+            <span id="support-version" class="text-[10px] text-[var(--ds-muted)] font-bold">ZeroPlus v36</span>
             <button onclick="closeSupportDrawer()" class="bg-[var(--ds-sunken)] text-[var(--ds-text-soft)] px-4 py-2 rounded-lg text-[11px] font-bold">إغلاق</button>
         </div>
     </aside>
@@ -2100,7 +1899,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         </div>
     </div>
 
-    <!-- BOTTOM NAV: خمسة تبويبات موحّدة -->
+    <!-- BOTTOM NAV: أربعة تبويبات موحّدة -->
     <nav id="app-bottom-nav" aria-label="التنقل الرئيسي" class="fixed bottom-0 inset-x-0 bg-[var(--ds-card)] border-t border-[var(--ds-border)] pt-2 ios-nav-safe z-40">
         <div class="ds-shell flex items-center justify-around px-1">
             <button onclick="navigateToTab('home')" id="nav-home" class="flex flex-col items-center justify-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
@@ -2114,10 +1913,6 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             <button onclick="navigateToTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 8v4.5l3 2M9 2.5h6"/></svg>
                 <span>التركيز</span>
-            </button>
-            <button onclick="navigateToTab('english')" id="nav-english" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
-                <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-11Z"/><path d="M4 9.5h16M10.5 9.5V19"/></svg>
-                <span>البناء اللغوي</span>
             </button>
             <button onclick="navigateToTab('achievements')" id="nav-achievements" class="flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition">
                 <svg class="ds-icon text-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5.5H5.5V7A3.5 3.5 0 0 0 9 10.5M16 5.5h2.5V7A3.5 3.5 0 0 1 15 10.5"/><path d="M12 13v3m-3 4h6l-.7-3.2a1 1 0 0 0-1-.8h-2.6a1 1 0 0 0-1 .8L9 20Z"/></svg>
@@ -2281,7 +2076,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ============ 1.c أيقونات خطية + الإنجازات + اليوم الوطني ============
+        // ============ 1.c أيقونات خطية + الإنجازات ============
         const SETTINGS_ICONS = {
             theme: function (mode, dark) {
                 if (mode === 'system') return '<svg class="ds-icon text-xs" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M12 4a8 8 0 0 1 0 16" fill="currentColor" stroke="none" opacity="0.35"/></svg>';
@@ -2401,62 +2196,6 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 }).join('');
             }
             return data;
-        }
-
-        // ===== 🇮🇶 اليوم الوطني 94: العلم التفاعلي (يظهر قبل تسجيل الدخول) =====
-        let nationalFlagTimer = null;
-        function celebrateNationalDay() {
-            const flag = document.getElementById('iq-flag-btn');
-            if (flag) {
-                flag.classList.add('is-windy');
-                if (nationalFlagTimer) clearTimeout(nationalFlagTimer);
-                nationalFlagTimer = setTimeout(() => { flag.classList.remove('is-windy'); nationalFlagTimer = null; }, 1800);
-            }
-            triggerConfetti(['#ce1126', '#ffffff', '#000000', '#007a3d']);
-            showToast('🇮🇶 اليوم الوطني العراقي 94 — كل عام والعراق بخير', 'success');
-            return true;
-        }
-
-        function initNationalFlag() {
-            const flag = document.getElementById('iq-flag-btn');
-            if (!flag || !flag.addEventListener) return false;
-            const boost = () => {
-                flag.classList.add('is-windy');
-                if (nationalFlagTimer) clearTimeout(nationalFlagTimer);
-                nationalFlagTimer = setTimeout(() => flag.classList.remove('is-windy'), 1500);
-            };
-            // التفاعل باللمس/المؤشر: كلما اقتربت من طرف العلم زاد التمويج
-            const onMove = (ev) => {
-                if (prefersReducedMotion()) return;
-                if (typeof flag.getBoundingClientRect !== 'function') return;
-                const rect = flag.getBoundingClientRect();
-                if (!rect || !rect.width) return;
-                const x = Math.min(1, Math.max(0, ((ev && ev.clientX ? ev.clientX : 0) - rect.left) / rect.width));
-                const amp = 1.8 + (1 - Math.abs(x - 0.5) * 2) * 5;
-                flag.style.setProperty('--amp', amp.toFixed(2) + 'px');
-                flag.style.setProperty('--speed', (3.6 - (1 - Math.abs(x - 0.5) * 2) * 1.6).toFixed(2) + 's');
-                flag.classList.add('is-windy');
-            };
-            const onRest = () => {
-                flag.style.removeProperty('--amp');
-                flag.style.removeProperty('--speed');
-                flag.classList.remove('is-windy');
-            };
-            ['pointermove', 'touchmove', 'mousemove'].forEach(ev => flag.addEventListener(ev, onMove, { passive: true }));
-            ['pointerleave', 'touchend', 'mouseleave', 'touchcancel'].forEach(ev => flag.addEventListener(ev, onRest, { passive: true }));
-            // التمرير أيضاً يحرّك العلم (كما لو أن الريح تمرّ به)
-            let scrollTick = false;
-            if (typeof window !== 'undefined' && window.addEventListener) {
-                window.addEventListener('scroll', () => {
-                    if (prefersReducedMotion() || scrollTick) return;
-                    scrollTick = true;
-                    setTimeout(() => { scrollTick = false; }, 140);
-                    boost();
-                    const y = Number(window.scrollY) || 0;
-                    flag.style.setProperty('--amp', (2.2 + Math.min(4.5, (y % 500) / 110)).toFixed(2) + 'px');
-                }, { passive: true });
-            }
-            return true;
         }
 
         // ============ 2. SUPABASE INITIALIZATION ============
@@ -3514,8 +3253,8 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             syncProfileWithCloud();
         }
 
-        const APP_TABS = ['home', 'todo', 'pomodoro', 'english', 'achievements', 'zero'];
-        const NAV_TABS = ['home', 'todo', 'pomodoro', 'english', 'achievements'];
+        const APP_TABS = ['home', 'todo', 'pomodoro', 'achievements', 'zero'];
+        const NAV_TABS = ['home', 'todo', 'pomodoro', 'achievements'];
         const NAV_CLASS_IDLE = "flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-bold text-[10px] text-[var(--ds-muted)] transition";
         const NAV_CLASS_ACTIVE = "flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl font-black text-[10px] text-[var(--ds-primary)] bg-[var(--ds-primary-soft)] transition";
         let activeTabId = 'home';
@@ -3752,7 +3491,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             return show;
         }
 
-        // الروابط المختصرة (اختصارات PWA في manifest.json) تعمل عبر #tab-english أو #support
+        // الروابط المختصرة (اختصارات PWA في manifest.json) تعمل عبر #tab-pomodoro أو #support
         function tabFromHash() {
             let h = '';
             try { h = String((typeof location !== 'undefined' && location.hash) || ''); } catch (e) { h = ''; }
@@ -3811,7 +3550,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         initTheme();
 
         // ============ 10. مركز الدعم الفني (درج جانبي) ============
-        const APP_VERSION = 'v35';
+        const APP_VERSION = 'v36';
         function openSupportDrawer(topicId) {
             refreshSupportPanel();
             if (!isOverlayOpen('support')) registerOverlayNavigation('support');
@@ -5705,7 +5444,6 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             renderTreeSpeciesStrip();
             renderForest();
             renderAchievements();
-            initNationalFlag();
             refreshSupportPanel();
             renderInstallGuides();
             updateBackgroundStatus();

@@ -444,7 +444,7 @@ test('23) الصفحة الرئيسية: تبويب افتراضي + إحصائ�
   const { sandbox, nodes } = createHarness();
   await signup(sandbox, 'طالب الرئيسية');
   sandbox.__api.tasks = [{ id: 1, title: 'مهمة منجزة', done: true, tag: '', prio: 'normal' }];
-  ['home', 'todo', 'pomodoro', 'english', 'zero'].forEach((t) => sandbox.showTab(t));
+  ['home', 'todo', 'pomodoro', 'zero'].forEach((t) => sandbox.showTab(t));
   assert.equal(nodes.get('tab-home').classList.contains('hidden'), true, 'لم يُخفَ تبويب الرئيسية عند الانتقال');
   sandbox.showTab('home');
   assert.equal(nodes.get('tab-home').classList.contains('hidden'), false, 'لم تظهر الصفحة الرئيسية');
@@ -492,7 +492,7 @@ test('26) اختصارات التطبيق (#tab-...) تُترجم لتبويب �
   sandbox.location.hash = '#tab-pomodoro';
   assert.equal(sandbox.tabFromHash(), 'pomodoro');
   sandbox.location.hash = '#tab-english';
-  assert.equal(sandbox.tabFromHash(), 'english');
+  assert.equal(sandbox.tabFromHash(), null, 'قسم البناء اللغوي أُلغي — اختصاره يجب ألا يفتح تبويباً');
   sandbox.location.hash = '#support';
   assert.equal(sandbox.tabFromHash(), 'support');
   sandbox.location.hash = '#tab-مجهول';
@@ -929,7 +929,7 @@ test('45) مدة جلسة مخصّصة: تُقبل الصحيحة وتُرفض �
 });
 
 // ============================================================================
-// v34: غابة الإنجاز (Supabase) + اليوم الوطني 94 + نظام التصميم الموحّد
+// v34: غابة الإنجاز (Supabase) + نظام التصميم الموحّد (v36: أُلغي احتفال اليوم الوطني وقسم البناء اللغوي)
 // ============================================================================
 test('46) إنهاء جلسة يزرع شجرة مختلفة ويحفظها فعلاً في جدول trees في Supabase', async () => {
   const { sandbox, supabaseMock, localStorage } = createHarness();
@@ -1042,28 +1042,24 @@ test('50) مسح السجل يحذف الأشجار من الجهاز ومن Sup
   assert.equal(rowsOf(supabaseMock, 'trees').length, 0, 'لم تُحذف الأشجار من Supabase');
 });
 
-test('51) اليوم الوطني 94: العلم العراقي التفاعلي ظاهر قبل تسجيل الدخول ويعمل بلا حساب', () => {
-  const { sandbox, nodes, localStorage } = createHarness();
+test('51) إلغاء قسم البناء اللغوي واحتفال اليوم الوطني: لا أثر لهما في الواجهة أو المنطق أو الاختصارات', () => {
+  const { sandbox, nodes } = createHarness();
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-  // 1) العنصر موجود داخل شاشة البداية (قبل تسجيل الدخول) وبدون أي شرط دخول
-  const landingStart = html.indexOf('id="landing-view"');
-  const landingEnd = html.indexOf('<!-- PROFILE MODAL -->');
-  const landing = html.slice(landingStart, landingEnd);
-  assert.ok(landingStart > 0 && landingEnd > landingStart, 'تعذّر تحديد شاشة البداية');
-  assert.match(landing, /id="iq-flag-btn"/, 'زر العلم غير موجود في شاشة البداية');
-  assert.match(landing, /id="national-day-card"/, 'بطاقة اليوم الوطني غير موجودة قبل تسجيل الدخول');
-  assert.match(landing, /National Day 94/, 'نص National Day 94 مفقود');
-  assert.match(landing, /اليوم الوطني/, 'النص العربي لليوم الوطني مفقود');
-  assert.ok(landing.indexOf('id="landing-view"') < landing.indexOf('id="auth-username"'), 'بطاقة الاحتفال يجب أن تسبق نموذج الدخول');
-  // 2) العلم مموّج تلقائياً (مقاطع + متغيّر الموجة) وتفاعلي بالضغط
-  assert.ok((landing.match(/iq-flag__slice/g) || []).length >= 8, 'مقاطع العلم المتحرك قليلة');
-  assert.match(landing, /href="#iqFlagArt"/, 'رسم العلم (symbol) غير مربوط بالمقاطع');
-  // 3) التفاعل: الضغط يفعّل التمويج + الاحتفال
-  const flag = sandbox.document.getElementById('iq-flag-btn');
-  sandbox.celebrateNationalDay();
-  assert.equal(flag.classList.contains('is-windy'), true, 'الضغط على العلم لا يشغّل التمويج');
-  // 4) الوظيفة تعمل بدون تسجيل دخول (لا حساب في هذا الـ harness)
-  assert.equal(localStorage.getItem('zp_device_id'), null, 'الاحتفال يجب أن يعمل قبل تسجيل الدخول');
+  const manifest = fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8');
+  // 1) قسم البناء اللغوي محذوف بالكامل: لا تبويب ولا زر تنقّل ولا بطاقة ولا اختصار
+  assert.ok(!/tab-english|nav-english|'english'/.test(html), 'بقي أثر لقسم البناء اللغوي في index.html');
+  assert.ok(!/البناء اللغوي/.test(html), 'بقي نص «البناء اللغوي» في الواجهة');
+  assert.ok(!/tab-english|البناء اللغوي/.test(manifest), 'بقي اختصار البناء اللغوي في manifest.json');
+  sandbox.showTab('english');
+  assert.equal(sandbox.__api.activeTabId, 'home', 'تبويب english الملغى يجب أن يرجع للرئيسية');
+  assert.equal(nodes.get('tab-home').classList.contains('hidden'), false);
+  // 2) احتفال اليوم الوطني محذوف: لا بطاقة ولا علم ولا دوال
+  assert.ok(!/national-day-card|iq-flag|iqFlagArt|National Day|اليوم الوطني/.test(html), 'بقي أثر لاحتفال اليوم الوطني');
+  assert.equal(typeof sandbox.celebrateNationalDay, 'undefined', 'دالة الاحتفال ما زالت موجودة');
+  assert.equal(typeof sandbox.initNationalFlag, 'undefined', 'دالة العلم ما زالت موجودة');
+  // 3) شريط التنقّل السفلي بأربعة تبويبات
+  const nav = html.slice(html.indexOf('id="app-bottom-nav"'), html.indexOf('</nav>', html.indexOf('id="app-bottom-nav"')));
+  assert.equal((nav.match(/onclick="navigateToTab\(/g) || []).length, 4, 'شريط التنقّل يجب أن يحوي أربعة تبويبات');
 });
 
 test('52) نظام التصميم: قسم التركيز بنطاق أخضر وحده، وبقية الشاشات كحلية موحّدة', () => {
@@ -1074,7 +1070,7 @@ test('52) نظام التصميم: قسم التركيز بنطاق أخضر و�
   // نطاق أخضر معرّف مرة واحدة في الـ CSS
   assert.match(html, /\[data-ds="focus"\]\s*\{/, 'نطاق focus غير معرّف في نظام التصميم');
   // ولا يوجد نطاق أخضر على أي قسم آخر
-  const otherTabs = ['home', 'todo', 'english', 'achievements', 'zero'];
+  const otherTabs = ['home', 'todo', 'achievements', 'zero'];
   otherTabs.forEach(t => {
     const i = html.indexOf('<section id="tab-' + t + '"');
     assert.ok(i > 0, 'قسم مفقود: ' + t);
@@ -1086,8 +1082,8 @@ test('52) نظام التصميم: قسم التركيز بنطاق أخضر و�
   ['ds-card', 'ds-tile', 'ds-btn-primary', 'ds-chip', 'ds-icon-tile', 'ds-fab'].forEach(c => {
     assert.ok(html.includes('.' + c), 'المكوّن ' + c + ' غير معرّف في نظام التصميم');
   });
-  // التبويبات الخمسة في الشريط السفلي
-  assert.equal((html.match(/id="nav-/g) || []).length, 5, 'عدد تبويبات الشريط السفلي ليس ٥');
+  // التبويبات الأربعة في الشريط السفلي (أُلغي قسم البناء اللغوي)
+  assert.equal((html.match(/id="nav-/g) || []).length, 4, 'عدد تبويبات الشريط السفلي ليس ٤');
   // الخطوط: خط حديث
   assert.match(html, /Cairo/, 'الخط الحديث (Cairo) مفقود');
 });
@@ -1167,7 +1163,7 @@ test('57) لوحة الألوان: التركيز أخضر/أبيض فقط عل�
   assert.equal(sandbox.document.body.getAttribute('data-ds'), 'focus', 'قسم التركيز لا يضع النطاق الأخضر على body');
   assert.equal(sandbox.currentSectionScope(), 'focus', 'النطاق الحالي ليس التركيز');
   // وكل قسم آخر يرجع للنطاق الافتراضي (الأساسي الكحلي) فوراً
-  for (const tab of ['home', 'todo', 'english', 'achievements', 'zero']) {
+  for (const tab of ['home', 'todo', 'achievements', 'zero']) {
     sandbox.showTab(tab);
     assert.equal(sandbox.document.body.getAttribute('data-ds'), 'default', 'قسم ' + tab + ' لم يرجع للنطاق الافتراضي');
   }
@@ -1195,7 +1191,7 @@ test('57) لوحة الألوان: التركيز أخضر/أبيض فقط عل�
     assert.match(html.slice(i, i + 400), /data-ds="default"/, 'العنصر ' + id + ' لا يحمل النطاق الافتراضي');
   });
   // ولا شيء داخل قسم التركيز يستعمل لوناً خارج الأخضر/الأبيض
-  const pomo = html.slice(html.indexOf('<section id="tab-pomodoro"'), html.indexOf('<section id="tab-english"'));
+  const pomo = html.slice(html.indexOf('<section id="tab-pomodoro"'), html.indexOf('<section id="tab-zero"'));
   assert.ok(!/(rose|sky|amber|violet|slate)-[0-9]/.test(pomo), 'لون خارج لوحة القسم داخل قسم التركيز');
 });
 
@@ -1221,7 +1217,7 @@ test('58) زر الرجوع: موجود في الترويسة وفي كل ناف
   const backHidden = () => nodes.get('app-back-btn').classList.contains('hidden');
   sandbox.showTab('home');
   assert.equal(backHidden(), true, 'زر الرجوع ظاهر في الشاشة الرئيسية');
-  for (const tab of ['todo', 'pomodoro', 'english', 'achievements', 'zero']) {
+  for (const tab of ['todo', 'pomodoro', 'achievements', 'zero']) {
     sandbox.showTab(tab);
     assert.equal(backHidden(), false, 'زر الرجوع مخفي في قسم ' + tab);
   }
