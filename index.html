@@ -532,7 +532,7 @@
         @keyframes dsFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
         .ds-enter { animation: dsFadeUp 0.35s ease-out both; }
         .ds-scroll-x { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
-        /* أكواد SQL للعرض داخل نافذة التهيئة */
+        /* تنسيق الأكواد للتشخيص الداخلي */
         .ds-code {
             direction: ltr; text-align: left; background: var(--ds-code-bg); color: var(--ds-code-text);
             border: 1px solid var(--ds-dark-border);
@@ -554,12 +554,34 @@
         .pomo-ring-value { stroke: var(--ds-ring); }
 
         /* ====== شجرة/غابة التركيز ====== */
-        .tree-sway { transform-origin: 50% 100%; animation: treeSway 6s ease-in-out infinite; }
-        @keyframes treeSway { 0%, 100% { transform: rotate(-1.1deg); } 50% { transform: rotate(1.1deg); } }
-        .tree-grow { transform-origin: 50% 100%; animation: treeGrow 0.8s cubic-bezier(0.22, 1.1, 0.36, 1) both; }
-        @keyframes treeGrow { from { transform: scale(0.05); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .forest-stage { border-radius: 24px; overflow: hidden; border: 1px solid var(--ds-border); background: var(--ds-card); }
-        .forest-empty-sky { background: linear-gradient(180deg, var(--ds-tint) 0%, var(--ds-card) 100%); }
+        /* Still, layered photorealistic imagery: no render loop, wind wobble, or GPU canvas. */
+        .forest-stage { border-radius: 24px; overflow: hidden; border: 1px solid var(--ds-border); background: var(--ds-sunken); }
+        .forest-empty-sky { background: var(--ds-sunken); }
+        .forest-view { margin: 0; min-width: 0; }
+        .forest-landscape { position: relative; aspect-ratio: 16 / 9; overflow: hidden; isolation: isolate; background: #737d59; direction: ltr; }
+        .forest-terrain { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 58%; }
+        .forest-plant { position: absolute; aspect-ratio: 3 / 4; max-width: 36%; transform: translateX(-50%); }
+        .forest-plant::before { content: ''; position: absolute; left: 30%; bottom: -1%; width: 66%; height: 9%; border-radius: 50%; background: radial-gradient(ellipse, rgba(25,31,12,.48), rgba(25,31,12,0) 72%); transform: rotate(-19deg); }
+        .forest-plant img { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform-origin: bottom center; }
+        .forest-tree-art { display: block; object-fit: contain; object-position: bottom; }
+        .forest-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; padding: 12px 16px; font-size: 11px; line-height: 1.8; color: var(--ds-muted); background: var(--ds-card); }
+        .forest-fallback { display: none; padding: 10px 14px; font-size: 11px; color: var(--ds-muted); background: var(--ds-card); }
+        .forest-image-error .forest-fallback { display: block; }
+        .forest-fallback button { color: var(--ds-primary); text-decoration: underline; padding: 8px; min-height: 44px; }
+        .forest-caption strong { color: var(--ds-text); font-weight: 800; }
+        .forest-preview { margin: 8px 4px 12px; border-radius: 18px; overflow: hidden; }
+        .forest-preview .forest-landscape { aspect-ratio: 2 / 1; }
+        .forest-preview .forest-caption { padding: 8px 12px; font-size: 10px; }
+        #forest-sync-bar { flex-wrap: wrap; }
+        #forest-sync-text { white-space: normal; overflow: visible; }
+        #forest-grid .ds-tile { min-width: 0; }
+        #forest-grid .ds-chip { max-width: 100%; white-space: normal; }
+        #forest-scene-loading { background: var(--ds-card); opacity: .92; }
+        @media (max-width: 639px) {
+            .forest-landscape { aspect-ratio: 4 / 3; }
+            .forest-preview .forest-landscape { aspect-ratio: 16 / 9; }
+            .forest-caption { padding: 10px 12px; }
+        }
 
         .ios-nav-safe {
             padding-bottom: 0.75rem;                                    /* بديل للمتصفحات القديمة */
@@ -773,10 +795,10 @@
                     <button onclick="closeProfileModal(); showTab('pomodoro');" class="ds-btn-ghost py-2.5 text-[11px]">غابة إنجازي</button>
                 </div>
                 <div class="flex items-center justify-between gap-2 bg-[var(--ds-sunken)] border border-[var(--ds-border)] rounded-xl px-3 py-2.5">
-                    <span class="text-[10.5px] font-bold text-[var(--ds-muted)]">أشجار محفوظة في Supabase</span>
+                    <span class="text-[10.5px] font-bold text-[var(--ds-muted)]">أشجار محفوظة في حسابك</span>
                     <span id="profile-forest-count" class="text-[11px] font-black text-[var(--ds-primary)]">0</span>
                 </div>
-                <p class="text-[10px] text-[var(--ds-muted)] font-semibold leading-relaxed">الحساب بالاسم وكلمة المرور فقط — بياناتك (المهام، الجلسات، الأشجار) مربوطة بحسابك في Supabase.</p>
+                <p class="text-[10px] text-[var(--ds-muted)] font-semibold leading-relaxed">الحساب بالاسم وكلمة المرور فقط — بياناتك (المهام، الجلسات، الأشجار) مربوطة بحسابك.</p>
             </div>
             <div class="space-y-2 pt-2">
                 <button onclick="saveProfileChanges()" class="ds-btn-primary w-full py-3 text-xs">حفظ التعديلات</button>
@@ -970,7 +992,7 @@
                         </div>
                         <div>
                             <h3 class="ds-title">غابة إنجازك</h3>
-                            <p class="ds-sub">كل جلسة تركيز تزرع شجرة — محفوظة في Supabase</p>
+                            <p class="ds-sub">كل جلسة تركيز تزرع شجرة — محفوظة في حسابك</p>
                         </div>
                     </div>
                     <span id="home-forest-count" class="ds-chip shrink-0">0 شجرة</span>
@@ -1013,7 +1035,7 @@
                             <svg class="ds-icon text-base text-[var(--ds-primary)]" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/></svg>
                             مزامنة سحابية فعلية
                         </span>
-                        <p class="text-[11px] text-[var(--ds-muted)] mt-1.5 leading-relaxed font-semibold">المهام والجلسات والأشجار تُحفظ في Supabase وتُرفع تلقائياً عند عودة الإنترنت.</p>
+                        <p class="text-[11px] text-[var(--ds-muted)] mt-1.5 leading-relaxed font-semibold">المهام والجلسات والأشجار تُحفظ في حسابك وتُزامَن تلقائياً عند عودة الإنترنت.</p>
                     </div>
                     <div class="ds-tile p-4">
                         <span class="text-xs font-black text-[var(--ds-text)] flex items-center gap-2">
@@ -1347,7 +1369,7 @@
                         </div>
                         <div>
                             <h3 class="ds-title">غابة إنجازك</h3>
-                            <p class="ds-sub">كل جلسة تركيز مكتملة تزرع شجرة — محفوظة في Supabase</p>
+                            <p class="ds-sub">كل جلسة تركيز مكتملة تزرع شجرة — كل شجرة محفوظة في حسابك</p>
                         </div>
                     </div>
                     <span id="forest-count-chip" class="ds-chip shrink-0">0 شجرة</span>
@@ -1360,7 +1382,7 @@
                         <span id="forest-sync-text" class="text-[10.5px] font-bold text-[var(--ds-muted)] truncate">جارٍ تجهيز الغابة...</span>
                     </span>
                     <button id="forest-retry-btn" onclick="loadForestFromCloud(true)" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">إعادة المحاولة</button>
-                    <button id="forest-setup-btn" onclick="openTreeSetupModal()" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">تهيئة الجدول</button>
+                    <button id="forest-setup-btn" onclick="openTreeSetupModal()" class="hidden text-[10.5px] font-black text-[var(--ds-primary)] hover:underline shrink-0">مساعدة الحفظ</button>
                 </div>
 
                 <!-- مشهد الغابة -->
@@ -1504,7 +1526,7 @@
                         <span id="ach-forest-count" class="ds-chip shrink-0">0 شجرة</span>
                     </div>
                     <h3 class="ds-title mt-3">غابة إنجازك</h3>
-                    <p class="ds-sub mt-0.5">شاهد كل شجرة زرعتها جلسة تركيز — محفوظة في Supabase</p>
+                    <p class="ds-sub mt-0.5">شاهد كل شجرة زرعتها جلسة تركيز — محفوظة في حسابك</p>
                 </button>
                 <button onclick="openProfileModal()" class="ds-card p-4 text-right hover:border-[var(--ds-primary)] transition">
                     <div class="flex items-center justify-between gap-2">
@@ -1536,7 +1558,7 @@
     </main>
 
     <!-- TREE SETUP MODAL: يظهر فقط إذا كان جدول trees غير مُهيّأ في Supabase -->
-    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="تهيئة جدول الأشجار في Supabase" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
+    <div id="tree-setup-modal" role="dialog" aria-modal="true" aria-label="مساعدة حفظ الأشجار" class="fixed inset-0 z-50 bg-[var(--ds-overlay)] hidden flex items-center justify-center p-4 ds-safe-x">
         <div class="ds-dialog-panel bg-[var(--ds-card)] border border-[var(--ds-border-strong)] rounded-[24px] max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-[var(--ds-shadow-lg)]">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-2.5">
@@ -1544,8 +1566,8 @@
                         <svg class="ds-icon text-base" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
                     </div>
                     <div>
-                        <h3 class="font-black text-sm text-[var(--ds-text)]">تهيئة جدول الأشجار في Supabase</h3>
-                        <p class="text-[11px] text-[var(--ds-muted)] font-semibold">خطوة واحدة لمرة واحدة — يفعّل الحفظ السحابي الكامل للغابة</p>
+                        <h3 class="font-black text-sm text-[var(--ds-text)]">مساعدة حفظ الأشجار</h3>
+                        <p class="text-[11px] text-[var(--ds-muted)] font-semibold">أشجارك على هذا الجهاز — سنحاول مزامنتها مع حسابك</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -1553,56 +1575,27 @@
                         <svg class="ds-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
                         <span class="hidden sm:inline">رجوع</span>
                     </button>
-                    <button onclick="closeTreeSetupModal()" aria-label="إغلاق نافذة تهيئة الجدول" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
+                    <button onclick="closeTreeSetupModal()" aria-label="إغلاق مساعدة الحفظ" class="w-11 h-11 rounded-xl bg-[var(--ds-sunken)] border border-[var(--ds-border)] text-[var(--ds-muted)] flex items-center justify-center shrink-0">
                         <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
                     </button>
                 </div>
             </div>
-            <ol class="text-[11.5px] text-[var(--ds-text-soft)] font-semibold space-y-1.5 leading-relaxed list-decimal pr-5">
-                <li>افتح مشروعك في Supabase ← <strong>SQL Editor</strong> ← <strong>New query</strong>.</li>
-                <li>الصق الكود بالأسفل ثم اضغط <strong>Run</strong>.</li>
-                <li>ارجع للتطبيق واضغط <strong>«إعادة المحاولة»</strong> — ستُرفع الأشجار المحفوظة على جهازك تلقائياً.</li>
-            </ol>
-            <pre id="tree-sql-code" class="ds-code" tabindex="0">-- ZeroPlus: جدول الأشجار (غابة الإنجاز)
-create table if not exists public.trees (
-    id          bigint not null,
-    user_id     text   not null,
-    tree_type   text   not null default 'oak',
-    duration    integer not null default 25,
-    planted_at  timestamptz not null default now(),
-    created_at  timestamptz not null default now(),
-    primary key (user_id, id)
-);
-
-alter table public.trees enable row level security;
-
-drop policy if exists "zp_anon_all_trees" on public.trees;
-create policy "zp_anon_all_trees" on public.trees
-    for all to anon using (true) with check (true);
-
-drop policy if exists "zp_auth_all_trees" on public.trees;
-create policy "zp_auth_all_trees" on public.trees
-    for all to authenticated using (true) with check (true);
-
-grant select, insert, update, delete on table public.trees to anon, authenticated, service_role;</pre>
+            <p class="text-xs text-[var(--ds-muted)] leading-relaxed">الحفظ في حسابك غير متاح الآن. احتفظ ببيانات التطبيق على هذا الجهاز، ثم أعد المحاولة عندما يعود الاتصال. إذا استمرت المشكلة، تواصل مع الدعم.</p>
             <div class="ds-tile p-3.5 space-y-2">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-black text-[var(--ds-text)]">اختبار الحفظ الفعلي في Supabase</span>
-                    <button onclick="testTreesStorage()" class="ds-btn-ghost px-3 py-1.5 text-[10.5px]">تشغيل الاختبار</button>
+                    <span class="text-[11px] font-black text-[var(--ds-text)]">التحقق من الحفظ في حسابك</span>
+                    <button onclick="testTreesStorage()" class="ds-btn-ghost px-3 py-1.5 text-[10.5px]">التحقق الآن</button>
                 </div>
                 <p id="tree-test-result" role="status" aria-live="polite" class="text-[10.5px] font-bold text-[var(--ds-muted)] leading-relaxed">
-                    يكتب صفاً تجريبياً في جدول trees ثم يقرأه ويحذفه — للتأكد أن الحفظ حقيقي وليس محلياً فقط.
+                    نتحقق من إمكانية حفظ إنجازاتك واستعادتها من حسابك.
                 </p>
             </div>
             <div class="flex gap-2">
-                <button onclick="copyTreeSql()" class="ds-btn-primary flex-1 py-3 text-xs flex items-center justify-center gap-2">
-                    <svg class="ds-icon text-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 4H6a2 2 0 0 0-2 2v6.5A2.5 2.5 0 0 0 6.5 15"/></svg>
-                    نسخ كود SQL
-                </button>
+                <button onclick="closeTreeSetupModal(); openSupportDrawer();" class="ds-btn-primary flex-1 py-3 text-xs">التواصل مع الدعم</button>
                 <button onclick="closeTreeSetupModal(); loadForestFromCloud(true);" class="ds-btn-ghost px-4 py-3 text-xs">إعادة المحاولة</button>
             </div>
             <p class="text-[10.5px] text-[var(--ds-muted)] font-semibold leading-relaxed">
-                الأشجار التي تزرعها الآن محفوظة على جهازك ولن تُفقد — وبعد التهيئة تُرفع كلها تلقائياً إلى جدول <code class="text-[var(--ds-primary)]">trees</code>.
+                الأشجار محفوظة على جهازك. لا تمسح بيانات التطبيق قبل اكتمال المزامنة مع حسابك.
             </p>
         </div>
     </div>
@@ -2006,7 +1999,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         let pomoEndTimestamp = parseInt(localStorage.getItem('zp_pomo_end_time') || '0');
 
         // ============ 1.b كتالوج الأشجار (أنواع مختلفة + نُدرة حسب طول الجلسة) ============
-        // كل نوع له رسم SVG خطي موحّد الطراز، ونُدرة تُحدَّد بطول جلسة التركيز.
+        // نُدرة الأنواع تُحدَّد بطول جلسة التركيز؛ الصور لا تغيّر قواعد الاستحقاق.
         const TREE_SPECIES = [
             { id: 'oak',      name: 'بلوط',        en: 'Oak',       rarity: 'common',   minMins: 0,  accent: '#2f7d59' },
             { id: 'pine',     name: 'صنوبر',       en: 'Pine',      rarity: 'common',   minMins: 0,  accent: '#1f6b52' },
@@ -2027,47 +2020,20 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             return TREE_SPECIES.find(t => t.id === id) || TREE_SPECIES[0];
         }
 
-        // رسم شجرة واحدة (SVG خطي، نفس الطراز لكل الأنواع — يتغيّر الشكل واللون فقط)
-        function treeSVG(speciesId, opts) {
+        // Photographic assets only. Catalog / rarity / earning rules remain unchanged.
+        // Three catalog species currently share the closest available canopy form.
+        function treeAssetName(speciesId) {
+            const aliases = { blossom: 'oak', ginkgo: 'maple', baobab: 'olive' };
+            const species = treeSpeciesById(speciesId);
+            return aliases[species.id] || species.id;
+        }
+        function treeImage(speciesId, opts) {
             opts = opts || {};
-            const cls = opts.className || 'w-full h-full';
-            const label = opts.title ? '<title>' + escapeHtml(opts.title) + '</title>' : '';
-            const art = {
-                oak: '<path d="M50 138V84" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                     '<path d="M50 104 38 92M50 96 62 84" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
-                     '<circle cx="50" cy="58" r="26" fill="VAR" opacity="0.9"/><circle cx="30" cy="72" r="17" fill="VAR" opacity="0.75"/><circle cx="70" cy="72" r="17" fill="VAR" opacity="0.75"/>',
-                pine: '<path d="M50 138V108" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                      '<path d="M50 14 74 58H26L50 14Z" fill="VAR"/><path d="M50 40 80 84H20L50 40Z" fill="VAR" opacity="0.9"/><path d="M50 66 86 112H14L50 66Z" fill="VAR" opacity="0.85"/>',
-                palm: '<path d="M50 138c-2-30-1-56 6-78" stroke="var(--ds-tree-trunk)" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
-                      '<path d="M56 60C40 44 24 42 12 50" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c16-16 34-16 44-6" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C46 40 30 32 16 32" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60c10-20 26-28 40-26" stroke="VAR" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M56 60C50 42 40 30 28 24" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M56 60c8-18 20-28 34-30" stroke="VAR" stroke-width="3.5" fill="none" stroke-linecap="round"/>' +
-                      '<circle cx="58" cy="62" r="5" fill="VAR" opacity="0.85"/>',
-                cypress: '<path d="M50 138V110" stroke="var(--ds-tree-trunk)" stroke-width="4" stroke-linecap="round"/>' +
-                         '<path d="M50 8c16 22 22 46 22 66 0 24-10 40-22 40S28 98 28 74C28 54 34 30 50 8Z" fill="VAR"/>',
-                olive: '<path d="M50 138V104m0 12c-8-6-12-12-12-18m12 8c8-6 12-12 12-18" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round" fill="none"/>' +
-                       '<ellipse cx="50" cy="66" rx="30" ry="22" fill="VAR" opacity="0.85"/><ellipse cx="34" cy="80" rx="15" ry="12" fill="VAR" opacity="0.7"/><ellipse cx="66" cy="78" rx="15" ry="12" fill="VAR" opacity="0.7"/>',
-                willow: '<path d="M50 138V86" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                        '<path d="M50 60c22 0 30 14 26 30-3 12-14 18-26 18s-23-6-26-18c-4-16 4-30 26-30Z" fill="VAR" opacity="0.9"/>' +
-                        '<path d="M34 92c-4 14-6 24-4 34M44 96c-2 16-3 26-2 36M56 96c2 16 3 26 2 36M66 92c4 14 6 24 4 34" stroke="VAR" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
-                maple: '<path d="M50 138V92" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                       '<path d="M50 20 62 44h-6l14 22h-8l10 20H60l2 12H38l2-12H28l10-20h-8l14-22h-6L50 20Z" fill="VAR"/>',
-                euca: '<path d="M50 138V44" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                      '<path d="M50 44c-14-6-22-16-24-26 12 2 20 10 24 22" fill="VAR" opacity="0.85"/><path d="M50 60c14-8 24-6 32 2-10 6-22 6-32 4" fill="VAR" opacity="0.85"/><path d="M50 82c-14-6-24-4-30 4 12 6 22 4 30-2" fill="VAR" opacity="0.85"/><path d="M50 104c12-6 22-4 28 4-10 6-20 4-28-2" fill="VAR" opacity="0.8"/>',
-                cedar: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="5" stroke-linecap="round"/>' +
-                       '<path d="M50 34c12 0 20 6 20 12s-8 12-20 12-20-6-20-12 8-12 20-12Z" fill="VAR"/>' +
-                       '<path d="M50 56c22 0 34 8 34 16s-14 16-34 16-34-8-34-16 12-16 34-16Z" fill="VAR" opacity="0.9"/>',
-                blossom: '<path d="M50 138V96" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                         '<path d="M50 96 36 84m14 6 14-12" stroke="var(--ds-tree-trunk)" stroke-width="3" stroke-linecap="round"/>' +
-                         '<circle cx="50" cy="60" r="24" fill="VAR" opacity="0.9"/><circle cx="32" cy="74" r="14" fill="VAR" opacity="0.8"/><circle cx="68" cy="74" r="14" fill="VAR" opacity="0.8"/>' +
-                         '<circle cx="40" cy="52" r="4" fill="#ffffff" opacity="0.8"/><circle cx="60" cy="66" r="3.4" fill="#ffffff" opacity="0.75"/><circle cx="52" cy="80" r="3" fill="#ffffff" opacity="0.7"/>',
-                ginkgo: '<path d="M50 138V78" stroke="var(--ds-tree-trunk)" stroke-width="4.5" stroke-linecap="round"/>' +
-                        '<path d="M50 78C28 76 12 58 10 34c26 0 40 20 40 44Z" fill="VAR" opacity="0.9"/><path d="M50 78c22-2 38-20 40-44-26 0-40 20-40 44Z" fill="VAR" opacity="0.8"/>',
-                baobab: '<path d="M50 138c-3-20-4-38-4-58 0-10 2-16 4-18 2 2 4 8 4 18 0 20-1 38-4 58Z" fill="var(--ds-tree-trunk)"/>' +
-                        '<path d="M46 80 26 66m26 22 22-18" stroke="var(--ds-tree-trunk)" stroke-width="3.4" stroke-linecap="round"/>' +
-                        '<ellipse cx="50" cy="52" rx="42" ry="16" fill="VAR" opacity="0.9"/><ellipse cx="50" cy="42" rx="30" ry="12" fill="VAR" opacity="0.85"/>'
-            }[speciesId] || '';
-            const color = treeSpeciesById(speciesId).accent;
-            return '<svg viewBox="0 0 100 145" class="' + cls + '" role="img" aria-hidden="' + (opts.title ? 'false' : 'true') + '">' +
-                label + art.replace(/VAR/g, color) + '</svg>';
+            const name = treeAssetName(speciesId);
+            const size = opts.large ? '' : '-thumb';
+            return '<img class="forest-tree-art ' + escapeHtml(opts.className || 'w-full h-full') +
+                '" src="assets/forest/' + name + size + '.webp" width="' + (opts.large ? 384 : 96) +
+                '" height="' + (opts.large ? 512 : 128) + '" loading="lazy" decoding="async" alt="' + escapeHtml(opts.title || '') + '">';
         }
 
         // اختيار نوع الشجرة: عشوائي + نُدرة حسب مدة الجلسة + لا تكرار متتالٍ (كل شجرة مختلفة)
@@ -2157,7 +2123,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             { id: 'level3', name: 'المستوى الثالث', desc: 'وصلت للمستوى ٣', icon: '<path d="M12 3.5 15 9h-2l3 5h-3v6h-2v-6H8l3-5H9l3-5.5Z"/>', check: d => d.level >= 3 },
             { id: 'long_session', name: 'جلسة ملحمية', desc: 'جلسة واحدة ٦٠ دقيقة+', icon: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.5 2"/><path d="M12 3.5V2M20.5 12H22M12 22v-1.5M3.5 12H2"/>', check: d => d.longest >= 60 },
             { id: 'sessions25', name: '٢٥ جلسة', desc: '٢٥ جلسة تركيز مكتملة', icon: '<path d="M12 3v18M5 8.5C5 6 7.5 4 12 4s7 2 7 4.5-2.5 3.5-7 3.5-7 1-7 3.5S7.5 20 12 20s7-2 7-4.5"/>', check: d => d.sessions >= 25 },
-            { id: 'sync_master', name: 'محفوظ سحابياً', desc: '١٠ أشجار محفوظة في Supabase', icon: '<path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/>', check: d => d.syncedTrees >= 10 }
+            { id: 'sync_master', name: 'محفوظ سحابياً', desc: '١٠ أشجار محفوظة في حسابك', icon: '<path d="M7 18.5a4 4 0 0 1-.4-8A5.5 5.5 0 0 1 17.4 9 3.8 3.8 0 0 1 17 18.5H7Z"/><path d="M12 12v5m0 0-2-2m2 2 2-2"/>', check: d => d.syncedTrees >= 10 }
         ];
 
         function computeAchievementData() {
@@ -2263,12 +2229,14 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function describeCloudError(err) {
-            const msg = (err && err.message) ? err.message : String(err || 'خطأ غير معروف');
-            if (/permission denied|42501/i.test(msg)) return msg + '\n\nالحل: شغّل ملف supabase/schema.sql في SQL Editor (مشكلة صلاحيات).';
-            if (/does not exist|42P01/i.test(msg)) return msg + '\n\nالحل: جدول ناقص — شغّل ملف supabase/schema.sql كاملاً.';
-            if (/column|PGRST204/i.test(msg)) return msg + '\n\nالحل: عمود ناقص — شغّل ملف supabase/schema.sql كاملاً.';
-            return msg;
+            const msg = String((err && err.message) || err || '');
+            const code = String((err && err.code) || '');
+            if (/network|fetch|offline|timeout/i.test(msg)) return 'تعذّر الاتصال. تحقق من الإنترنت ثم أعد المحاولة.';
+            if (/permission|42501|403/.test(msg + code)) return 'تعذّر إتمام الحفظ في حسابك. أعد تسجيل الدخول أو تواصل مع الدعم.';
+            if (/does not exist|column|schema|42P01|PGRST20/i.test(msg + code)) return 'خدمة الحفظ غير متاحة مؤقتاً. أعد المحاولة أو تواصل مع الدعم.';
+            return 'تعذّر إتمام العملية. أعد المحاولة، وإذا استمرت المشكلة تواصل مع الدعم.';
         }
+
         // جدول/عمود غير موجود في مشروع Supabase (لم يُشغَّل schema.sql بعد)
         function isMissingTableError(err) {
             const code = String((err && err.code) || '');
@@ -2360,7 +2328,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 ind.title = 'توجد تغييرات بانتظار المزامنة';
             } else if (status === 'error') {
                 ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-danger';
-                ind.title = 'فشلت المزامنة: ' + (lastSyncError || '');
+                ind.title = 'فشلت المزامنة: ' + describeCloudError(lastSyncError);
             } else {
                 ind.className = 'w-2.5 h-2.5 rounded-full ds-fill-soft';
                 ind.title = 'غير متصل — ستُرفع التغييرات عند عودة الاتصال';
@@ -2538,7 +2506,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const pwdHash = await hashPassword(passwordInput);
 
             if (!supabaseClient || !navigator.onLine) {
-                alert("يجب الاتصال بالإنترنت لإتمام المصادقة."); return;
+                alert("يجب الاتصال بالإنترنت لإتمام تسجيل الدخول."); return;
             }
 
             const submitBtn = document.getElementById('auth-submit-btn');
@@ -2594,7 +2562,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     enterApp();
                 }
             } catch(e) {
-                alert("حدث خطأ أثناء المصادقة: " + e.message);
+                alert("تعذّر تسجيل الدخول: " + describeCloudError(e));
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -2603,7 +2571,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
 
         async function handleGoogleLogin() {
             if (!supabaseClient) {
-                alert('تعذّر الاتصال بخدمة الحسابات (Supabase) — تحقق من الإنترنت ثم أعد المحاولة، أو استخدم الاسم وكلمة المرور.');
+                alert('تعذّر الاتصال بخدمة الحسابات — تحقق من الإنترنت ثم أعد المحاولة، أو استخدم الاسم وكلمة المرور.');
                 return;
             }
             if (!navigator.onLine) {
@@ -3014,7 +2982,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             try {
                 dataUrl = await compressImageFile(file);
             } catch (err) {
-                alert("تعذر معالجة الصورة: " + err.message);
+                alert("تعذّر معالجة الصورة. جرّب صورة أخرى بحجم أصغر.");
                 return;
             }
 
@@ -3128,19 +3096,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         function renderHomeForestPreview() {
             const box = document.getElementById('home-forest-preview');
             if (!box) return;
-            const trees = displayForest();
-            if (!trees.length) {
-                box.innerHTML = '<div class="forest-empty-sky rounded-2xl mx-3 my-3 h-24 flex flex-col items-center justify-center text-center gap-1 px-4">' +
-                    '<p class="text-[11px] font-black text-[var(--ds-text)]">غابتك فارغة الآن</p>' +
-                    '<p class="text-[10px] font-semibold text-[var(--ds-muted)]">أكمل أول جلسة تركيز لتزرع شجرتك الأولى</p></div>';
-                return;
-            }
-            const shown = trees.slice(0, 10).reverse();
-            box.innerHTML = '<div class="forest-empty-sky rounded-2xl mx-3 my-3 h-28 flex items-end justify-center gap-1 px-3 pb-2">' +
-                shown.map((t, i) => '<div class="w-8 h-16 tree-sway" style="animation-delay:' + (-(i % 5) * 0.5) + 's">' +
-                    treeSVG(t.tree_type, { className: 'w-full h-full' }) + '</div>').join('') +
-                (trees.length > shown.length ? '<span class="ml-1 mb-1 text-[10px] font-black text-[var(--ds-muted)]">+' + (trees.length - shown.length) + '</span>' : '') +
-                '</div>';
+            renderNaturalForest(box, displayForest(), true);
         }
 
         function updateGreetingHeader() {
@@ -3657,7 +3613,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const cloud = document.getElementById('support-cloud-status');
             if (cloud) {
                 const state = !supabaseClient ? 'غير مهيّأة' : (!navigator.onLine ? 'غير متصل — تغييراتك محفوظة محلياً'
-                    : lastSyncError ? 'فشل مزامنة: ' + lastSyncError
+                    : lastSyncError ? 'فشل مزامنة: ' + describeCloudError(lastSyncError)
                     : (pendingSyncCount() > 0 ? `${pendingSyncCount()} تغيير بانتظار الرفع` : 'متصل ومزامن'));
                 cloud.innerText = 'حالة السحابة: ' + state;
             }
@@ -3699,10 +3655,10 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 'الخدمة الخلفية: ' + (backgroundTimerSupported() ? 'متاحة' : 'غير متاحة'),
                 'جلسة التركيز: ' + (pomoRunning ? 'تعمل' : (pomoPaused ? 'موقوفة مؤقتاً' : 'متوقفة')),
                 'الاتصال: ' + (navigator.onLine ? 'متصل' : 'غير متصل'),
-                'السحابة: ' + (lastSyncError ? 'خطأ: ' + lastSyncError : 'سليمة'),
+                'السحابة: ' + (lastSyncError ? 'خطأ: ' + describeCloudError(lastSyncError) : 'سليمة'),
                 'آخر مزامنة: ' + humanSince(parseInt(localStorage.getItem(LAST_SYNC_KEY) || '0')),
                 'عمليات بانتظار المزامنة: ' + pendingSyncCount(),
-                issues.length ? ('آخر الأخطاء: ' + issues.map(i => i.source + ': ' + i.message).join(' | ')) : 'آخر الأخطاء: لا يوجد'
+                issues.length ? ('آخر الأخطاء: ' + issues.map(i => i.at + ': ' + describeCloudError(i.message)).join(' | ')) : 'آخر الأخطاء: لا يوجد'
             ].join('\n');
         }
         async function copyDiagnostics() {
@@ -4088,7 +4044,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 return p;
             } catch (e) {
                 openSupportDrawer('faq-notify');
-                alert('تعذّر طلب إذن الإشعارات: ' + (e && e.message ? e.message : e) + '\nيمكنك تفعيلها يدوياً من إعدادات المتصفح (الخطوات معروضة أمامك).');
+                alert('تعذّر طلب إذن الإشعارات: ' + describeCloudError(e) + '\nيمكنك تفعيلها يدوياً من إعدادات المتصفح (الخطوات معروضة أمامك).');
                 return 'error';
             }
         }
@@ -4577,68 +4533,72 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
         }
 
         function treeSyncBadge(sync) {
-            if (sync === 'synced') return '<span class="ds-chip !bg-emerald-500/10 !text-emerald-600 !border-emerald-500/20" title="محفوظة في Supabase"><i aria-hidden="true" class="fa-solid fa-cloud text-[9px]"></i> سحابي</span>';
-            if (sync === 'pending') return '<span class="ds-chip !bg-amber-500/10 !text-amber-600 !border-amber-500/25" title="بانتظار الرفع إلى Supabase"><i aria-hidden="true" class="fa-solid fa-clock text-[9px]"></i> بانتظار الرفع</span>';
+            if (sync === 'synced') return '<span class="ds-chip !bg-emerald-500/10 !text-emerald-600 !border-emerald-500/20" title="محفوظة في حسابك"><i aria-hidden="true" class="fa-solid fa-cloud text-[9px]"></i> سحابي</span>';
+            if (sync === 'pending') return '<span class="ds-chip !bg-amber-500/10 !text-amber-600 !border-amber-500/25" title="بانتظار الحفظ في حسابك"><i aria-hidden="true" class="fa-solid fa-clock text-[9px]"></i> بانتظار الرفع</span>';
             if (sync === 'failed') return '<span class="ds-chip !bg-rose-500/10 !text-rose-500 !border-rose-500/25" title="فشل الرفع — سنعيد المحاولة"><i aria-hidden="true" class="fa-solid fa-triangle-exclamation text-[9px]"></i> فشل الرفع</span>';
-            if (sync === 'local') return '<span class="ds-chip" title="محفوظة على جهازك — تتطلب تهيئة جدول trees"><i aria-hidden="true" class="fa-solid fa-mobile-screen text-[9px]"></i> على الجهاز</span>';
-            return '<span class="ds-chip" title="سجل جلسة سابق من Supabase"><i aria-hidden="true" class="fa-solid fa-database text-[9px]"></i> جلسة سابقة</span>';
+            if (sync === 'local') return '<span class="ds-chip" title="محفوظة على جهازك — بانتظار المزامنة"><i aria-hidden="true" class="fa-solid fa-mobile-screen text-[9px]"></i> على الجهاز</span>';
+            return '<span class="ds-chip" title="جلسة تركيز سابقة في حسابك"><i aria-hidden="true" class="fa-solid fa-database text-[9px]"></i> جلسة سابقة</span>';
         }
 
-        // مشهد الغابة: SVG واحد يجمع الأشجار بثلاث طبقات عمق (تنمو مع كل استخدام)
+        // Stable placements: old trees keep their location when a new session is earned.
+        // A bounded window avoids hundreds of image nodes on mobile; totals are never capped.
+        function forestLayout(trees, limit) {
+            return trees.slice(0, limit).reverse().map((tree, i) => {
+                let seed = 2166136261;
+                for (const char of String(tree.id)) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
+                const noise = (seed % 997) / 997;
+                const depth = i === 0 ? .82 : .12 + ((i * .61803398875) % 1) * .8;
+                const height = (24 + depth * 46) * (.91 + noise * .12);
+                return { tree, x: i === 0 ? 50 : 20 + ((i * .754877666 + noise * .08) % 1) * 60,
+                    bottom: 43 - depth * 35, height, width: .91 + ((seed >>> 8) % 19) / 100,
+                    depth, tone: .93 + ((seed >>> 16) % 12) / 100 };
+            }).sort((a, b) => a.depth - b.depth);
+        }
+        function renderNaturalForest(box, trees, compact) {
+            // Use the same composition in both cards. Native lazy images do not load in hidden tabs.
+            const limit = compact ? 24 : 96;
+            const signature = (compact ? 'preview:' : 'full:') + trees.map(t => String(t.id) + ':' + t.tree_type).join('|');
+            if (box.getAttribute('data-forest-key') === signature) return;
+            box.setAttribute('data-forest-key', signature);
+            const layout = forestLayout(trees, limit);
+            let out = '<figure class="forest-view' + (compact ? ' forest-preview' : '') + '">';
+            out += '<div class="forest-landscape" role="img" aria-label="غابة إنجازك: ' + trees.length + ' شجرة' +
+                (trees.length > limit ? '، يظهر منها ' + layout.length + ' في المشهد' : '') + '">';
+            out += '<picture><source media="(min-width: 768px)" srcset="assets/forest/meadow-1280.webp">' +
+                '<img class="forest-terrain" src="assets/forest/meadow-640.webp" width="640" height="427" loading="lazy" decoding="async" alt=""></picture>';
+            layout.forEach(p => {
+                out += '<span class="forest-plant" aria-hidden="true" style="left:' + p.x.toFixed(2) + '%;bottom:' + p.bottom.toFixed(2) +
+                    '%;height:' + p.height.toFixed(2) + '%"><img src="assets/forest/' + treeAssetName(p.tree.tree_type) +
+                    (compact ? '-thumb' : '') + '.webp" width="384" height="512" loading="lazy" decoding="async" alt="" style="transform:scaleX(' +
+                    p.width.toFixed(2) + ');filter:brightness(' + p.tone.toFixed(2) + ')"></span>';
+            });
+            out += '</div><figcaption class="forest-caption">';
+            if (!trees.length) out += '<strong>هنا تبدأ غابتك</strong><span>أكمل جلسة تركيز لتزرع شجرتك الأولى</span>';
+            else out += '<strong>' + (trees.length === 1 ? 'بداية تنمو معك' : trees.length < 10 ? 'جلسة بعد جلسة، تنمو غابتك' : 'وقت تركيزك أصبح غابة') +
+                '</strong><span>' + (trees.length > limit ? 'يظهر ' + layout.length + ' من ' + trees.length + ' شجرة' : 'كل شجرة تحكي جلسة تركيز') + '</span>';
+            out += '</figcaption><div class="forest-fallback" role="status">تعذّر تحميل بعض تفاصيل المشهد. عدد أشجارك لم يتغيّر. <button type="button" onclick="retryForestImages(this)">إعادة تحميل المشهد</button></div></figure>';
+            box.innerHTML = out;
+        }
+        // Asset failures must not hide achievements or show broken-image icons.
+        document.addEventListener('error', function (event) {
+            const image = event.target;
+            if (!image || image.tagName !== 'IMG' || !(image.getAttribute('src') || '').startsWith('assets/forest/')) return;
+            image.style.visibility = 'hidden';
+            image.closest('.forest-view')?.classList.add('forest-image-error');
+        }, true);
+        function retryForestImages(button) {
+            const scene = button.closest('.forest-view');
+            if (!scene) return;
+            scene.classList.remove('forest-image-error');
+            scene.querySelectorAll('img').forEach(image => {
+                if (image.style.visibility !== 'hidden') return;
+                image.style.visibility = '';
+                image.src = image.src;
+            });
+        }
         function renderForestScene(trees) {
             const box = document.getElementById('forest-scene');
-            if (!box) return;
-            if (forestState === 'loading') {
-                box.innerHTML = '<div class="ds-skeleton h-56 w-full"></div>';
-                return;
-            }
-            if (!trees.length) {
-                box.innerHTML =
-                    '<div class="forest-empty-sky h-56 flex flex-col items-center justify-center text-center gap-2 px-6">' +
-                    '<div class="w-14 h-14 rounded-2xl bg-[var(--ds-primary-soft)] text-[var(--ds-primary)] flex items-center justify-center border border-[var(--ds-border)]">' +
-                    '<svg class="ds-icon text-2xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0L9 6.5M12 9l3-2.5"/><circle cx="12" cy="14" r="3.6"/><path d="M12 17.5V21"/></svg></div>' +
-                    '<p class="text-xs font-black text-[var(--ds-text)]">غابتك تنمو مع كل جلسة</p>' +
-                    '<p class="text-[11px] text-[var(--ds-muted)] font-semibold max-w-xs">أكمل جلسة تركيز واحدة لتزرع أول شجرة — وسنحفظها في حسابك مباشرة.</p>' +
-                    '</div>';
-                return;
-            }
-            const shown = trees.slice(0, 30);
-            const cols = Math.max(1, Math.ceil(shown.length / 3));
-            const spacing = Math.max(38, Math.min(96, 820 / cols));
-            const startX = 450 - ((cols - 1) * spacing) / 2;
-            let out = '<svg viewBox="0 0 900 320" class="w-full h-56 sm:h-64" role="img" aria-label="غابة إنجازك: ' + trees.length + ' شجرة">';
-            out += '<defs><linearGradient id="forestSky" x1="0" y1="0" x2="0" y2="1">' +
-                '<stop offset="0%" stop-color="#eef8f2"/><stop offset="100%" stop-color="#ffffff"/></linearGradient>' +
-                '<linearGradient id="forestGround" x1="0" y1="0" x2="0" y2="1">' +
-                '<stop offset="0%" stop-color="#cfebdb"/><stop offset="100%" stop-color="#a9d9bf"/></linearGradient></defs>';
-            out += '<rect width="900" height="320" fill="url(#forestSky)"/>';
-            out += '<circle cx="760" cy="64" r="30" fill="#d7f0e2" opacity="0.8"/>';
-            out += '<path d="M0 214c120-34 210-8 320 6s200 22 300-6 180-30 280-6v40H0Z" fill="#cfe8da" opacity="0.85"/>';
-            out += '<path d="M0 252c140-26 240 8 360 12s220-16 320-24 160 0 220 10v70H0Z" fill="url(#forestGround)"/>';
-            // الطبقات: خلفية → أمامية (الأحدث في المقدّمة)
-            const rows = [2, 1, 0];
-            rows.forEach(row => {
-                for (let i = row; i < shown.length; i += 3) {
-                    const tree = shown[i];
-                    const species = treeSpeciesById(tree.tree_type);
-                    const col = Math.floor(i / 3);
-                    const jitter = ((Number(tree.id) || i) % 9) - 4;
-                    const x = startX + col * spacing + jitter;
-                    const scale = 0.42 + row * 0.2 + Math.min(0.18, (Number(tree.duration) || 25) / 400);
-                    const baseline = 300 - row * 26;
-                    const size = 132 * scale;
-                    out += '<g class="tree-sway" style="animation-delay: ' + (-(i % 7) * 0.4).toFixed(1) + 's" ' +
-                        'transform="translate(' + (x - size / 2).toFixed(1) + ',' + (baseline - size).toFixed(1) + ')" opacity="' + (0.92 - row * 0.12).toFixed(2) + '">' +
-                        '<svg x="0" y="0" width="' + size.toFixed(1) + '" height="' + size.toFixed(1) + '" viewBox="0 0 100 145">' +
-                        treeSVG(tree.tree_type, { className: '' }).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '') +
-                        '</svg></g>';
-                }
-            });
-            if (trees.length > shown.length) {
-                out += '<text x="450" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ds-muted)">+' + (trees.length - shown.length) + ' شجرة في السجل</text>';
-            }
-            out += '</svg>';
-            box.innerHTML = out;
+            if (box) renderNaturalForest(box, trees, false);
         }
 
         function renderTreeSpeciesStrip() {
@@ -4646,7 +4606,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             if (!strip) return;
             strip.innerHTML = TREE_SPECIES.map(s =>
                 '<div class="ds-tile p-3 w-[104px] shrink-0 text-center">' +
-                '<div class="w-12 h-14 mx-auto">' + treeSVG(s.id, { className: 'w-full h-full' }) + '</div>' +
+                '<div class="w-12 h-14 mx-auto">' + treeImage(s.id, { className: 'w-full h-full' }) + '</div>' +
                 '<span class="block text-[10.5px] font-black text-[var(--ds-text)] mt-1">' + escapeHtml(s.name) + '</span>' +
                 '<span class="block text-[9px] font-bold text-[var(--ds-muted)]">' + TREE_RARITY_LABEL[s.rarity] + (s.minMins ? ' • +' + s.minMins + 'د' : '') + '</span>' +
                 '</div>'
@@ -4660,32 +4620,34 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const setup = document.getElementById('forest-setup-btn');
             const stateEl = document.getElementById('forest-cloud-state');
             const pending = userTrees.filter(t => t.sync === 'pending' || t.sync === 'failed').length;
+            const localOnly = !supabaseClient || !navigator.onLine || !localStorage.getItem('zp_device_id');
             if (retry) retry.classList.toggle('hidden', forestState !== 'error');
             if (setup) setup.classList.toggle('hidden', !treesTableMissing);
             if (dot) {
                 dot.className = 'w-2 h-2 rounded-full shrink-0 ' + (
                     forestState === 'loading' ? 'ds-fill-muted animate-ping'
                     : forestState === 'error' ? 'ds-fill-danger'
-                    : treesTableMissing ? 'ds-fill-warn'
+                    : (treesTableMissing || localOnly) ? 'ds-fill-warn'
                     : pending ? 'ds-fill-warn' : 'ds-fill-success');
             }
             if (text) {
                 text.innerText =
-                    forestState === 'loading' ? 'نجلب غابتك من Supabase...'
+                    forestState === 'loading' ? 'نحمّل غابتك من حسابك...'
                     : forestState === 'error' ? 'تعذّر جلب الغابة من السحابة — ' + (forestError || 'خطأ غير معروف')
-                    : treesTableMissing ? 'جدول trees غير مُهيّأ — الأشجار محفوظة على جهازك وبانتظار الرفع'
-                    : pending ? pending + ' شجرة بانتظار الرفع إلى Supabase'
-                    : 'كل شجرة محفوظة فعلياً في Supabase (جدول trees) — تُرفع فور إكمال الجلسة';
+                    : treesTableMissing ? 'الحفظ في حسابك غير متاح الآن — أشجارك محفوظة على جهازك'
+                    : localOnly ? 'أشجارك محفوظة على جهازك — ستتم مزامنتها عند الاتصال بحسابك'
+                    : pending ? pending + ' شجرة بانتظار الحفظ في حسابك'
+                    : 'كل شجرة محفوظة في حسابك';
             }
             if (stateEl) {
                 stateEl.innerText = forestState === 'loading' ? 'جارٍ الجلب...'
                     : forestState === 'error' ? 'خطأ في الجلب'
-                    : treesTableMissing ? 'بانتظار التهيئة'
+                    : (treesTableMissing || localOnly) ? 'بانتظار المزامنة'
                     : pending ? 'قيد الرفع' : 'متصل ومحفوظ';
             }
         }
 
-        // زر/حالة التهيئة: عند غياب الجدول نعرض SQL جاهزاً للنسخ
+        // مساعدة الحفظ للمستخدم؛ تعليمات التهيئة للمشرف في وثائق المشروع.
         function openTreeSetupModal() {
             const modal = document.getElementById('tree-setup-modal');
             if (!modal) return;
@@ -4702,13 +4664,6 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             restoreFocus();
             if (wasOpen) syncHistoryAfterClose();
         }
-        async function copyTreeSql() {
-            const el = document.getElementById('tree-sql-code');
-            const ok = await copyText(el ? el.innerText : '');
-            showToast(ok ? 'تم نسخ كود SQL — ألصقه في SQL Editor' : 'تعذّر النسخ تلقائياً', ok ? 'success' : 'warn');
-            return ok;
-        }
-
         // اختبار حقيقي للكتابة في Supabase: إدراج صف تجريبي ← قراءته ← حذفه
         async function testTreesStorage() {
             const out = document.getElementById('tree-test-result');
@@ -4716,9 +4671,9 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 if (out) { out.innerText = msg; out.className = 'text-[10.5px] font-bold leading-relaxed ' + (kind === 'error' ? 'text-rose-500' : kind === 'success' ? 'text-emerald-600' : 'text-[var(--ds-muted)]'); }
             };
             const deviceId = localStorage.getItem('zp_device_id');
-            if (!supabaseClient) { say('لا يوجد اتصال بـ Supabase (المكتبة لم تُحمّل).', 'error'); return false; }
+            if (!supabaseClient) { say('تعذّر الاتصال بخدمة الحفظ. أعد تحميل التطبيق ثم حاول مجدداً.', 'error'); return false; }
             if (!deviceId) { say('سجّل الدخول أولاً حتى نربط الشجرة بحسابك.', 'error'); return false; }
-            say('جارٍ الاختبار: نكتب صفاً في جدول trees...');
+            say('نتحقق من الحفظ في حسابك...');
             const probe = {
                 id: nextRecordId(), user_id: deviceId, tree_type: 'oak', duration: 1,
                 planted_at: new Date().toISOString(), created_at: new Date().toISOString()
@@ -4738,12 +4693,12 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 treesTableMissing = false;
                 updateForestSyncUI();
                 say(found
-                    ? 'نجح الاختبار ✔ كُتب الصف في Supabase وقُرئ ثم حُذف — الحفظ حقيقي وليس محلياً فقط.'
-                    : 'لم نجد الصف بعد الكتابة — تحقق من سياسات RLS والصلاحيات (شغّل schema.sql).', found ? 'success' : 'error');
+                    ? 'تم التحقق — يمكنك حفظ إنجازاتك واستعادتها من حسابك.'
+                    : 'تعذّر تأكيد الحفظ. أعد المحاولة أو تواصل مع الدعم.', found ? 'success' : 'error');
                 return found;
             } catch (e) {
                 recordRuntimeIssue(e, 'testTreesStorage');
-                say('فشل الاختبار: ' + ((e && e.message) || e), 'error');
+                say('فشل الاختبار: ' + describeCloudError(e), 'error');
                 return false;
             }
         }
@@ -4796,7 +4751,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                         treesTableMissing = true;
                         markTreeSync(tree.id, 'local');
                         console.warn('ZeroPlus: جدول trees غير موجود — شغّل supabase/schema.sql');
-                        showToast('جدول الأشجار غير مُهيّأ — شغّل schema.sql (زر «تهيئة الجدول»)', 'warn');
+                        showToast('الحفظ في حسابك غير متاح الآن — أشجارك محفوظة على جهازك. يمكنك فتح «مساعدة الحفظ».', 'warn');
                     } else {
                         markTreeSync(tree.id, 'failed');
                         lastSyncError = error.message;
@@ -4859,7 +4814,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                     }
                     updateForestSyncUI();
                     renderForest();
-                    if (manual) showToast(forestState === 'error' ? 'تعذّر جلب الغابة: ' + forestError : 'جدول trees غير مُهيّأ بعد في Supabase', forestState === 'error' ? 'error' : 'warn');
+                    if (manual) showToast(forestState === 'error' ? 'تعذّر جلب الغابة: ' + forestError : 'الحفظ في حسابك غير متاح الآن — أشجارك محفوظة على جهازك', forestState === 'error' ? 'error' : 'warn');
                     return false;
                 }
                 treesTableMissing = false;
@@ -4884,11 +4839,11 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
                 renderForest();
                 renderAchievements();
                 if (navigator.onLine) flushSyncQueue();
-                if (manual) showToast('تم جلب غابتك من Supabase (' + cloudTrees.length + ' شجرة)', 'success');
+                if (manual) showToast('تم تحديث غابتك من حسابك (' + cloudTrees.length + ' شجرة)', 'success');
                 return true;
             } catch (e) {
                 forestState = 'error';
-                forestError = (e && e.message) ? e.message : String(e);
+                forestError = describeCloudError(e);
                 recordRuntimeIssue(e, 'loadForestFromCloud');
                 renderForest();
                 updateForestSyncUI();
@@ -4903,6 +4858,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const loading = forestState === 'loading';
             const sceneLoading = document.getElementById('forest-scene-loading');
             if (sceneLoading) sceneLoading.classList.toggle('hidden', !loading);
+            document.getElementById('forest-scene')?.setAttribute('aria-busy', String(loading));
 
             const count = document.getElementById('stat-tree-count');
             if (count) count.innerText = `${trees.length} شجرة`;
@@ -4933,7 +4889,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             grid.innerHTML = trees.slice(0, 60).map(t => {
                 const species = treeSpeciesById(t.tree_type);
                 return '<div class="ds-tile p-3 flex flex-col items-center text-center gap-1">' +
-                    '<div class="w-12 h-14">' + treeSVG(t.tree_type, { className: 'w-full h-full', title: species.name }) + '</div>' +
+                    '<div class="w-12 h-14">' + treeImage(t.tree_type, { className: 'w-full h-full', title: species.name }) + '</div>' +
                     '<span class="text-[11px] font-black text-[var(--ds-text)]">' + escapeHtml(species.name) + '</span>' +
                     '<span class="text-[9.5px] font-bold text-[var(--ds-muted)]">' + t.duration + ' دقيقة • ' + escapeHtml(treeDateLabel(t)) + '</span>' +
                     treeSyncBadge(t.sync) +
@@ -4953,9 +4909,9 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             const sub = document.getElementById('tree-planted-sub');
             if (!card) return;
             const species = treeSpeciesById(tree.tree_type);
-            if (art) art.innerHTML = treeSVG(tree.tree_type, { className: 'w-full h-full tree-grow', title: species.name });
+            if (art) art.innerHTML = treeImage(tree.tree_type, { className: 'w-full h-full', title: species.name, large: true });
             if (title) title.innerText = 'زُرعت شجرة ' + species.name + ' في غابتك';
-            if (sub) sub.innerText = 'جلسة ' + tree.duration + ' دقيقة • ' + TREE_RARITY_LABEL[species.rarity] + ' • ' + (treesTableMissing ? 'محفوظة على جهازك (بانتظار تهيئة الجدول)' : 'تُحفظ في Supabase');
+            if (sub) sub.innerText = 'جلسة ' + tree.duration + ' دقيقة • ' + TREE_RARITY_LABEL[species.rarity] + ' • ' + (tree.sync === 'synced' ? 'محفوظة في حسابك' : 'محفوظة على جهازك (بانتظار المزامنة)');
             card.classList.remove('hidden');
         }
 
@@ -5344,7 +5300,7 @@ grant select, insert, update, delete on table public.trees to anon, authenticate
             renderForest();
             renderAchievements();
             updateGamificationBar();
-            showToast('تم مسح سجل الأشجار من الجهاز ومن Supabase', 'info');
+            showToast('تم مسح السجل من الجهاز، وستتم مزامنة الحذف مع حسابك', 'info');
             return true;
         }
 
